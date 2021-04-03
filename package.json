@@ -3,13 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "devDependencies": {
-    "lerna": "^4.0.0",
-    "npm-run-all": "^4.1.5",
-    "ttab": "^0.7.0"
+    "lerna": "^4.0.0"
   },
   "scripts": {
     "build": "lerna run build",
     "start": "lerna run start",
-    "diff": "lerna diff"
+    "bootstrap": "lerna bootstrap --hoist"
   }
 }

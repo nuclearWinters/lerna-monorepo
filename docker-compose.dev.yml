@@ -8,12 +8,22 @@ services:
       - .:/usr/src/service
     env_file:
       - ./packages/backend-courses/.env
-    working_dir: /usr/src/service
+    working_dir: /usr/src/service/packages/backend-courses
     command: npm run start
     ports:
-      - 1234:1234
-      - 1235:1235
-    links: mongo-courses
+      - "4000:4000"
+    links:
+      - mongo-courses
+  frontend-courses:
+    container_name: frontend-courses
+    image: node:14
+    volumes:
+      - nodemodules:/usr/src/service/node_modules
+      - .:/usr/src/service
+    working_dir: /usr/src/service/packages/frontend-courses
+    command: npm run start
+    ports:
+      - "8000:8000"
   mongo-courses:
     container_name: mongo-courses
     image: mongo
@@ -21,6 +31,8 @@ services:
       - ./data:/data/db
     ports:
       - "27017:27017"
+    logging:
+      driver: none
 volumes:
   nodemodules:
     external: true

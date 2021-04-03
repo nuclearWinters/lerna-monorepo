@@ -10,15 +10,11 @@ x-base: &base
 services:
   install:
     <<: *base
-    command: npm i
+    command: npm run bootstrap
 
   build:
     <<: *base
     command: npm run build
-
-  create-bundles:
-    <<: *base
-    command: npm run create-bundles
 
 volumes:
   nodemodules:

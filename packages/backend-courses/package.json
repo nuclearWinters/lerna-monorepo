@@ -4,9 +4,9 @@
   "description": "Backend typescript express relay mongodb",
   "main": "server.ts",
   "scripts": {
-    "start:only": "ts-node-dev ./src/server.ts",
-    "start": "ttab -w -t 'Backend Courses development mode' npm run start:only",
-    "build": "npx tsc && node ./build/server.js"
+    "start": "ts-node-dev ./src/server.ts",
+    "build": "npx tsc",
+    "prod": "node ./build/server.js"
   },
   "author": "Armando Rueda",
   "license": "ISC",
@@ -30,7 +30,6 @@
     "@typescript-eslint/parser": "^4.20.0",
     "eslint": "^7.23.0",
     "ts-node-dev": "1.1.6",
-    "ttab": "^0.7.0",
     "typescript": "4.2.3"
   }
 }
