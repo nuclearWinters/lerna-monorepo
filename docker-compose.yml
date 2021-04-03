@@ -1,0 +1,20 @@
+version: "3"
+services:
+  login-app:
+    container_name: backend-courses
+    image: anrp/backend-courses
+    restart: always
+    build: .
+    ports:
+      - "4000:4000"
+    links:
+      - mongo
+    env_file:
+      - ./packages/backend-courses/.env
+  mongo:
+    container_name: mongo-courses
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"

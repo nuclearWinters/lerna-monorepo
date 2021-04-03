@@ -1,0 +1,23 @@
+FROM node:14
+
+WORKDIR /usr/src/app
+
+RUN npm i lerna -g --loglevel notice
+
+COPY package.json .
+RUN npm install --loglevel notice
+
+COPY packages/backend-courses ./packages/backend-courses
+
+COPY lerna.json .
+RUN lerna bootstrap
+
+COPY package*.json ./
+
+RUN npm ci --only=production
+
+COPY . .
+
+EXPOSE 4080
+
+CMD [ "npm", "--prefix", "packages/backend-courses", "run", "build" ]
