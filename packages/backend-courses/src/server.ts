@@ -1,11 +1,11 @@
-import express from "express"
-import { graphqlHTTP } from "express-graphql"
-import { GraphQLSchema, GraphQLObjectType } from "graphql"
-import cors from "cors"
-import { MONGO_DB } from "./config"
-import { UserQuery } from "./QueryUser"
-import { MongoClient, Db } from "mongodb"
-import { UserDB, Context } from "./types"
+import express from "express";
+import { graphqlHTTP } from "express-graphql";
+import { GraphQLSchema, GraphQLObjectType } from "graphql";
+import cors from "cors";
+import { MONGO_DB } from "./config";
+import { UserQuery } from "./QueryUser";
+import { MongoClient, Db } from "mongodb";
+import { UserDB, Context } from "./types";
 
 const Query = new GraphQLObjectType({
   name: "Query",

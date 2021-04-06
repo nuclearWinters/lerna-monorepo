@@ -1,6 +1,6 @@
 import { GraphQLString } from "graphql";
 import { GraphQLUser } from "./Nodes";
-import { RootUser } from "./types"
+import { RootUser } from "./types";
 
 const UserQuery = {
   type: GraphQLUser,

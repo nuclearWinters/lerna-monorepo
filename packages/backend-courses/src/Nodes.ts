@@ -1,7 +1,5 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
-
 import { fromGlobalId, globalIdField, nodeDefinitions } from "graphql-relay";
-
 import { RootUser, Context } from "./types";
 
 const { nodeInterface } = nodeDefinitions(
