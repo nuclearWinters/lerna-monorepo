@@ -23,7 +23,7 @@ services:
       - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
       - .:/usr/src/service
     ports:
-      - 80:80
+      - "80:80"
 volumes:
   nodemodules:
     external: true
