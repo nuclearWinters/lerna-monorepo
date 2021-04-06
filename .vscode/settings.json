@@ -3,6 +3,6 @@
     "packages/frontend-courses",
     "packages/backend-courses"
   ],
-  "editor.formatOnSave": false,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 }
