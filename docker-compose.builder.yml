@@ -10,7 +10,7 @@ x-base: &base
 services:
   install:
     <<: *base
-    command: npm run install
+    command: npm install
 
   bootstrap:
     <<: *base
