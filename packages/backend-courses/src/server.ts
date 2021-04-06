@@ -1,11 +1,11 @@
-import express from "express";
-import { graphqlHTTP } from "express-graphql";
-import { GraphQLSchema, GraphQLObjectType } from "graphql";
-import cors from "cors";
-import { MONGO_DB } from "./config";
-import { UserQuery } from "./QueryUser";
-import { MongoClient, Db } from "mongodb";
-import { UserDB, Context } from "./types";
+import express from "express"
+import { graphqlHTTP } from "express-graphql"
+import { GraphQLSchema, GraphQLObjectType } from "graphql"
+import cors from "cors"
+import { MONGO_DB } from "./config"
+import { UserQuery } from "./QueryUser"
+import { MongoClient, Db } from "mongodb"
+import { UserDB, Context } from "./types"
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -22,8 +22,16 @@ const app = express();
 
 app.use(cors());
 
-app.get("/", (req, res) => {
+app.use((req) => {
+  req.next && req.next();
+});
+
+app.get("/api/", (req, res) => {
   res.json({ hola: "Hola esto con hot reload funciona" });
+});
+
+app.get("/api/random", (req, res) => {
+  res.json({ random: "random" });
 });
 
 const menuOptions = { useNewUrlParser: true, useUnifiedTopology: true };
@@ -50,9 +58,5 @@ app.use(
 MongoClient.connect(MONGO_DB, menuOptions).then((client) => {
   const db = client.db("courses");
   app.locals.db = db;
-  app.listen(process.env.PORT || 4000, () => {
-    console.log(
-      `Running a GraphQL API server at http://localhost:4000/graphql`
-    );
-  });
+  app.listen(process.env.PORT || 4000);
 });

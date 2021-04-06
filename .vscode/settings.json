@@ -3,7 +3,7 @@
     "packages/frontend-courses",
     "packages/backend-courses"
   ],
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

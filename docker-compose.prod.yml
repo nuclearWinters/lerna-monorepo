@@ -9,21 +9,11 @@ services:
     env_file:
       - ./packages/backend-courses/.env
     working_dir: /usr/src/service/packages/backend-courses
-    command: npm run start
+    command: npm run serve
     ports:
       - "4000:4000"
     depends_on:
       - mongo-courses
-  frontend-courses:
-    container_name: frontend-courses
-    image: node:14
-    volumes:
-      - nodemodules:/usr/src/service/node_modules
-      - .:/usr/src/service
-    working_dir: /usr/src/service/packages/frontend-courses
-    command: npm run start
-    ports:
-      - "8000:8000"
   reverse-proxy:
     container_name: reverse_proxy
     image: nginx
@@ -33,16 +23,7 @@ services:
       - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
       - .:/usr/src/service
     ports:
-      - "80:80"
-  mongo-courses:
-    container_name: mongo-courses
-    image: mongo
-    volumes:
-      - ./data:/data/db
-    ports:
-      - "27017:27017"
-    logging:
-      driver: none
+      - 80:80
 volumes:
   nodemodules:
     external: true

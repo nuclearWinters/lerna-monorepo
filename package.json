@@ -3,11 +3,17 @@
   "private": true,
   "version": "1.0.0",
   "devDependencies": {
+    "husky": "^6.0.0",
     "lerna": "^4.0.0"
   },
   "scripts": {
     "build": "lerna run build",
-    "start": "lerna run start",
-    "bootstrap": "lerna bootstrap --hoist"
+    "bootstrap": "lerna bootstrap --hoist",
+    "precommit": "lerna run precommit"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run precommit"
+    }
   }
 }
