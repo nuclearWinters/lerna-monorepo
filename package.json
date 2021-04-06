@@ -9,11 +9,10 @@
   "scripts": {
     "build": "lerna run build",
     "bootstrap": "lerna bootstrap --hoist",
-    "precommit": "lerna run precommit"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run precommit"
+      "pre-commit": "lerna run --concurrency 1 --stream precommit --since HEAD --exclude-dependents"
     }
   }
 }
