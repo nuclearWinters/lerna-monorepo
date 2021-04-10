@@ -1,6 +1,6 @@
 {
   "name": "frontend-courses",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React app built from zero",
   "main": "build/index.tsx",
   "scripts": {
