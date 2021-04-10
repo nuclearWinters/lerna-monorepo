@@ -12,7 +12,8 @@
   "scripts": {
     "build": "lerna run build",
     "bootstrap": "lerna bootstrap",
-    "cm": "cz"
+    "cm": "cz",
+    "new-version": "lerna version --conventional-commits --yes"
   },
   "husky": {
     "hooks": {
