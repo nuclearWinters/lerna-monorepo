@@ -3,16 +3,26 @@
   "private": true,
   "version": "1.0.0",
   "devDependencies": {
+    "@commitlint/cli": "^12.1.1",
+    "@commitlint/config-conventional": "^12.1.1",
+    "cz-conventional-changelog": "^3.3.0",
     "husky": "^4.3.8",
     "lerna": "^4.0.0"
   },
   "scripts": {
     "build": "lerna run build",
-    "bootstrap": "lerna bootstrap"
+    "bootstrap": "lerna bootstrap",
+    "cm": "cz"
   },
   "husky": {
     "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true",
       "pre-commit": "lerna run --concurrency 1 --stream precommit --since HEAD --exclude-dependents"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
     }
   }
 }
