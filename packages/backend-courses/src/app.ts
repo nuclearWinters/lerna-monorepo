@@ -2,9 +2,8 @@ import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import { GraphQLSchema, GraphQLObjectType } from "graphql";
 import cors from "cors";
-import { MONGO_DB } from "./config";
 import { UserQuery } from "./QueryUser";
-import { MongoClient, Db } from "mongodb";
+import { Db } from "mongodb";
 import { UserDB, Context } from "./types";
 
 const Query = new GraphQLObjectType({
@@ -26,15 +25,13 @@ app.use((req) => {
   req.next && req.next();
 });
 
-app.get("/api/", (req, res) => {
+app.get("/api", (req, res) => {
   res.json({ hola: "Hola esto con hot reload funciona" });
 });
 
 app.get("/api/random", (req, res) => {
-  res.json({ random: "random" });
+  res.json({ random: "random2" });
 });
-
-const menuOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 
 app.use(
   "/graphql",
@@ -55,8 +52,4 @@ app.use(
   })
 );
 
-MongoClient.connect(MONGO_DB, menuOptions).then((client) => {
-  const db = client.db("courses");
-  app.locals.db = db;
-  app.listen(process.env.PORT || 4000);
-});
+export { app };
