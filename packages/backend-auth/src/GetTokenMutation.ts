@@ -4,6 +4,7 @@ import { Context } from "./types";
 import bcrypt from "bcryptjs";
 import { REFRESHSECRET, ACCESSSECRET } from "./config";
 import { jwt } from "./jwt";
+import { getContext } from "./utils";
 
 interface Input {
   email: string;
@@ -39,9 +40,10 @@ export const GetTokenMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
-    { users }: Context
+    { req }: Context
   ): Promise<Payload> => {
     try {
+      const { users } = getContext(req);
       const user = await users.findOne({ email });
       if (!user) throw new Error("El usuario no existe.");
       const hash = await bcrypt.compare(password, user.password);

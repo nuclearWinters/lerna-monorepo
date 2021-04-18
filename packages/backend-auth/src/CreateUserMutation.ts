@@ -5,6 +5,7 @@ import { jwt } from "./jwt";
 import { Context } from "./types";
 import bcrypt from "bcryptjs";
 import { ObjectID } from "mongodb";
+import { getContext } from "./utils";
 
 interface Input {
   username: string;
@@ -42,9 +43,10 @@ export const CreateUserMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
-    { users }: Context
+    { req }: Context
   ): Promise<Payload> => {
     try {
+      const { users } = getContext(req);
       const user = await users.findOne({ email });
       if (user) throw new Error("El email ya esta siendo usado.");
       const hash_password = await bcrypt.hash(password, 12);

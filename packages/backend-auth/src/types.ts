@@ -1,7 +1,13 @@
-import { ObjectId, Collection } from "mongodb";
+import { ObjectId, Db } from "mongodb";
 
 export interface Context {
-  users: Collection<UserMongo>;
+  req: {
+    app: {
+      locals: {
+        db: Db;
+      };
+    };
+  };
 }
 
 export interface UserMongo {
