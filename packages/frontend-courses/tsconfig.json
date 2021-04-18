@@ -15,5 +15,5 @@
     "noEmit": true,
     "strictNullChecks": true
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*", "modules.d.ts"]
 }

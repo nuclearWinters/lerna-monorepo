@@ -6,7 +6,7 @@ MongoClient.connect(MONGO_DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then((client) => {
-  const db = client.db("fintech");
+  const db = client.db("auth");
   app.locals.db = db;
-  app.listen(process.env.PORT || 4000);
+  app.listen(process.env.PORT || 5000);
 });

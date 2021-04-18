@@ -14,7 +14,17 @@ export interface Context {
 }
 
 export interface RootUser {
-  username: string;
+  name: string;
+  apellidoPaterno: string;
+  apellidoMaterno: string;
+  RFC: string;
+  CURP: string;
+  clabe: string;
+  mobile: string;
+  email: string;
+  password: string;
+  accountTotal: number;
+  accountAvailable: number;
 }
 
 export interface UserDB {

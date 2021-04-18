@@ -6,6 +6,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "./build"),
     filename: "bundle.js",
+    publicPath: "/",
   },
   module: {
     rules: [
@@ -31,5 +32,6 @@ module.exports = {
     contentBase: path.resolve(__dirname, "./build"),
     port: 8000,
     host: "0.0.0.0",
+    historyApiFallback: true,
   },
 };

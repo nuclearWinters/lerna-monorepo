@@ -14,6 +14,20 @@ services:
       - "4000:4000"
     depends_on:
       - mongo-courses
+  backend-auth:
+    container_name: backend-auth
+    image: node:14
+    volumes:
+      - nodemodules:/usr/src/service/node_modules
+      - .:/usr/src/service
+    env_file:
+      - ./packages/backend-auth/.env
+    working_dir: /usr/src/service/packages/backend-auth
+    command: npm run start
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo-courses
   frontend-courses:
     container_name: frontend-courses
     image: node:14
@@ -29,6 +43,7 @@ services:
     image: nginx
     depends_on:
       - backend-courses
+      - backend-auth
     volumes:
       - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
       - .:/usr/src/service

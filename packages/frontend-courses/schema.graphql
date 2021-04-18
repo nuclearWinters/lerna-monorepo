@@ -1,0 +1,22 @@
+schema {
+  query: Query
+}
+
+type Query {
+  user(id: String): User!
+}
+
+type User {
+  id: ID!
+  name: String!
+  apellidoPaterno: String!
+  apellidoMaterno: String!
+  RFC: String!
+  CURP: String!
+  clabe: String!
+  mobile: String!
+  email: String!
+  password: String!
+  accountTotal: Int!
+  accountAvailable: Int!
+}

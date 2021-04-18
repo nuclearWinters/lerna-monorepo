@@ -1,8 +1,9 @@
 {
   "eslint.workingDirectories": [
     "packages/frontend-courses",
-    "packages/backend-courses"
+    "packages/backend-courses",
+    "packages/backend-auth"
   ],
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

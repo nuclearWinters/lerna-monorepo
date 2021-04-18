@@ -1,19 +1,41 @@
-import { GraphQLString } from "graphql";
+import { GraphQLString, GraphQLNonNull } from "graphql";
 import { GraphQLUser } from "./Nodes";
 import { RootUser } from "./types";
 
 const UserQuery = {
-  type: GraphQLUser,
+  type: new GraphQLNonNull(GraphQLUser),
   args: {
     id: { type: GraphQLString },
   },
   resolve: async (): Promise<RootUser> => {
     try {
       return {
-        username: "Default",
+        name: "Armando Narcizo",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Perez",
+        RFC: "3276342RFC",
+        CURP: "23946239CURP",
+        clabe: "123456789012345678",
+        mobile: "9831228788",
+        email: "armandonarcizoruedaperez@gmail.com",
+        password: "anrp1224",
+        accountTotal: 10000,
+        accountAvailable: 1000,
       };
     } catch (e) {
-      return { username: "Default" };
+      return {
+        name: "Armando Narcizo",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Perez",
+        RFC: "3276342RFC",
+        CURP: "23946239CURP",
+        clabe: "123456789012345678",
+        mobile: "9831228788",
+        email: "armandonarcizoruedaperez@gmail.com",
+        password: "anrp1224",
+        accountTotal: 10000,
+        accountAvailable: 1000,
+      };
     }
   },
 };

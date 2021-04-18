@@ -34,7 +34,7 @@ app.get("/api/random", (req, res) => {
 });
 
 app.use(
-  "/graphql",
+  "/api/graphql",
   graphqlHTTP((req: any): {
     context: Context;
     schema: GraphQLSchema;
