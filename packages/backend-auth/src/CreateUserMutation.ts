@@ -3,7 +3,7 @@ import { GraphQLString, GraphQLNonNull } from "graphql";
 import { ACCESSSECRET, REFRESHSECRET } from "./config";
 import { jwt } from "./jwt";
 import { Context } from "./types";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { ObjectID } from "mongodb";
 
 interface Input {

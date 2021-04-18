@@ -1,7 +1,7 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import { Context } from "./types";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { REFRESHSECRET, ACCESSSECRET } from "./config";
 import { jwt } from "./jwt";
 
