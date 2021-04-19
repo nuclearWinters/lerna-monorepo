@@ -2,7 +2,7 @@ import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { fromGlobalId, globalIdField, nodeDefinitions } from "graphql-relay";
 import { RootUser, Context } from "./types";
 
-const { nodeInterface } = nodeDefinitions(
+const { nodeInterface, nodeField } = nodeDefinitions(
   (globalId) => {
     const { type } = fromGlobalId(globalId);
     return type;
@@ -20,7 +20,7 @@ const { nodeInterface } = nodeDefinitions(
 const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
   name: "User",
   fields: {
-    id: globalIdField("User"),
+    id: globalIdField("User", ({ _id }): string => _id),
     name: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ name }): string => name,
@@ -65,8 +65,12 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ accountAvailable }): number => accountAvailable,
     },
+    error: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ error }): string => error,
+    },
   },
   interfaces: [nodeInterface],
 });
 
-export { GraphQLUser };
+export { GraphQLUser, nodeField };

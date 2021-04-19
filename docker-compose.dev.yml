@@ -28,6 +28,7 @@ services:
       - "5000:5000"
     depends_on:
       - mongo-courses
+      - redis-auth
   frontend-courses:
     container_name: frontend-courses
     image: node:14
@@ -58,6 +59,15 @@ services:
       - "27017:27017"
     logging:
       driver: none
+  redis-auth:
+    container_name: redis-auth
+    command: redis-server --appendonly yes
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis:/data
+
 volumes:
   nodemodules:
     external: true

@@ -1,8 +1,9 @@
 import { Db, Collection } from "mongodb";
-import { UserMongo, RedisPromises } from "./types";
-import { ACCESSSECRET, REFRESHSECRET } from "./config";
+import { UserMongo } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
+import { ACCESSSECRET } from "./config";
+import axios from "axios";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -23,14 +24,42 @@ export const jwt = {
   },
 };
 
+export const getContext = (ctx: {
+  req: {
+    app: {
+      locals: {
+        db: Db;
+      };
+    };
+    headers: {
+      authorization: string | undefined;
+    };
+  };
+}): {
+  users: Collection<UserMongo>;
+  accessToken: string | undefined;
+} => {
+  const db = ctx.req.app.locals.db;
+  return {
+    users: db.collection<UserMongo>("users"),
+    accessToken: ctx.req.headers.authorization,
+  };
+};
+
+interface IResolve {
+  validAccessToken: string;
+  _id: string;
+  email: string;
+}
+
 export const refreshTokenMiddleware = async (
   accessToken: string | undefined,
   refreshToken: string | undefined
-): Promise<{ validAccessToken: string; _id: string; email: string }> => {
-  if (accessToken === undefined) {
+): Promise<IResolve> => {
+  if (!accessToken) {
     throw new Error("Sin access token.");
   }
-  if (refreshToken === undefined) {
+  if (!refreshToken) {
     throw new Error("Sin refresh token.");
   }
   try {
@@ -43,44 +72,13 @@ export const refreshTokenMiddleware = async (
     };
   } catch (e) {
     if (e.message === "jwt expired") {
-      const user = jwt.verify(refreshToken, REFRESHSECRET);
-      if (!user) throw new Error("El token esta corrompido.");
-      const validAccessToken = jwt.sign(
-        { _id: user._id, email: user.email },
-        ACCESSSECRET,
-        {
-          expiresIn: "15s",
-        }
+      const response = await axios.post(
+        "http://localhost/auth/expiredAcessToken",
+        { refreshToken }
       );
-      return {
-        validAccessToken,
-        _id: user._id,
-        email: user.email,
-      };
+      const { validAccessToken, user } = response.data;
+      return { validAccessToken, _id: user._id, email: user.email };
     }
     throw e;
   }
-};
-
-export const getContext = (req: {
-  headers: {
-    authorization: string | undefined;
-  };
-  app: {
-    locals: {
-      db: Db;
-      rdb: RedisPromises;
-    };
-  };
-}): {
-  users: Collection<UserMongo>;
-  rdb: RedisPromises;
-  accessToken: string | undefined;
-} => {
-  const { db, rdb } = req.app.locals;
-  return {
-    users: db.collection<UserMongo>("users"),
-    rdb,
-    accessToken: req.headers.authorization,
-  };
 };

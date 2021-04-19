@@ -1,10 +1,10 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
-import { Context } from "./types";
+import { Context } from "../types";
 import bcrypt from "bcryptjs";
-import { REFRESHSECRET, ACCESSSECRET } from "./config";
-import { jwt } from "./jwt";
-import { getContext } from "./utils";
+import { REFRESHSECRET, ACCESSSECRET } from "../config";
+import { jwt } from "../utils";
+import { getContext } from "../utils";
 
 interface Input {
   email: string;
@@ -48,15 +48,15 @@ export const GetTokenMutation = mutationWithClientMutationId({
       if (!user) throw new Error("El usuario no existe.");
       const hash = await bcrypt.compare(password, user.password);
       if (!hash) throw new Error("La contraseña no coincide.");
-      const refreshToken = await jwt.sign(
-        { _id: user._id.toHexString() },
+      const refreshToken = jwt.sign(
+        { _id: user._id.toHexString(), email: user.email },
         REFRESHSECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "45s" }
       );
-      const accessToken = await jwt.sign(
-        { _id: user._id.toHexString() },
+      const accessToken = jwt.sign(
+        { _id: user._id.toHexString(), email: user.email },
         ACCESSSECRET,
-        { expiresIn: "15m" }
+        { expiresIn: "15s" }
       );
       return {
         refreshToken,

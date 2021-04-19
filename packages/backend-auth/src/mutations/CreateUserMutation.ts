@@ -1,11 +1,11 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull } from "graphql";
-import { ACCESSSECRET, REFRESHSECRET } from "./config";
-import { jwt } from "./jwt";
-import { Context } from "./types";
+import { ACCESSSECRET, REFRESHSECRET } from "../config";
+import { jwt } from "../utils";
+import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import { ObjectID } from "mongodb";
-import { getContext } from "./utils";
+import { getContext } from "../utils";
 
 interface Input {
   username: string;
@@ -56,15 +56,15 @@ export const CreateUserMutation = mutationWithClientMutationId({
         email,
         password: hash_password,
       });
-      const refreshToken = await jwt.sign(
-        { _id: _id.toHexString() },
+      const refreshToken = jwt.sign(
+        { _id: _id.toHexString(), email },
         REFRESHSECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "45s" }
       );
-      const accessToken = await jwt.sign(
-        { _id: _id.toHexString() },
+      const accessToken = jwt.sign(
+        { _id: _id.toHexString(), email },
         ACCESSSECRET,
-        { expiresIn: "15m" }
+        { expiresIn: "15s" }
       );
       //const msg = {
       //  to: email,
