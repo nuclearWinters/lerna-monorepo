@@ -1,5 +1,62 @@
+input GetTokenInput {
+  password: String!
+  email: String!
+  clientMutationId: String
+}
+
+type GetTokenPayload {
+  error: String
+  refreshToken: String!
+  accessToken: String!
+  clientMutationId: String
+}
+
+input CreateUserInput {
+  password: String!
+  email: String!
+  clientMutationId: String
+}
+
+type CreateUserPayload {
+  error: String!
+  refreshToken: String!
+  accessToken: String!
+  clientMutationId: String
+}
+
+input RenewAccessTokenInput {
+  password: String!
+  email: String!
+  clientMutationId: String
+}
+
+type RenewAccessTokenPayload {
+  refreshToken: String!
+  clientMutationId: String
+}
+
+input BlacklistUserInput {
+  refreshToken: String!
+  id: String!
+  clientMutationId: String
+}
+
+type BlacklistUserPayload {
+  validAccessToken: String!
+  error: String!
+  clientMutationId: String
+}
+
+type Mutation {
+  getToken(input: GetTokenInput!): GetTokenPayload!
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  renewAccessToken(input: RenewAccessTokenInput!): RenewAccessTokenPayload!
+  blacklistUser(input: BlacklistUserInput!): BlacklistUserPayload!
+}
+
 schema {
   query: Query
+  mutation: Mutation
 }
 
 type Query {
