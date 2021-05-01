@@ -18,35 +18,38 @@ export const AuthServer: IAuthServer = {
     call: ServerUnaryCall<RenewAccessTokenInput, RenewAccessTokenPayload>,
     callback: sendUnaryData<RenewAccessTokenPayload>
   ): Promise<void> {
-    const refreshToken = call.request.getRefreshtoken();
-    if (!refreshToken) {
+    try {
+      const refreshToken = call.request.getRefreshtoken();
+      if (!refreshToken) {
+        throw new Error("No refresh token");
+      }
+      const user = jwt.verify(refreshToken, REFRESHSECRET);
+      if (!user) {
+        throw new Error("El token esta corrompido.");
+      }
+      const blacklistedUser = await ctx.rdb?.get(user._id);
+      if (blacklistedUser) {
+        throw new Error("El usuario estará bloqueado por una hora.");
+      }
+      const validAccessToken = jwt.sign(
+        { _id: user._id, email: user.email },
+        ACCESSSECRET,
+        {
+          expiresIn: "15m",
+        }
+      );
+      const payload = new RenewAccessTokenPayload();
+      payload.setValidaccesstoken(validAccessToken);
+      callback(null, payload);
+    } catch (e) {
       const error: ServiceError = {
-        name: "No refresh token",
-        message: `No refresh token.`,
+        name: "Error Auth Service",
+        message: e.message,
         code: 1,
         details: "",
         metadata: new Metadata(),
       };
       callback(error, null);
-      return;
     }
-    const user = jwt.verify(refreshToken, REFRESHSECRET);
-    if (!user) {
-      throw new Error("El token esta corrompido.");
-    }
-    const blacklistedUser = await ctx.rdb?.get(user._id);
-    if (blacklistedUser) {
-      throw new Error("El usuario estará bloqueado por una hora.");
-    }
-    const validAccessToken = jwt.sign(
-      { _id: user._id, email: user.email },
-      ACCESSSECRET,
-      {
-        expiresIn: "15m",
-      }
-    );
-    const payload = new RenewAccessTokenPayload();
-    payload.setValidaccesstoken(validAccessToken);
-    callback(null, payload);
   },
 };

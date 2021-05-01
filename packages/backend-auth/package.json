@@ -59,7 +59,7 @@
     "typescript": "^4.2.4"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
+    "**/*.{js,jsx,ts,tsx},!*_pb.{js,ts}": [
       "eslint --cache --fix",
       "prettier --write",
       "jest --findRelatedTests --bail"
