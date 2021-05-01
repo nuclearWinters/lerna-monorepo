@@ -9,7 +9,7 @@ services:
     working_dir: /usr/src/service/packages/relay-gateway
     command: ["npm", "run", "start"]
     ports:
-      - "6000:6000"
+      - "4001:4001"
     depends_on:
       - backend-courses
       - backend-auth
@@ -27,6 +27,7 @@ services:
       - "4000:4000"
     depends_on:
       - mongo-courses
+      - backend-auth
   backend-auth:
     container_name: backend-auth
     image: node:14
@@ -38,7 +39,8 @@ services:
     working_dir: /usr/src/service/packages/backend-auth
     command: ["npm", "run", "start"]
     ports:
-      - "5000:5000"
+      - "4002:4002"
+      - "1983:1983"
     depends_on:
       - mongo-courses
       - redis-auth
@@ -81,6 +83,13 @@ services:
       - "6379:6379"
     volumes:
       - ./redis:/data
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq
+    ports:
+      - "15672:15672"
+    logging:
+      driver: none
 
 volumes:
   nodemodules:

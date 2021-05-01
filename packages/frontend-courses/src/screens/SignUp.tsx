@@ -1,8 +1,12 @@
 import React, { FC, useState } from "react";
+import { commitCreateUserMutation } from "mutations/CreateUser";
+import { RelayEnvironment } from "RelayEnvironment";
 
-interface Props {}
+interface Props {
+  refetch: () => void;
+}
 
-export const SignIn: FC<Props> = () => {
+export const SignUp: FC<Props> = ({ refetch }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,7 +23,17 @@ export const SignIn: FC<Props> = () => {
         value={password}
         onChange={handlePassword}
       />
-      <button>Sign In</button>
+      <button
+        onClick={() => {
+          commitCreateUserMutation(
+            RelayEnvironment,
+            { email, password },
+            refetch
+          );
+        }}
+      >
+        Sign Up
+      </button>
     </div>
   );
 };

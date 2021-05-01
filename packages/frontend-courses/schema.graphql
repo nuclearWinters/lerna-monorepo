@@ -54,13 +54,13 @@ type Mutation {
   blacklistUser(input: BlacklistUserInput!): BlacklistUserPayload!
 }
 
+type Query {
+  user(id: String!, refreshToken: String!): User!
+}
+
 schema {
   query: Query
   mutation: Mutation
-}
-
-type Query {
-  user(id: String): User!
 }
 
 type User {
@@ -76,4 +76,5 @@ type User {
   password: String!
   accountTotal: Int!
   accountAvailable: Int!
+  error: String!
 }

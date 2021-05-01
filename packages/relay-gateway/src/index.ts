@@ -4,13 +4,19 @@ import { graphqlHTTP } from "express-graphql";
 import fetch from "cross-fetch";
 import { print } from "graphql";
 
+interface GraphQLContext {
+  authorization: string | undefined;
+}
+
 const makeRemoteExecutor = (url: string): AsyncExecutor => {
-  return async ({ document, variables }) => {
+  return async ({ document, variables, context }) => {
     const query = typeof document === "string" ? document : print(document);
     const fetchResult = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization:
+          ((context as unknown) as GraphQLContext)?.authorization || "",
       },
       body: JSON.stringify({ query, variables }),
     });
@@ -20,7 +26,7 @@ const makeRemoteExecutor = (url: string): AsyncExecutor => {
 
 const makeGatewaySchema = async () => {
   const courses = makeRemoteExecutor("http://backend-courses:4000/api/graphql");
-  const auth = makeRemoteExecutor("http://backend-auth:5000/auth/graphql");
+  const auth = makeRemoteExecutor("http://backend-auth:4002/auth/graphql");
   const gatewaySchema = stitchSchemas({
     subschemas: [
       {
@@ -39,10 +45,11 @@ const makeGatewaySchema = async () => {
 makeGatewaySchema().then((schema) => {
   app.use(
     "/relay/graphql",
-    graphqlHTTP(() => ({
+    graphqlHTTP((req) => ({
       schema,
+      context: { authorization: req.headers.authorization },
       graphiql: true,
     }))
   );
-  app.listen(process.env.PORT || 6000);
+  app.listen(process.env.PORT || 4001);
 });

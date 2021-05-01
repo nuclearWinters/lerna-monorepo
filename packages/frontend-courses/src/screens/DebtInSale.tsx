@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect } from "react";
 import { useTable, usePagination } from "react-table";
-import { Table } from "../components/Table";
+import { Table } from "components/Table";
 
 interface Props {}
 

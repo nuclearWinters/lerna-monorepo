@@ -4,7 +4,7 @@ import { Main } from "./Main";
 import { Options } from "./Options";
 import { graphql, useFragment } from "react-relay";
 import { Routes_user$key } from "./__generated__/Routes_user.graphql";
-import { GeneralData, DebtInSale } from "./screens";
+import { GeneralData, DebtInSale, LogIn, SignUp } from "./screens";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -19,6 +19,7 @@ const routesFragment = graphql`
 
 type Props = {
   user: Routes_user$key;
+  refetch: () => void;
 };
 
 export const Routes: FC<Props> = (props) => {
@@ -33,12 +34,18 @@ export const Routes: FC<Props> = (props) => {
           width: "100vw",
         }}
       >
-        <div style={{ border: "1px solid black" }}>
+        <div
+          style={{
+            border: "1px solid black",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <div>Valor de la cuenta</div>
           <div>${(user.accountTotal / 100).toFixed(2)}</div>
           <div>Saldo disponible</div>
           <div>${(user.accountAvailable / 100).toFixed(2)}</div>
-          <div>Mi cuenta</div>
+          <Link to="/profile">Mi cuenta</Link>
           <Link to="/debtinsale">Comprar</Link>
           <div>Agregar fondos</div>
           <div>Retirar fondos</div>
@@ -52,10 +59,30 @@ export const Routes: FC<Props> = (props) => {
             flexDirection: "column",
           }}
         >
-          <Link
-            to="/profile"
-            style={{ textAlign: "end" }}
-          >{`${user.name} ${user.apellidoPaterno} ${user.apellidoMaterno}`}</Link>
+          {user.name ? (
+            <>
+              <Link
+                to="/profile"
+                style={{ textAlign: "end" }}
+              >{`${user.name} ${user.apellidoPaterno} ${user.apellidoMaterno}`}</Link>
+              <div
+                style={{ textAlign: "end" }}
+                onClick={() => {
+                  localStorage.removeItem("accessToken");
+                  localStorage.removeItem("refreshToken");
+                  props.refetch();
+                }}
+              >
+                Log Out
+              </div>
+            </>
+          ) : (
+            <div>
+              <Link to="/login">Log In</Link>
+              <Link to="/register">Register</Link>
+              <span>No user</span>
+            </div>
+          )}
           <div style={{ flex: 1 }}>
             <Switch>
               <Route exact path="/">
@@ -69,6 +96,12 @@ export const Routes: FC<Props> = (props) => {
               </Route>
               <Route path="/debtinsale">
                 <DebtInSale />
+              </Route>
+              <Route path="/login">
+                <LogIn refetch={props.refetch} />
+              </Route>
+              <Route path="/register">
+                <SignUp refetch={props.refetch} />
               </Route>
             </Switch>
           </div>

@@ -1,9 +1,15 @@
 import { Db, Collection } from "mongodb";
 import { UserMongo } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
-import { DecodeJWT } from "./types";
+import { DecodeJWT, IMQ } from "./types";
 import { ACCESSSECRET } from "./config";
-import axios from "axios";
+import { Channel } from "amqplib";
+import {
+  RenewAccessTokenInput,
+  RenewAccessTokenPayload,
+} from "./proto/auth_pb";
+import { AuthClient } from "./proto/auth_grpc_pb";
+import { credentials } from "@grpc/grpc-js";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -29,6 +35,7 @@ export const getContext = (ctx: {
     app: {
       locals: {
         db: Db;
+        ch: Channel;
       };
     };
     headers: {
@@ -38,12 +45,39 @@ export const getContext = (ctx: {
 }): {
   users: Collection<UserMongo>;
   accessToken: string | undefined;
+  publishToQueue: (message: IMQ) => void;
 } => {
   const db = ctx.req.app.locals.db;
+  const ch = ctx.req.app.locals.ch;
   return {
     users: db.collection<UserMongo>("users"),
     accessToken: ctx.req.headers.authorization,
+    publishToQueue: (message) => {
+      ch.sendToQueue(
+        message.queue,
+        Buffer.from(JSON.stringify(message.payload))
+      );
+    },
   };
+};
+
+export const client = new AuthClient(
+  `backend-auth:1983`,
+  credentials.createInsecure()
+);
+
+export const renewAccessToken = (
+  refreshToken: string
+): Promise<RenewAccessTokenPayload> => {
+  return new Promise<RenewAccessTokenPayload>((resolve, reject) => {
+    const request = new RenewAccessTokenInput();
+    request.setRefreshtoken(refreshToken);
+
+    client.renewAccessToken(request, (err, user) => {
+      if (err) reject(err);
+      else resolve(user);
+    });
+  });
 };
 
 interface IResolve {
@@ -72,13 +106,13 @@ export const refreshTokenMiddleware = async (
     };
   } catch (e) {
     if (e.message === "jwt expired") {
-      const response = await axios.post(
-        "http://localhost/auth/expiredAcessToken",
-        { refreshToken }
-      );
-      const { validAccessToken, user } = response.data;
+      const response = await renewAccessToken(refreshToken);
+      const validAccessToken = response.getValidaccesstoken();
+      const user = jwt.verify(validAccessToken, ACCESSSECRET);
+      if (!user) throw new Error("El token esta corrompido.");
       return { validAccessToken, _id: user._id, email: user.email };
+    } else {
+      throw e;
     }
-    throw e;
   }
 };

@@ -3,6 +3,8 @@ import { UserMongo, RedisPromises } from "./types";
 import { ACCESSSECRET, REFRESHSECRET } from "./config";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
+//import { Channel } from "amqplib";
+//import { rdbInstance } from "./index";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -49,7 +51,7 @@ export const refreshTokenMiddleware = async (
         { _id: user._id, email: user.email },
         ACCESSSECRET,
         {
-          expiresIn: "15s",
+          expiresIn: "15m",
         }
       );
       return {
@@ -84,3 +86,27 @@ export const getContext = (req: {
     accessToken: req.headers.authorization,
   };
 };
+
+/*export const channelConsume = (ch: Channel): void => {
+  ch.consume(RENEW_ACCESS_TOKEN, async (msg) => {
+    if (msg !== null) {
+      const refreshToken = msg.content.toString();
+      const user = jwt.verify(refreshToken, REFRESHSECRET);
+      if (!user) {
+        throw new Error("El token esta corrompido.");
+      }
+      const blacklistedUser = await rdb.get(user._id);
+      if (blacklistedUser) {
+        throw new Error("El usuario estará bloqueado por una hora.");
+      }
+      const validAccessToken = jwt.sign(
+        { _id: user._id, email: user.email },
+        ACCESSSECRET,
+        {
+          expiresIn: "15m",
+        }
+      );
+      ch.ack(msg);
+    }
+  });
+};*/

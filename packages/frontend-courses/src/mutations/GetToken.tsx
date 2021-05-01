@@ -16,14 +16,22 @@ const MutationQuery = graphql`
   }
 `;
 
-export const commitFeedbackLikeMutation = (
+export const commitGetTokenMutation = (
   environment: Environment,
-  input: GetTokenInput
+  input: GetTokenInput,
+  refetch: () => void
 ) => {
   return commitMutation<GetTokenMutation>(environment, {
     mutation: MutationQuery,
     variables: { input },
-    onCompleted: (response) => {} /* Mutation completed */,
+    onCompleted: (response) => {
+      if (response.getToken.error) {
+        return;
+      }
+      localStorage.setItem("accessToken", response.getToken.accessToken);
+      localStorage.setItem("refreshToken", response.getToken.refreshToken);
+      refetch();
+    } /* Mutation completed */,
     onError: (error) => {} /* Mutation errored */,
   });
 };

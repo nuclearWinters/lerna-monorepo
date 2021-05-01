@@ -1,4 +1,9 @@
-import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
+import {
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+} from "graphql";
 import { fromGlobalId, globalIdField, nodeDefinitions } from "graphql-relay";
 import { RootUser, Context } from "./types";
 
@@ -58,11 +63,11 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
       resolve: ({ password }): string => password,
     },
     accountTotal: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ accountTotal }): number => accountTotal,
     },
     accountAvailable: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ accountAvailable }): number => accountAvailable,
     },
     error: {

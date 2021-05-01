@@ -4,9 +4,13 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type AppQueryVariables = {};
+export type AppQueryVariables = {
+  id: string;
+  refreshToken: string;
+};
 export type AppQueryResponse = {
   readonly user: {
+    readonly error: string;
     readonly " $fragmentRefs": FragmentRefs<"Routes_user">;
   };
 };
@@ -16,9 +20,13 @@ export type AppQuery = {
 };
 
 /*
-query AppQuery {
-  user(id: "facebook") {
+query AppQuery(
+  $id: String!
+  $refreshToken: String!
+) {
+  user(id: $id, refreshToken: $refreshToken) {
     ...Routes_user
+    error
     id
   }
 }
@@ -50,34 +58,59 @@ fragment Routes_user on User {
 
 const node: ConcreteRequest = (function () {
   var v0 = [
-    {
-      kind: "Literal",
-      name: "id",
-      value: "facebook",
-    } as any,
-  ];
+      {
+        defaultValue: null,
+        kind: "LocalArgument",
+        name: "id",
+      } as any,
+      {
+        defaultValue: null,
+        kind: "LocalArgument",
+        name: "refreshToken",
+      } as any,
+    ],
+    v1 = [
+      {
+        kind: "Variable",
+        name: "id",
+        variableName: "id",
+      } as any,
+      {
+        kind: "Variable",
+        name: "refreshToken",
+        variableName: "refreshToken",
+      } as any,
+    ],
+    v2 = {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "error",
+      storageKey: null,
+    } as any;
   return {
     fragment: {
-      argumentDefinitions: [],
+      argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
       name: "AppQuery",
       selections: [
         {
           alias: null,
-          args: v0 /*: any*/,
+          args: v1 /*: any*/,
           concreteType: "User",
           kind: "LinkedField",
           name: "user",
           plural: false,
           selections: [
+            v2 /*: any*/,
             {
               args: null,
               kind: "FragmentSpread",
               name: "Routes_user",
             },
           ],
-          storageKey: 'user(id:"facebook")',
+          storageKey: null,
         },
       ],
       type: "Query",
@@ -85,13 +118,13 @@ const node: ConcreteRequest = (function () {
     },
     kind: "Request",
     operation: {
-      argumentDefinitions: [],
+      argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
       name: "AppQuery",
       selections: [
         {
           alias: null,
-          args: v0 /*: any*/,
+          args: v1 /*: any*/,
           concreteType: "User",
           kind: "LinkedField",
           name: "user",
@@ -181,21 +214,22 @@ const node: ConcreteRequest = (function () {
               name: "password",
               storageKey: null,
             },
+            v2 /*: any*/,
           ],
-          storageKey: 'user(id:"facebook")',
+          storageKey: null,
         },
       ],
     },
     params: {
-      cacheID: "d5e962f2cacf1fd26c8d45c97c875184",
+      cacheID: "5c403dd74665964d608b326bc754e03f",
       id: null,
       metadata: {},
       name: "AppQuery",
       operationKind: "query",
       text:
-        'query AppQuery {\n  user(id: "facebook") {\n    ...Routes_user\n    id\n  }\n}\n\nfragment GeneralData_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  password\n  accountTotal\n  accountAvailable\n}\n\nfragment Routes_user on User {\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...GeneralData_user\n}\n',
+        "query AppQuery(\n  $id: String!\n  $refreshToken: String!\n) {\n  user(id: $id, refreshToken: $refreshToken) {\n    ...Routes_user\n    error\n    id\n  }\n}\n\nfragment GeneralData_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  password\n  accountTotal\n  accountAvailable\n}\n\nfragment Routes_user on User {\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...GeneralData_user\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "c5485ad76ecbb3b39a66921b0516ad50";
+(node as any).hash = "14c65173d2767a2c561332de2ae28e8e";
 export default node;

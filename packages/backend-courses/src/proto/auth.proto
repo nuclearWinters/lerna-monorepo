@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package authPackage;
+
+service Auth {
+    rpc renewAccessToken(RenewAccessTokenInput) returns (RenewAccessTokenPayload) {};
+}
+
+message RenewAccessTokenInput {
+    string refreshtoken = 1;
+}
+
+message RenewAccessTokenPayload {
+    string validAccessToken = 1;
+}

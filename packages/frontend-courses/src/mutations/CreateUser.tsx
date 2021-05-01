@@ -16,9 +16,10 @@ const MutationQuery = graphql`
   }
 `;
 
-export const commitFeedbackLikeMutation = (
+export const commitCreateUserMutation = (
   environment: Environment,
-  input: CreateUserInput
+  input: CreateUserInput,
+  refetch: () => void
 ) => {
   return commitMutation<CreateUserMutation>(environment, {
     mutation: MutationQuery,

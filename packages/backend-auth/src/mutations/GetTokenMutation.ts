@@ -51,12 +51,12 @@ export const GetTokenMutation = mutationWithClientMutationId({
       const refreshToken = jwt.sign(
         { _id: user._id.toHexString(), email: user.email },
         REFRESHSECRET,
-        { expiresIn: "45s" }
+        { expiresIn: "1h" }
       );
       const accessToken = jwt.sign(
         { _id: user._id.toHexString(), email: user.email },
         ACCESSSECRET,
-        { expiresIn: "15s" }
+        { expiresIn: "15m" }
       );
       return {
         refreshToken,

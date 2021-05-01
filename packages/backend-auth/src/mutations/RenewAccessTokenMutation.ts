@@ -52,7 +52,7 @@ export const RenewAccessTokenMutation = mutationWithClientMutationId({
         { _id: user._id, email: user.email },
         ACCESSSECRET,
         {
-          expiresIn: "15s",
+          expiresIn: "15m",
         }
       );
       return { validAccessToken, error: "" };

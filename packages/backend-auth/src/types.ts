@@ -34,3 +34,11 @@ export interface DecodeJWT {
   _id: string;
   email: string;
 }
+
+export const RENEW_ACCESS_TOKEN = "RENEW_ACCESS_TOKEN";
+interface IRenewAccessToken {
+  queue: typeof RENEW_ACCESS_TOKEN;
+  payload: string;
+}
+
+export type IMQ = IRenewAccessToken;
