@@ -21,7 +21,11 @@ export interface Context {
         rdb: RedisPromises;
       };
     };
+    body: {
+      refreshToken?: string;
+    };
   };
+  newRefreshToken?: string;
 }
 
 export interface UserMongo {

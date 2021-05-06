@@ -4,7 +4,6 @@ import { Context } from "../types";
 import { getContext, refreshTokenMiddleware } from "../utils";
 
 interface Input {
-  refreshToken: string;
   id: string;
 }
 
@@ -17,7 +16,6 @@ export const BlacklistUserMutation = mutationWithClientMutationId({
   name: "BlacklistUser",
   description: "Bloquea los refresh token de un usuario por una hora.",
   inputFields: {
-    refreshToken: { type: new GraphQLNonNull(GraphQLString) },
     id: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
@@ -31,11 +29,11 @@ export const BlacklistUserMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { refreshToken, id }: Input,
-    { req }: Context
+    { id }: Input,
+    ctx: Context
   ): Promise<Payload> => {
     try {
-      const { rdb, accessToken } = getContext(req);
+      const { rdb, accessToken, refreshToken } = getContext(ctx);
       const { validAccessToken, _id } = await refreshTokenMiddleware(
         accessToken,
         refreshToken

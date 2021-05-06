@@ -14,6 +14,7 @@ const routesFragment = graphql`
     accountTotal
     accountAvailable
     ...GeneralData_user
+    ...DebtInSale_user
   }
 `;
 
@@ -95,7 +96,7 @@ export const Routes: FC<Props> = (props) => {
                 <GeneralData user={user} />
               </Route>
               <Route path="/debtinsale">
-                <DebtInSale />
+                <DebtInSale user={user} />
               </Route>
               <Route path="/login">
                 <LogIn refetch={props.refetch} />

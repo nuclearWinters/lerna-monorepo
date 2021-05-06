@@ -10,7 +10,9 @@ export type Routes_user = {
   readonly apellidoMaterno: string;
   readonly accountTotal: number;
   readonly accountAvailable: number;
-  readonly " $fragmentRefs": FragmentRefs<"GeneralData_user">;
+  readonly " $fragmentRefs": FragmentRefs<
+    "GeneralData_user" | "DebtInSale_user"
+  >;
   readonly " $refType": "Routes_user";
 };
 export type Routes_user$data = Routes_user;
@@ -65,9 +67,14 @@ const node: ReaderFragment = {
       kind: "FragmentSpread",
       name: "GeneralData_user",
     },
+    {
+      args: null,
+      kind: "FragmentSpread",
+      name: "DebtInSale_user",
+    },
   ],
   type: "User",
   abstractKey: null,
 } as any;
-(node as any).hash = "3a5603542265d9b290313cf6013f891b";
+(node as any).hash = "20160cd4bd10b78da9692d47881c1c83";
 export default node;

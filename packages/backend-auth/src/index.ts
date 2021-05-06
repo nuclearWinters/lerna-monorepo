@@ -45,7 +45,7 @@ MongoClient.connect(MONGO_DB, {
   const server = new Server();
   server.addService(AuthService, AuthServer);
   server.bindAsync(
-    `0.0.0.0:1983`,
+    "backend-auth:1983",
     ServerCredentials.createInsecure(),
     (err) => {
       if (err) {

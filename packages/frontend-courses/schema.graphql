@@ -1,37 +1,24 @@
-input GetTokenInput {
+input SignInInput {
   password: String!
   email: String!
   clientMutationId: String
 }
 
-type GetTokenPayload {
+type SignInPayload {
   error: String
-  refreshToken: String!
   accessToken: String!
   clientMutationId: String
 }
 
-input CreateUserInput {
+input SignUpInput {
   password: String!
   email: String!
   clientMutationId: String
 }
 
-type CreateUserPayload {
+type SignUpPayload {
   error: String!
-  refreshToken: String!
   accessToken: String!
-  clientMutationId: String
-}
-
-input RenewAccessTokenInput {
-  password: String!
-  email: String!
-  clientMutationId: String
-}
-
-type RenewAccessTokenPayload {
-  refreshToken: String!
   clientMutationId: String
 }
 
@@ -48,14 +35,14 @@ type BlacklistUserPayload {
 }
 
 type Mutation {
-  getToken(input: GetTokenInput!): GetTokenPayload!
-  createUser(input: CreateUserInput!): CreateUserPayload!
-  renewAccessToken(input: RenewAccessTokenInput!): RenewAccessTokenPayload!
+  signIn(input: SignInInput!): SignInPayload!
+  signUp(input: SignUpInput!): SignUpPayload!
   blacklistUser(input: BlacklistUserInput!): BlacklistUserPayload!
 }
 
 type Query {
-  user(id: String!, refreshToken: String!): User!
+  user(id: String!): User!
+  node(id: ID!): Node
 }
 
 schema {
@@ -63,7 +50,39 @@ schema {
   mutation: Mutation
 }
 
-type User {
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Loan {
+  id: ID!
+  user_id: String!
+  score: Int!
+  rate: Int!
+  total: Int!
+  term: Int!
+  need: Int!
+  ends: Int!
+}
+
+type LoanConnection {
+  pageInfo: PageInfo!
+  edges: [LoanEdge]
+}
+
+type LoanEdge {
+  node: Loan
+  cursor: String!
+}
+
+type User implements Node {
   id: ID!
   name: String!
   apellidoPaterno: String!
@@ -73,8 +92,8 @@ type User {
   clabe: String!
   mobile: String!
   email: String!
-  password: String!
   accountTotal: Int!
   accountAvailable: Int!
+  loans(after: String, first: Int, before: String, last: Int): LoanConnection
   error: String!
 }

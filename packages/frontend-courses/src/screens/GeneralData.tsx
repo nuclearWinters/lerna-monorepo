@@ -13,7 +13,6 @@ const generalDataFragment = graphql`
     clabe
     mobile
     email
-    password
     accountTotal
     accountAvailable
   }

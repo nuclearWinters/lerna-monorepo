@@ -1,5 +1,5 @@
-import { Db, Collection } from "mongodb";
-import { UserMongo, RedisPromises } from "./types";
+import { Collection } from "mongodb";
+import { UserMongo, RedisPromises, Context } from "./types";
 import { ACCESSSECRET, REFRESHSECRET } from "./config";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
@@ -64,26 +64,20 @@ export const refreshTokenMiddleware = async (
   }
 };
 
-export const getContext = (req: {
-  headers: {
-    authorization: string | undefined;
-  };
-  app: {
-    locals: {
-      db: Db;
-      rdb: RedisPromises;
-    };
-  };
-}): {
+interface IContextResult {
   users: Collection<UserMongo>;
   rdb: RedisPromises;
-  accessToken: string | undefined;
-} => {
-  const { db, rdb } = req.app.locals;
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+export const getContext = (ctx: Context): IContextResult => {
+  const { db, rdb } = ctx.req.app.locals;
   return {
     users: db.collection<UserMongo>("users"),
     rdb,
-    accessToken: req.headers.authorization,
+    accessToken: ctx.req.headers.authorization,
+    refreshToken: ctx.req.body.refreshToken,
   };
 };
 

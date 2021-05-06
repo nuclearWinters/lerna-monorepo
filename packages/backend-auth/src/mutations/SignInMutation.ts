@@ -12,13 +12,12 @@ interface Input {
 }
 
 type Payload = {
-  refreshToken: string;
   accessToken: string;
   error?: string;
 };
 
-export const GetTokenMutation = mutationWithClientMutationId({
-  name: "GetToken",
+export const SignInMutation = mutationWithClientMutationId({
+  name: "SignIn",
   description: "Obtén un Refresh Token y un AccessToken.",
   inputFields: {
     password: { type: new GraphQLNonNull(GraphQLString) },
@@ -29,10 +28,6 @@ export const GetTokenMutation = mutationWithClientMutationId({
       type: GraphQLString,
       resolve: ({ error }: Payload): string | null => error || null,
     },
-    refreshToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ refreshToken }: Payload): string => refreshToken,
-    },
     accessToken: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ accessToken }: Payload): string => accessToken,
@@ -40,10 +35,10 @@ export const GetTokenMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
-    { req }: Context
+    ctx: Context
   ): Promise<Payload> => {
     try {
-      const { users } = getContext(req);
+      const { users } = getContext(ctx);
       const user = await users.findOne({ email });
       if (!user) throw new Error("El usuario no existe.");
       const hash = await bcrypt.compare(password, user.password);
@@ -58,14 +53,13 @@ export const GetTokenMutation = mutationWithClientMutationId({
         ACCESSSECRET,
         { expiresIn: "15m" }
       );
+      ctx.newRefreshToken = refreshToken;
       return {
-        refreshToken,
         accessToken,
       };
     } catch (e) {
       return {
         error: e.message,
-        refreshToken: "",
         accessToken: "",
       };
     }

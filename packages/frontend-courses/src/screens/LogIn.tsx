@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { commitGetTokenMutation } from "mutations/GetToken";
+import { commitGetTokenMutation } from "mutations/SignIn";
 import { RelayEnvironment } from "RelayEnvironment";
 
 interface Props {

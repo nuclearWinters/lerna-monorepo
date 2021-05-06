@@ -10,9 +10,6 @@ interface IQueryUser {
     id: {
       type: GraphQLNonNull<GraphQLNullableType>;
     };
-    refreshToken: {
-      type: GraphQLNonNull<GraphQLNullableType>;
-    };
   };
   resolve: (
     root: { [argName: string]: string },
@@ -25,11 +22,10 @@ const QueryUser: IQueryUser = {
   type: new GraphQLNonNull(GraphQLUser),
   args: {
     id: { type: new GraphQLNonNull(GraphQLString) },
-    refreshToken: { type: new GraphQLNonNull(GraphQLString) },
   },
-  resolve: async (_, { id, refreshToken }, ctx) => {
+  resolve: async (_, { id }, ctx) => {
     try {
-      const { users, accessToken } = getContext(ctx);
+      const { users, accessToken, refreshToken } = getContext(ctx);
       const { _id, email } = await refreshTokenMiddleware(
         accessToken,
         refreshToken
@@ -43,19 +39,29 @@ const QueryUser: IQueryUser = {
       if (!user) {
         throw new Error("El usuario no existe.");
       }
+      const {
+        name,
+        apellidoMaterno,
+        apellidoPaterno,
+        RFC,
+        CURP,
+        clabe,
+        mobile,
+        accountTotal,
+        accountAvailable,
+      } = user;
       return {
         _id,
-        name: "Armando Narcizo",
-        apellidoPaterno: "Rueda",
-        apellidoMaterno: "Perez",
-        RFC: "3276342RFC",
-        CURP: "23946239CURP",
-        clabe: "123456789012345678",
-        mobile: "9831228788",
+        name,
+        apellidoPaterno,
+        apellidoMaterno,
+        RFC,
+        CURP,
+        clabe,
+        mobile,
         email,
-        password: "anrp1224",
-        accountTotal: 10000,
-        accountAvailable: 1000,
+        accountTotal,
+        accountAvailable,
         error: "",
       };
     } catch (e) {
@@ -69,7 +75,6 @@ const QueryUser: IQueryUser = {
         clabe: "",
         mobile: "",
         email: "",
-        password: "",
         accountTotal: 0,
         accountAvailable: 0,
         error: e.message,

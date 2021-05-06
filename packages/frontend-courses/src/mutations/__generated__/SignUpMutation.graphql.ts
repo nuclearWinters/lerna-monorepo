@@ -3,33 +3,31 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
-export type GetTokenInput = {
+export type SignUpInput = {
   password: string;
   email: string;
   clientMutationId?: string | null;
 };
-export type GetTokenMutationVariables = {
-  input: GetTokenInput;
+export type SignUpMutationVariables = {
+  input: SignUpInput;
 };
-export type GetTokenMutationResponse = {
-  readonly getToken: {
-    readonly error: string | null;
-    readonly refreshToken: string;
+export type SignUpMutationResponse = {
+  readonly signUp: {
+    readonly error: string;
     readonly accessToken: string;
   };
 };
-export type GetTokenMutation = {
-  readonly response: GetTokenMutationResponse;
-  readonly variables: GetTokenMutationVariables;
+export type SignUpMutation = {
+  readonly response: SignUpMutationResponse;
+  readonly variables: SignUpMutationVariables;
 };
 
 /*
-mutation GetTokenMutation(
-  $input: GetTokenInput!
+mutation SignUpMutation(
+  $input: SignUpInput!
 ) {
-  getToken(input: $input) {
+  signUp(input: $input) {
     error
-    refreshToken
     accessToken
   }
 }
@@ -53,9 +51,9 @@ const node: ConcreteRequest = (function () {
             variableName: "input",
           },
         ],
-        concreteType: "GetTokenPayload",
+        concreteType: "SignUpPayload",
         kind: "LinkedField",
-        name: "getToken",
+        name: "signUp",
         plural: false,
         selections: [
           {
@@ -63,13 +61,6 @@ const node: ConcreteRequest = (function () {
             args: null,
             kind: "ScalarField",
             name: "error",
-            storageKey: null,
-          },
-          {
-            alias: null,
-            args: null,
-            kind: "ScalarField",
-            name: "refreshToken",
             storageKey: null,
           },
           {
@@ -88,7 +79,7 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
-      name: "GetTokenMutation",
+      name: "SignUpMutation",
       selections: v1 /*: any*/,
       type: "Mutation",
       abstractKey: null,
@@ -97,19 +88,19 @@ const node: ConcreteRequest = (function () {
     operation: {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
-      name: "GetTokenMutation",
+      name: "SignUpMutation",
       selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "1574e3b9031ed5107b6da10a31ceb633",
+      cacheID: "c038cae93e0906e9f30c33caca7fee1c",
       id: null,
       metadata: {},
-      name: "GetTokenMutation",
+      name: "SignUpMutation",
       operationKind: "mutation",
       text:
-        "mutation GetTokenMutation(\n  $input: GetTokenInput!\n) {\n  getToken(input: $input) {\n    error\n    refreshToken\n    accessToken\n  }\n}\n",
+        "mutation SignUpMutation(\n  $input: SignUpInput!\n) {\n  signUp(input: $input) {\n    error\n    accessToken\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "7ad250c514017694d282a9607d6c6f53";
+(node as any).hash = "0dea7eab86f740ea1a4ae131f0b770fc";
 export default node;

@@ -1,9 +1,9 @@
-import { Db, Collection } from "mongodb";
-import { UserMongo } from "./types";
+import { Collection } from "mongodb";
+import { UserMongo, LoanMongo } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
-import { DecodeJWT, IMQ } from "./types";
+import { DecodeJWT, Context } from "./types";
 import { ACCESSSECRET } from "./config";
-import { Channel } from "amqplib";
+//import { Channel } from "amqplib";
 import {
   RenewAccessTokenInput,
   RenewAccessTokenPayload,
@@ -30,34 +30,29 @@ export const jwt = {
   },
 };
 
-export const getContext = (ctx: {
-  req: {
-    app: {
-      locals: {
-        db: Db;
-        ch: Channel;
-      };
-    };
-    headers: {
-      authorization: string | undefined;
-    };
-  };
-}): {
+interface IContextResult {
   users: Collection<UserMongo>;
+  loans: Collection<LoanMongo>;
   accessToken: string | undefined;
-  publishToQueue: (message: IMQ) => void;
-} => {
+  //publishToQueue: (message: IMQ) => void;
+  refreshToken?: string;
+  Cookie?: string;
+}
+
+export const getContext = (ctx: Context): IContextResult => {
   const db = ctx.req.app.locals.db;
-  const ch = ctx.req.app.locals.ch;
+  //const ch = ctx.req.app.locals.ch;
   return {
     users: db.collection<UserMongo>("users"),
+    loans: db.collection<LoanMongo>("loans"),
     accessToken: ctx.req.headers.authorization,
-    publishToQueue: (message) => {
-      ch.sendToQueue(
-        message.queue,
-        Buffer.from(JSON.stringify(message.payload))
-      );
-    },
+    refreshToken: ctx.req.body.refreshToken,
+    //publishToQueue: (message) => {
+    //  ch.sendToQueue(
+    //    message.queue,
+    //    Buffer.from(JSON.stringify(message.payload))
+    //  );
+    //},
   };
 };
 
@@ -115,4 +110,12 @@ export const refreshTokenMiddleware = async (
       throw e;
     }
   }
+};
+
+export const base64 = (i: string): string => {
+  return Buffer.from("arrayconnection:" + i, "utf8").toString("base64");
+};
+
+export const unbase64 = (i: string): number => {
+  return Number(Buffer.from(i, "base64").toString("utf8").split(":")[1]);
 };

@@ -1,16 +1,15 @@
 import { Environment } from "react-relay";
 import {
-  CreateUserInput,
-  CreateUserMutation,
-} from "./__generated__/CreateUserMutation.graphql";
+  SignUpInput,
+  SignUpMutation,
+} from "./__generated__/SignUpMutation.graphql";
 
 import { commitMutation, graphql } from "react-relay";
 
 const MutationQuery = graphql`
-  mutation CreateUserMutation($input: CreateUserInput!) {
-    createUser(input: $input) {
+  mutation SignUpMutation($input: SignUpInput!) {
+    signUp(input: $input) {
       error
-      refreshToken
       accessToken
     }
   }
@@ -18,10 +17,10 @@ const MutationQuery = graphql`
 
 export const commitCreateUserMutation = (
   environment: Environment,
-  input: CreateUserInput,
+  input: SignUpInput,
   refetch: () => void
 ) => {
-  return commitMutation<CreateUserMutation>(environment, {
+  return commitMutation<SignUpMutation>(environment, {
     mutation: MutationQuery,
     variables: { input },
     onCompleted: (response) => {} /* Mutation completed */,

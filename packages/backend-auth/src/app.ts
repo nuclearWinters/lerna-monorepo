@@ -2,17 +2,16 @@ import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import { GraphQLSchema, GraphQLObjectType, GraphQLString } from "graphql";
 import cors from "cors";
-import { CreateUserMutation } from "./mutations/CreateUserMutation";
-import { GetTokenMutation } from "./mutations/GetTokenMutation";
-import { RenewAccessTokenMutation } from "./mutations/RenewAccessTokenMutation";
+import { SignUpMutation } from "./mutations/SignUpMutation";
+import { SignInMutation } from "./mutations/SignInMutation";
 import { BlacklistUserMutation } from "./mutations/BlacklistUserMutation";
+import cookieParser from "cookie-parser";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
   fields: {
-    createUser: CreateUserMutation,
-    getToken: GetTokenMutation,
-    renewAccessToken: RenewAccessTokenMutation,
+    signUp: SignUpMutation,
+    signIn: SignInMutation,
     blacklistUser: BlacklistUserMutation,
   },
 });
@@ -36,7 +35,13 @@ const schema = new GraphQLSchema({
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://relay-gateway:4001",
+  })
+);
+app.use(cookieParser());
+app.use(express.json());
 
 app.use(
   "/auth/graphql",
@@ -46,6 +51,12 @@ app.use(
       graphiql: true,
       context: {
         req,
+      },
+      extensions: ({ context }) => {
+        const response = (context as any).newRefreshToken
+          ? { newRefreshToken: (context as any).newRefreshToken }
+          : {};
+        return response;
       },
     };
   })

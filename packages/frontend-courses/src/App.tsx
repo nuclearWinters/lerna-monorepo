@@ -25,15 +25,9 @@ const getIdFromToken = (): string => {
   return jwtDecode<IJWT>(accessToken)._id;
 };
 
-const getRefreshToken = (): string => {
-  const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) return "";
-  return refreshToken;
-};
-
 const RepositoryNameQuery = graphql`
-  query AppQuery($id: String!, $refreshToken: String!) {
-    user(id: $id, refreshToken: $refreshToken) {
+  query AppQuery($id: String!) {
+    user(id: $id) {
       ...Routes_user
       error
     }
@@ -43,7 +37,7 @@ const RepositoryNameQuery = graphql`
 export const preloadedQuery = loadQuery<AppQueryType>(
   RelayEnvironment,
   RepositoryNameQuery,
-  { id: getIdFromToken(), refreshToken: getRefreshToken() }
+  { id: getIdFromToken() }
 );
 
 const AppQueryRoot: FC = () => {
@@ -56,7 +50,7 @@ const AppQueryRoot: FC = () => {
     queryRef || preloadedQuery
   );
   const refetch = useCallback(() => {
-    loadQuery({ id: getIdFromToken(), refreshToken: getRefreshToken() });
+    loadQuery({ id: getIdFromToken() });
   }, [loadQuery]);
   return <Routes user={data.user} refetch={refetch} />;
 };
