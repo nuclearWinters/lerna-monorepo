@@ -1,11 +1,10 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull } from "graphql";
 import { ACCESSSECRET, REFRESHSECRET } from "../config";
-import { jwt } from "../utils";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import { ObjectID } from "mongodb";
-import { getContext } from "../utils";
+import { getContext, channelSendToQueue, jwt } from "../utils";
 
 interface Input {
   username: string;
@@ -36,13 +35,17 @@ export const SignUpMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ accessToken }: Payload): string => accessToken,
     },
+    refreshToken: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ refreshToken }: Payload): string => refreshToken,
+    },
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
     ctx: Context
   ): Promise<Payload> => {
     try {
-      const { users } = getContext(ctx);
+      const { users, ch } = getContext(ctx);
       const user = await users.findOne({ email });
       if (user) throw new Error("El email ya esta siendo usado.");
       const hash_password = await bcrypt.hash(password, 12);
@@ -62,7 +65,7 @@ export const SignUpMutation = mutationWithClientMutationId({
         ACCESSSECRET,
         { expiresIn: "15m" }
       );
-      ctx.newRefreshToken = refreshToken;
+      channelSendToQueue(ch, _id.toHexString());
       //const msg = {
       //  to: email,
       //  from: "soporte@amigoprogramador.com",
@@ -71,7 +74,7 @@ export const SignUpMutation = mutationWithClientMutationId({
       //  html: "<strong>and easy to do anywhere, even with Node.js</strong>",
       //};
       //sgMail.send(msg);
-      return { refreshToken, accessToken };
+      return { refreshToken, accessToken, error: "" };
     } catch (e) {
       return { refreshToken: "", accessToken: "", error: e.message };
     }

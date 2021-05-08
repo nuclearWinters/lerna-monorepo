@@ -13,6 +13,7 @@ interface Input {
 
 type Payload = {
   accessToken: string;
+  refreshToken: string;
   error?: string;
 };
 
@@ -31,6 +32,10 @@ export const SignInMutation = mutationWithClientMutationId({
     accessToken: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ accessToken }: Payload): string => accessToken,
+    },
+    refreshToken: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ refreshToken }: Payload): string => refreshToken,
     },
   },
   mutateAndGetPayload: async (
@@ -53,14 +58,16 @@ export const SignInMutation = mutationWithClientMutationId({
         ACCESSSECRET,
         { expiresIn: "15m" }
       );
-      ctx.newRefreshToken = refreshToken;
       return {
+        error: "",
         accessToken,
+        refreshToken,
       };
     } catch (e) {
       return {
         error: e.message,
         accessToken: "",
+        refreshToken: "",
       };
     }
   },

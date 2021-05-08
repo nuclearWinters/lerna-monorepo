@@ -1,0 +1,5 @@
+
+use('fintech');
+
+db.users.findOneAndUpdate({ "_id": ObjectId("6095ed06f92be2001a15885a") }, { $set: {name: "Prueba"} });
+//db.users.find({ "_id": ObjectId("6095ed06f92be2001a15885a") });

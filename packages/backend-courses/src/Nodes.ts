@@ -23,8 +23,8 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     const { type, id } = fromGlobalId(globalId);
     const { users } = getContext(ctx);
     if (type === "User") {
-      const user = await users.findOne({ auth_id: new ObjectID(id) });
-      const typedUser = { ...user, type, _id: user?.auth_id };
+      const user = await users.findOne({ _id: new ObjectID(id) });
+      const typedUser = { ...user, type };
       return typedUser;
     }
     return null;

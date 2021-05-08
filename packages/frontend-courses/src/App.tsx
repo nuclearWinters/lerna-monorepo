@@ -19,15 +19,26 @@ interface IJWT {
   _id: string;
 }
 
+export const tokens = {
+  accessToken: "",
+  refreshToken: "",
+};
+
 const getIdFromToken = (): string => {
-  const accessToken = localStorage.getItem("accessToken");
+  const accessToken = tokens.accessToken;
   if (!accessToken) return "";
   return jwtDecode<IJWT>(accessToken)._id;
 };
 
+const getRefreshToken = (): string => {
+  const refreshToken = tokens.refreshToken;
+  if (!refreshToken) return "";
+  return refreshToken;
+};
+
 const RepositoryNameQuery = graphql`
-  query AppQuery($id: String!) {
-    user(id: $id) {
+  query AppQuery($id: String!, $refreshToken: String!) {
+    user(id: $id, refreshToken: $refreshToken) {
       ...Routes_user
       error
     }
@@ -37,7 +48,7 @@ const RepositoryNameQuery = graphql`
 export const preloadedQuery = loadQuery<AppQueryType>(
   RelayEnvironment,
   RepositoryNameQuery,
-  { id: getIdFromToken() }
+  { id: getIdFromToken(), refreshToken: getRefreshToken() }
 );
 
 const AppQueryRoot: FC = () => {
@@ -50,7 +61,7 @@ const AppQueryRoot: FC = () => {
     queryRef || preloadedQuery
   );
   const refetch = useCallback(() => {
-    loadQuery({ id: getIdFromToken() });
+    loadQuery({ id: getIdFromToken(), refreshToken: getRefreshToken() });
   }, [loadQuery]);
   return <Routes user={data.user} refetch={refetch} />;
 };

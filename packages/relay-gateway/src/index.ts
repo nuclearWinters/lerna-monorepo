@@ -4,13 +4,10 @@ import { graphqlHTTP } from "express-graphql";
 import fetch from "cross-fetch";
 import { print } from "graphql";
 import { getContext } from "./utils";
-import { Response } from "express";
-import { IContextResult } from "./utils";
 
 const makeRemoteExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
-    const { cookies, authorization } = getContext(context);
-    const refreshToken = cookies?.refreshToken;
+    const { authorization } = getContext(context);
     const query = typeof document === "string" ? document : print(document);
     const fetchResult = await fetch(url, {
       method: "POST",
@@ -18,14 +15,9 @@ const makeRemoteExecutor = (url: string): AsyncExecutor => {
         "Content-Type": "application/json",
         Authorization: authorization || "",
       },
-      body: JSON.stringify({ query, variables, refreshToken }),
+      body: JSON.stringify({ query, variables }),
     });
-    const response = await fetchResult.json();
-    if (context) {
-      ((context as unknown) as IContextResult).refreshToken =
-        response?.extensions?.newRefreshToken;
-    }
-    return Promise.resolve(response);
+    return fetchResult.json();
   };
 };
 
@@ -50,23 +42,12 @@ const makeGatewaySchema = async () => {
 makeGatewaySchema().then((schema) => {
   app.use(
     "/relay/graphql",
-    graphqlHTTP((req, res) => ({
+    graphqlHTTP((req) => ({
       schema,
       context: {
         req,
       },
       graphiql: true,
-      extensions: ({ context }) => {
-        const { refreshToken } = getContext(context);
-        if (refreshToken) {
-          ((res as unknown) as Response).cookie("refreshToken", refreshToken, {
-            sameSite: "strict",
-            httpOnly: true,
-            path: "/relay/graphql",
-          });
-        }
-        return {};
-      },
     }))
   );
   app.listen(process.env.PORT || 4001);

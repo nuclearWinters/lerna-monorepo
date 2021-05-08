@@ -6,6 +6,7 @@ import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type AppQueryVariables = {
   id: string;
+  refreshToken: string;
 };
 export type AppQueryResponse = {
   readonly user: {
@@ -21,8 +22,9 @@ export type AppQuery = {
 /*
 query AppQuery(
   $id: String!
+  $refreshToken: String!
 ) {
-  user(id: $id) {
+  user(id: $id, refreshToken: $refreshToken) {
     ...Routes_user
     error
     id
@@ -68,6 +70,7 @@ fragment GeneralData_user on User {
 }
 
 fragment Routes_user on User {
+  id
   name
   apellidoPaterno
   apellidoMaterno
@@ -85,12 +88,22 @@ const node: ConcreteRequest = (function () {
         kind: "LocalArgument",
         name: "id",
       } as any,
+      {
+        defaultValue: null,
+        kind: "LocalArgument",
+        name: "refreshToken",
+      } as any,
     ],
     v1 = [
       {
         kind: "Variable",
         name: "id",
         variableName: "id",
+      } as any,
+      {
+        kind: "Variable",
+        name: "refreshToken",
+        variableName: "refreshToken",
       } as any,
     ],
     v2 = {
@@ -161,6 +174,7 @@ const node: ConcreteRequest = (function () {
           name: "user",
           plural: false,
           selections: [
+            v3 /*: any*/,
             {
               alias: null,
               args: null,
@@ -196,7 +210,6 @@ const node: ConcreteRequest = (function () {
               name: "accountAvailable",
               storageKey: null,
             },
-            v3 /*: any*/,
             {
               alias: null,
               args: null,
@@ -370,15 +383,15 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "0f504e4fd04beba9c282f6d980b745a0",
+      cacheID: "f3241f92e98ee9607ad8a964675999ad",
       id: null,
       metadata: {},
       name: "AppQuery",
       operationKind: "query",
       text:
-        'query AppQuery(\n  $id: String!\n) {\n  user(id: $id) {\n    ...Routes_user\n    error\n    id\n  }\n}\n\nfragment DebtInSale_user on User {\n  loans(first: 5, after: "") {\n    edges {\n      node {\n        id\n        user_id\n        score\n        rate\n        total\n        term\n        need\n        ends\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment GeneralData_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  accountTotal\n  accountAvailable\n}\n\nfragment Routes_user on User {\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...GeneralData_user\n  ...DebtInSale_user\n}\n',
+        'query AppQuery(\n  $id: String!\n  $refreshToken: String!\n) {\n  user(id: $id, refreshToken: $refreshToken) {\n    ...Routes_user\n    error\n    id\n  }\n}\n\nfragment DebtInSale_user on User {\n  loans(first: 5, after: "") {\n    edges {\n      node {\n        id\n        user_id\n        score\n        rate\n        total\n        term\n        need\n        ends\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment GeneralData_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  accountTotal\n  accountAvailable\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...GeneralData_user\n  ...DebtInSale_user\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "2a9203dc03a544100d71e58c32af3e11";
+(node as any).hash = "14c65173d2767a2c561332de2ae28e8e";
 export default node;

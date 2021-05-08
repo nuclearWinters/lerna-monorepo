@@ -5,9 +5,11 @@ import { Options } from "./Options";
 import { graphql, useFragment } from "react-relay";
 import { Routes_user$key } from "./__generated__/Routes_user.graphql";
 import { GeneralData, DebtInSale, LogIn, SignUp } from "./screens";
+import { tokens } from "App";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
+    id
     name
     apellidoPaterno
     apellidoMaterno
@@ -60,17 +62,19 @@ export const Routes: FC<Props> = (props) => {
             flexDirection: "column",
           }}
         >
-          {user.name ? (
+          {user.id !== "VXNlcjo=" ? (
             <>
-              <Link
-                to="/profile"
-                style={{ textAlign: "end" }}
-              >{`${user.name} ${user.apellidoPaterno} ${user.apellidoMaterno}`}</Link>
+              <Link to="/profile" style={{ textAlign: "end" }}>
+                ¡Bienvenido!{" "}
+                {`${user.name || ""} ${user.apellidoPaterno || ""} ${
+                  user.apellidoMaterno || ""
+                }`}
+              </Link>
               <div
                 style={{ textAlign: "end" }}
                 onClick={() => {
-                  localStorage.removeItem("accessToken");
-                  localStorage.removeItem("refreshToken");
+                  tokens.accessToken = "";
+                  tokens.refreshToken = "";
                   props.refetch();
                 }}
               >

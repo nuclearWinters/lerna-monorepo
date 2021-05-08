@@ -11,9 +11,6 @@ export interface Context {
       };
     };
     headers: { authorization: string | undefined; Cookie?: string };
-    body: {
-      refreshToken?: string;
-    };
   };
 }
 export interface RootUser {
@@ -73,11 +70,11 @@ export interface DecodeJWT {
   password: string;
 }
 
-export const RENEW_ACCESS_TOKEN = "RENEW_ACCESS_TOKEN";
+export const SIGN_UP = "SIGN_UP";
 
-interface IRenewAccessToken {
-  queue: typeof RENEW_ACCESS_TOKEN;
+interface ISignUp {
+  queue: typeof SIGN_UP;
   payload: string;
 }
 
-export type IMQ = IRenewAccessToken;
+export type IMQ = ISignUp;

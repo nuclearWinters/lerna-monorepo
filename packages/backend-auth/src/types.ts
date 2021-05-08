@@ -1,3 +1,4 @@
+import { Channel } from "amqplib";
 import { ObjectId, Db } from "mongodb";
 
 export interface RedisPromises {
@@ -19,13 +20,10 @@ export interface Context {
       locals: {
         db: Db;
         rdb: RedisPromises;
+        ch: Channel;
       };
     };
-    body: {
-      refreshToken?: string;
-    };
   };
-  newRefreshToken?: string;
 }
 
 export interface UserMongo {
@@ -39,10 +37,10 @@ export interface DecodeJWT {
   email: string;
 }
 
-export const RENEW_ACCESS_TOKEN = "RENEW_ACCESS_TOKEN";
-interface IRenewAccessToken {
-  queue: typeof RENEW_ACCESS_TOKEN;
+export const SIGN_UP = "SIGN_UP";
+interface ISignUp {
+  queue: typeof SIGN_UP;
   payload: string;
 }
 
-export type IMQ = IRenewAccessToken;
+export type IMQ = ISignUp;

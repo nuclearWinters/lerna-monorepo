@@ -5,6 +5,7 @@
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type Routes_user = {
+  readonly id: string;
   readonly name: string;
   readonly apellidoPaterno: string;
   readonly apellidoMaterno: string;
@@ -27,6 +28,13 @@ const node: ReaderFragment = {
   metadata: null,
   name: "Routes_user",
   selections: [
+    {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "id",
+      storageKey: null,
+    },
     {
       alias: null,
       args: null,
@@ -76,5 +84,5 @@ const node: ReaderFragment = {
   type: "User",
   abstractKey: null,
 } as any;
-(node as any).hash = "20160cd4bd10b78da9692d47881c1c83";
+(node as any).hash = "d543b8a550dd3cd748a3a12888d62ad0";
 export default node;

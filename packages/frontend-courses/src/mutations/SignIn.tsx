@@ -5,12 +5,14 @@ import {
 } from "./__generated__/SignInMutation.graphql";
 
 import { commitMutation, graphql } from "react-relay";
+import { tokens } from "App";
 
 const MutationQuery = graphql`
   mutation SignInMutation($input: SignInInput!) {
     signIn(input: $input) {
       error
       accessToken
+      refreshToken
     }
   }
 `;
@@ -25,11 +27,12 @@ export const commitGetTokenMutation = (
     variables: { input },
     onCompleted: (response) => {
       if (response.signIn.error) {
-        return;
+        throw new Error(response.signIn.error);
       }
-      localStorage.setItem("accessToken", response.signIn.accessToken);
+      tokens.accessToken = response.signIn.accessToken;
+      tokens.refreshToken = response.signIn.refreshToken;
       refetch();
-    } /* Mutation completed */,
-    onError: (error) => {} /* Mutation errored */,
+    },
+    onError: (error) => {},
   });
 };

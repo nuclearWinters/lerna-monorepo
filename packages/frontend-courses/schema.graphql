@@ -7,6 +7,7 @@ input SignInInput {
 type SignInPayload {
   error: String
   accessToken: String!
+  refreshToken: String!
   clientMutationId: String
 }
 
@@ -19,6 +20,7 @@ input SignUpInput {
 type SignUpPayload {
   error: String!
   accessToken: String!
+  refreshToken: String!
   clientMutationId: String
 }
 
@@ -34,14 +36,37 @@ type BlacklistUserPayload {
   clientMutationId: String
 }
 
+input UpdateUserInput {
+  clientMutationId: String
+  refreshToken: String!
+  id: String!
+  name: String
+  apellidoPaterno: String
+  apellidoMaterno: String
+  RFC: String
+  CURP: String
+  clabe: String
+  mobile: String
+  accountTotal: Int
+  accountAvailable: Int
+}
+
+type UpdateUserPayload {
+  validAccessToken: String!
+  error: String!
+  clientMutationId: String
+  user: User!
+}
+
 type Mutation {
   signIn(input: SignInInput!): SignInPayload!
   signUp(input: SignUpInput!): SignUpPayload!
   blacklistUser(input: BlacklistUserInput!): BlacklistUserPayload!
+  updateUser(input: UpdateUserInput): UpdateUserPayload!
 }
 
 type Query {
-  user(id: String!): User!
+  user(id: String!, refreshToken: String!): User!
   node(id: ID!): Node
 }
 

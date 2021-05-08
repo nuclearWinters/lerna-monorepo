@@ -10,6 +10,9 @@ interface IQueryUser {
     id: {
       type: GraphQLNonNull<GraphQLNullableType>;
     };
+    refreshToken: {
+      type: GraphQLNonNull<GraphQLNullableType>;
+    };
   };
   resolve: (
     root: { [argName: string]: string },
@@ -22,10 +25,11 @@ const QueryUser: IQueryUser = {
   type: new GraphQLNonNull(GraphQLUser),
   args: {
     id: { type: new GraphQLNonNull(GraphQLString) },
+    refreshToken: { type: new GraphQLNonNull(GraphQLString) },
   },
-  resolve: async (_, { id }, ctx) => {
+  resolve: async (_, { id, refreshToken }, ctx) => {
     try {
-      const { users, accessToken, refreshToken } = getContext(ctx);
+      const { users, accessToken } = getContext(ctx);
       const { _id, email } = await refreshTokenMiddleware(
         accessToken,
         refreshToken
@@ -34,7 +38,7 @@ const QueryUser: IQueryUser = {
         throw new Error("No es el mismo usuario.");
       }
       const user = await users.findOne({
-        auth_id: new ObjectID(_id),
+        _id: new ObjectID(_id),
       });
       if (!user) {
         throw new Error("El usuario no existe.");

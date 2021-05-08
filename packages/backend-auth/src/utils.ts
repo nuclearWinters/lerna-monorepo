@@ -1,10 +1,9 @@
 import { Collection } from "mongodb";
-import { UserMongo, RedisPromises, Context } from "./types";
+import { UserMongo, RedisPromises, Context, SIGN_UP } from "./types";
 import { ACCESSSECRET, REFRESHSECRET } from "./config";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
-//import { Channel } from "amqplib";
-//import { rdbInstance } from "./index";
+import { Channel } from "amqplib";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -68,39 +67,19 @@ interface IContextResult {
   users: Collection<UserMongo>;
   rdb: RedisPromises;
   accessToken?: string;
-  refreshToken?: string;
+  ch: Channel;
 }
 
 export const getContext = (ctx: Context): IContextResult => {
-  const { db, rdb } = ctx.req.app.locals;
+  const { db, rdb, ch } = ctx.req.app.locals;
   return {
     users: db.collection<UserMongo>("users"),
     rdb,
     accessToken: ctx.req.headers.authorization,
-    refreshToken: ctx.req.body.refreshToken,
+    ch,
   };
 };
 
-/*export const channelConsume = (ch: Channel): void => {
-  ch.consume(RENEW_ACCESS_TOKEN, async (msg) => {
-    if (msg !== null) {
-      const refreshToken = msg.content.toString();
-      const user = jwt.verify(refreshToken, REFRESHSECRET);
-      if (!user) {
-        throw new Error("El token esta corrompido.");
-      }
-      const blacklistedUser = await rdb.get(user._id);
-      if (blacklistedUser) {
-        throw new Error("El usuario estará bloqueado por una hora.");
-      }
-      const validAccessToken = jwt.sign(
-        { _id: user._id, email: user.email },
-        ACCESSSECRET,
-        {
-          expiresIn: "15m",
-        }
-      );
-      ch.ack(msg);
-    }
-  });
-};*/
+export const channelSendToQueue = (ch: Channel, message: string): void => {
+  ch.sendToQueue(SIGN_UP, Buffer.from(message));
+};

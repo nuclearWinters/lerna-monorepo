@@ -28,6 +28,7 @@ services:
     depends_on:
       - mongo-courses
       - backend-auth
+      - rabbitmq
   backend-auth:
     container_name: backend-auth
     image: node:14
@@ -44,6 +45,7 @@ services:
     depends_on:
       - mongo-courses
       - redis-auth
+      - rabbitmq
   frontend-courses:
     container_name: frontend-courses
     image: node:14
@@ -85,9 +87,11 @@ services:
       - ./redis:/data
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq
+    image: rabbitmq:3-management
     ports:
+      - "5672:5672"
       - "15672:15672"
+      - "25672:25672"
     logging:
       driver: none
 

@@ -15,6 +15,7 @@ export type SignUpMutationResponse = {
   readonly signUp: {
     readonly error: string;
     readonly accessToken: string;
+    readonly refreshToken: string;
   };
 };
 export type SignUpMutation = {
@@ -29,6 +30,7 @@ mutation SignUpMutation(
   signUp(input: $input) {
     error
     accessToken
+    refreshToken
   }
 }
 */
@@ -70,6 +72,13 @@ const node: ConcreteRequest = (function () {
             name: "accessToken",
             storageKey: null,
           },
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "refreshToken",
+            storageKey: null,
+          },
         ],
         storageKey: null,
       } as any,
@@ -92,15 +101,15 @@ const node: ConcreteRequest = (function () {
       selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "c038cae93e0906e9f30c33caca7fee1c",
+      cacheID: "51f13e55fa79632a99765a965dd5d3ed",
       id: null,
       metadata: {},
       name: "SignUpMutation",
       operationKind: "mutation",
       text:
-        "mutation SignUpMutation(\n  $input: SignUpInput!\n) {\n  signUp(input: $input) {\n    error\n    accessToken\n  }\n}\n",
+        "mutation SignUpMutation(\n  $input: SignUpInput!\n) {\n  signUp(input: $input) {\n    error\n    accessToken\n    refreshToken\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "0dea7eab86f740ea1a4ae131f0b770fc";
+(node as any).hash = "b0475cad1ddee70b458fa957f2725d8b";
 export default node;

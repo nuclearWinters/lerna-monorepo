@@ -15,6 +15,7 @@ export type SignInMutationResponse = {
   readonly signIn: {
     readonly error: string | null;
     readonly accessToken: string;
+    readonly refreshToken: string;
   };
 };
 export type SignInMutation = {
@@ -29,6 +30,7 @@ mutation SignInMutation(
   signIn(input: $input) {
     error
     accessToken
+    refreshToken
   }
 }
 */
@@ -70,6 +72,13 @@ const node: ConcreteRequest = (function () {
             name: "accessToken",
             storageKey: null,
           },
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "refreshToken",
+            storageKey: null,
+          },
         ],
         storageKey: null,
       } as any,
@@ -92,15 +101,15 @@ const node: ConcreteRequest = (function () {
       selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "fa71e806ada5c782ba99a6b259c0e905",
+      cacheID: "3520018fefa6e356512e43f8d7a4f9d6",
       id: null,
       metadata: {},
       name: "SignInMutation",
       operationKind: "mutation",
       text:
-        "mutation SignInMutation(\n  $input: SignInInput!\n) {\n  signIn(input: $input) {\n    error\n    accessToken\n  }\n}\n",
+        "mutation SignInMutation(\n  $input: SignInInput!\n) {\n  signIn(input: $input) {\n    error\n    accessToken\n    refreshToken\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "c26c55334c6e5b03b57239de37ca99e8";
+(node as any).hash = "81a42a86f5d0d4de302cf343ab7dd619";
 export default node;

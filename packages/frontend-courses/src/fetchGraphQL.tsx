@@ -9,7 +9,6 @@ const fetchGraphQL = async (text: string, variables: Record<any, any>) => {
       query: text,
       variables,
     }),
-    credentials: "include",
   });
   return await response.json();
 };

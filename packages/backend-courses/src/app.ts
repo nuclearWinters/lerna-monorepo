@@ -4,7 +4,7 @@ import { GraphQLSchema, GraphQLObjectType } from "graphql";
 import cors from "cors";
 import { QueryUser } from "./QueryUser";
 import { nodeField } from "./Nodes";
-import cookieParser from "cookie-parser";
+import { UpdateUserMutation } from "./mutations/UpdateUser";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -14,8 +14,16 @@ const Query = new GraphQLObjectType({
   },
 });
 
+const Mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    updateUser: UpdateUserMutation,
+  },
+});
+
 const schema = new GraphQLSchema({
   query: Query,
+  mutation: Mutation,
 });
 
 const app = express();
@@ -25,8 +33,6 @@ app.use(
     origin: "http://relay-gateway:4001",
   })
 );
-app.use(cookieParser());
-app.use(express.json());
 
 app.use(
   "/api/graphql",

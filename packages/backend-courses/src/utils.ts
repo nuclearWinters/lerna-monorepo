@@ -10,6 +10,7 @@ import {
 } from "./proto/auth_pb";
 import { AuthClient } from "./proto/auth_grpc_pb";
 import { credentials } from "@grpc/grpc-js";
+import { Channel } from "amqplib";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -34,25 +35,17 @@ interface IContextResult {
   users: Collection<UserMongo>;
   loans: Collection<LoanMongo>;
   accessToken: string | undefined;
-  //publishToQueue: (message: IMQ) => void;
-  refreshToken?: string;
-  Cookie?: string;
+  ch: Channel;
 }
 
 export const getContext = (ctx: Context): IContextResult => {
   const db = ctx.req.app.locals.db;
-  //const ch = ctx.req.app.locals.ch;
+  const ch = ctx.req.app.locals.ch;
   return {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
     accessToken: ctx.req.headers.authorization,
-    refreshToken: ctx.req.body.refreshToken,
-    //publishToQueue: (message) => {
-    //  ch.sendToQueue(
-    //    message.queue,
-    //    Buffer.from(JSON.stringify(message.payload))
-    //  );
-    //},
+    ch,
   };
 };
 

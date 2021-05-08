@@ -5,7 +5,6 @@ import cors from "cors";
 import { SignUpMutation } from "./mutations/SignUpMutation";
 import { SignInMutation } from "./mutations/SignInMutation";
 import { BlacklistUserMutation } from "./mutations/BlacklistUserMutation";
-import cookieParser from "cookie-parser";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -40,8 +39,6 @@ app.use(
     origin: "http://relay-gateway:4001",
   })
 );
-app.use(cookieParser());
-app.use(express.json());
 
 app.use(
   "/auth/graphql",
@@ -51,12 +48,6 @@ app.use(
       graphiql: true,
       context: {
         req,
-      },
-      extensions: ({ context }) => {
-        const response = (context as any).newRefreshToken
-          ? { newRefreshToken: (context as any).newRefreshToken }
-          : {};
-        return response;
       },
     };
   })
