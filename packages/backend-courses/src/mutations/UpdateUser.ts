@@ -57,21 +57,21 @@ export const UpdateUserMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { refreshToken, id, ...user }: Input,
+    { refreshToken, id: user_gid, ...user }: Input,
     ctx: Context
   ): Promise<Payload> => {
     try {
-      const { id: o_id } = fromGlobalId(id);
+      const { id: _id_user } = fromGlobalId(user_gid);
       const { users, accessToken } = getContext(ctx);
       const { _id, validAccessToken } = await refreshTokenMiddleware(
         accessToken,
         refreshToken
       );
-      if (o_id !== _id) {
+      if (_id_user !== _id) {
         throw new Error("No es el mismo usuario.");
       }
       const result = await users.findOneAndUpdate(
-        { _id: new ObjectID(o_id) },
+        { _id: new ObjectID(_id_user) },
         { $set: user },
         { returnOriginal: false }
       );

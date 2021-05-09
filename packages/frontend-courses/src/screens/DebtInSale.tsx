@@ -1,7 +1,10 @@
-import React, { CSSProperties, FC } from "react";
+import React, { CSSProperties, FC, useState } from "react";
 import { graphql, usePaginationFragment } from "react-relay";
 import { DebtInSale_user$key } from "./__generated__/DebtInSale_user.graphql";
 import { DebtInSalePaginationQuery } from "./__generated__/DebtInSalePaginationQuery.graphql";
+import { commitAddLendsMutation } from "mutations/AddLends";
+import { RelayEnvironment } from "RelayEnvironment";
+import { tokens } from "App";
 
 const debtInSaleFragment = graphql`
   fragment DebtInSale_user on User
@@ -10,6 +13,7 @@ const debtInSaleFragment = graphql`
     cursor: { type: "String", defaultValue: "" }
   )
   @refetchable(queryName: "DebtInSalePaginationQuery") {
+    id
     loans(first: $count, after: $cursor)
       @connection(key: "DebtInSale_user_loans") {
       edges {
@@ -50,8 +54,23 @@ export const DebtInSale: FC<Props> = (props) => {
     { key: "lend", title: "Prestar" },
   ];
 
+  const [lends, setLends] = useState<
+    { id: string; lend: string; _id_borrower: string }[]
+  >([]);
+
+  const getValue = (id: string | undefined) => {
+    if (!id) {
+      return "";
+    }
+    const val = lends.find((lend) => id === lend.id);
+    if (!val) {
+      return "";
+    }
+    return val.lend;
+  };
+
   return (
-    <div>
+    <div style={{ flex: 1, display: "flex", flexDirection: "row" }}>
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", flexDirection: "row" }}>
           {columns.map((column) => (
@@ -76,11 +95,67 @@ export const DebtInSale: FC<Props> = (props) => {
                 <div style={style.cell}>{edge?.node?.term}</div>
                 <div style={style.cell}>{edge?.node?.need}</div>
                 <div style={style.cell}>{edge?.node?.ends}</div>
-                <div style={style.cell}>{0}</div>
+                <input
+                  type="text"
+                  name={edge?.node?.id}
+                  style={style.cell}
+                  value={getValue(edge?.node?.id)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (isNaN(Number(val))) {
+                      return;
+                    }
+                    setLends((state) => {
+                      const idx = state.findIndex(
+                        (lend) => edge?.node?.id === lend.id
+                      );
+                      if (Number(val) === 0) {
+                        state.splice(idx, 1);
+                        return [...state];
+                      }
+                      if (idx === -1) {
+                        return [
+                          ...state,
+                          {
+                            id: edge?.node?.id || "",
+                            lend: val,
+                            _id_borrower: edge?.node?.user_id || "",
+                          },
+                        ];
+                      }
+                      state[idx].lend = val;
+                      return [...state];
+                    });
+                  }}
+                />
               </div>
             ))}
         </div>
         <button onClick={() => loadNext(5)}>loadNext</button>
+      </div>
+      <div
+        style={{
+          width: 300,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <button
+          onClick={() => {
+            commitAddLendsMutation(RelayEnvironment, {
+              lends: lends.map((lend) => ({
+                ...lend,
+                lend: Number(lend.lend),
+              })),
+              id: data.id,
+              refreshToken: tokens.refreshToken,
+            });
+            setLends([]);
+          }}
+        >
+          Lend
+        </button>
       </div>
     </div>
   );

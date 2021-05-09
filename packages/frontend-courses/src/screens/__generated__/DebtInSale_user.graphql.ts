@@ -5,6 +5,7 @@
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type DebtInSale_user = {
+  readonly id: string;
   readonly loans: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -19,7 +20,6 @@ export type DebtInSale_user = {
       } | null;
     } | null> | null;
   } | null;
-  readonly id: string;
   readonly " $refType": "DebtInSale_user";
 };
 export type DebtInSale_user$data = DebtInSale_user;
@@ -76,6 +76,7 @@ const node: ReaderFragment = (function () {
     },
     name: "DebtInSale_user",
     selections: [
+      v1 /*: any*/,
       {
         alias: "loans",
         args: null,
@@ -198,11 +199,10 @@ const node: ReaderFragment = (function () {
         ],
         storageKey: null,
       },
-      v1 /*: any*/,
     ],
     type: "User",
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "43a31cbaf5efa1f8f0f11f22084e8348";
+(node as any).hash = "8cbb37ba075bcdbab7c9173fc9ea681a";
 export default node;

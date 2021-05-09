@@ -22,7 +22,9 @@ export const commitFeedbackLikeMutation = (
   return commitMutation<BlacklistUserMutation>(environment, {
     mutation: MutationQuery,
     variables: { input },
-    onCompleted: (response) => {} /* Mutation completed */,
-    onError: (error) => {} /* Mutation errored */,
+    onCompleted: (response) => {},
+    onError: (error) => {
+      window.alert(error.message);
+    },
   });
 };

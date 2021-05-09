@@ -31,8 +31,17 @@ export const commitCreateUserMutation = (
       }
       tokens.accessToken = response.signUp.accessToken;
       tokens.refreshToken = response.signUp.refreshToken;
+      localStorage.setItem("accessToken", response.signUp.accessToken);
+      localStorage.setItem("refreshToken", response.signUp.refreshToken);
       refetch();
     },
-    onError: (error) => {},
+    updater: (store, data) => {
+      const root = store.getRoot();
+      root.setValue(data.signUp.accessToken, "accessToken");
+      root.setValue(data.signUp.refreshToken, "refreshToken");
+    },
+    onError: (error) => {
+      window.alert(error.message);
+    },
   });
 };

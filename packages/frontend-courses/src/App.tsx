@@ -20,8 +20,8 @@ interface IJWT {
 }
 
 export const tokens = {
-  accessToken: "",
-  refreshToken: "",
+  accessToken: localStorage.getItem("accessToken") || "",
+  refreshToken: localStorage.getItem("refreshToken") || "",
 };
 
 const getIdFromToken = (): string => {

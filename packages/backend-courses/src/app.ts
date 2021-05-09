@@ -5,6 +5,7 @@ import cors from "cors";
 import { QueryUser } from "./QueryUser";
 import { nodeField } from "./Nodes";
 import { UpdateUserMutation } from "./mutations/UpdateUser";
+import { AddLendsMutation } from "./mutations/AddLends";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -18,6 +19,7 @@ const Mutation = new GraphQLObjectType({
   name: "Mutation",
   fields: {
     updateUser: UpdateUserMutation,
+    addLends: AddLendsMutation,
   },
 });
 

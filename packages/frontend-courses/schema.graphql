@@ -58,11 +58,33 @@ type UpdateUserPayload {
   user: User!
 }
 
+input LendList {
+  id: ID!
+  lend: Int!
+  _id_borrower: String!
+}
+
+input AddLendsInput {
+  clientMutationId: String
+  refreshToken: String!
+  id: ID!
+  lends: [LendList!]!
+}
+
+type AddLendsPayload {
+  validAccessToken: String!
+  error: String!
+  clientMutationId: String
+  user: User!
+  loans: [Loan!]
+}
+
 type Mutation {
   signIn(input: SignInInput!): SignInPayload!
   signUp(input: SignUpInput!): SignUpPayload!
   blacklistUser(input: BlacklistUserInput!): BlacklistUserPayload!
-  updateUser(input: UpdateUserInput): UpdateUserPayload!
+  updateUser(input: UpdateUserInput!): UpdateUserPayload!
+  addLends(input: AddLendsInput!): AddLendsPayload!
 }
 
 type Query {

@@ -1,5 +1,5 @@
 import { Collection } from "mongodb";
-import { UserMongo, LoanMongo } from "./types";
+import { UserMongo, LoanMongo, LendMongo } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT, Context } from "./types";
 import { ACCESSSECRET } from "./config";
@@ -34,6 +34,7 @@ export const jwt = {
 interface IContextResult {
   users: Collection<UserMongo>;
   loans: Collection<LoanMongo>;
+  lends: Collection<LendMongo>;
   accessToken: string | undefined;
   ch: Channel;
 }
@@ -44,6 +45,7 @@ export const getContext = (ctx: Context): IContextResult => {
   return {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
+    lends: db.collection<LendMongo>("lends"),
     accessToken: ctx.req.headers.authorization,
     ch,
   };

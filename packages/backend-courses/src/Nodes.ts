@@ -41,7 +41,7 @@ const { nodeInterface, nodeField } = nodeDefinitions(
   }
 );
 
-const GraphQLLoan = new GraphQLObjectType({
+export const GraphQLLoan = new GraphQLObjectType({
   name: "Loan",
   fields: {
     id: globalIdField("Loan", ({ _id }): string => _id),

@@ -40,6 +40,8 @@ export const commitUpdateUserMutation = (
       }
       tokens.accessToken = response.updateUser.validAccessToken;
     },
-    onError: (error) => {},
+    onError: (error) => {
+      window.alert(error.message);
+    },
   });
 };

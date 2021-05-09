@@ -32,6 +32,7 @@ query AppQuery(
 }
 
 fragment DebtInSale_user on User {
+  id
   loans(first: 5, after: "") {
     edges {
       node {
@@ -52,7 +53,6 @@ fragment DebtInSale_user on User {
       hasNextPage
     }
   }
-  id
 }
 
 fragment GeneralData_user on User {
@@ -383,13 +383,13 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "f3241f92e98ee9607ad8a964675999ad",
+      cacheID: "ef8611f00517135346f8563a05b1dc63",
       id: null,
       metadata: {},
       name: "AppQuery",
       operationKind: "query",
       text:
-        'query AppQuery(\n  $id: String!\n  $refreshToken: String!\n) {\n  user(id: $id, refreshToken: $refreshToken) {\n    ...Routes_user\n    error\n    id\n  }\n}\n\nfragment DebtInSale_user on User {\n  loans(first: 5, after: "") {\n    edges {\n      node {\n        id\n        user_id\n        score\n        rate\n        total\n        term\n        need\n        ends\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment GeneralData_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  accountTotal\n  accountAvailable\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...GeneralData_user\n  ...DebtInSale_user\n}\n',
+        'query AppQuery(\n  $id: String!\n  $refreshToken: String!\n) {\n  user(id: $id, refreshToken: $refreshToken) {\n    ...Routes_user\n    error\n    id\n  }\n}\n\nfragment DebtInSale_user on User {\n  id\n  loans(first: 5, after: "") {\n    edges {\n      node {\n        id\n        user_id\n        score\n        rate\n        total\n        term\n        need\n        ends\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment GeneralData_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  accountTotal\n  accountAvailable\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...GeneralData_user\n  ...DebtInSale_user\n}\n',
     },
   } as any;
 })();

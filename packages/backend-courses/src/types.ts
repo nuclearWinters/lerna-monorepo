@@ -42,17 +42,6 @@ export interface UserMongo {
   auth_id: ObjectId;
 }
 
-export interface LoanUser {
-  _id: string;
-  user_id: string;
-  score: number;
-  rate: number;
-  total: number;
-  term: number;
-  need: number;
-  ends: number;
-}
-
 export interface LoanMongo {
   _id: ObjectId;
   user_id: ObjectId;
@@ -62,6 +51,14 @@ export interface LoanMongo {
   term: number;
   need: number;
   ends: number;
+}
+
+export interface LendMongo {
+  _id: ObjectId;
+  _id_borrower: ObjectId;
+  _id_lender: ObjectId;
+  lend: number;
+  date: Date;
 }
 
 export interface DecodeJWT {

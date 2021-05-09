@@ -1,0 +1,20 @@
+
+use('fintech');
+
+//db.users.findOneAndUpdate({ "_id": ObjectId("6095ed06f92be2001a15885a") }, { $set: {name: "Prueba"} });
+//db.users.find({ "_id": ObjectId("6095ed06f92be2001a15885a") });
+
+/*db.loans.updateMany({ user_id: { $in: [ObjectId("607b7338119cbd2f4c4ad524"), ObjectId("607b7338119cbd2f4c4ad524")] } }, 
+{ $inc: 
+  { total: 
+    { $switch: 
+      {
+        branches: [
+          { case: { $eq: [ "$_id", ObjectId("607b7338119cbd2f4c4ad525") ] }, then: 100 },
+          { case: { $eq: [ "$_id", ObjectId("607b7338119cbd2f4c4ad523") ] }, then: 100 }
+        ],
+        default: 0
+      } 
+    }
+  }
+});*/

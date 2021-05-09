@@ -33,6 +33,7 @@ query DebtInSalePaginationQuery(
 }
 
 fragment DebtInSale_user_1G22uz on User {
+  id
   loans(first: $count, after: $cursor) {
     edges {
       node {
@@ -53,7 +54,6 @@ fragment DebtInSale_user_1G22uz on User {
       hasNextPage
     }
   }
-  id
 }
 */
 
@@ -300,15 +300,15 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "08a01034a4d026ad6075e68cf1659f71",
+      cacheID: "0a0882c3be47289c5792b3a1d2c692e9",
       id: null,
       metadata: {},
       name: "DebtInSalePaginationQuery",
       operationKind: "query",
       text:
-        'query DebtInSalePaginationQuery(\n  $count: Int = 5\n  $cursor: String = ""\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...DebtInSale_user_1G22uz\n    id\n  }\n}\n\nfragment DebtInSale_user_1G22uz on User {\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        rate\n        total\n        term\n        need\n        ends\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n',
+        'query DebtInSalePaginationQuery(\n  $count: Int = 5\n  $cursor: String = ""\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...DebtInSale_user_1G22uz\n    id\n  }\n}\n\nfragment DebtInSale_user_1G22uz on User {\n  id\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        rate\n        total\n        term\n        need\n        ends\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "43a31cbaf5efa1f8f0f11f22084e8348";
+(node as any).hash = "8cbb37ba075bcdbab7c9173fc9ea681a";
 export default node;
