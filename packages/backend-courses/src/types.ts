@@ -22,7 +22,6 @@ export interface RootUser {
   CURP: string;
   clabe: string;
   mobile: string;
-  email: string;
   accountTotal: number;
   accountAvailable: number;
   error: string;
@@ -39,25 +38,24 @@ export interface UserMongo {
   mobile: string;
   accountTotal: number;
   accountAvailable: number;
-  auth_id: ObjectId;
 }
 
 export interface LoanMongo {
   _id: ObjectId;
-  user_id: ObjectId;
-  score: number;
-  rate: number;
-  total: number;
+  _id_user: ObjectId;
+  score: string;
+  ROI: number;
+  goal: number;
   term: number;
-  need: number;
-  ends: number;
+  raised: number;
+  expiry: Date;
 }
 
 export interface LendMongo {
   _id: ObjectId;
   _id_borrower: ObjectId;
   _id_lender: ObjectId;
-  lend: number;
+  quantity: number;
   date: Date;
 }
 

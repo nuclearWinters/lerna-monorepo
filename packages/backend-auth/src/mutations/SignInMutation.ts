@@ -14,7 +14,7 @@ interface Input {
 type Payload = {
   accessToken: string;
   refreshToken: string;
-  error?: string;
+  error: string;
 };
 
 export const SignInMutation = mutationWithClientMutationId({
@@ -26,8 +26,8 @@ export const SignInMutation = mutationWithClientMutationId({
   },
   outputFields: {
     error: {
-      type: GraphQLString,
-      resolve: ({ error }: Payload): string | null => error || null,
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ error }: Payload): string => error,
     },
     accessToken: {
       type: new GraphQLNonNull(GraphQLString),

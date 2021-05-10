@@ -3,52 +3,41 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
-export type AddLendsInput = {
+export type AddFundsInput = {
   clientMutationId?: string | null;
   refreshToken: string;
-  lender_gid: string;
-  lends: Array<LendList>;
-};
-export type LendList = {
-  loan_gid: string;
+  user_gid: string;
   quantity: number;
-  borrower_id: string;
 };
-export type AddLendsMutationVariables = {
-  input: AddLendsInput;
+export type AddFundsMutationVariables = {
+  input: AddFundsInput;
 };
-export type AddLendsMutationResponse = {
-  readonly addLends: {
+export type AddFundsMutationResponse = {
+  readonly addFunds: {
     readonly error: string;
     readonly validAccessToken: string;
     readonly user: {
+      readonly accountTotal: number;
       readonly accountAvailable: number;
-    };
-    readonly loans: ReadonlyArray<{
-      readonly id: string;
-      readonly raised: number;
-    }> | null;
+    } | null;
   };
 };
-export type AddLendsMutation = {
-  readonly response: AddLendsMutationResponse;
-  readonly variables: AddLendsMutationVariables;
+export type AddFundsMutation = {
+  readonly response: AddFundsMutationResponse;
+  readonly variables: AddFundsMutationVariables;
 };
 
 /*
-mutation AddLendsMutation(
-  $input: AddLendsInput!
+mutation AddFundsMutation(
+  $input: AddFundsInput!
 ) {
-  addLends(input: $input) {
+  addFunds(input: $input) {
     error
     validAccessToken
     user {
+      accountTotal
       accountAvailable
       id
-    }
-    loans {
-      id
-      raised
     }
   }
 }
@@ -87,33 +76,14 @@ const node: ConcreteRequest = (function () {
       alias: null,
       args: null,
       kind: "ScalarField",
-      name: "accountAvailable",
+      name: "accountTotal",
       storageKey: null,
     } as any,
     v5 = {
       alias: null,
       args: null,
       kind: "ScalarField",
-      name: "id",
-      storageKey: null,
-    } as any,
-    v6 = {
-      alias: null,
-      args: null,
-      concreteType: "Loan",
-      kind: "LinkedField",
-      name: "loans",
-      plural: true,
-      selections: [
-        v5 /*: any*/,
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "raised",
-          storageKey: null,
-        },
-      ],
+      name: "accountAvailable",
       storageKey: null,
     } as any;
   return {
@@ -121,48 +91,14 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
-      name: "AddLendsMutation",
+      name: "AddFundsMutation",
       selections: [
         {
           alias: null,
           args: v1 /*: any*/,
-          concreteType: "AddLendsPayload",
+          concreteType: "AddFundsPayload",
           kind: "LinkedField",
-          name: "addLends",
-          plural: false,
-          selections: [
-            v2 /*: any*/,
-            v3 /*: any*/,
-            {
-              alias: null,
-              args: null,
-              concreteType: "User",
-              kind: "LinkedField",
-              name: "user",
-              plural: false,
-              selections: [v4 /*: any*/],
-              storageKey: null,
-            },
-            v6 /*: any*/,
-          ],
-          storageKey: null,
-        },
-      ],
-      type: "Mutation",
-      abstractKey: null,
-    },
-    kind: "Request",
-    operation: {
-      argumentDefinitions: v0 /*: any*/,
-      kind: "Operation",
-      name: "AddLendsMutation",
-      selections: [
-        {
-          alias: null,
-          args: v1 /*: any*/,
-          concreteType: "AddLendsPayload",
-          kind: "LinkedField",
-          name: "addLends",
+          name: "addFunds",
           plural: false,
           selections: [
             v2 /*: any*/,
@@ -177,22 +113,64 @@ const node: ConcreteRequest = (function () {
               selections: [v4 /*: any*/, v5 /*: any*/],
               storageKey: null,
             },
-            v6 /*: any*/,
+          ],
+          storageKey: null,
+        },
+      ],
+      type: "Mutation",
+      abstractKey: null,
+    },
+    kind: "Request",
+    operation: {
+      argumentDefinitions: v0 /*: any*/,
+      kind: "Operation",
+      name: "AddFundsMutation",
+      selections: [
+        {
+          alias: null,
+          args: v1 /*: any*/,
+          concreteType: "AddFundsPayload",
+          kind: "LinkedField",
+          name: "addFunds",
+          plural: false,
+          selections: [
+            v2 /*: any*/,
+            v3 /*: any*/,
+            {
+              alias: null,
+              args: null,
+              concreteType: "User",
+              kind: "LinkedField",
+              name: "user",
+              plural: false,
+              selections: [
+                v4 /*: any*/,
+                v5 /*: any*/,
+                {
+                  alias: null,
+                  args: null,
+                  kind: "ScalarField",
+                  name: "id",
+                  storageKey: null,
+                },
+              ],
+              storageKey: null,
+            },
           ],
           storageKey: null,
         },
       ],
     },
     params: {
-      cacheID: "64c4f271899a0c370811089df6cae2cc",
+      cacheID: "547138b20422b9c485f92dfbd332fa2f",
       id: null,
       metadata: {},
-      name: "AddLendsMutation",
+      name: "AddFundsMutation",
       operationKind: "mutation",
       text:
-        "mutation AddLendsMutation(\n  $input: AddLendsInput!\n) {\n  addLends(input: $input) {\n    error\n    validAccessToken\n    user {\n      accountAvailable\n      id\n    }\n    loans {\n      id\n      raised\n    }\n  }\n}\n",
+        "mutation AddFundsMutation(\n  $input: AddFundsInput!\n) {\n  addFunds(input: $input) {\n    error\n    validAccessToken\n    user {\n      accountTotal\n      accountAvailable\n      id\n    }\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "312cc51512d7fed198f72f18e41993db";
+(node as any).hash = "afb70bd423d0f36380f7cdc4fc52f505";
 export default node;

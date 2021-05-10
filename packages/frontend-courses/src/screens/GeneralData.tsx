@@ -1,4 +1,5 @@
-import { tokens } from "App";
+import { IJWT } from "App";
+import jwtDecode from "jwt-decode";
 import { commitUpdateUserMutation } from "mutations/UpdateUser";
 import React, { FC, useRef, useState } from "react";
 import { graphql, useFragment } from "react-relay";
@@ -15,7 +16,6 @@ const generalDataFragment = graphql`
     CURP
     clabe
     mobile
-    email
     accountTotal
     accountAvailable
   }
@@ -28,7 +28,7 @@ type Props = {
 export const GeneralData: FC<Props> = (props) => {
   const user = useFragment(generalDataFragment, props.user);
   const [formUser, setFormUser] = useState({
-    id: user.id,
+    user_gid: user.id,
     name: user.name,
     apellidoMaterno: user.apellidoMaterno,
     apellidoPaterno: user.apellidoPaterno,
@@ -117,21 +117,35 @@ export const GeneralData: FC<Props> = (props) => {
             onChange={handleFormUser}
           />
         </div>
-        <div>
-          <div>Email</div>
-          <input
-            placeholder="Email"
-            value={user.email}
-            name="email"
-            disabled={true}
-          />
-        </div>
+        {
+          <div>
+            <div>Email</div>
+            <input
+              placeholder="Email"
+              value={
+                RelayEnvironment.getStore()
+                  .getSource()
+                  .get("client:root:tokens")?.refreshToken
+                  ? jwtDecode<IJWT>(
+                      RelayEnvironment.getStore()
+                        .getSource()
+                        .get("client:root:tokens")?.refreshToken as string
+                    ).email
+                  : ""
+              }
+              name="email"
+              disabled={true}
+            />
+          </div>
+        }
       </div>
       <button
         onClick={() => {
           commitUpdateUserMutation(RelayEnvironment, {
             ...formUser,
-            refreshToken: tokens.refreshToken,
+            refreshToken:
+              (RelayEnvironment.getStore().getSource().get("client:root:tokens")
+                ?.refreshToken as string) || "",
           });
         }}
       >
@@ -142,7 +156,7 @@ export const GeneralData: FC<Props> = (props) => {
           onClick={() => {
             isChanged.current = false;
             setFormUser({
-              id: user.id,
+              user_gid: user.id,
               name: user.name,
               apellidoMaterno: user.apellidoMaterno,
               apellidoPaterno: user.apellidoPaterno,

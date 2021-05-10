@@ -1,10 +1,10 @@
-import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLNonNull, GraphQLString } from "graphql";
+import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
+import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
 import { Context } from "../types";
 import { getContext, refreshTokenMiddleware } from "../utils";
 
 interface Input {
-  id: string;
+  user_gid: string;
   refreshToken: string;
 }
 
@@ -17,7 +17,7 @@ export const BlacklistUserMutation = mutationWithClientMutationId({
   name: "BlacklistUser",
   description: "Bloquea los refresh token de un usuario por una hora.",
   inputFields: {
-    id: { type: new GraphQLNonNull(GraphQLString) },
+    user_gid: { type: new GraphQLNonNull(GraphQLID) },
     refreshToken: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
@@ -31,20 +31,18 @@ export const BlacklistUserMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { id, refreshToken }: Input,
+    { user_gid, refreshToken }: Input,
     ctx: Context
   ): Promise<Payload> => {
     try {
+      const { id: user_id } = fromGlobalId(user_gid);
       const { rdb, accessToken } = getContext(ctx);
-      const { validAccessToken, _id } = await refreshTokenMiddleware(
-        accessToken,
-        refreshToken
-      );
-      if (id !== _id) {
+      const { _id } = await refreshTokenMiddleware(accessToken, refreshToken);
+      if (user_id !== _id) {
         throw new Error("Solo el usuario puede bloquear su cuenta.");
       }
       await rdb.set(_id, _id, "EX", 60 * 60);
-      return { validAccessToken, error: "" };
+      return { validAccessToken: "", error: "" };
     } catch (e) {
       return { validAccessToken: "", error: e.message };
     }

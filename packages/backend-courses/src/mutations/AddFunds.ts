@@ -1,5 +1,5 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
+import { GraphQLString, GraphQLNonNull, GraphQLInt, GraphQLID } from "graphql";
 import { Context, UserMongo } from "../types";
 import { ObjectID } from "mongodb";
 import { getContext, refreshTokenMiddleware } from "../utils";
@@ -8,13 +8,7 @@ import { GraphQLUser } from "../Nodes";
 interface Input {
   refreshToken: string;
   user_gid: string;
-  name: string;
-  apellidoPaterno: string;
-  apellidoMaterno: string;
-  RFC: string;
-  CURP: string;
-  clabe: string;
-  mobile: string;
+  quantity: number;
 }
 
 type Payload = {
@@ -23,20 +17,14 @@ type Payload = {
   error: string;
 };
 
-export const UpdateUserMutation = mutationWithClientMutationId({
-  name: "UpdateUser",
+export const AddFundsMutation = mutationWithClientMutationId({
+  name: "AddFunds",
   description:
-    "Actualiza los datos personales: recibe el usuario actualizado y obtén un AccessToken valido.",
+    "Añade fondos a tu cuenta: recibe el usuario actualziao y obtén un AccessToken valido.",
   inputFields: {
     refreshToken: { type: new GraphQLNonNull(GraphQLString) },
     user_gid: { type: new GraphQLNonNull(GraphQLID) },
-    name: { type: GraphQLString },
-    apellidoMaterno: { type: GraphQLString },
-    apellidoPaterno: { type: GraphQLString },
-    RFC: { type: GraphQLString },
-    CURP: { type: GraphQLString },
-    clabe: { type: GraphQLString },
-    mobile: { type: GraphQLString },
+    quantity: { type: new GraphQLNonNull(GraphQLInt) },
   },
   outputFields: {
     error: {
@@ -53,7 +41,7 @@ export const UpdateUserMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { refreshToken, user_gid, ...user }: Input,
+    { refreshToken, user_gid, quantity }: Input,
     ctx: Context
   ): Promise<Payload> => {
     try {
@@ -68,7 +56,7 @@ export const UpdateUserMutation = mutationWithClientMutationId({
       }
       const result = await users.findOneAndUpdate(
         { _id: new ObjectID(user_id) },
-        { $set: user },
+        { $inc: { accountTotal: quantity, accountAvailable: quantity } },
         { returnOriginal: false }
       );
       const updatedUser = result.value;

@@ -4,39 +4,31 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type DebtInSale_user = {
-  readonly id: string;
+export type DebtInSale_query = {
   readonly loans: {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
-        readonly user_id: string;
+        readonly _id_user: string;
         readonly score: number;
-        readonly rate: number;
-        readonly total: number;
+        readonly ROI: number;
+        readonly goal: number;
         readonly term: number;
-        readonly need: number;
-        readonly ends: number;
+        readonly raised: number;
+        readonly expiry: number;
       } | null;
     } | null> | null;
   } | null;
-  readonly " $refType": "DebtInSale_user";
+  readonly " $refType": "DebtInSale_query";
 };
-export type DebtInSale_user$data = DebtInSale_user;
-export type DebtInSale_user$key = {
-  readonly " $data"?: DebtInSale_user$data;
-  readonly " $fragmentRefs": FragmentRefs<"DebtInSale_user">;
+export type DebtInSale_query$data = DebtInSale_query;
+export type DebtInSale_query$key = {
+  readonly " $data"?: DebtInSale_query$data;
+  readonly " $fragmentRefs": FragmentRefs<"DebtInSale_query">;
 };
 
 const node: ReaderFragment = (function () {
-  var v0 = ["loans"],
-    v1 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "id",
-      storageKey: null,
-    } as any;
+  var v0 = ["loans"];
   return {
     argumentDefinitions: [
       {
@@ -69,20 +61,18 @@ const node: ReaderFragment = (function () {
           backward: null,
           path: v0 /*: any*/,
         },
-        fragmentPathInResult: ["node"],
+        fragmentPathInResult: [],
         operation: require("./DebtInSalePaginationQuery.graphql.ts"),
-        identifierField: "id",
       },
     },
-    name: "DebtInSale_user",
+    name: "DebtInSale_query",
     selections: [
-      v1 /*: any*/,
       {
         alias: "loans",
         args: null,
         concreteType: "LoanConnection",
         kind: "LinkedField",
-        name: "__DebtInSale_user_loans_connection",
+        name: "__DebtInSale_query_loans_connection",
         plural: false,
         selections: [
           {
@@ -101,12 +91,18 @@ const node: ReaderFragment = (function () {
                 name: "node",
                 plural: false,
                 selections: [
-                  v1 /*: any*/,
                   {
                     alias: null,
                     args: null,
                     kind: "ScalarField",
-                    name: "user_id",
+                    name: "id",
+                    storageKey: null,
+                  },
+                  {
+                    alias: null,
+                    args: null,
+                    kind: "ScalarField",
+                    name: "_id_user",
                     storageKey: null,
                   },
                   {
@@ -120,14 +116,14 @@ const node: ReaderFragment = (function () {
                     alias: null,
                     args: null,
                     kind: "ScalarField",
-                    name: "rate",
+                    name: "ROI",
                     storageKey: null,
                   },
                   {
                     alias: null,
                     args: null,
                     kind: "ScalarField",
-                    name: "total",
+                    name: "goal",
                     storageKey: null,
                   },
                   {
@@ -141,14 +137,14 @@ const node: ReaderFragment = (function () {
                     alias: null,
                     args: null,
                     kind: "ScalarField",
-                    name: "need",
+                    name: "raised",
                     storageKey: null,
                   },
                   {
                     alias: null,
                     args: null,
                     kind: "ScalarField",
-                    name: "ends",
+                    name: "expiry",
                     storageKey: null,
                   },
                   {
@@ -200,9 +196,9 @@ const node: ReaderFragment = (function () {
         storageKey: null,
       },
     ],
-    type: "User",
+    type: "Query",
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "8cbb37ba075bcdbab7c9173fc9ea681a";
+(node as any).hash = "ad4abc2ed9fab37f6b124cf17f51751e";
 export default node;

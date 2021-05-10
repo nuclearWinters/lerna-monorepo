@@ -5,7 +5,6 @@ import {
 } from "./__generated__/SignInMutation.graphql";
 
 import { commitMutation, graphql } from "react-relay";
-import { tokens } from "App";
 
 const MutationQuery = graphql`
   mutation SignInMutation($input: SignInInput!) {
@@ -29,16 +28,16 @@ export const commitGetTokenMutation = (
       if (response.signIn.error) {
         throw new Error(response.signIn.error);
       }
-      tokens.accessToken = response.signIn.accessToken;
-      tokens.refreshToken = response.signIn.refreshToken;
-      localStorage.setItem("accessToken", response.signIn.accessToken);
-      localStorage.setItem("refreshToken", response.signIn.refreshToken);
       refetch();
     },
     updater: (store, data) => {
       const root = store.getRoot();
-      root.setValue(data.signIn.accessToken, "accessToken");
-      root.setValue(data.signIn.refreshToken, "refreshToken");
+      const tokenLinkedRecord = root.getOrCreateLinkedRecord(
+        "tokens",
+        "Tokens"
+      );
+      tokenLinkedRecord.setValue(data.signIn.accessToken, "accessToken");
+      tokenLinkedRecord.setValue(data.signIn.refreshToken, "refreshToken");
     },
     onError: (error) => {
       window.alert(error.message);

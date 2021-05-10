@@ -15,29 +15,35 @@ import jwtDecode from "jwt-decode";
 
 const { Suspense } = React;
 
-interface IJWT {
+export interface IJWT {
   _id: string;
+  email: string;
 }
 
-export const tokens = {
-  accessToken: localStorage.getItem("accessToken") || "",
-  refreshToken: localStorage.getItem("refreshToken") || "",
-};
+//export const tokens = {
+//  accessToken: localStorage.getItem("accessToken") || "",
+//  refreshToken: localStorage.getItem("refreshToken") || "",
+//};
 
 const getIdFromToken = (): string => {
-  const accessToken = tokens.accessToken;
+  const accessToken =
+    (RelayEnvironment.getStore().getSource().get("client:root:tokens")
+      ?.accessToken as string) || "";
   if (!accessToken) return "";
   return jwtDecode<IJWT>(accessToken)._id;
 };
 
 const getRefreshToken = (): string => {
-  const refreshToken = tokens.refreshToken;
+  const refreshToken =
+    (RelayEnvironment.getStore().getSource().get("client:root:tokens")
+      ?.refreshToken as string) || "";
   if (!refreshToken) return "";
   return refreshToken;
 };
 
 const RepositoryNameQuery = graphql`
   query AppQuery($id: String!, $refreshToken: String!) {
+    ...DebtInSale_query
     user(id: $id, refreshToken: $refreshToken) {
       ...Routes_user
       error
@@ -63,7 +69,7 @@ const AppQueryRoot: FC = () => {
   const refetch = useCallback(() => {
     loadQuery({ id: getIdFromToken(), refreshToken: getRefreshToken() });
   }, [loadQuery]);
-  return <Routes user={data.user} refetch={refetch} />;
+  return <Routes user={data.user} data={data} refetch={refetch} />;
 };
 
 export const App: FC = () => {

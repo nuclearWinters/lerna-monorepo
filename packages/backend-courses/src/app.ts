@@ -6,12 +6,16 @@ import { QueryUser } from "./QueryUser";
 import { nodeField } from "./Nodes";
 import { UpdateUserMutation } from "./mutations/UpdateUser";
 import { AddLendsMutation } from "./mutations/AddLends";
+import { AddFundsMutation } from "./mutations/AddFunds";
+import { QueryLoans } from "./QueryLoans";
+import { AddLoanMutation } from "./mutations/AddLoan";
 
 const Query = new GraphQLObjectType({
   name: "Query",
   fields: {
     user: QueryUser,
     node: nodeField,
+    loans: QueryLoans,
   },
 });
 
@@ -20,6 +24,8 @@ const Mutation = new GraphQLObjectType({
   fields: {
     updateUser: UpdateUserMutation,
     addLends: AddLendsMutation,
+    addFunds: AddFundsMutation,
+    addLoan: AddLoanMutation,
   },
 });
 

@@ -4,30 +4,56 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
+  GraphQLFloat,
+  GraphQLScalarType,
+  Kind,
 } from "graphql";
 import {
   fromGlobalId,
   globalIdField,
   nodeDefinitions,
   connectionDefinitions,
-  connectionArgs,
-  connectionFromArray,
-  ConnectionArguments,
-  Connection,
 } from "graphql-relay";
 import { RootUser, Context, LoanMongo } from "./types";
-import { getContext, base64, unbase64 } from "./utils";
+import { getContext } from "./utils";
+
+const DateScalarType = new GraphQLScalarType({
+  name: "Date",
+  serialize: (value) => {
+    return value.getTime();
+  },
+  parseValue: (value) => {
+    return new Date(value);
+  },
+  parseLiteral(ast) {
+    if (ast.kind === Kind.INT) {
+      return new Date(parseInt(ast.value, 10));
+    }
+    return null;
+  },
+});
 
 const { nodeInterface, nodeField } = nodeDefinitions(
   async (globalId, ctx) => {
     const { type, id } = fromGlobalId(globalId);
-    const { users } = getContext(ctx);
+    const { users, loans } = getContext(ctx);
     if (type === "User") {
       const user = await users.findOne({ _id: new ObjectID(id) });
+      if (!user) {
+        return { type: "" };
+      }
       const typedUser = { ...user, type };
       return typedUser;
+    } else if (type === "Loan") {
+      const loan = await loans.findOne({ _id: new ObjectID(id) });
+      if (!loan) {
+        return { type: "" };
+      }
+      const typedUser = { ...loan, type };
+      return typedUser;
+    } else {
+      return { type: "" };
     }
-    return null;
   },
   (obj: { type: string }): GraphQLObjectType | null => {
     switch (obj.type) {
@@ -41,41 +67,37 @@ const { nodeInterface, nodeField } = nodeDefinitions(
   }
 );
 
-export const GraphQLLoan = new GraphQLObjectType({
+export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
   name: "Loan",
   fields: {
-    id: globalIdField("Loan", ({ _id }): string => _id),
-    user_id: {
+    id: globalIdField("Loan", ({ _id }): string => _id.toHexString()),
+    _id_user: {
       type: GraphQLNonNull(GraphQLString),
-      resolve: ({ user_id }) => user_id,
+      resolve: ({ _id_user }): string => _id_user.toHexString(),
     },
     score: {
-      type: GraphQLNonNull(GraphQLInt),
-      resolve: ({ score }) => score,
+      type: GraphQLNonNull(GraphQLString),
+      resolve: ({ score }): string => score,
     },
-    rate: {
-      type: GraphQLNonNull(GraphQLInt),
-      resolve: ({ rate }) => rate,
+    ROI: {
+      type: GraphQLNonNull(GraphQLFloat),
+      resolve: ({ ROI }): number => ROI,
     },
-    total: {
+    goal: {
       type: GraphQLNonNull(GraphQLInt),
-      resolve: ({ total }) => total,
+      resolve: ({ goal }): number => goal,
     },
     term: {
       type: GraphQLNonNull(GraphQLInt),
-      resolve: ({ term }) => term,
+      resolve: ({ term }): number => term,
     },
-    need: {
+    raised: {
       type: GraphQLNonNull(GraphQLInt),
-      resolve: ({ need }) => need,
+      resolve: ({ raised }): number => raised,
     },
-    ends: {
-      type: GraphQLNonNull(GraphQLInt),
-      resolve: ({ ends }) => ends,
-    },
-    lend: {
-      type: GraphQLNonNull(GraphQLInt),
-      resolve: ({ lend }) => lend,
+    expiry: {
+      type: GraphQLNonNull(DateScalarType),
+      resolve: ({ expiry }): Date => expiry,
     },
   },
   interfaces: [nodeInterface],
@@ -93,47 +115,6 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
   name: "User",
   fields: {
     id: globalIdField("User", ({ _id }): string => _id),
-    loans: {
-      type: new GraphQLNonNull(LoanConnection),
-      args: connectionArgs,
-      resolve: async (
-        user,
-        args: ConnectionArguments,
-        ctx
-      ): Promise<Connection<LoanMongo>> => {
-        try {
-          if (!user._id) {
-            throw new Error("No user");
-          }
-          const { loans } = getContext(ctx);
-          const offset = unbase64(args.after || "YXJyYXljb25uZWN0aW9uOjA=");
-          const skip = Number(offset) === 0 ? 0 : Number(offset) + 1;
-          const limit = args.first ? args.first + 1 : 0;
-          if (limit === 0) {
-            throw new Error("Se requiere 'first'");
-          }
-          const result = await loans.find().skip(skip).limit(limit).toArray();
-          const edgesMapped = result.map((loan, idx) => {
-            return {
-              cursor: base64(String(skip + idx)),
-              node: loan,
-            };
-          });
-          const edges = edgesMapped.slice(0, args.first || 5);
-          return {
-            edges,
-            pageInfo: {
-              startCursor: edges[0]?.cursor || null,
-              endCursor: edges[edges.length - 1]?.cursor || null,
-              hasPreviousPage: false,
-              hasNextPage: edgesMapped.length > (args.first || 0),
-            },
-          };
-        } catch (e) {
-          return connectionFromArray([], args);
-        }
-      },
-    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ name }): string => name,
@@ -162,10 +143,6 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ mobile }): string => mobile,
     },
-    email: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ email }): string => email,
-    },
     accountTotal: {
       type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ accountTotal }): number => accountTotal,
@@ -182,4 +159,4 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
   interfaces: [nodeInterface],
 });
 
-export { GraphQLUser, nodeField, GraphQLLoanEdge };
+export { GraphQLUser, nodeField, GraphQLLoanEdge, LoanConnection };

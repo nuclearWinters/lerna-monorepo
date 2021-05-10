@@ -30,10 +30,7 @@ const QueryUser: IQueryUser = {
   resolve: async (_, { id, refreshToken }, ctx) => {
     try {
       const { users, accessToken } = getContext(ctx);
-      const { _id, email } = await refreshTokenMiddleware(
-        accessToken,
-        refreshToken
-      );
+      const { _id } = await refreshTokenMiddleware(accessToken, refreshToken);
       if (_id !== id) {
         throw new Error("No es el mismo usuario.");
       }
@@ -63,7 +60,6 @@ const QueryUser: IQueryUser = {
         CURP,
         clabe,
         mobile,
-        email,
         accountTotal,
         accountAvailable,
         error: "",
@@ -78,7 +74,6 @@ const QueryUser: IQueryUser = {
         CURP: "",
         clabe: "",
         mobile: "",
-        email: "",
         accountTotal: 0,
         accountAvailable: 0,
         error: e.message,

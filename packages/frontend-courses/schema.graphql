@@ -26,7 +26,7 @@ type SignUpPayload {
 
 input BlacklistUserInput {
   refreshToken: String!
-  id: String!
+  user_gid: String!
   clientMutationId: String
 }
 
@@ -39,7 +39,7 @@ type BlacklistUserPayload {
 input UpdateUserInput {
   clientMutationId: String
   refreshToken: String!
-  id: String!
+  user_gid: String!
   name: String
   apellidoPaterno: String
   apellidoMaterno: String
@@ -47,8 +47,6 @@ input UpdateUserInput {
   CURP: String
   clabe: String
   mobile: String
-  accountTotal: Int
-  accountAvailable: Int
 }
 
 type UpdateUserPayload {
@@ -59,15 +57,15 @@ type UpdateUserPayload {
 }
 
 input LendList {
-  id: ID!
-  lend: Int!
-  _id_borrower: String!
+  loan_gid: ID!
+  quantity: Int!
+  borrower_id: String!
 }
 
 input AddLendsInput {
   clientMutationId: String
   refreshToken: String!
-  id: ID!
+  lender_gid: ID!
   lends: [LendList!]!
 }
 
@@ -79,17 +77,49 @@ type AddLendsPayload {
   loans: [Loan!]
 }
 
+input AddLoanInput {
+  clientMutationId: String
+  refreshToken: String!
+  user_gid: ID!
+  term: Int!
+  goal: Int!
+}
+
+type AddLoanPayload {
+  validAccessToken: String!
+  error: String!
+  clientMutationId: String
+  loan: Loan
+}
+
+input AddFundsInput {
+  clientMutationId: String
+  refreshToken: String!
+  user_gid: ID!
+  quantity: Int!
+}
+
+type AddFundsPayload {
+  validAccessToken: String!
+  error: String!
+  clientMutationId: String
+  user: User
+}
+
 type Mutation {
   signIn(input: SignInInput!): SignInPayload!
   signUp(input: SignUpInput!): SignUpPayload!
   blacklistUser(input: BlacklistUserInput!): BlacklistUserPayload!
   updateUser(input: UpdateUserInput!): UpdateUserPayload!
   addLends(input: AddLendsInput!): AddLendsPayload!
+  addLoan(input: AddLoanInput!): AddLoanPayload!
+  addFunds(input: AddFundsInput!): AddFundsPayload!
 }
 
 type Query {
   user(id: String!, refreshToken: String!): User!
   node(id: ID!): Node
+  loans(after: String, first: Int, before: String, last: Int): LoanConnection
 }
 
 schema {
@@ -110,13 +140,13 @@ type PageInfo {
 
 type Loan {
   id: ID!
-  user_id: String!
+  _id_user: String!
   score: Int!
-  rate: Int!
-  total: Int!
+  ROI: Int!
+  goal: Int!
   term: Int!
-  need: Int!
-  ends: Int!
+  raised: Int!
+  expiry: Date!
 }
 
 type LoanConnection {
@@ -138,9 +168,9 @@ type User implements Node {
   CURP: String!
   clabe: String!
   mobile: String!
-  email: String!
   accountTotal: Int!
   accountAvailable: Int!
-  loans(after: String, first: Int, before: String, last: Int): LoanConnection
   error: String!
 }
+
+scalar Date

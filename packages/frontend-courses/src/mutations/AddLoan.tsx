@@ -1,43 +1,46 @@
 import { Environment } from "react-relay";
 import {
-  AddLendsInput,
-  AddLendsMutation,
-} from "./__generated__/AddLendsMutation.graphql";
+  AddLoanInput,
+  AddLoanMutation,
+} from "./__generated__/AddLoanMutation.graphql";
 
 import { commitMutation, graphql } from "react-relay";
 
 const MutationQuery = graphql`
-  mutation AddLendsMutation($input: AddLendsInput!) {
-    addLends(input: $input) {
+  mutation AddLoanMutation($input: AddLoanInput!) {
+    addLoan(input: $input) {
       error
       validAccessToken
-      user {
-        accountAvailable
-      }
-      loans {
+      loan {
         id
+        _id_user
+        score
+        ROI
+        goal
+        term
         raised
+        expiry
       }
     }
   }
 `;
 
-export const commitAddLendsMutation = (
+export const commitAddLoanMutation = (
   environment: Environment,
-  input: AddLendsInput
+  input: AddLoanInput
 ) => {
-  return commitMutation<AddLendsMutation>(environment, {
+  return commitMutation<AddLoanMutation>(environment, {
     mutation: MutationQuery,
     variables: { input },
     onCompleted: (response) => {
-      if (response.addLends.error) {
-        throw new Error(response.addLends.error);
+      if (response.addLoan.error) {
+        throw new Error(response.addLoan.error);
       }
     },
     updater: (store, data) => {
       const root = store.getRoot();
       const token = root.getLinkedRecord("tokens");
-      token?.setValue(data.addLends.validAccessToken, "accessToken");
+      token?.setValue(data.addLoan.validAccessToken, "accessToken");
     },
     onError: (error) => {
       window.alert(error.message);

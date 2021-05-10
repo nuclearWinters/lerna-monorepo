@@ -7,12 +7,9 @@ import { FragmentRefs } from "relay-runtime";
 export type DebtInSalePaginationQueryVariables = {
   count?: number | null;
   cursor?: string | null;
-  id: string;
 };
 export type DebtInSalePaginationQueryResponse = {
-  readonly node: {
-    readonly " $fragmentRefs": FragmentRefs<"DebtInSale_user">;
-  } | null;
+  readonly " $fragmentRefs": FragmentRefs<"DebtInSale_query">;
 };
 export type DebtInSalePaginationQuery = {
   readonly response: DebtInSalePaginationQueryResponse;
@@ -23,28 +20,22 @@ export type DebtInSalePaginationQuery = {
 query DebtInSalePaginationQuery(
   $count: Int = 5
   $cursor: String = ""
-  $id: ID!
 ) {
-  node(id: $id) {
-    __typename
-    ...DebtInSale_user_1G22uz
-    id
-  }
+  ...DebtInSale_query_1G22uz
 }
 
-fragment DebtInSale_user_1G22uz on User {
-  id
+fragment DebtInSale_query_1G22uz on Query {
   loans(first: $count, after: $cursor) {
     edges {
       node {
         id
-        user_id
+        _id_user
         score
-        rate
-        total
+        ROI
+        goal
         term
-        need
-        ends
+        raised
+        expiry
         __typename
       }
       cursor
@@ -69,34 +60,8 @@ const node: ConcreteRequest = (function () {
         kind: "LocalArgument",
         name: "cursor",
       } as any,
-      {
-        defaultValue: null,
-        kind: "LocalArgument",
-        name: "id",
-      } as any,
     ],
     v1 = [
-      {
-        kind: "Variable",
-        name: "id",
-        variableName: "id",
-      } as any,
-    ],
-    v2 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "__typename",
-      storageKey: null,
-    } as any,
-    v3 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "id",
-      storageKey: null,
-    } as any,
-    v4 = [
       {
         kind: "Variable",
         name: "after",
@@ -116,31 +81,20 @@ const node: ConcreteRequest = (function () {
       name: "DebtInSalePaginationQuery",
       selections: [
         {
-          alias: null,
-          args: v1 /*: any*/,
-          concreteType: null,
-          kind: "LinkedField",
-          name: "node",
-          plural: false,
-          selections: [
+          args: [
             {
-              args: [
-                {
-                  kind: "Variable",
-                  name: "count",
-                  variableName: "count",
-                },
-                {
-                  kind: "Variable",
-                  name: "cursor",
-                  variableName: "cursor",
-                },
-              ],
-              kind: "FragmentSpread",
-              name: "DebtInSale_user",
+              kind: "Variable",
+              name: "count",
+              variableName: "count",
+            },
+            {
+              kind: "Variable",
+              name: "cursor",
+              variableName: "cursor",
             },
           ],
-          storageKey: null,
+          kind: "FragmentSpread",
+          name: "DebtInSale_query",
         },
       ],
       type: "Query",
@@ -155,127 +109,88 @@ const node: ConcreteRequest = (function () {
         {
           alias: null,
           args: v1 /*: any*/,
-          concreteType: null,
+          concreteType: "LoanConnection",
           kind: "LinkedField",
-          name: "node",
+          name: "loans",
           plural: false,
           selections: [
-            v2 /*: any*/,
-            v3 /*: any*/,
             {
-              kind: "InlineFragment",
+              alias: null,
+              args: null,
+              concreteType: "LoanEdge",
+              kind: "LinkedField",
+              name: "edges",
+              plural: true,
               selections: [
                 {
                   alias: null,
-                  args: v4 /*: any*/,
-                  concreteType: "LoanConnection",
+                  args: null,
+                  concreteType: "Loan",
                   kind: "LinkedField",
-                  name: "loans",
+                  name: "node",
                   plural: false,
                   selections: [
                     {
                       alias: null,
                       args: null,
-                      concreteType: "LoanEdge",
-                      kind: "LinkedField",
-                      name: "edges",
-                      plural: true,
-                      selections: [
-                        {
-                          alias: null,
-                          args: null,
-                          concreteType: "Loan",
-                          kind: "LinkedField",
-                          name: "node",
-                          plural: false,
-                          selections: [
-                            v3 /*: any*/,
-                            {
-                              alias: null,
-                              args: null,
-                              kind: "ScalarField",
-                              name: "user_id",
-                              storageKey: null,
-                            },
-                            {
-                              alias: null,
-                              args: null,
-                              kind: "ScalarField",
-                              name: "score",
-                              storageKey: null,
-                            },
-                            {
-                              alias: null,
-                              args: null,
-                              kind: "ScalarField",
-                              name: "rate",
-                              storageKey: null,
-                            },
-                            {
-                              alias: null,
-                              args: null,
-                              kind: "ScalarField",
-                              name: "total",
-                              storageKey: null,
-                            },
-                            {
-                              alias: null,
-                              args: null,
-                              kind: "ScalarField",
-                              name: "term",
-                              storageKey: null,
-                            },
-                            {
-                              alias: null,
-                              args: null,
-                              kind: "ScalarField",
-                              name: "need",
-                              storageKey: null,
-                            },
-                            {
-                              alias: null,
-                              args: null,
-                              kind: "ScalarField",
-                              name: "ends",
-                              storageKey: null,
-                            },
-                            v2 /*: any*/,
-                          ],
-                          storageKey: null,
-                        },
-                        {
-                          alias: null,
-                          args: null,
-                          kind: "ScalarField",
-                          name: "cursor",
-                          storageKey: null,
-                        },
-                      ],
+                      kind: "ScalarField",
+                      name: "id",
                       storageKey: null,
                     },
                     {
                       alias: null,
                       args: null,
-                      concreteType: "PageInfo",
-                      kind: "LinkedField",
-                      name: "pageInfo",
-                      plural: false,
-                      selections: [
-                        {
-                          alias: null,
-                          args: null,
-                          kind: "ScalarField",
-                          name: "endCursor",
-                          storageKey: null,
-                        },
-                        {
-                          alias: null,
-                          args: null,
-                          kind: "ScalarField",
-                          name: "hasNextPage",
-                          storageKey: null,
-                        },
-                      ],
+                      kind: "ScalarField",
+                      name: "_id_user",
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: "ScalarField",
+                      name: "score",
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: "ScalarField",
+                      name: "ROI",
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: "ScalarField",
+                      name: "goal",
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: "ScalarField",
+                      name: "term",
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: "ScalarField",
+                      name: "raised",
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: "ScalarField",
+                      name: "expiry",
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: "ScalarField",
+                      name: "__typename",
                       storageKey: null,
                     },
                   ],
@@ -283,32 +198,63 @@ const node: ConcreteRequest = (function () {
                 },
                 {
                   alias: null,
-                  args: v4 /*: any*/,
-                  filters: null,
-                  handle: "connection",
-                  key: "DebtInSale_user_loans",
-                  kind: "LinkedHandle",
-                  name: "loans",
+                  args: null,
+                  kind: "ScalarField",
+                  name: "cursor",
+                  storageKey: null,
                 },
               ],
-              type: "User",
-              abstractKey: null,
+              storageKey: null,
+            },
+            {
+              alias: null,
+              args: null,
+              concreteType: "PageInfo",
+              kind: "LinkedField",
+              name: "pageInfo",
+              plural: false,
+              selections: [
+                {
+                  alias: null,
+                  args: null,
+                  kind: "ScalarField",
+                  name: "endCursor",
+                  storageKey: null,
+                },
+                {
+                  alias: null,
+                  args: null,
+                  kind: "ScalarField",
+                  name: "hasNextPage",
+                  storageKey: null,
+                },
+              ],
+              storageKey: null,
             },
           ],
           storageKey: null,
         },
+        {
+          alias: null,
+          args: v1 /*: any*/,
+          filters: null,
+          handle: "connection",
+          key: "DebtInSale_query_loans",
+          kind: "LinkedHandle",
+          name: "loans",
+        },
       ],
     },
     params: {
-      cacheID: "0a0882c3be47289c5792b3a1d2c692e9",
+      cacheID: "fa9f62854919c84bdab089cb774d18cf",
       id: null,
       metadata: {},
       name: "DebtInSalePaginationQuery",
       operationKind: "query",
       text:
-        'query DebtInSalePaginationQuery(\n  $count: Int = 5\n  $cursor: String = ""\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...DebtInSale_user_1G22uz\n    id\n  }\n}\n\nfragment DebtInSale_user_1G22uz on User {\n  id\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        rate\n        total\n        term\n        need\n        ends\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+        'query DebtInSalePaginationQuery(\n  $count: Int = 5\n  $cursor: String = ""\n) {\n  ...DebtInSale_query_1G22uz\n}\n\nfragment DebtInSale_query_1G22uz on Query {\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "8cbb37ba075bcdbab7c9173fc9ea681a";
+(node as any).hash = "ad4abc2ed9fab37f6b124cf17f51751e";
 export default node;

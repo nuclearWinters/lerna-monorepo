@@ -2,10 +2,24 @@ import React, { FC } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { Main } from "./Main";
 import { Options } from "./Options";
-import { graphql, useFragment } from "react-relay";
+import {
+  graphql,
+  useFragment,
+  commitLocalUpdate,
+  Environment,
+} from "react-relay";
 import { Routes_user$key } from "./__generated__/Routes_user.graphql";
-import { GeneralData, DebtInSale, LogIn, SignUp } from "./screens";
-import { tokens } from "App";
+import {
+  GeneralData,
+  DebtInSale,
+  LogIn,
+  SignUp,
+  AddFunds,
+  RetireFunds,
+} from "./screens";
+import { RelayEnvironment } from "RelayEnvironment";
+import { AppQueryResponse } from "__generated__/AppQuery.graphql";
+import { AddLoan } from "screens/AddLoan";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -16,12 +30,15 @@ const routesFragment = graphql`
     accountTotal
     accountAvailable
     ...GeneralData_user
-    ...DebtInSale_user
+    ...AddFunds_user
+    ...RetireFunds_user
+    ...AddLoan_user
   }
 `;
 
 type Props = {
   user: Routes_user$key;
+  data: AppQueryResponse;
   refetch: () => void;
 };
 
@@ -49,9 +66,10 @@ export const Routes: FC<Props> = (props) => {
           <div>Saldo disponible</div>
           <div>${(user.accountAvailable / 100).toFixed(2)}</div>
           <Link to="/profile">Mi cuenta</Link>
-          <Link to="/debtinsale">Comprar</Link>
-          <div>Agregar fondos</div>
-          <div>Retirar fondos</div>
+          <Link to="/loans">Comprar</Link>
+          <Link to="/addFunds">Agregar fondos</Link>
+          <Link to="/retireFunds">Retirar fondos</Link>
+          <Link to="/addLoan">Pedir prestamo</Link>
           <div>Mis movimientos</div>
         </div>
         <div
@@ -73,8 +91,7 @@ export const Routes: FC<Props> = (props) => {
               <div
                 style={{ textAlign: "end" }}
                 onClick={() => {
-                  tokens.accessToken = "";
-                  tokens.refreshToken = "";
+                  commitDeleteTokensLocally(RelayEnvironment);
                   props.refetch();
                 }}
               >
@@ -99,8 +116,17 @@ export const Routes: FC<Props> = (props) => {
               <Route path="/profile">
                 <GeneralData user={user} />
               </Route>
-              <Route path="/debtinsale">
-                <DebtInSale user={user} />
+              <Route path="/loans">
+                <DebtInSale user={{ id: user.id }} data={props.data} />
+              </Route>
+              <Route path="/addFunds">
+                <AddFunds user={user} />
+              </Route>
+              <Route path="/retireFunds">
+                <RetireFunds user={user} />
+              </Route>
+              <Route path="/addLoan">
+                <AddLoan user={user} />
               </Route>
               <Route path="/login">
                 <LogIn refetch={props.refetch} />
@@ -115,3 +141,12 @@ export const Routes: FC<Props> = (props) => {
     </Router>
   );
 };
+
+function commitDeleteTokensLocally(environment: Environment) {
+  return commitLocalUpdate(environment, (store) => {
+    const root = store.getRoot();
+    const tokens = root.getLinkedRecord("tokens");
+    tokens?.setValue("", "accessToken");
+    tokens?.setValue("", "refreshToken");
+  });
+}

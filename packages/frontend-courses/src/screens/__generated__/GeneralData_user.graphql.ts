@@ -13,7 +13,6 @@ export type GeneralData_user = {
   readonly CURP: string;
   readonly clabe: string;
   readonly mobile: string;
-  readonly email: string;
   readonly accountTotal: number;
   readonly accountAvailable: number;
   readonly " $refType": "GeneralData_user";
@@ -90,13 +89,6 @@ const node: ReaderFragment = {
       alias: null,
       args: null,
       kind: "ScalarField",
-      name: "email",
-      storageKey: null,
-    },
-    {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
       name: "accountTotal",
       storageKey: null,
     },
@@ -111,5 +103,5 @@ const node: ReaderFragment = {
   type: "User",
   abstractKey: null,
 } as any;
-(node as any).hash = "9cfed411a4b2117e632a48ca0b24bce9";
+(node as any).hash = "888f30676b761acf93cf6e891b200414";
 export default node;

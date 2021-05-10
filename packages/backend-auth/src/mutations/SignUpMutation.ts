@@ -15,7 +15,7 @@ interface Input {
 type Payload = {
   refreshToken: string;
   accessToken: string;
-  error?: string;
+  error: string;
 };
 
 export const SignUpMutation = mutationWithClientMutationId({
@@ -23,13 +23,13 @@ export const SignUpMutation = mutationWithClientMutationId({
   description:
     "Registra un nuevo usuario y obtén un Refresh Token y un AccessToken.",
   inputFields: {
-    password: { type: GraphQLNonNull(GraphQLString) },
-    email: { type: GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
     error: {
-      type: GraphQLString,
-      resolve: ({ error }: Payload): string | null => error || null,
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ error }: Payload): string => error,
     },
     accessToken: {
       type: new GraphQLNonNull(GraphQLString),

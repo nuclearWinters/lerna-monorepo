@@ -14,8 +14,8 @@ import { GraphQLLoan, GraphQLUser } from "../Nodes";
 
 interface Input {
   refreshToken: string;
-  id: string;
-  lends: { lend: number; _id_borrower: string; id: string }[];
+  lender_gid: string;
+  lends: { quantity: number; borrower_id: string; loan_gid: string }[];
 }
 
 type Payload = {
@@ -28,14 +28,14 @@ type Payload = {
 export const GraphQLLendList = new GraphQLInputObjectType({
   name: "LendList",
   fields: {
-    id: {
+    loan_gid: {
       type: GraphQLNonNull(GraphQLID),
     },
-    lend: {
+    quantity: {
       type: GraphQLNonNull(GraphQLInt),
     },
-    _id_borrower: {
-      type: GraphQLNonNull(GraphQLID),
+    borrower_id: {
+      type: GraphQLNonNull(GraphQLString),
     },
   },
 });
@@ -43,10 +43,10 @@ export const GraphQLLendList = new GraphQLInputObjectType({
 export const AddLendsMutation = mutationWithClientMutationId({
   name: "AddLends",
   description:
-    "Envía una lista de prestamos y recibe una lista con deudas actualizadas y un usuario actualizado.",
+    "Envía una lista de prestamos: recibe una lista con deudas actualizadas y un usuario actualizado.",
   inputFields: {
-    refreshToken: { type: GraphQLNonNull(GraphQLString) },
-    id: { type: GraphQLNonNull(GraphQLID) },
+    refreshToken: { type: new GraphQLNonNull(GraphQLString) },
+    lender_gid: { type: new GraphQLNonNull(GraphQLID) },
     lends: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLLendList))
@@ -55,7 +55,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
   },
   outputFields: {
     error: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       resolve: ({ error }: Payload): string => error,
     },
     validAccessToken: {
@@ -72,43 +72,43 @@ export const AddLendsMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { refreshToken, id: lender_gid, lends: newLends }: Input,
+    { refreshToken, lender_gid, lends: newLends }: Input,
     ctx: Context
   ): Promise<Payload> => {
     try {
-      const { id: _id_lender } = fromGlobalId(lender_gid);
+      const { id: lender_id } = fromGlobalId(lender_gid);
       const { users, accessToken, lends, loans } = getContext(ctx);
       const { _id, validAccessToken } = await refreshTokenMiddleware(
         accessToken,
         refreshToken
       );
-      if (_id_lender !== _id) {
+      if (lender_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
-      const docs = newLends.map(({ id: loan_gid, lend, _id_borrower }) => {
+      const docs = newLends.map(({ loan_gid, quantity, borrower_id }) => {
         const _id_loan = fromGlobalId(loan_gid).id;
         return {
           _id: new ObjectID(),
-          _id_lender: new ObjectID(_id_lender),
-          _id_borrower: new ObjectID(_id_borrower),
-          lend,
+          _id_lender: new ObjectID(lender_id),
+          _id_borrower: new ObjectID(borrower_id),
+          quantity,
           _id_loan: new ObjectID(_id_loan),
           date: new Date(),
         };
       });
       await lends.insertMany(docs);
-      const operations = docs.map(({ lend, _id_borrower }) => ({
+      const operations = docs.map(({ quantity, _id_loan }) => ({
         updateOne: {
-          filter: { user_id: new ObjectID(_id_borrower) },
-          update: { $inc: { total: lend } },
+          filter: { _id: _id_loan },
+          update: { $inc: { raised: quantity } },
         },
       }));
       await loans.bulkWrite(operations);
       const total = newLends.reduce<number>((prev, next) => {
-        return prev + next.lend;
+        return prev + next.quantity;
       }, 0);
       const result = await users.findOneAndUpdate(
-        { _id: new ObjectID(_id_lender) },
+        { _id: new ObjectID(lender_id) },
         { $inc: { accountAvailable: -total } },
         { returnOriginal: false }
       );

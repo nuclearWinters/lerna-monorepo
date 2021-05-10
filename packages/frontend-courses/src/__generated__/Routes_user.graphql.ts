@@ -12,7 +12,7 @@ export type Routes_user = {
   readonly accountTotal: number;
   readonly accountAvailable: number;
   readonly " $fragmentRefs": FragmentRefs<
-    "GeneralData_user" | "DebtInSale_user"
+    "GeneralData_user" | "AddFunds_user" | "RetireFunds_user" | "AddLoan_user"
   >;
   readonly " $refType": "Routes_user";
 };
@@ -78,11 +78,21 @@ const node: ReaderFragment = {
     {
       args: null,
       kind: "FragmentSpread",
-      name: "DebtInSale_user",
+      name: "AddFunds_user",
+    },
+    {
+      args: null,
+      kind: "FragmentSpread",
+      name: "RetireFunds_user",
+    },
+    {
+      args: null,
+      kind: "FragmentSpread",
+      name: "AddLoan_user",
     },
   ],
   type: "User",
   abstractKey: null,
 } as any;
-(node as any).hash = "d543b8a550dd3cd748a3a12888d62ad0";
+(node as any).hash = "169296689c7299ffa8aaa1b5af9d784e";
 export default node;

@@ -6,7 +6,7 @@ import { ConcreteRequest } from "relay-runtime";
 export type UpdateUserInput = {
   clientMutationId?: string | null;
   refreshToken: string;
-  id: string;
+  user_gid: string;
   name?: string | null;
   apellidoPaterno?: string | null;
   apellidoMaterno?: string | null;
@@ -14,8 +14,6 @@ export type UpdateUserInput = {
   CURP?: string | null;
   clabe?: string | null;
   mobile?: string | null;
-  accountTotal?: number | null;
-  accountAvailable?: number | null;
 };
 export type UpdateUserMutationVariables = {
   input: UpdateUserInput;

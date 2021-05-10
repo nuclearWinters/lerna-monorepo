@@ -5,7 +5,7 @@
 import { ConcreteRequest } from "relay-runtime";
 export type BlacklistUserInput = {
   refreshToken: string;
-  id: string;
+  user_gid: string;
   clientMutationId?: string | null;
 };
 export type BlacklistUserMutationVariables = {
