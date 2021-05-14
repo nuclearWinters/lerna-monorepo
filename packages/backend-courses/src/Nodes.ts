@@ -74,8 +74,6 @@ const { nodeInterface, nodeField } = nodeDefinitions(
   async (globalId, ctx) => {
     const { type, id } = fromGlobalId(globalId);
     const { users, loans } = getContext(ctx);
-    console.log("type:", type);
-    console.log("id:", id);
     if (type === "User") {
       const user = await users.findOne({ _id: new ObjectID(id) });
       if (!user) {
