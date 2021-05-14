@@ -11,7 +11,7 @@ export type AddLendsInput = {
 };
 export type LendList = {
   loan_gid: string;
-  quantity: number;
+  quantity: string;
   borrower_id: string;
 };
 export type AddLendsMutationVariables = {
@@ -22,11 +22,11 @@ export type AddLendsMutationResponse = {
     readonly error: string;
     readonly validAccessToken: string;
     readonly user: {
-      readonly accountAvailable: number;
+      readonly accountAvailable: string;
     };
     readonly loans: ReadonlyArray<{
       readonly id: string;
-      readonly raised: number;
+      readonly raised: string;
     }> | null;
   };
 };

@@ -58,7 +58,7 @@ type UpdateUserPayload {
 
 input LendList {
   loan_gid: ID!
-  quantity: Int!
+  quantity: MXN!
   borrower_id: String!
 }
 
@@ -82,7 +82,7 @@ input AddLoanInput {
   refreshToken: String!
   user_gid: ID!
   term: Int!
-  goal: Int!
+  goal: MXN!
 }
 
 type AddLoanPayload {
@@ -96,7 +96,7 @@ input AddFundsInput {
   clientMutationId: String
   refreshToken: String!
   user_gid: ID!
-  quantity: Int!
+  quantity: MXN!
 }
 
 type AddFundsPayload {
@@ -141,11 +141,11 @@ type PageInfo {
 type Loan {
   id: ID!
   _id_user: String!
-  score: Int!
+  score: String!
   ROI: Int!
-  goal: Int!
+  goal: MXN!
   term: Int!
-  raised: Int!
+  raised: MXN!
   expiry: Date!
 }
 
@@ -159,6 +159,38 @@ type LoanEdge {
   cursor: String!
 }
 
+enum TransactionType {
+  CREDIT
+  WITHDRAWAL
+  INVEST
+}
+
+type Transaction {
+  id: ID!
+  _id_borrower: String
+  _id_loan: String
+  type: TransactionType!
+  quantity: MXN!
+  created: Date!
+}
+
+type BucketTransaction {
+  id: String!
+  _id_user: String!
+  count: Int!
+  history: [Transaction!]!
+}
+
+type BucketTransactionConnection {
+  pageInfo: PageInfo!
+  edges: [BucketTransactionEdge]
+}
+
+type BucketTransactionEdge {
+  node: BucketTransaction
+  cursor: String!
+}
+
 type User implements Node {
   id: ID!
   name: String!
@@ -168,9 +200,16 @@ type User implements Node {
   CURP: String!
   clabe: String!
   mobile: String!
-  accountTotal: Int!
-  accountAvailable: Int!
+  accountTotal: MXN!
+  accountAvailable: MXN!
+  transactions(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): BucketTransactionConnection
   error: String!
 }
 
 scalar Date
+scalar MXN

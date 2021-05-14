@@ -1,9 +1,12 @@
 import React, { CSSProperties, FC, useState } from "react";
-import { graphql, usePaginationFragment } from "react-relay";
+import {
+  graphql,
+  usePaginationFragment,
+  useRelayEnvironment,
+} from "react-relay";
 import { DebtInSale_query$key } from "./__generated__/DebtInSale_query.graphql";
 import { DebtInSalePaginationQuery } from "./__generated__/DebtInSalePaginationQuery.graphql";
 import { commitAddLendsMutation } from "mutations/AddLends";
-import { RelayEnvironment } from "RelayEnvironment";
 import { useHistory } from "react-router";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { differenceInMonths, differenceInDays } from "date-fns";
@@ -41,6 +44,7 @@ type Props = {
 };
 
 export const DebtInSale: FC<Props> = (props) => {
+  const environment = useRelayEnvironment();
   const history = useHistory();
   const { data, loadNext } = usePaginationFragment<
     DebtInSalePaginationQuery,
@@ -96,15 +100,13 @@ export const DebtInSale: FC<Props> = (props) => {
                 <div style={style.cell}>{edge?.node?._id_user}</div>
                 <div style={style.cell}>{edge?.node?.score}</div>
                 <div style={style.cell}>{edge?.node?.ROI}%</div>
-                <div style={style.cell}>
-                  ${((edge?.node?.goal || 0) / 100).toFixed(2)}
-                </div>
+                <div style={style.cell}>${edge?.node?.goal}</div>
                 <div style={style.cell}>{edge?.node?.term} meses</div>
                 <div style={style.cell}>
                   $
                   {(
-                    ((edge?.node?.goal || 0) - (edge?.node?.raised || 0)) /
-                    100
+                    Number(edge?.node?.goal || 0) -
+                    Number(edge?.node?.raised || 0)
                   ).toFixed(2)}
                 </div>
                 <div style={style.cell}>
@@ -183,16 +185,15 @@ export const DebtInSale: FC<Props> = (props) => {
             if (props.user.id === "VXNlcjo=") {
               return history.push("/login");
             }
-            commitAddLendsMutation(RelayEnvironment, {
+            commitAddLendsMutation(environment, {
               lends: lends.map((lend) => ({
                 ...lend,
-                quantity: Number(Number(lend.quantity).toFixed(2)) * 100,
+                quantity: lend.quantity,
               })),
               lender_gid: props.user.id,
               refreshToken:
-                (RelayEnvironment.getStore()
-                  .getSource()
-                  .get("client:root:tokens")?.refreshToken as string) || "",
+                (environment.getStore().getSource().get("client:root:tokens")
+                  ?.refreshToken as string) || "",
             });
             setLends([]);
           }}

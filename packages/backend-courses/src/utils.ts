@@ -1,5 +1,10 @@
 import { Collection } from "mongodb";
-import { UserMongo, LoanMongo, LendMongo } from "./types";
+import {
+  UserMongo,
+  LoanMongo,
+  LendMongo,
+  BucketTransactionMongo,
+} from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT, Context } from "./types";
 import { ACCESSSECRET } from "./config";
@@ -35,6 +40,7 @@ interface IContextResult {
   users: Collection<UserMongo>;
   loans: Collection<LoanMongo>;
   lends: Collection<LendMongo>;
+  transactions: Collection<BucketTransactionMongo>;
   accessToken: string | undefined;
   ch: Channel;
 }
@@ -46,6 +52,7 @@ export const getContext = (ctx: Context): IContextResult => {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
     lends: db.collection<LendMongo>("lends"),
+    transactions: db.collection<BucketTransactionMongo>("transactions"),
     accessToken: ctx.req.headers.authorization,
     ch,
   };

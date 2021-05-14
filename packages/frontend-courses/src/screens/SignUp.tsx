@@ -1,12 +1,13 @@
 import React, { FC, useState } from "react";
 import { commitCreateUserMutation } from "mutations/SignUp";
-import { RelayEnvironment } from "RelayEnvironment";
+import { useRelayEnvironment } from "react-relay";
 
 interface Props {
   refetch: () => void;
 }
 
 export const SignUp: FC<Props> = ({ refetch }) => {
+  const environment = useRelayEnvironment();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,11 +26,7 @@ export const SignUp: FC<Props> = ({ refetch }) => {
       />
       <button
         onClick={() => {
-          commitCreateUserMutation(
-            RelayEnvironment,
-            { email, password },
-            refetch
-          );
+          commitCreateUserMutation(environment, { email, password }, refetch);
         }}
       >
         Sign Up

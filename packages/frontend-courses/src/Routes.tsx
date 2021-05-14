@@ -1,12 +1,11 @@
 import React, { FC } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { Main } from "./Main";
-import { Options } from "./Options";
 import {
   graphql,
   useFragment,
   commitLocalUpdate,
   Environment,
+  useRelayEnvironment,
 } from "react-relay";
 import { Routes_user$key } from "./__generated__/Routes_user.graphql";
 import {
@@ -16,10 +15,10 @@ import {
   SignUp,
   AddFunds,
   RetireFunds,
+  AddLoan,
+  Transactions,
 } from "./screens";
-import { RelayEnvironment } from "RelayEnvironment";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
-import { AddLoan } from "screens/AddLoan";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -33,6 +32,7 @@ const routesFragment = graphql`
     ...AddFunds_user
     ...RetireFunds_user
     ...AddLoan_user
+    ...Transactions_user
   }
 `;
 
@@ -43,6 +43,7 @@ type Props = {
 };
 
 export const Routes: FC<Props> = (props) => {
+  const environment = useRelayEnvironment();
   const user = useFragment(routesFragment, props.user);
   return (
     <Router>
@@ -62,15 +63,16 @@ export const Routes: FC<Props> = (props) => {
           }}
         >
           <div>Valor de la cuenta</div>
-          <div>${(user.accountTotal / 100).toFixed(2)}</div>
+          <div>${user.accountTotal}</div>
           <div>Saldo disponible</div>
-          <div>${(user.accountAvailable / 100).toFixed(2)}</div>
+          <div>${user.accountAvailable}</div>
           <Link to="/profile">Mi cuenta</Link>
           <Link to="/loans">Comprar</Link>
           <Link to="/addFunds">Agregar fondos</Link>
           <Link to="/retireFunds">Retirar fondos</Link>
           <Link to="/addLoan">Pedir prestamo</Link>
-          <div>Mis movimientos</div>
+          <div>Mis Inversiones</div>
+          <Link to="/transactions">Mis movimientos</Link>
         </div>
         <div
           style={{
@@ -91,7 +93,7 @@ export const Routes: FC<Props> = (props) => {
               <div
                 style={{ textAlign: "end" }}
                 onClick={() => {
-                  commitDeleteTokensLocally(RelayEnvironment);
+                  commitDeleteTokensLocally(environment);
                   props.refetch();
                 }}
               >
@@ -107,12 +109,6 @@ export const Routes: FC<Props> = (props) => {
           )}
           <div style={{ flex: 1 }}>
             <Switch>
-              <Route exact path="/">
-                <Main />
-              </Route>
-              <Route path="/options">
-                <Options />
-              </Route>
               <Route path="/profile">
                 <GeneralData user={user} />
               </Route>
@@ -133,6 +129,9 @@ export const Routes: FC<Props> = (props) => {
               </Route>
               <Route path="/register">
                 <SignUp refetch={props.refetch} />
+              </Route>
+              <Route path="/transactions">
+                <Transactions user={user} />
               </Route>
             </Switch>
           </div>

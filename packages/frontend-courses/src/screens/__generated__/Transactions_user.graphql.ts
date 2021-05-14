@@ -4,35 +4,50 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type DebtInSale_query = {
-  readonly loans: {
+export type TransactionType =
+  | "CREDIT"
+  | "INVEST"
+  | "WITHDRAWAL"
+  | "%future added value";
+export type Transactions_user = {
+  readonly id: string;
+  readonly transactions: {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
-        readonly _id_user: string;
-        readonly score: string;
-        readonly ROI: number;
-        readonly goal: string;
-        readonly term: number;
-        readonly raised: string;
-        readonly expiry: number;
+        readonly count: number;
+        readonly history: ReadonlyArray<{
+          readonly id: string;
+          readonly _id_borrower: string | null;
+          readonly _id_loan: string | null;
+          readonly type: TransactionType;
+          readonly quantity: string;
+          readonly created: number;
+        }>;
       } | null;
     } | null> | null;
   } | null;
-  readonly " $refType": "DebtInSale_query";
+  readonly " $refType": "Transactions_user";
 };
-export type DebtInSale_query$data = DebtInSale_query;
-export type DebtInSale_query$key = {
-  readonly " $data"?: DebtInSale_query$data;
-  readonly " $fragmentRefs": FragmentRefs<"DebtInSale_query">;
+export type Transactions_user$data = Transactions_user;
+export type Transactions_user$key = {
+  readonly " $data"?: Transactions_user$data;
+  readonly " $fragmentRefs": FragmentRefs<"Transactions_user">;
 };
 
 const node: ReaderFragment = (function () {
-  var v0 = ["loans"];
+  var v0 = ["transactions"],
+    v1 = {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "id",
+      storageKey: null,
+    } as any;
   return {
     argumentDefinitions: [
       {
-        defaultValue: 5,
+        defaultValue: 2,
         kind: "LocalArgument",
         name: "count",
       },
@@ -61,24 +76,26 @@ const node: ReaderFragment = (function () {
           backward: null,
           path: v0 /*: any*/,
         },
-        fragmentPathInResult: [],
-        operation: require("./DebtInSalePaginationQuery.graphql.ts"),
+        fragmentPathInResult: ["node"],
+        operation: require("./TransactionsPaginationQuery.graphql.ts"),
+        identifierField: "id",
       },
     },
-    name: "DebtInSale_query",
+    name: "Transactions_user",
     selections: [
+      v1 /*: any*/,
       {
-        alias: "loans",
+        alias: "transactions",
         args: null,
-        concreteType: "LoanConnection",
+        concreteType: "BucketTransactionConnection",
         kind: "LinkedField",
-        name: "__DebtInSale_query_loans_connection",
+        name: "__Transactions_user_transactions_connection",
         plural: false,
         selections: [
           {
             alias: null,
             args: null,
-            concreteType: "LoanEdge",
+            concreteType: "BucketTransactionEdge",
             kind: "LinkedField",
             name: "edges",
             plural: true,
@@ -86,65 +103,64 @@ const node: ReaderFragment = (function () {
               {
                 alias: null,
                 args: null,
-                concreteType: "Loan",
+                concreteType: "BucketTransaction",
                 kind: "LinkedField",
                 name: "node",
                 plural: false,
                 selections: [
+                  v1 /*: any*/,
                   {
                     alias: null,
                     args: null,
                     kind: "ScalarField",
-                    name: "id",
+                    name: "count",
                     storageKey: null,
                   },
                   {
                     alias: null,
                     args: null,
-                    kind: "ScalarField",
-                    name: "_id_user",
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "score",
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "ROI",
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "goal",
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "term",
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "raised",
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "expiry",
+                    concreteType: "Transaction",
+                    kind: "LinkedField",
+                    name: "history",
+                    plural: true,
+                    selections: [
+                      v1 /*: any*/,
+                      {
+                        alias: null,
+                        args: null,
+                        kind: "ScalarField",
+                        name: "_id_borrower",
+                        storageKey: null,
+                      },
+                      {
+                        alias: null,
+                        args: null,
+                        kind: "ScalarField",
+                        name: "_id_loan",
+                        storageKey: null,
+                      },
+                      {
+                        alias: null,
+                        args: null,
+                        kind: "ScalarField",
+                        name: "type",
+                        storageKey: null,
+                      },
+                      {
+                        alias: null,
+                        args: null,
+                        kind: "ScalarField",
+                        name: "quantity",
+                        storageKey: null,
+                      },
+                      {
+                        alias: null,
+                        args: null,
+                        kind: "ScalarField",
+                        name: "created",
+                        storageKey: null,
+                      },
+                    ],
                     storageKey: null,
                   },
                   {
@@ -196,9 +212,9 @@ const node: ReaderFragment = (function () {
         storageKey: null,
       },
     ],
-    type: "Query",
+    type: "User",
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "ad4abc2ed9fab37f6b124cf17f51751e";
+(node as any).hash = "6810b7c8fe43a38aaf2b534c62b307d9";
 export default node;

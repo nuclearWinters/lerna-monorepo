@@ -8,7 +8,7 @@ export type AddLoanInput = {
   refreshToken: string;
   user_gid: string;
   term: number;
-  goal: number;
+  goal: string;
 };
 export type AddLoanMutationVariables = {
   input: AddLoanInput;
@@ -20,11 +20,11 @@ export type AddLoanMutationResponse = {
     readonly loan: {
       readonly id: string;
       readonly _id_user: string;
-      readonly score: number;
+      readonly score: string;
       readonly ROI: number;
-      readonly goal: number;
+      readonly goal: string;
       readonly term: number;
-      readonly raised: number;
+      readonly raised: string;
       readonly expiry: number;
     } | null;
   };

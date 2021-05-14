@@ -40,6 +40,22 @@ export interface UserMongo {
   accountAvailable: number;
 }
 
+export interface TransactionMongo {
+  _id: ObjectId;
+  type: "CREDIT" | "WITHDRAWAL" | "INVEST";
+  quantity: number;
+  _id_borrower?: ObjectId;
+  _id_loan?: ObjectId;
+  created: Date;
+}
+
+export interface BucketTransactionMongo {
+  _id: string;
+  _id_user: ObjectId;
+  count: number;
+  history: TransactionMongo[];
+}
+
 export interface LoanMongo {
   _id: ObjectId;
   _id_user: ObjectId;

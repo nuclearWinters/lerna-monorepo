@@ -2,8 +2,7 @@ import { IJWT } from "App";
 import jwtDecode from "jwt-decode";
 import { commitUpdateUserMutation } from "mutations/UpdateUser";
 import React, { FC, useRef, useState } from "react";
-import { graphql, useFragment } from "react-relay";
-import { RelayEnvironment } from "RelayEnvironment";
+import { graphql, useFragment, useRelayEnvironment } from "react-relay";
 import { GeneralData_user$key } from "./__generated__/GeneralData_user.graphql";
 
 const generalDataFragment = graphql`
@@ -26,6 +25,7 @@ type Props = {
 };
 
 export const GeneralData: FC<Props> = (props) => {
+  const environment = useRelayEnvironment();
   const user = useFragment(generalDataFragment, props.user);
   const [formUser, setFormUser] = useState({
     user_gid: user.id,
@@ -123,11 +123,11 @@ export const GeneralData: FC<Props> = (props) => {
             <input
               placeholder="Email"
               value={
-                RelayEnvironment.getStore()
-                  .getSource()
-                  .get("client:root:tokens")?.refreshToken
+                environment.getStore().getSource().get("client:root:tokens")
+                  ?.refreshToken
                   ? jwtDecode<IJWT>(
-                      RelayEnvironment.getStore()
+                      environment
+                        .getStore()
                         .getSource()
                         .get("client:root:tokens")?.refreshToken as string
                     ).email
@@ -141,10 +141,10 @@ export const GeneralData: FC<Props> = (props) => {
       </div>
       <button
         onClick={() => {
-          commitUpdateUserMutation(RelayEnvironment, {
+          commitUpdateUserMutation(environment, {
             ...formUser,
             refreshToken:
-              (RelayEnvironment.getStore().getSource().get("client:root:tokens")
+              (environment.getStore().getSource().get("client:root:tokens")
                 ?.refreshToken as string) || "",
           });
         }}

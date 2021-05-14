@@ -29,13 +29,13 @@ export const GraphQLLendList = new GraphQLInputObjectType({
   name: "LendList",
   fields: {
     loan_gid: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
     },
     quantity: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
     },
     borrower_id: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 });
@@ -77,7 +77,9 @@ export const AddLendsMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       const { id: lender_id } = fromGlobalId(lender_gid);
-      const { users, accessToken, lends, loans } = getContext(ctx);
+      const { users, accessToken, lends, loans, transactions } = getContext(
+        ctx
+      );
       const { _id, validAccessToken } = await refreshTokenMiddleware(
         accessToken,
         refreshToken
@@ -96,7 +98,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
           date: new Date(),
         };
       });
-      await lends.insertMany(docs);
+      lends.insertMany(docs);
       const operations = docs.map(({ quantity, _id_loan }) => ({
         updateOne: {
           filter: { _id: _id_loan },
@@ -118,6 +120,32 @@ export const AddLendsMutation = mutationWithClientMutationId({
       if (!user) {
         throw new Error("El usuario no existe.");
       }
+      const transactionOperations = docs.map(
+        ({ quantity, _id_loan, _id_borrower }) => ({
+          updateOne: {
+            filter: { _id: new RegExp(`^${lender_id}`), count: { $lt: 5 } },
+            update: {
+              $push: {
+                history: {
+                  _id: new ObjectID(),
+                  type: "INVEST" as const,
+                  quantity,
+                  created: new Date(),
+                  _id_loan,
+                  _id_borrower,
+                },
+              },
+              $inc: { count: 1 },
+              $setOnInsert: {
+                _id: `${lender_id}_${new Date().getTime()}`,
+                _id_user: new ObjectID(lender_id),
+              },
+            },
+            options: { upsert: true },
+          },
+        })
+      );
+      transactions.bulkWrite(transactionOperations);
       return { validAccessToken, error: "", loans: updatedLoans, user };
     } catch (e) {
       return {

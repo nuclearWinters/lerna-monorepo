@@ -7,7 +7,7 @@ export type AddFundsInput = {
   clientMutationId?: string | null;
   refreshToken: string;
   user_gid: string;
-  quantity: number;
+  quantity: string;
 };
 export type AddFundsMutationVariables = {
   input: AddFundsInput;
@@ -17,8 +17,8 @@ export type AddFundsMutationResponse = {
     readonly error: string;
     readonly validAccessToken: string;
     readonly user: {
-      readonly accountTotal: number;
-      readonly accountAvailable: number;
+      readonly accountTotal: string;
+      readonly accountAvailable: string;
     } | null;
   };
 };

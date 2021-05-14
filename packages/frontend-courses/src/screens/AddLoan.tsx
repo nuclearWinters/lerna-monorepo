@@ -1,7 +1,6 @@
 import { commitAddLoanMutation } from "mutations/AddLoan";
 import React, { FC, useState } from "react";
-import { graphql, useFragment } from "react-relay";
-import { RelayEnvironment } from "RelayEnvironment";
+import { graphql, useFragment, useRelayEnvironment } from "react-relay";
 import { AddLoan_user$key } from "./__generated__/AddLoan_user.graphql";
 
 const addLoanFragment = graphql`
@@ -15,6 +14,7 @@ type Props = {
 };
 
 export const AddLoan: FC<Props> = (props) => {
+  const environment = useRelayEnvironment();
   const user = useFragment(addLoanFragment, props.user);
   const [form, setForm] = useState({
     goal: "",
@@ -71,12 +71,12 @@ export const AddLoan: FC<Props> = (props) => {
       </label>
       <button
         onClick={() => {
-          commitAddLoanMutation(RelayEnvironment, {
-            goal: Number(Number(form.goal).toFixed(2)) * 100,
+          commitAddLoanMutation(environment, {
+            goal: form.goal,
             term: Number(form.term),
             user_gid: user.id,
             refreshToken:
-              (RelayEnvironment.getStore().getSource().get("client:root:tokens")
+              (environment.getStore().getSource().get("client:root:tokens")
                 ?.refreshToken as string) || "",
           });
         }}

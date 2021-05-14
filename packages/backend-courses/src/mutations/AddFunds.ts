@@ -46,7 +46,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       const { id: user_id } = fromGlobalId(user_gid);
-      const { users, accessToken } = getContext(ctx);
+      const { users, accessToken, transactions } = getContext(ctx);
       const { _id, validAccessToken } = await refreshTokenMiddleware(
         accessToken,
         refreshToken
@@ -63,6 +63,25 @@ export const AddFundsMutation = mutationWithClientMutationId({
       if (!updatedUser) {
         throw new Error("El usuario no existe.");
       }
+      transactions.updateOne(
+        { _id: new RegExp(`^${user_id}`), count: { $lt: 5 } },
+        {
+          $push: {
+            history: {
+              _id: new ObjectID(),
+              type: quantity > 0 ? "CREDIT" : "WITHDRAWAL",
+              quantity,
+              created: new Date(),
+            },
+          },
+          $inc: { count: 1 },
+          $setOnInsert: {
+            _id: `${user_id}_${new Date().getTime()}`,
+            _id_user: new ObjectID(user_id),
+          },
+        },
+        { upsert: true }
+      );
       return { validAccessToken, error: "", user: updatedUser };
     } catch (e) {
       return { validAccessToken: "", error: e.message, user: null };

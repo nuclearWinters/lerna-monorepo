@@ -7,17 +7,29 @@ import {
   GraphQLFloat,
   GraphQLScalarType,
   Kind,
+  GraphQLEnumType,
+  GraphQLList,
 } from "graphql";
 import {
   fromGlobalId,
   globalIdField,
   nodeDefinitions,
   connectionDefinitions,
+  connectionArgs,
+  ConnectionArguments,
+  Connection,
+  connectionFromArray,
 } from "graphql-relay";
-import { RootUser, Context, LoanMongo } from "./types";
-import { getContext } from "./utils";
+import {
+  RootUser,
+  Context,
+  LoanMongo,
+  TransactionMongo,
+  BucketTransactionMongo,
+} from "./types";
+import { base64, getContext, unbase64 } from "./utils";
 
-const DateScalarType = new GraphQLScalarType({
+export const DateScalarType = new GraphQLScalarType({
   name: "Date",
   serialize: (value) => {
     return value.getTime();
@@ -33,10 +45,37 @@ const DateScalarType = new GraphQLScalarType({
   },
 });
 
+export const MXNScalarType = new GraphQLScalarType({
+  name: "MXN",
+  serialize: (value) => {
+    return (value / 100).toFixed(2);
+  },
+  parseValue: (value) => {
+    return Number(value) * 100;
+  },
+  parseLiteral(ast) {
+    if (ast.kind === Kind.STRING) {
+      return Number(ast.value) * 100;
+    }
+    return null;
+  },
+});
+
+const TransactionType = new GraphQLEnumType({
+  name: "TransactionType",
+  values: {
+    CREDIT: { value: "CREDIT" },
+    WITHDRAWAL: { value: "WITHDRAWAL" },
+    INVEST: { value: "INVEST" },
+  },
+});
+
 const { nodeInterface, nodeField } = nodeDefinitions(
   async (globalId, ctx) => {
     const { type, id } = fromGlobalId(globalId);
     const { users, loans } = getContext(ctx);
+    console.log("type:", type);
+    console.log("id:", id);
     if (type === "User") {
       const user = await users.findOne({ _id: new ObjectID(id) });
       if (!user) {
@@ -67,36 +106,96 @@ const { nodeInterface, nodeField } = nodeDefinitions(
   }
 );
 
+export const GraphQLTransaction = new GraphQLObjectType<TransactionMongo>({
+  name: "Transaction",
+  fields: {
+    id: globalIdField("Transaction", ({ _id }): string => _id.toHexString()),
+    _id_borrower: {
+      type: GraphQLString,
+      resolve: ({ _id_borrower }): string | null =>
+        _id_borrower?.toHexString() || null,
+    },
+    _id_loan: {
+      type: GraphQLString,
+      resolve: ({ _id_loan }): string | null => _id_loan?.toHexString() || null,
+    },
+    quantity: {
+      type: new GraphQLNonNull(MXNScalarType),
+      resolve: ({ quantity }): number => quantity,
+    },
+    created: {
+      type: new GraphQLNonNull(DateScalarType),
+      resolve: ({ created }): Date => created,
+    },
+    type: {
+      type: new GraphQLNonNull(TransactionType),
+      resolve: ({ type }): "CREDIT" | "WITHDRAWAL" | "INVEST" => type,
+    },
+  },
+});
+
+export const GraphQLBucketTransaction = new GraphQLObjectType<BucketTransactionMongo>(
+  {
+    name: "BucketTransaction",
+    fields: {
+      id: globalIdField("BucketTransaction", ({ _id }): string => _id),
+      history: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(GraphQLTransaction))
+        ),
+        resolve: ({ history }): TransactionMongo[] => history,
+      },
+      count: {
+        type: new GraphQLNonNull(GraphQLInt),
+        resolve: ({ count }): number => count,
+      },
+      _id_user: {
+        type: new GraphQLNonNull(GraphQLString),
+        resolve: ({ _id_user }): string => _id_user.toHexString(),
+      },
+    },
+    interfaces: [nodeInterface],
+  }
+);
+
+const {
+  connectionType: BucketTransactionConnection,
+  edgeType: GraphQLBucketTransactionEdge,
+} = connectionDefinitions({
+  name: "BucketTransaction",
+  nodeType: GraphQLBucketTransaction,
+});
+
 export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
   name: "Loan",
   fields: {
     id: globalIdField("Loan", ({ _id }): string => _id.toHexString()),
     _id_user: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       resolve: ({ _id_user }): string => _id_user.toHexString(),
     },
     score: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       resolve: ({ score }): string => score,
     },
     ROI: {
-      type: GraphQLNonNull(GraphQLFloat),
+      type: new GraphQLNonNull(GraphQLFloat),
       resolve: ({ ROI }): number => ROI,
     },
     goal: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ goal }): number => goal,
     },
     term: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ term }): number => term,
     },
     raised: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ raised }): number => raised,
     },
     expiry: {
-      type: GraphQLNonNull(DateScalarType),
+      type: new GraphQLNonNull(DateScalarType),
       resolve: ({ expiry }): Date => expiry,
     },
   },
@@ -144,12 +243,54 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
       resolve: ({ mobile }): string => mobile,
     },
     accountTotal: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountTotal }): number => accountTotal,
     },
     accountAvailable: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountAvailable }): number => accountAvailable,
+    },
+    transactions: {
+      type: new GraphQLNonNull(BucketTransactionConnection),
+      args: connectionArgs,
+      resolve: async (
+        _,
+        args: ConnectionArguments,
+        ctx
+      ): Promise<Connection<BucketTransactionMongo>> => {
+        try {
+          const { transactions } = getContext(ctx);
+          const offset = unbase64(args.after || "YXJyYXljb25uZWN0aW9uOjA=");
+          const skip = Number(offset) === 0 ? 0 : Number(offset) + 1;
+          const limit = args.first ? args.first + 1 : 0;
+          if (limit === 0) {
+            throw new Error("Se requiere 'first'");
+          }
+          const result = await transactions
+            .find()
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+          const edgesMapped = result.map((loan, idx) => {
+            return {
+              cursor: base64(String(skip + idx)),
+              node: loan,
+            };
+          });
+          const edges = edgesMapped.slice(0, args.first || 5);
+          return {
+            edges,
+            pageInfo: {
+              startCursor: edges[0]?.cursor || null,
+              endCursor: edges[edges.length - 1]?.cursor || null,
+              hasPreviousPage: false,
+              hasNextPage: edgesMapped.length > (args.first || 0),
+            },
+          };
+        } catch (e) {
+          return connectionFromArray([], args);
+        }
+      },
     },
     error: {
       type: new GraphQLNonNull(GraphQLString),
@@ -159,4 +300,10 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
   interfaces: [nodeInterface],
 });
 
-export { GraphQLUser, nodeField, GraphQLLoanEdge, LoanConnection };
+export {
+  GraphQLUser,
+  nodeField,
+  GraphQLLoanEdge,
+  LoanConnection,
+  GraphQLBucketTransactionEdge,
+};

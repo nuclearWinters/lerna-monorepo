@@ -13,8 +13,8 @@ export type GeneralData_user = {
   readonly CURP: string;
   readonly clabe: string;
   readonly mobile: string;
-  readonly accountTotal: number;
-  readonly accountAvailable: number;
+  readonly accountTotal: string;
+  readonly accountAvailable: string;
   readonly " $refType": "GeneralData_user";
 };
 export type GeneralData_user$data = GeneralData_user;

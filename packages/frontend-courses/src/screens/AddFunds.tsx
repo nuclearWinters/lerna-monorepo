@@ -1,7 +1,6 @@
 import { commitAddFundsMutation } from "mutations/AddFunds";
 import React, { FC, useState } from "react";
-import { graphql, useFragment } from "react-relay";
-import { RelayEnvironment } from "RelayEnvironment";
+import { graphql, useFragment, useRelayEnvironment } from "react-relay";
 import { AddFunds_user$key } from "./__generated__/AddFunds_user.graphql";
 
 const addFundsFragment = graphql`
@@ -15,6 +14,7 @@ type Props = {
 };
 
 export const AddFunds: FC<Props> = (props) => {
+  const environment = useRelayEnvironment();
   const user = useFragment(addFundsFragment, props.user);
   const [quantity, setQuantity] = useState("");
   const handleQuantityOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,11 +44,11 @@ export const AddFunds: FC<Props> = (props) => {
       />
       <button
         onClick={() => {
-          commitAddFundsMutation(RelayEnvironment, {
+          commitAddFundsMutation(environment, {
             user_gid: user.id,
-            quantity: Number(Number(quantity).toFixed(2)) * 100,
+            quantity,
             refreshToken:
-              (RelayEnvironment.getStore().getSource().get("client:root:tokens")
+              (environment.getStore().getSource().get("client:root:tokens")
                 ?.refreshToken as string) || "",
           });
         }}
