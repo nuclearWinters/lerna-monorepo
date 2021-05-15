@@ -2,15 +2,20 @@ import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import {
   GraphQLString,
   GraphQLNonNull,
-  GraphQLInt,
   GraphQLID,
   GraphQLList,
   GraphQLInputObjectType,
 } from "graphql";
-import { Context, LoanMongo, UserMongo } from "../types";
-import { ObjectID } from "mongodb";
+import {
+  BucketTransactionMongo,
+  Context,
+  InvestmentMongo,
+  LoanMongo,
+  UserMongo,
+} from "../types";
+import { ObjectID, BulkWriteUpdateOneOperation } from "mongodb";
 import { getContext, refreshTokenMiddleware } from "../utils";
-import { GraphQLLoan, GraphQLUser } from "../Nodes";
+import { GraphQLUser, MXNScalarType, GraphQLLoan } from "../Nodes";
 
 interface Input {
   refreshToken: string;
@@ -32,7 +37,7 @@ export const GraphQLLendList = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID),
     },
     quantity: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(MXNScalarType),
     },
     borrower_id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -77,9 +82,13 @@ export const AddLendsMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       const { id: lender_id } = fromGlobalId(lender_gid);
-      const { users, accessToken, lends, loans, transactions } = getContext(
-        ctx
-      );
+      const {
+        users,
+        accessToken,
+        investments,
+        loans,
+        transactions,
+      } = getContext(ctx);
       const { _id, validAccessToken } = await refreshTokenMiddleware(
         accessToken,
         refreshToken
@@ -87,30 +96,53 @@ export const AddLendsMutation = mutationWithClientMutationId({
       if (lender_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
+      const _id_lender = new ObjectID(lender_id);
+      const now = new Date();
       const docs = newLends.map(({ loan_gid, quantity, borrower_id }) => {
         const _id_loan = fromGlobalId(loan_gid).id;
         return {
           _id: new ObjectID(),
-          _id_lender: new ObjectID(lender_id),
+          _id_lender,
           _id_borrower: new ObjectID(borrower_id),
           quantity,
           _id_loan: new ObjectID(_id_loan),
-          date: new Date(),
+          now,
         };
       });
-      lends.insertMany(docs);
-      const operations = docs.map(({ quantity, _id_loan }) => ({
+      const investmentsOperations = docs.map<
+        BulkWriteUpdateOneOperation<InvestmentMongo>
+      >(({ quantity, _id_loan, _id_borrower, _id_lender, now }) => ({
         updateOne: {
-          filter: { _id: _id_loan },
-          update: { $inc: { raised: quantity } },
+          filter: { _id_loan, _id_borrower, _id_lender },
+          update: {
+            $inc: { quantity },
+            $setOnInsert: {
+              _id: new ObjectID(),
+              _id_lender,
+              _id_borrower,
+              _id_loan,
+              created: now,
+              updated: now,
+            },
+          },
+          upsert: true,
         },
       }));
-      await loans.bulkWrite(operations);
-      const total = newLends.reduce<number>((prev, next) => {
+      investments.bulkWrite(investmentsOperations);
+      const loansOperations = docs.map<BulkWriteUpdateOneOperation<LoanMongo>>(
+        ({ quantity, _id_loan }) => ({
+          updateOne: {
+            filter: { _id: _id_loan },
+            update: { $inc: { raised: quantity } },
+          },
+        })
+      );
+      await loans.bulkWrite(loansOperations);
+      const total = newLends.reduce((prev, next) => {
         return prev + next.quantity;
       }, 0);
       const result = await users.findOneAndUpdate(
-        { _id: new ObjectID(lender_id) },
+        { _id: _id_lender },
         { $inc: { accountAvailable: -total } },
         { returnOriginal: false }
       );
@@ -120,32 +152,32 @@ export const AddLendsMutation = mutationWithClientMutationId({
       if (!user) {
         throw new Error("El usuario no existe.");
       }
-      const transactionOperations = docs.map(
-        ({ quantity, _id_loan, _id_borrower }) => ({
-          updateOne: {
-            filter: { _id: new RegExp(`^${lender_id}`), count: { $lt: 5 } },
-            update: {
-              $push: {
-                history: {
-                  _id: new ObjectID(),
-                  type: "INVEST" as const,
-                  quantity,
-                  created: new Date(),
-                  _id_loan,
-                  _id_borrower,
-                },
-              },
-              $inc: { count: 1 },
-              $setOnInsert: {
-                _id: `${lender_id}_${new Date().getTime()}`,
-                _id_user: new ObjectID(lender_id),
+      const transactionsOperations = docs.map<
+        BulkWriteUpdateOneOperation<BucketTransactionMongo>
+      >(({ quantity, _id_loan, _id_borrower, now }) => ({
+        updateOne: {
+          filter: { _id: new RegExp(`^${lender_id}`), count: { $lt: 5 } },
+          update: {
+            $push: {
+              history: {
+                _id: new ObjectID(),
+                type: "INVEST" as const,
+                quantity,
+                created: now,
+                _id_loan,
+                _id_borrower,
               },
             },
-            options: { upsert: true },
+            $inc: { count: 1 },
+            $setOnInsert: {
+              _id: `${lender_id}_${now.getTime()}`,
+              _id_user: _id_lender,
+            },
           },
-        })
-      );
-      transactions.bulkWrite(transactionOperations);
+          upsert: true,
+        },
+      }));
+      transactions.bulkWrite(transactionsOperations);
       return { validAccessToken, error: "", loans: updatedLoans, user };
     } catch (e) {
       return {

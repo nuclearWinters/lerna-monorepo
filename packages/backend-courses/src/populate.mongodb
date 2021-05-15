@@ -18,3 +18,60 @@ use('fintech');
     }
   }
 });*/
+
+/*db.lends.bulkWrite(
+  [
+    {updateOne: {
+      filter: { _id_loan: ObjectId() },
+      update: {
+        $inc: { quantity: 1000 },
+        $setOnInsert: {
+          _id: ObjectId(),
+        },
+      },
+      options: { upsert: true }
+    }}
+  ]
+)
+
+updateOne: {
+              filter: { _id_loan, _id_borrower, _id_lender },
+              update: {
+                $inc: { quantity },
+                $setOnInsert: {
+                  _id: new ObjectID(),
+                  _id_lender,
+                  _id_borrower,
+                  _id_loan,
+                  created,
+                  updated,
+                },
+              },
+              options: { upsert: true },
+            },
+
+*/
+
+db.lends.bulkWrite([{
+  updateOne: {
+    filter: { "_id": ObjectId("607b7338119cbd2f4c4ad525") },
+    update: { $inc: { "quantity": 1000 } },
+    upsert: true
+  }
+}])
+
+/*db.lends.updateOne(
+  { "_id": ObjectId("607b7338119cbd2f4c4ad524") },
+  {
+    $inc: { "quantity": 1000 },
+    $setOnInsert: {
+      "_id": ObjectId("607b7338119cbd2f4c4ad524"),
+      "_id_lender": ObjectId("607b7338119cbd2f4c4ad525"),
+      "_id_borrower": ObjectId("607b7338119cbd2f4c4ad526"),
+      "_id_loan": ObjectId("607b7338119cbd2f4c4ad527"),
+      "created": new Date(),
+      "updated": new Date()
+    }
+  },
+  { upsert: true }
+)*/

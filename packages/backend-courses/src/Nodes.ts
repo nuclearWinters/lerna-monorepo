@@ -3,11 +3,11 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
-  GraphQLFloat,
   GraphQLScalarType,
   Kind,
   GraphQLEnumType,
+  GraphQLFloat,
+  GraphQLInt,
   GraphQLList,
 } from "graphql";
 import {
@@ -15,19 +15,16 @@ import {
   globalIdField,
   nodeDefinitions,
   connectionDefinitions,
-  connectionArgs,
-  ConnectionArguments,
-  Connection,
-  connectionFromArray,
 } from "graphql-relay";
 import {
   RootUser,
   Context,
+  InvestmentMongo,
   LoanMongo,
   TransactionMongo,
   BucketTransactionMongo,
 } from "./types";
-import { base64, getContext, unbase64 } from "./utils";
+import { getContext } from "./utils";
 
 export const DateScalarType = new GraphQLScalarType({
   name: "Date",
@@ -61,7 +58,7 @@ export const MXNScalarType = new GraphQLScalarType({
   },
 });
 
-const TransactionType = new GraphQLEnumType({
+export const TransactionType = new GraphQLEnumType({
   name: "TransactionType",
   values: {
     CREDIT: { value: "CREDIT" },
@@ -103,6 +100,46 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     }
   }
 );
+
+export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
+  name: "Investments",
+  fields: {
+    id: globalIdField("Investments", ({ _id }): string => _id.toHexString()),
+    _id_borrower: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ _id_borrower }): string => _id_borrower.toHexString(),
+    },
+    _id_lender: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ _id_lender }): string => _id_lender.toHexString(),
+    },
+    _id_loan: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ _id_loan }): string => _id_loan.toHexString(),
+    },
+    quantity: {
+      type: new GraphQLNonNull(MXNScalarType),
+      resolve: ({ quantity }): number => quantity,
+    },
+    created: {
+      type: new GraphQLNonNull(DateScalarType),
+      resolve: ({ created }): Date => created,
+    },
+    updated: {
+      type: new GraphQLNonNull(DateScalarType),
+      resolve: ({ updated }): Date => updated,
+    },
+  },
+  interfaces: [nodeInterface],
+});
+
+const {
+  connectionType: InvestmentConnection,
+  edgeType: GraphQLInvestmentEdge,
+} = connectionDefinitions({
+  name: "Investment",
+  nodeType: GraphQLInvestment,
+});
 
 export const GraphQLTransaction = new GraphQLObjectType<TransactionMongo>({
   name: "Transaction",
@@ -248,48 +285,6 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountAvailable }): number => accountAvailable,
     },
-    transactions: {
-      type: new GraphQLNonNull(BucketTransactionConnection),
-      args: connectionArgs,
-      resolve: async (
-        _,
-        args: ConnectionArguments,
-        ctx
-      ): Promise<Connection<BucketTransactionMongo>> => {
-        try {
-          const { transactions } = getContext(ctx);
-          const offset = unbase64(args.after || "YXJyYXljb25uZWN0aW9uOjA=");
-          const skip = Number(offset) === 0 ? 0 : Number(offset) + 1;
-          const limit = args.first ? args.first + 1 : 0;
-          if (limit === 0) {
-            throw new Error("Se requiere 'first'");
-          }
-          const result = await transactions
-            .find()
-            .skip(skip)
-            .limit(limit)
-            .toArray();
-          const edgesMapped = result.map((loan, idx) => {
-            return {
-              cursor: base64(String(skip + idx)),
-              node: loan,
-            };
-          });
-          const edges = edgesMapped.slice(0, args.first || 5);
-          return {
-            edges,
-            pageInfo: {
-              startCursor: edges[0]?.cursor || null,
-              endCursor: edges[edges.length - 1]?.cursor || null,
-              hasPreviousPage: false,
-              hasNextPage: edgesMapped.length > (args.first || 0),
-            },
-          };
-        } catch (e) {
-          return connectionFromArray([], args);
-        }
-      },
-    },
     error: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ error }): string => error,
@@ -299,9 +294,13 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
 });
 
 export {
-  GraphQLUser,
   nodeField,
-  GraphQLLoanEdge,
+  nodeInterface,
   LoanConnection,
+  GraphQLLoanEdge,
+  BucketTransactionConnection,
   GraphQLBucketTransactionEdge,
+  InvestmentConnection,
+  GraphQLInvestmentEdge,
+  GraphQLUser,
 };

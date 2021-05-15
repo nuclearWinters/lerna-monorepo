@@ -120,6 +120,22 @@ type Query {
   user(id: String!, refreshToken: String!): User!
   node(id: ID!): Node
   loans(after: String, first: Int, before: String, last: Int): LoanConnection
+  investments(
+    after: String
+    first: Int
+    before: String
+    last: Int
+    refreshToken: String!
+    user_id: String!
+  ): InvestmentsConnection
+  transactions(
+    after: String
+    first: Int
+    before: String
+    last: Int
+    refreshToken: String!
+    user_id: String!
+  ): BucketTransactionConnection
 }
 
 schema {
@@ -136,6 +152,26 @@ type PageInfo {
   hasPreviousPage: Boolean!
   startCursor: String
   endCursor: String
+}
+
+type Investments {
+  id: ID!
+  _id_borrower: String!
+  _id_lender: String!
+  _id_loan: String!
+  quantity: Int!
+  created: Date!
+  updated: Date!
+}
+
+type InvestmentsConnection {
+  pageInfo: PageInfo!
+  edges: [InvestmentsEdge]
+}
+
+type InvestmentsEdge {
+  node: Investments
+  cursor: String!
 }
 
 type Loan {
@@ -202,12 +238,6 @@ type User implements Node {
   mobile: String!
   accountTotal: MXN!
   accountAvailable: MXN!
-  transactions(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): BucketTransactionConnection
   error: String!
 }
 

@@ -9,6 +9,8 @@ import { AddLendsMutation } from "./mutations/AddLends";
 import { AddFundsMutation } from "./mutations/AddFunds";
 import { QueryLoans } from "./QueryLoans";
 import { AddLoanMutation } from "./mutations/AddLoan";
+import { QueryInvestments } from "./QueryInvestments";
+import { QueryTransactions } from "./QueryTransactions";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -16,6 +18,8 @@ const Query = new GraphQLObjectType({
     user: QueryUser,
     node: nodeField,
     loans: QueryLoans,
+    investments: QueryInvestments,
+    transactions: QueryTransactions,
   },
 });
 
