@@ -3,8 +3,8 @@ import { GraphQLString, GraphQLNonNull, GraphQLInt, GraphQLID } from "graphql";
 import { Context, LoanMongo } from "../types";
 import { ObjectID } from "mongodb";
 import { getContext, refreshTokenMiddleware } from "../utils";
-import { GraphQLLoan } from "../Nodes";
 import { add } from "date-fns";
+import { GraphQLLoan } from "../Nodes";
 
 interface Input {
   refreshToken: string;

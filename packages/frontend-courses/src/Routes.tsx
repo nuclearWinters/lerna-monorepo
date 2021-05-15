@@ -17,6 +17,7 @@ import {
   RetireFunds,
   AddLoan,
   Transactions,
+  Investments,
 } from "./screens";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 
@@ -32,7 +33,6 @@ const routesFragment = graphql`
     ...AddFunds_user
     ...RetireFunds_user
     ...AddLoan_user
-    ...Transactions_user
   }
 `;
 
@@ -71,7 +71,7 @@ export const Routes: FC<Props> = (props) => {
           <Link to="/addFunds">Agregar fondos</Link>
           <Link to="/retireFunds">Retirar fondos</Link>
           <Link to="/addLoan">Pedir prestamo</Link>
-          <div>Mis Inversiones</div>
+          <Link to="/investments">Mis Inversiones</Link>
           <Link to="/transactions">Mis movimientos</Link>
         </div>
         <div
@@ -131,7 +131,10 @@ export const Routes: FC<Props> = (props) => {
                 <SignUp refetch={props.refetch} />
               </Route>
               <Route path="/transactions">
-                <Transactions user={user} />
+                <Transactions user={{ id: user.id }} data={props.data} />
+              </Route>
+              <Route path="/investments">
+                <Investments user={{ id: user.id }} data={props.data} />
               </Route>
             </Switch>
           </div>

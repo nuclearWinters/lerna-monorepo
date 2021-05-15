@@ -67,12 +67,14 @@ export interface LoanMongo {
   expiry: Date;
 }
 
-export interface LendMongo {
+export interface InvestmentMongo {
   _id: ObjectId;
   _id_borrower: ObjectId;
   _id_lender: ObjectId;
+  _id_loan: ObjectId;
   quantity: number;
-  date: Date;
+  created: Date;
+  updated: Date;
 }
 
 export interface DecodeJWT {

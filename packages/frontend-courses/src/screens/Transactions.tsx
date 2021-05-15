@@ -1,20 +1,24 @@
 import React, { FC } from "react";
 import { graphql, usePaginationFragment } from "react-relay";
-import { Transactions_user$key } from "./__generated__/Transactions_user.graphql";
+import { Transactions_query$key } from "./__generated__/Transactions_query.graphql";
 import { TransactionsPaginationQuery } from "./__generated__/TransactionsPaginationQuery.graphql";
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
+import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 
 const transactionsFragment = graphql`
-  fragment Transactions_user on User
+  fragment Transactions_query on Query
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 2 }
     cursor: { type: "String", defaultValue: "" }
   )
   @refetchable(queryName: "TransactionsPaginationQuery") {
-    id
-    transactions(first: $count, after: $cursor)
-      @connection(key: "Transactions_user_transactions") {
+    transactions(
+      first: $count
+      after: $cursor
+      refreshToken: $refreshToken
+      user_id: $id
+    ) @connection(key: "Transactions_query_transactions") {
       edges {
         node {
           id
@@ -34,14 +38,17 @@ const transactionsFragment = graphql`
 `;
 
 type Props = {
-  user: Transactions_user$key;
+  user: {
+    id: string;
+  };
+  data: AppQueryResponse;
 };
 
 export const Transactions: FC<Props> = (props) => {
   const { data, loadNext } = usePaginationFragment<
     TransactionsPaginationQuery,
-    Transactions_user$key
-  >(transactionsFragment, props.user);
+    Transactions_query$key
+  >(transactionsFragment, props.data);
 
   return (
     <div>
@@ -54,7 +61,7 @@ export const Transactions: FC<Props> = (props) => {
               edge &&
               edge.node &&
               edge.node.history &&
-              edge.node.history.map((transaction) => {
+              [...edge.node.history].reverse().map((transaction) => {
                 return (
                   <div
                     style={{

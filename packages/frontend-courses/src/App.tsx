@@ -9,7 +9,7 @@ import { RelayEnvironment } from "./RelayEnvironment";
 import AppQuery, {
   AppQuery as AppQueryType,
 } from "./__generated__/AppQuery.graphql";
-import { graphql } from "react-relay";
+import { graphql, Environment } from "react-relay";
 import { Routes } from "./Routes";
 import jwtDecode from "jwt-decode";
 
@@ -20,22 +20,17 @@ export interface IJWT {
   email: string;
 }
 
-//export const tokens = {
-//  accessToken: localStorage.getItem("accessToken") || "",
-//  refreshToken: localStorage.getItem("refreshToken") || "",
-//};
-
-const getIdFromToken = (): string => {
+export const getIdFromToken = (environment: Environment): string => {
   const accessToken =
-    (RelayEnvironment.getStore().getSource().get("client:root:tokens")
+    (environment.getStore().getSource().get("client:root:tokens")
       ?.accessToken as string) || "";
   if (!accessToken) return "";
   return jwtDecode<IJWT>(accessToken)._id;
 };
 
-const getRefreshToken = (): string => {
+export const getRefreshToken = (environment: Environment): string => {
   const refreshToken =
-    (RelayEnvironment.getStore().getSource().get("client:root:tokens")
+    (environment.getStore().getSource().get("client:root:tokens")
       ?.refreshToken as string) || "";
   if (!refreshToken) return "";
   return refreshToken;
@@ -44,6 +39,8 @@ const getRefreshToken = (): string => {
 const RepositoryNameQuery = graphql`
   query AppQuery($id: String!, $refreshToken: String!) {
     ...DebtInSale_query
+    ...Transactions_query
+    ...Investments_query
     user(id: $id, refreshToken: $refreshToken) {
       ...Routes_user
       error
@@ -54,7 +51,10 @@ const RepositoryNameQuery = graphql`
 export const preloadedQuery = loadQuery<AppQueryType>(
   RelayEnvironment,
   RepositoryNameQuery,
-  { id: getIdFromToken(), refreshToken: getRefreshToken() }
+  {
+    id: getIdFromToken(RelayEnvironment),
+    refreshToken: getRefreshToken(RelayEnvironment),
+  }
 );
 
 const AppQueryRoot: FC = () => {
@@ -67,7 +67,13 @@ const AppQueryRoot: FC = () => {
     queryRef || preloadedQuery
   );
   const refetch = useCallback(() => {
-    loadQuery({ id: getIdFromToken(), refreshToken: getRefreshToken() });
+    loadQuery(
+      {
+        id: getIdFromToken(RelayEnvironment),
+        refreshToken: getRefreshToken(RelayEnvironment),
+      },
+      { fetchPolicy: "network-only" }
+    );
   }, [loadQuery]);
   return <Routes user={data.user} data={data} refetch={refetch} />;
 };

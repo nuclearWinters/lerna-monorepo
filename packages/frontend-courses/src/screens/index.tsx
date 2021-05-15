@@ -6,3 +6,4 @@ export { AddFunds } from "./AddFunds";
 export { RetireFunds } from "./RetireFunds";
 export { Transactions } from "./Transactions";
 export { AddLoan } from "./AddLoan";
+export { Investments } from "./Investments";

@@ -8,25 +8,17 @@ describe("supertest example with mongodb", () => {
   let client: MongoClient;
 
   beforeAll(async () => {
-    try {
-      client = await MongoClient.connect("mongodb://127.0.0.1:27017", {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-      const db = client.db();
-      app.locals.db = db;
-    } catch (e) {
-      //console.log(e)
-    }
+    client = await MongoClient.connect("mongodb://127.0.0.1:27017", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    const db = client.db();
+    app.locals.db = db;
   });
 
   afterAll(async () => {
-    try {
-      delete app.locals.db;
-      await client.close();
-    } catch (e) {
-      //console.log(e)
-    }
+    delete app.locals.db;
+    await client.close();
   });
 
   it("should get hola property in json", async (done) => {

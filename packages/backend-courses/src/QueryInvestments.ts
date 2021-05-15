@@ -2,18 +2,19 @@ import {
   GraphQLFieldConfigArgumentMap,
   GraphQLNonNull,
   GraphQLNullableType,
+  GraphQLString,
 } from "graphql";
 import {
   BackwardConnectionArgs,
   Connection,
   connectionArgs,
-  ConnectionArguments,
   connectionFromArray,
   ForwardConnectionArgs,
+  ConnectionArguments,
 } from "graphql-relay";
-import { LoanConnection } from "./Nodes";
-import { Context, LoanMongo } from "./types";
-import { base64, getContext, unbase64 } from "./utils";
+import { InvestmentConnection } from "./Nodes";
+import { Context, InvestmentMongo } from "./types";
+import { base64, getContext, refreshTokenMiddleware, unbase64 } from "./utils";
 
 interface IQuery {
   type: GraphQLNonNull<GraphQLNullableType>;
@@ -24,30 +25,51 @@ interface IQuery {
     root: { [argName: string]: string },
     args: { [argName: string]: string },
     ctx: Context
-  ) => Promise<Connection<LoanMongo>>;
+  ) => Promise<Connection<InvestmentMongo>>;
 }
 
-export const QueryLoans: IQuery = {
-  type: new GraphQLNonNull(LoanConnection),
-  args: connectionArgs,
-  resolve: async (
-    _,
-    args: ConnectionArguments,
-    ctx
-  ): Promise<Connection<LoanMongo>> => {
+interface Args extends ConnectionArguments {
+  user_id?: string | null;
+  refreshToken?: string | null;
+}
+
+export const QueryInvestments: IQuery = {
+  type: new GraphQLNonNull(InvestmentConnection),
+  args: {
+    user_id: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    refreshToken: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    ...connectionArgs,
+  },
+  resolve: async (_, args: Args, ctx): Promise<Connection<InvestmentMongo>> => {
     try {
-      const { loans } = getContext(ctx);
+      const { investments, accessToken } = getContext(ctx);
+      const { _id } = await refreshTokenMiddleware(
+        accessToken,
+        args.refreshToken || ""
+      );
+      if (args.user_id !== _id) {
+        throw new Error("No es el mismo usuario.");
+      }
       const offset = unbase64(args.after || "YXJyYXljb25uZWN0aW9uOjA=");
       const skip = Number(offset) === 0 ? 0 : Number(offset) + 1;
       const limit = args.first ? args.first + 1 : 0;
       if (limit === 0) {
         throw new Error("Se requiere 'first'");
       }
-      const result = await loans.find().skip(skip).limit(limit).toArray();
-      const edgesMapped = result.map((loan, idx) => {
+      const result = await investments
+        .find()
+        .skip(skip)
+        .limit(limit)
+        .sort({ $natural: -1 })
+        .toArray();
+      const edgesMapped = result.map((investment, idx) => {
         return {
           cursor: base64(String(skip + idx)),
-          node: loan,
+          node: investment,
         };
       });
       const edges = edgesMapped.slice(0, args.first || 5);
