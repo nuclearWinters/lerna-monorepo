@@ -4,31 +4,31 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type InvestmentsPaginationQueryVariables = {
+export type MyInvestmentsPaginationQueryVariables = {
   count?: number | null;
   cursor?: string | null;
   id: string;
   refreshToken: string;
 };
-export type InvestmentsPaginationQueryResponse = {
-  readonly " $fragmentRefs": FragmentRefs<"Investments_query">;
+export type MyInvestmentsPaginationQueryResponse = {
+  readonly " $fragmentRefs": FragmentRefs<"MyInvestments_query">;
 };
-export type InvestmentsPaginationQuery = {
-  readonly response: InvestmentsPaginationQueryResponse;
-  readonly variables: InvestmentsPaginationQueryVariables;
+export type MyInvestmentsPaginationQuery = {
+  readonly response: MyInvestmentsPaginationQueryResponse;
+  readonly variables: MyInvestmentsPaginationQueryVariables;
 };
 
 /*
-query InvestmentsPaginationQuery(
+query MyInvestmentsPaginationQuery(
   $count: Int = 2
   $cursor: String = ""
   $id: String!
   $refreshToken: String!
 ) {
-  ...Investments_query_1G22uz
+  ...MyInvestments_query_1G22uz
 }
 
-fragment Investments_query_1G22uz on Query {
+fragment MyInvestments_query_1G22uz on Query {
   investments(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {
     edges {
       node {
@@ -100,7 +100,7 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
-      name: "InvestmentsPaginationQuery",
+      name: "MyInvestmentsPaginationQuery",
       selections: [
         {
           args: [
@@ -116,7 +116,7 @@ const node: ConcreteRequest = (function () {
             },
           ],
           kind: "FragmentSpread",
-          name: "Investments_query",
+          name: "MyInvestments_query",
         },
       ],
       type: "Query",
@@ -126,7 +126,7 @@ const node: ConcreteRequest = (function () {
     operation: {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
-      name: "InvestmentsPaginationQuery",
+      name: "MyInvestmentsPaginationQuery",
       selections: [
         {
           alias: null,
@@ -247,22 +247,22 @@ const node: ConcreteRequest = (function () {
           args: v1 /*: any*/,
           filters: ["refreshToken", "user_id"],
           handle: "connection",
-          key: "Investments_query_investments",
+          key: "MyInvestments_query_investments",
           kind: "LinkedHandle",
           name: "investments",
         },
       ],
     },
     params: {
-      cacheID: "d4f2bc9258298de0213954f54fb40cfa",
+      cacheID: "e1b2fa06ee098983004cbb97544d4906",
       id: null,
       metadata: {},
-      name: "InvestmentsPaginationQuery",
+      name: "MyInvestmentsPaginationQuery",
       operationKind: "query",
       text:
-        'query InvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n  $refreshToken: String!\n) {\n  ...Investments_query_1G22uz\n}\n\nfragment Investments_query_1G22uz on Query {\n  investments(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+        'query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n  $refreshToken: String!\n) {\n  ...MyInvestments_query_1G22uz\n}\n\nfragment MyInvestments_query_1G22uz on Query {\n  investments(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "8f78f7c1a8e68ce18fec8f71db2df062";
+(node as any).hash = "91b836d56ae4ca06a2dff2bb676e40b4";
 export default node;

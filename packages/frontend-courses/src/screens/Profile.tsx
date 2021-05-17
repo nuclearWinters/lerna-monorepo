@@ -1,12 +1,17 @@
 import { IJWT } from "App";
 import jwtDecode from "jwt-decode";
-import { commitUpdateUserMutation } from "mutations/UpdateUser";
 import React, { FC, useRef, useState } from "react";
-import { graphql, useFragment, useRelayEnvironment } from "react-relay";
-import { GeneralData_user$key } from "./__generated__/GeneralData_user.graphql";
+import {
+  graphql,
+  useFragment,
+  useMutation,
+  useRelayEnvironment,
+} from "react-relay";
+import { ProfileMutation } from "./__generated__/ProfileMutation.graphql";
+import { Profile_user$key } from "./__generated__/Profile_user.graphql";
 
 const generalDataFragment = graphql`
-  fragment GeneralData_user on User {
+  fragment Profile_user on User {
     id
     name
     apellidoPaterno
@@ -21,11 +26,30 @@ const generalDataFragment = graphql`
 `;
 
 type Props = {
-  user: GeneralData_user$key;
+  user: Profile_user$key;
 };
 
-export const GeneralData: FC<Props> = (props) => {
+export const Profile: FC<Props> = (props) => {
   const environment = useRelayEnvironment();
+  const [commit] = useMutation<ProfileMutation>(graphql`
+    mutation ProfileMutation($input: UpdateUserInput!) {
+      updateUser(input: $input) {
+        error
+        validAccessToken
+        user {
+          name
+          apellidoMaterno
+          apellidoPaterno
+          RFC
+          CURP
+          clabe
+          mobile
+          accountTotal
+          accountAvailable
+        }
+      }
+    }
+  `);
   const user = useFragment(generalDataFragment, props.user);
   const [formUser, setFormUser] = useState({
     user_gid: user.id,
@@ -141,11 +165,28 @@ export const GeneralData: FC<Props> = (props) => {
       </div>
       <button
         onClick={() => {
-          commitUpdateUserMutation(environment, {
-            ...formUser,
-            refreshToken:
-              (environment.getStore().getSource().get("client:root:tokens")
-                ?.refreshToken as string) || "",
+          commit({
+            variables: {
+              input: {
+                ...formUser,
+                refreshToken:
+                  (environment.getStore().getSource().get("client:root:tokens")
+                    ?.refreshToken as string) || "",
+              },
+            },
+            onCompleted: (response) => {
+              if (response.updateUser.error) {
+                throw new Error(response.updateUser.error);
+              }
+            },
+            updater: (store, data) => {
+              const root = store.getRoot();
+              const token = root.getLinkedRecord("tokens");
+              token?.setValue(data.updateUser.validAccessToken, "accessToken");
+            },
+            onError: (error) => {
+              window.alert(error.message);
+            },
           });
         }}
       >

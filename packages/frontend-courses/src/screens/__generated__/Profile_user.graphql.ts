@@ -4,7 +4,7 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type GeneralData_user = {
+export type Profile_user = {
   readonly id: string;
   readonly name: string;
   readonly apellidoPaterno: string;
@@ -15,19 +15,19 @@ export type GeneralData_user = {
   readonly mobile: string;
   readonly accountTotal: string;
   readonly accountAvailable: string;
-  readonly " $refType": "GeneralData_user";
+  readonly " $refType": "Profile_user";
 };
-export type GeneralData_user$data = GeneralData_user;
-export type GeneralData_user$key = {
-  readonly " $data"?: GeneralData_user$data;
-  readonly " $fragmentRefs": FragmentRefs<"GeneralData_user">;
+export type Profile_user$data = Profile_user;
+export type Profile_user$key = {
+  readonly " $data"?: Profile_user$data;
+  readonly " $fragmentRefs": FragmentRefs<"Profile_user">;
 };
 
 const node: ReaderFragment = {
   argumentDefinitions: [],
   kind: "Fragment",
   metadata: null,
-  name: "GeneralData_user",
+  name: "Profile_user",
   selections: [
     {
       alias: null,
@@ -103,5 +103,5 @@ const node: ReaderFragment = {
   type: "User",
   abstractKey: null,
 } as any;
-(node as any).hash = "888f30676b761acf93cf6e891b200414";
+(node as any).hash = "b71da76a98e434467fadec39c613036f";
 export default node;

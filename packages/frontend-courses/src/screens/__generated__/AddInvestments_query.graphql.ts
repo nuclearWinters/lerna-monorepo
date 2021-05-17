@@ -4,7 +4,7 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type DebtInSale_query = {
+export type AddInvestments_query = {
   readonly loans: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -19,12 +19,12 @@ export type DebtInSale_query = {
       } | null;
     } | null> | null;
   } | null;
-  readonly " $refType": "DebtInSale_query";
+  readonly " $refType": "AddInvestments_query";
 };
-export type DebtInSale_query$data = DebtInSale_query;
-export type DebtInSale_query$key = {
-  readonly " $data"?: DebtInSale_query$data;
-  readonly " $fragmentRefs": FragmentRefs<"DebtInSale_query">;
+export type AddInvestments_query$data = AddInvestments_query;
+export type AddInvestments_query$key = {
+  readonly " $data"?: AddInvestments_query$data;
+  readonly " $fragmentRefs": FragmentRefs<"AddInvestments_query">;
 };
 
 const node: ReaderFragment = (function () {
@@ -62,17 +62,17 @@ const node: ReaderFragment = (function () {
           path: v0 /*: any*/,
         },
         fragmentPathInResult: [],
-        operation: require("./DebtInSalePaginationQuery.graphql.ts"),
+        operation: require("./AddInvestmentsPaginationQuery.graphql.ts"),
       },
     },
-    name: "DebtInSale_query",
+    name: "AddInvestments_query",
     selections: [
       {
         alias: "loans",
         args: null,
         concreteType: "LoanConnection",
         kind: "LinkedField",
-        name: "__DebtInSale_query_loans_connection",
+        name: "__AddInvestments_query_loans_connection",
         plural: false,
         selections: [
           {
@@ -200,5 +200,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "ad4abc2ed9fab37f6b124cf17f51751e";
+(node as any).hash = "e6946d8bf9ee093e14953914bdda246a";
 export default node;

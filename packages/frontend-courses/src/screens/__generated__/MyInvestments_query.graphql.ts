@@ -4,7 +4,7 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type Investments_query = {
+export type MyInvestments_query = {
   readonly investments: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -17,12 +17,12 @@ export type Investments_query = {
       } | null;
     } | null> | null;
   } | null;
-  readonly " $refType": "Investments_query";
+  readonly " $refType": "MyInvestments_query";
 };
-export type Investments_query$data = Investments_query;
-export type Investments_query$key = {
-  readonly " $data"?: Investments_query$data;
-  readonly " $fragmentRefs": FragmentRefs<"Investments_query">;
+export type MyInvestments_query$data = MyInvestments_query;
+export type MyInvestments_query$key = {
+  readonly " $data"?: MyInvestments_query$data;
+  readonly " $fragmentRefs": FragmentRefs<"MyInvestments_query">;
 };
 
 const node: ReaderFragment = (function () {
@@ -68,10 +68,10 @@ const node: ReaderFragment = (function () {
           path: v0 /*: any*/,
         },
         fragmentPathInResult: [],
-        operation: require("./InvestmentsPaginationQuery.graphql.ts"),
+        operation: require("./MyInvestmentsPaginationQuery.graphql.ts"),
       },
     },
-    name: "Investments_query",
+    name: "MyInvestments_query",
     selections: [
       {
         alias: "investments",
@@ -89,7 +89,7 @@ const node: ReaderFragment = (function () {
         ],
         concreteType: "InvestmentsConnection",
         kind: "LinkedField",
-        name: "__Investments_query_investments_connection",
+        name: "__MyInvestments_query_investments_connection",
         plural: false,
         selections: [
           {
@@ -203,5 +203,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "8f78f7c1a8e68ce18fec8f71db2df062";
+(node as any).hash = "91b836d56ae4ca06a2dff2bb676e40b4";
 export default node;

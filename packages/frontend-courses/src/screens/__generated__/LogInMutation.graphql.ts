@@ -8,23 +8,23 @@ export type SignInInput = {
   email: string;
   clientMutationId?: string | null;
 };
-export type SignInMutationVariables = {
+export type LogInMutationVariables = {
   input: SignInInput;
 };
-export type SignInMutationResponse = {
+export type LogInMutationResponse = {
   readonly signIn: {
     readonly error: string | null;
     readonly accessToken: string;
     readonly refreshToken: string;
   };
 };
-export type SignInMutation = {
-  readonly response: SignInMutationResponse;
-  readonly variables: SignInMutationVariables;
+export type LogInMutation = {
+  readonly response: LogInMutationResponse;
+  readonly variables: LogInMutationVariables;
 };
 
 /*
-mutation SignInMutation(
+mutation LogInMutation(
   $input: SignInInput!
 ) {
   signIn(input: $input) {
@@ -88,7 +88,7 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
-      name: "SignInMutation",
+      name: "LogInMutation",
       selections: v1 /*: any*/,
       type: "Mutation",
       abstractKey: null,
@@ -97,19 +97,19 @@ const node: ConcreteRequest = (function () {
     operation: {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
-      name: "SignInMutation",
+      name: "LogInMutation",
       selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "3520018fefa6e356512e43f8d7a4f9d6",
+      cacheID: "efb8de858dc33aba92f7525617672896",
       id: null,
       metadata: {},
-      name: "SignInMutation",
+      name: "LogInMutation",
       operationKind: "mutation",
       text:
-        "mutation SignInMutation(\n  $input: SignInInput!\n) {\n  signIn(input: $input) {\n    error\n    accessToken\n    refreshToken\n  }\n}\n",
+        "mutation LogInMutation(\n  $input: SignInInput!\n) {\n  signIn(input: $input) {\n    error\n    accessToken\n    refreshToken\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "81a42a86f5d0d4de302cf343ab7dd619";
+(node as any).hash = "96f070a0b897e3ae741e4264338f2bd1";
 export default node;

@@ -1,9 +1,9 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull, GraphQLInt, GraphQLID } from "graphql";
+import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context, UserMongo } from "../types";
 import { ObjectID } from "mongodb";
 import { getContext, refreshTokenMiddleware } from "../utils";
-import { GraphQLUser } from "../Nodes";
+import { GraphQLUser, MXNScalarType } from "../Nodes";
 
 interface Input {
   refreshToken: string;
@@ -24,7 +24,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
   inputFields: {
     refreshToken: { type: new GraphQLNonNull(GraphQLString) },
     user_gid: { type: new GraphQLNonNull(GraphQLID) },
-    quantity: { type: new GraphQLNonNull(GraphQLInt) },
+    quantity: { type: new GraphQLNonNull(MXNScalarType) },
   },
   outputFields: {
     error: {

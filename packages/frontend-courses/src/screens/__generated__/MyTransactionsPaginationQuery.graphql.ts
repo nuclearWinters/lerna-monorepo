@@ -4,31 +4,31 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type TransactionsPaginationQueryVariables = {
+export type MyTransactionsPaginationQueryVariables = {
   count?: number | null;
   cursor?: string | null;
   id: string;
   refreshToken: string;
 };
-export type TransactionsPaginationQueryResponse = {
-  readonly " $fragmentRefs": FragmentRefs<"Transactions_query">;
+export type MyTransactionsPaginationQueryResponse = {
+  readonly " $fragmentRefs": FragmentRefs<"MyTransactions_query">;
 };
-export type TransactionsPaginationQuery = {
-  readonly response: TransactionsPaginationQueryResponse;
-  readonly variables: TransactionsPaginationQueryVariables;
+export type MyTransactionsPaginationQuery = {
+  readonly response: MyTransactionsPaginationQueryResponse;
+  readonly variables: MyTransactionsPaginationQueryVariables;
 };
 
 /*
-query TransactionsPaginationQuery(
+query MyTransactionsPaginationQuery(
   $count: Int = 2
   $cursor: String = ""
   $id: String!
   $refreshToken: String!
 ) {
-  ...Transactions_query_1G22uz
+  ...MyTransactions_query_1G22uz
 }
 
-fragment Transactions_query_1G22uz on Query {
+fragment MyTransactions_query_1G22uz on Query {
   transactions(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {
     edges {
       node {
@@ -111,7 +111,7 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
-      name: "TransactionsPaginationQuery",
+      name: "MyTransactionsPaginationQuery",
       selections: [
         {
           args: [
@@ -127,7 +127,7 @@ const node: ConcreteRequest = (function () {
             },
           ],
           kind: "FragmentSpread",
-          name: "Transactions_query",
+          name: "MyTransactions_query",
         },
       ],
       type: "Query",
@@ -137,7 +137,7 @@ const node: ConcreteRequest = (function () {
     operation: {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
-      name: "TransactionsPaginationQuery",
+      name: "MyTransactionsPaginationQuery",
       selections: [
         {
           alias: null,
@@ -271,22 +271,22 @@ const node: ConcreteRequest = (function () {
           args: v1 /*: any*/,
           filters: ["refreshToken", "user_id"],
           handle: "connection",
-          key: "Transactions_query_transactions",
+          key: "MyTransactions_query_transactions",
           kind: "LinkedHandle",
           name: "transactions",
         },
       ],
     },
     params: {
-      cacheID: "6d87446903b6d9ec35681ad68d3e1f97",
+      cacheID: "83d46bb59ec4a2196bd9f8ed5a1cca81",
       id: null,
       metadata: {},
-      name: "TransactionsPaginationQuery",
+      name: "MyTransactionsPaginationQuery",
       operationKind: "query",
       text:
-        'query TransactionsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n  $refreshToken: String!\n) {\n  ...Transactions_query_1G22uz\n}\n\nfragment Transactions_query_1G22uz on Query {\n  transactions(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+        'query MyTransactionsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n  $refreshToken: String!\n) {\n  ...MyTransactions_query_1G22uz\n}\n\nfragment MyTransactions_query_1G22uz on Query {\n  transactions(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "69f81226e3cf808c3a8a87c5b268f59e";
+(node as any).hash = "0d508d4a1101b290f4666c6ced0c8bb0";
 export default node;

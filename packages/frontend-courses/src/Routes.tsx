@@ -9,15 +9,15 @@ import {
 } from "react-relay";
 import { Routes_user$key } from "./__generated__/Routes_user.graphql";
 import {
-  GeneralData,
-  DebtInSale,
+  Profile,
+  AddInvestments,
   LogIn,
   SignUp,
   AddFunds,
   RetireFunds,
   AddLoan,
-  Transactions,
-  Investments,
+  MyTransactions,
+  MyInvestments,
 } from "./screens";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 
@@ -29,7 +29,7 @@ const routesFragment = graphql`
     apellidoMaterno
     accountTotal
     accountAvailable
-    ...GeneralData_user
+    ...Profile_user
     ...AddFunds_user
     ...RetireFunds_user
     ...AddLoan_user
@@ -67,12 +67,12 @@ export const Routes: FC<Props> = (props) => {
           <div>Saldo disponible</div>
           <div>${user.accountAvailable}</div>
           <Link to="/profile">Mi cuenta</Link>
-          <Link to="/loans">Comprar</Link>
+          <Link to="/addInvestments">Comprar</Link>
           <Link to="/addFunds">Agregar fondos</Link>
           <Link to="/retireFunds">Retirar fondos</Link>
           <Link to="/addLoan">Pedir prestamo</Link>
-          <Link to="/investments">Mis Inversiones</Link>
-          <Link to="/transactions">Mis movimientos</Link>
+          <Link to="/myInvestments">Mis Inversiones</Link>
+          <Link to="/myTransactions">Mis movimientos</Link>
         </div>
         <div
           style={{
@@ -110,10 +110,10 @@ export const Routes: FC<Props> = (props) => {
           <div style={{ flex: 1 }}>
             <Switch>
               <Route path="/profile">
-                <GeneralData user={user} />
+                <Profile user={user} />
               </Route>
-              <Route path="/loans">
-                <DebtInSale user={{ id: user.id }} data={props.data} />
+              <Route path="/addInvestments">
+                <AddInvestments user={{ id: user.id }} data={props.data} />
               </Route>
               <Route path="/addFunds">
                 <AddFunds user={user} />
@@ -130,11 +130,11 @@ export const Routes: FC<Props> = (props) => {
               <Route path="/register">
                 <SignUp refetch={props.refetch} />
               </Route>
-              <Route path="/transactions">
-                <Transactions user={{ id: user.id }} data={props.data} />
+              <Route path="/myTransactions">
+                <MyTransactions user={{ id: user.id }} data={props.data} />
               </Route>
-              <Route path="/investments">
-                <Investments user={{ id: user.id }} data={props.data} />
+              <Route path="/myInvestments">
+                <MyInvestments user={{ id: user.id }} data={props.data} />
               </Route>
             </Switch>
           </div>

@@ -9,7 +9,7 @@ export type TransactionType =
   | "INVEST"
   | "WITHDRAWAL"
   | "%future added value";
-export type Transactions_query = {
+export type MyTransactions_query = {
   readonly transactions: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -26,12 +26,12 @@ export type Transactions_query = {
       } | null;
     } | null> | null;
   } | null;
-  readonly " $refType": "Transactions_query";
+  readonly " $refType": "MyTransactions_query";
 };
-export type Transactions_query$data = Transactions_query;
-export type Transactions_query$key = {
-  readonly " $data"?: Transactions_query$data;
-  readonly " $fragmentRefs": FragmentRefs<"Transactions_query">;
+export type MyTransactions_query$data = MyTransactions_query;
+export type MyTransactions_query$key = {
+  readonly " $data"?: MyTransactions_query$data;
+  readonly " $fragmentRefs": FragmentRefs<"MyTransactions_query">;
 };
 
 const node: ReaderFragment = (function () {
@@ -84,10 +84,10 @@ const node: ReaderFragment = (function () {
           path: v0 /*: any*/,
         },
         fragmentPathInResult: [],
-        operation: require("./TransactionsPaginationQuery.graphql.ts"),
+        operation: require("./MyTransactionsPaginationQuery.graphql.ts"),
       },
     },
-    name: "Transactions_query",
+    name: "MyTransactions_query",
     selections: [
       {
         alias: "transactions",
@@ -105,7 +105,7 @@ const node: ReaderFragment = (function () {
         ],
         concreteType: "BucketTransactionConnection",
         kind: "LinkedField",
-        name: "__Transactions_query_transactions_connection",
+        name: "__MyTransactions_query_transactions_connection",
         plural: false,
         selections: [
           {
@@ -232,5 +232,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "69f81226e3cf808c3a8a87c5b268f59e";
+(node as any).hash = "0d508d4a1101b290f4666c6ced0c8bb0";
 export default node;

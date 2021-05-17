@@ -1,4 +1,4 @@
-import { Environment } from "react-relay";
+/*import { Environment } from "react-relay";
 import {
   SignUpInput,
   SignUpMutation,
@@ -44,3 +44,4 @@ export const commitCreateUserMutation = (
     },
   });
 };
+*/

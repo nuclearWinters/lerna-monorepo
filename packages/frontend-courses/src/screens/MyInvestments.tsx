@@ -1,24 +1,24 @@
 import React, { FC } from "react";
 import { graphql, usePaginationFragment } from "react-relay";
-import { Investments_query$key } from "./__generated__/Investments_query.graphql";
-import { InvestmentsPaginationQuery } from "./__generated__/InvestmentsPaginationQuery.graphql";
+import { MyInvestments_query$key } from "./__generated__/MyInvestments_query.graphql";
+import { MyInvestmentsPaginationQuery } from "./__generated__/MyInvestmentsPaginationQuery.graphql";
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 
-const investmentsFragment = graphql`
-  fragment Investments_query on Query
+const myInvestmentsFragment = graphql`
+  fragment MyInvestments_query on Query
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 2 }
     cursor: { type: "String", defaultValue: "" }
   )
-  @refetchable(queryName: "InvestmentsPaginationQuery") {
+  @refetchable(queryName: "MyInvestmentsPaginationQuery") {
     investments(
       first: $count
       after: $cursor
       refreshToken: $refreshToken
       user_id: $id
-    ) @connection(key: "Investments_query_investments") {
+    ) @connection(key: "MyInvestments_query_investments") {
       edges {
         node {
           id
@@ -40,11 +40,11 @@ type Props = {
   data: AppQueryResponse;
 };
 
-export const Investments: FC<Props> = (props) => {
-  const { data, loadNext } = usePaginationFragment<
-    InvestmentsPaginationQuery,
-    Investments_query$key
-  >(investmentsFragment, props.data);
+export const MyInvestments: FC<Props> = (props) => {
+  const { data, loadNext, refetch } = usePaginationFragment<
+    MyInvestmentsPaginationQuery,
+    MyInvestments_query$key
+  >(myInvestmentsFragment, props.data);
 
   return (
     <div>
@@ -110,6 +110,9 @@ export const Investments: FC<Props> = (props) => {
           })}
       </div>
       <button onClick={() => loadNext(1)}>loadNext</button>
+      <button onClick={() => refetch({}, { fetchPolicy: "network-only" })}>
+        refetch
+      </button>
     </div>
   );
 };

@@ -15,10 +15,10 @@ export type UpdateUserInput = {
   clabe?: string | null;
   mobile?: string | null;
 };
-export type UpdateUserMutationVariables = {
+export type ProfileMutationVariables = {
   input: UpdateUserInput;
 };
-export type UpdateUserMutationResponse = {
+export type ProfileMutationResponse = {
   readonly updateUser: {
     readonly error: string;
     readonly validAccessToken: string;
@@ -35,13 +35,13 @@ export type UpdateUserMutationResponse = {
     };
   };
 };
-export type UpdateUserMutation = {
-  readonly response: UpdateUserMutationResponse;
-  readonly variables: UpdateUserMutationVariables;
+export type ProfileMutation = {
+  readonly response: ProfileMutationResponse;
+  readonly variables: ProfileMutationVariables;
 };
 
 /*
-mutation UpdateUserMutation(
+mutation ProfileMutation(
   $input: UpdateUserInput!
 ) {
   updateUser(input: $input) {
@@ -160,7 +160,7 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
-      name: "UpdateUserMutation",
+      name: "ProfileMutation",
       selections: [
         {
           alias: null,
@@ -203,7 +203,7 @@ const node: ConcreteRequest = (function () {
     operation: {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
-      name: "UpdateUserMutation",
+      name: "ProfileMutation",
       selections: [
         {
           alias: null,
@@ -248,15 +248,15 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "de321552e1534bfba649c06013fc8297",
+      cacheID: "cde74f05b9c5a1aae1ba17f1f5d12679",
       id: null,
       metadata: {},
-      name: "UpdateUserMutation",
+      name: "ProfileMutation",
       operationKind: "mutation",
       text:
-        "mutation UpdateUserMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n    validAccessToken\n    user {\n      name\n      apellidoMaterno\n      apellidoPaterno\n      RFC\n      CURP\n      clabe\n      mobile\n      accountTotal\n      accountAvailable\n      id\n    }\n  }\n}\n",
+        "mutation ProfileMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n    validAccessToken\n    user {\n      name\n      apellidoMaterno\n      apellidoPaterno\n      RFC\n      CURP\n      clabe\n      mobile\n      accountTotal\n      accountAvailable\n      id\n    }\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "a95164c41be0ee611f5cf4462d6c4bff";
+(node as any).hash = "e393aceea5bfb173211c6378f9f8f118";
 export default node;

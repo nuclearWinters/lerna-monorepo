@@ -14,7 +14,7 @@ export type AppQueryResponse = {
     readonly " $fragmentRefs": FragmentRefs<"Routes_user">;
   };
   readonly " $fragmentRefs": FragmentRefs<
-    "DebtInSale_query" | "Transactions_query" | "Investments_query"
+    "AddInvestments_query" | "MyTransactions_query" | "MyInvestments_query"
   >;
 };
 export type AppQuery = {
@@ -27,9 +27,9 @@ query AppQuery(
   $id: String!
   $refreshToken: String!
 ) {
-  ...DebtInSale_query
-  ...Transactions_query
-  ...Investments_query
+  ...AddInvestments_query
+  ...MyTransactions_query
+  ...MyInvestments_query
   user(id: $id, refreshToken: $refreshToken) {
     ...Routes_user
     error
@@ -41,11 +41,7 @@ fragment AddFunds_user on User {
   id
 }
 
-fragment AddLoan_user on User {
-  id
-}
-
-fragment DebtInSale_query on Query {
+fragment AddInvestments_query on Query {
   loans(first: 5, after: "") {
     edges {
       node {
@@ -68,20 +64,11 @@ fragment DebtInSale_query on Query {
   }
 }
 
-fragment GeneralData_user on User {
+fragment AddLoan_user on User {
   id
-  name
-  apellidoPaterno
-  apellidoMaterno
-  RFC
-  CURP
-  clabe
-  mobile
-  accountTotal
-  accountAvailable
 }
 
-fragment Investments_query on Query {
+fragment MyInvestments_query on Query {
   investments(first: 2, after: "", refreshToken: $refreshToken, user_id: $id) {
     edges {
       node {
@@ -102,24 +89,7 @@ fragment Investments_query on Query {
   }
 }
 
-fragment RetireFunds_user on User {
-  id
-}
-
-fragment Routes_user on User {
-  id
-  name
-  apellidoPaterno
-  apellidoMaterno
-  accountTotal
-  accountAvailable
-  ...GeneralData_user
-  ...AddFunds_user
-  ...RetireFunds_user
-  ...AddLoan_user
-}
-
-fragment Transactions_query on Query {
+fragment MyTransactions_query on Query {
   transactions(first: 2, after: "", refreshToken: $refreshToken, user_id: $id) {
     edges {
       node {
@@ -142,6 +112,36 @@ fragment Transactions_query on Query {
       hasNextPage
     }
   }
+}
+
+fragment Profile_user on User {
+  id
+  name
+  apellidoPaterno
+  apellidoMaterno
+  RFC
+  CURP
+  clabe
+  mobile
+  accountTotal
+  accountAvailable
+}
+
+fragment RetireFunds_user on User {
+  id
+}
+
+fragment Routes_user on User {
+  id
+  name
+  apellidoPaterno
+  apellidoMaterno
+  accountTotal
+  accountAvailable
+  ...Profile_user
+  ...AddFunds_user
+  ...RetireFunds_user
+  ...AddLoan_user
 }
 */
 
@@ -307,17 +307,17 @@ const node: ConcreteRequest = (function () {
         {
           args: null,
           kind: "FragmentSpread",
-          name: "DebtInSale_query",
+          name: "AddInvestments_query",
         },
         {
           args: null,
           kind: "FragmentSpread",
-          name: "Transactions_query",
+          name: "MyTransactions_query",
         },
         {
           args: null,
           kind: "FragmentSpread",
-          name: "Investments_query",
+          name: "MyInvestments_query",
         },
       ],
       type: "Query",
@@ -420,7 +420,7 @@ const node: ConcreteRequest = (function () {
           args: v5 /*: any*/,
           filters: null,
           handle: "connection",
-          key: "DebtInSale_query_loans",
+          key: "AddInvestments_query_loans",
           kind: "LinkedHandle",
           name: "loans",
         },
@@ -496,7 +496,7 @@ const node: ConcreteRequest = (function () {
           args: v10 /*: any*/,
           filters: v15 /*: any*/,
           handle: "connection",
-          key: "Transactions_query_transactions",
+          key: "MyTransactions_query_transactions",
           kind: "LinkedHandle",
           name: "transactions",
         },
@@ -553,7 +553,7 @@ const node: ConcreteRequest = (function () {
           args: v10 /*: any*/,
           filters: v15 /*: any*/,
           handle: "connection",
-          key: "Investments_query_investments",
+          key: "MyInvestments_query_investments",
           kind: "LinkedHandle",
           name: "investments",
         },
@@ -636,15 +636,15 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "39a2194b0be07cb15cf75ed8fadf6ac3",
+      cacheID: "f1d2d8e4ed179e7369bb7ecdcf04aa7a",
       id: null,
       metadata: {},
       name: "AppQuery",
       operationKind: "query",
       text:
-        'query AppQuery(\n  $id: String!\n  $refreshToken: String!\n) {\n  ...DebtInSale_query\n  ...Transactions_query\n  ...Investments_query\n  user(id: $id, refreshToken: $refreshToken) {\n    ...Routes_user\n    error\n    id\n  }\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment DebtInSale_query on Query {\n  loans(first: 5, after: "") {\n    edges {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment GeneralData_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  accountTotal\n  accountAvailable\n}\n\nfragment Investments_query on Query {\n  investments(first: 2, after: "", refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...GeneralData_user\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n}\n\nfragment Transactions_query on Query {\n  transactions(first: 2, after: "", refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+        'query AppQuery(\n  $id: String!\n  $refreshToken: String!\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  user(id: $id, refreshToken: $refreshToken) {\n    ...Routes_user\n    error\n    id\n  }\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: "") {\n    edges {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: "", refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: "", refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment Profile_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  accountTotal\n  accountAvailable\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...Profile_user\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "68ddfaef29e18b802d5ee366845f4896";
+(node as any).hash = "9849c7df2405fcae9e466e1cae2c3f22";
 export default node;

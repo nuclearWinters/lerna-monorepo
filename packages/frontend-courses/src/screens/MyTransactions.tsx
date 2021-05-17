@@ -1,24 +1,24 @@
 import React, { FC } from "react";
 import { graphql, usePaginationFragment } from "react-relay";
-import { Transactions_query$key } from "./__generated__/Transactions_query.graphql";
-import { TransactionsPaginationQuery } from "./__generated__/TransactionsPaginationQuery.graphql";
+import { MyTransactions_query$key } from "./__generated__/MyTransactions_query.graphql";
+import { MyTransactionsPaginationQuery } from "./__generated__/MyTransactionsPaginationQuery.graphql";
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 
 const transactionsFragment = graphql`
-  fragment Transactions_query on Query
+  fragment MyTransactions_query on Query
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 2 }
     cursor: { type: "String", defaultValue: "" }
   )
-  @refetchable(queryName: "TransactionsPaginationQuery") {
+  @refetchable(queryName: "MyTransactionsPaginationQuery") {
     transactions(
       first: $count
       after: $cursor
       refreshToken: $refreshToken
       user_id: $id
-    ) @connection(key: "Transactions_query_transactions") {
+    ) @connection(key: "MyTransactions_query_transactions") {
       edges {
         node {
           id
@@ -44,10 +44,10 @@ type Props = {
   data: AppQueryResponse;
 };
 
-export const Transactions: FC<Props> = (props) => {
-  const { data, loadNext } = usePaginationFragment<
-    TransactionsPaginationQuery,
-    Transactions_query$key
+export const MyTransactions: FC<Props> = (props) => {
+  const { data, loadNext, refetch } = usePaginationFragment<
+    MyTransactionsPaginationQuery,
+    MyTransactions_query$key
   >(transactionsFragment, props.data);
 
   return (
@@ -118,6 +118,9 @@ export const Transactions: FC<Props> = (props) => {
           })}
       </div>
       <button onClick={() => loadNext(1)}>loadNext</button>
+      <button onClick={() => refetch({}, { fetchPolicy: "network-only" })}>
+        refetch
+      </button>
     </div>
   );
 };

@@ -38,9 +38,9 @@ export const getRefreshToken = (environment: Environment): string => {
 
 const RepositoryNameQuery = graphql`
   query AppQuery($id: String!, $refreshToken: String!) {
-    ...DebtInSale_query
-    ...Transactions_query
-    ...Investments_query
+    ...AddInvestments_query
+    ...MyTransactions_query
+    ...MyInvestments_query
     user(id: $id, refreshToken: $refreshToken) {
       ...Routes_user
       error

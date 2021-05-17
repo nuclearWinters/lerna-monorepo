@@ -1,7 +1,12 @@
-import { commitAddLoanMutation } from "mutations/AddLoan";
 import React, { FC, useState } from "react";
-import { graphql, useFragment, useRelayEnvironment } from "react-relay";
+import {
+  graphql,
+  useFragment,
+  useMutation,
+  useRelayEnvironment,
+} from "react-relay";
 import { AddLoan_user$key } from "./__generated__/AddLoan_user.graphql";
+import { AddLoanMutation } from "./__generated__/AddLoanMutation.graphql";
 
 const addLoanFragment = graphql`
   fragment AddLoan_user on User {
@@ -15,6 +20,24 @@ type Props = {
 
 export const AddLoan: FC<Props> = (props) => {
   const environment = useRelayEnvironment();
+  const [commit] = useMutation<AddLoanMutation>(graphql`
+    mutation AddLoanMutation($input: AddLoanInput!) {
+      addLoan(input: $input) {
+        error
+        validAccessToken
+        loan {
+          id
+          _id_user
+          score
+          ROI
+          goal
+          term
+          raised
+          expiry
+        }
+      }
+    }
+  `);
   const user = useFragment(addLoanFragment, props.user);
   const [form, setForm] = useState({
     goal: "",
@@ -71,13 +94,30 @@ export const AddLoan: FC<Props> = (props) => {
       </label>
       <button
         onClick={() => {
-          commitAddLoanMutation(environment, {
-            goal: form.goal,
-            term: Number(form.term),
-            user_gid: user.id,
-            refreshToken:
-              (environment.getStore().getSource().get("client:root:tokens")
-                ?.refreshToken as string) || "",
+          commit({
+            variables: {
+              input: {
+                goal: form.goal,
+                term: Number(form.term),
+                user_gid: user.id,
+                refreshToken:
+                  (environment.getStore().getSource().get("client:root:tokens")
+                    ?.refreshToken as string) || "",
+              },
+            },
+            onCompleted: (response) => {
+              if (response.addLoan.error) {
+                throw new Error(response.addLoan.error);
+              }
+            },
+            updater: (store, data) => {
+              const root = store.getRoot();
+              const token = root.getLinkedRecord("tokens");
+              token?.setValue(data.addLoan.validAccessToken, "accessToken");
+            },
+            onError: (error) => {
+              window.alert(error.message);
+            },
           });
         }}
       >

@@ -4,27 +4,27 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type DebtInSalePaginationQueryVariables = {
+export type AddInvestmentsPaginationQueryVariables = {
   count?: number | null;
   cursor?: string | null;
 };
-export type DebtInSalePaginationQueryResponse = {
-  readonly " $fragmentRefs": FragmentRefs<"DebtInSale_query">;
+export type AddInvestmentsPaginationQueryResponse = {
+  readonly " $fragmentRefs": FragmentRefs<"AddInvestments_query">;
 };
-export type DebtInSalePaginationQuery = {
-  readonly response: DebtInSalePaginationQueryResponse;
-  readonly variables: DebtInSalePaginationQueryVariables;
+export type AddInvestmentsPaginationQuery = {
+  readonly response: AddInvestmentsPaginationQueryResponse;
+  readonly variables: AddInvestmentsPaginationQueryVariables;
 };
 
 /*
-query DebtInSalePaginationQuery(
+query AddInvestmentsPaginationQuery(
   $count: Int = 5
   $cursor: String = ""
 ) {
-  ...DebtInSale_query_1G22uz
+  ...AddInvestments_query_1G22uz
 }
 
-fragment DebtInSale_query_1G22uz on Query {
+fragment AddInvestments_query_1G22uz on Query {
   loans(first: $count, after: $cursor) {
     edges {
       node {
@@ -78,7 +78,7 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
-      name: "DebtInSalePaginationQuery",
+      name: "AddInvestmentsPaginationQuery",
       selections: [
         {
           args: [
@@ -94,7 +94,7 @@ const node: ConcreteRequest = (function () {
             },
           ],
           kind: "FragmentSpread",
-          name: "DebtInSale_query",
+          name: "AddInvestments_query",
         },
       ],
       type: "Query",
@@ -104,7 +104,7 @@ const node: ConcreteRequest = (function () {
     operation: {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
-      name: "DebtInSalePaginationQuery",
+      name: "AddInvestmentsPaginationQuery",
       selections: [
         {
           alias: null,
@@ -239,22 +239,22 @@ const node: ConcreteRequest = (function () {
           args: v1 /*: any*/,
           filters: null,
           handle: "connection",
-          key: "DebtInSale_query_loans",
+          key: "AddInvestments_query_loans",
           kind: "LinkedHandle",
           name: "loans",
         },
       ],
     },
     params: {
-      cacheID: "fa9f62854919c84bdab089cb774d18cf",
+      cacheID: "cde60407154eea25a992275307bbb39d",
       id: null,
       metadata: {},
-      name: "DebtInSalePaginationQuery",
+      name: "AddInvestmentsPaginationQuery",
       operationKind: "query",
       text:
-        'query DebtInSalePaginationQuery(\n  $count: Int = 5\n  $cursor: String = ""\n) {\n  ...DebtInSale_query_1G22uz\n}\n\nfragment DebtInSale_query_1G22uz on Query {\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+        'query AddInvestmentsPaginationQuery(\n  $count: Int = 5\n  $cursor: String = ""\n) {\n  ...AddInvestments_query_1G22uz\n}\n\nfragment AddInvestments_query_1G22uz on Query {\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "ad4abc2ed9fab37f6b124cf17f51751e";
+(node as any).hash = "e6946d8bf9ee093e14953914bdda246a";
 export default node;

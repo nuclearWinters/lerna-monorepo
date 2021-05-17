@@ -1,8 +1,10 @@
-import { app } from "./app";
+import { app, schema } from "./app";
 import { MongoClient, ObjectID } from "mongodb";
 import { MONGO_DB } from "./config";
 import amqp from "amqplib";
 import { SIGN_UP } from "./types";
+import { useServer } from "graphql-ws/lib/use/ws";
+import ws from "ws";
 
 MongoClient.connect(MONGO_DB, {
   useNewUrlParser: true,
@@ -31,5 +33,11 @@ MongoClient.connect(MONGO_DB, {
     }
   });
   app.locals.ch = ch;
-  app.listen(process.env.PORT || 4000);
+  const server = app.listen(4000, () => {
+    const wsServer = new ws.Server({
+      server,
+      path: "/api/graphql",
+    });
+    useServer({ schema }, wsServer);
+  });
 });

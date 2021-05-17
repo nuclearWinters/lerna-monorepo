@@ -1,7 +1,12 @@
-import { commitAddFundsMutation } from "mutations/AddFunds";
 import React, { FC, useState } from "react";
-import { graphql, useFragment, useRelayEnvironment } from "react-relay";
+import {
+  graphql,
+  useFragment,
+  useMutation,
+  useRelayEnvironment,
+} from "react-relay";
 import { AddFunds_user$key } from "./__generated__/AddFunds_user.graphql";
+import { AddFundsMutation } from "./__generated__/AddFundsMutation.graphql";
 
 const addFundsFragment = graphql`
   fragment AddFunds_user on User {
@@ -15,6 +20,18 @@ type Props = {
 
 export const AddFunds: FC<Props> = (props) => {
   const environment = useRelayEnvironment();
+  const [commit] = useMutation<AddFundsMutation>(graphql`
+    mutation AddFundsMutation($input: AddFundsInput!) {
+      addFunds(input: $input) {
+        error
+        validAccessToken
+        user {
+          accountTotal
+          accountAvailable
+        }
+      }
+    }
+  `);
   const user = useFragment(addFundsFragment, props.user);
   const [quantity, setQuantity] = useState("");
   const handleQuantityOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,12 +61,29 @@ export const AddFunds: FC<Props> = (props) => {
       />
       <button
         onClick={() => {
-          commitAddFundsMutation(environment, {
-            user_gid: user.id,
-            quantity,
-            refreshToken:
-              (environment.getStore().getSource().get("client:root:tokens")
-                ?.refreshToken as string) || "",
+          commit({
+            variables: {
+              input: {
+                user_gid: user.id,
+                quantity,
+                refreshToken:
+                  (environment.getStore().getSource().get("client:root:tokens")
+                    ?.refreshToken as string) || "",
+              },
+            },
+            onCompleted: (response) => {
+              if (response.addFunds.error) {
+                throw new Error(response.addFunds.error);
+              }
+            },
+            updater: (store, data) => {
+              const root = store.getRoot();
+              const token = root.getLinkedRecord("tokens");
+              token?.setValue(data.addFunds.validAccessToken, "accessToken");
+            },
+            onError: (error) => {
+              window.alert(error.message);
+            },
           });
         }}
       >

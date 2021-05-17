@@ -8,7 +8,7 @@ describe("supertest example with mongodb", () => {
   let client: MongoClient;
 
   beforeAll(async () => {
-    client = await MongoClient.connect("mongodb://127.0.0.1:27017", {
+    client = await MongoClient.connect(process.env.MONGO_URL as string, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

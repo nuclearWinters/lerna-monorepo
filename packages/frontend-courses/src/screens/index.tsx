@@ -1,9 +1,9 @@
-export { DebtInSale } from "./DebtInSale";
-export { GeneralData } from "./GeneralData";
+export { AddInvestments } from "./AddInvestments";
+export { Profile } from "./Profile";
 export { LogIn } from "./LogIn";
 export { SignUp } from "./SignUp";
 export { AddFunds } from "./AddFunds";
 export { RetireFunds } from "./RetireFunds";
-export { Transactions } from "./Transactions";
+export { MyTransactions } from "./MyTransactions";
 export { AddLoan } from "./AddLoan";
-export { Investments } from "./Investments";
+export { MyInvestments } from "./MyInvestments";

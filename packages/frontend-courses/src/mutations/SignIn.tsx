@@ -1,4 +1,4 @@
-import { Environment } from "react-relay";
+/*import { Environment } from "react-relay";
 import {
   SignInInput,
   SignInMutation,
@@ -43,4 +43,4 @@ export const commitGetTokenMutation = (
       window.alert(error.message);
     },
   });
-};
+};*/

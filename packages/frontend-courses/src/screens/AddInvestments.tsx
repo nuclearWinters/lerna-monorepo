@@ -1,25 +1,26 @@
 import React, { CSSProperties, FC, useState } from "react";
 import {
   graphql,
+  useMutation,
   usePaginationFragment,
   useRelayEnvironment,
 } from "react-relay";
-import { DebtInSale_query$key } from "./__generated__/DebtInSale_query.graphql";
-import { DebtInSalePaginationQuery } from "./__generated__/DebtInSalePaginationQuery.graphql";
-import { commitAddLendsMutation } from "mutations/AddLends";
+import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
+import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
 import { useHistory } from "react-router";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { differenceInMonths, differenceInDays } from "date-fns";
+import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
 
 const debtInSaleFragment = graphql`
-  fragment DebtInSale_query on Query
+  fragment AddInvestments_query on Query
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
   )
-  @refetchable(queryName: "DebtInSalePaginationQuery") {
+  @refetchable(queryName: "AddInvestmentsPaginationQuery") {
     loans(first: $count, after: $cursor)
-      @connection(key: "DebtInSale_query_loans") {
+      @connection(key: "AddInvestments_query_loans") {
       edges {
         node {
           id
@@ -43,12 +44,27 @@ type Props = {
   data: AppQueryResponse;
 };
 
-export const DebtInSale: FC<Props> = (props) => {
+export const AddInvestments: FC<Props> = (props) => {
   const environment = useRelayEnvironment();
+  const [commit] = useMutation<AddInvestmentsMutation>(graphql`
+    mutation AddInvestmentsMutation($input: AddLendsInput!) {
+      addLends(input: $input) {
+        error
+        validAccessToken
+        user {
+          accountAvailable
+        }
+        loans {
+          id
+          raised
+        }
+      }
+    }
+  `);
   const history = useHistory();
   const { data, loadNext } = usePaginationFragment<
-    DebtInSalePaginationQuery,
-    DebtInSale_query$key
+    AddInvestmentsPaginationQuery,
+    AddInvestments_query$key
   >(debtInSaleFragment, props.data);
 
   const columns = [
@@ -185,15 +201,34 @@ export const DebtInSale: FC<Props> = (props) => {
             if (props.user.id === "VXNlcjo=") {
               return history.push("/login");
             }
-            commitAddLendsMutation(environment, {
-              lends: lends.map((lend) => ({
-                ...lend,
-                quantity: lend.quantity,
-              })),
-              lender_gid: props.user.id,
-              refreshToken:
-                (environment.getStore().getSource().get("client:root:tokens")
-                  ?.refreshToken as string) || "",
+            commit({
+              variables: {
+                input: {
+                  lends: lends.map((lend) => ({
+                    ...lend,
+                    quantity: lend.quantity,
+                  })),
+                  lender_gid: props.user.id,
+                  refreshToken:
+                    (environment
+                      .getStore()
+                      .getSource()
+                      .get("client:root:tokens")?.refreshToken as string) || "",
+                },
+              },
+              onCompleted: (response) => {
+                if (response.addLends.error) {
+                  throw new Error(response.addLends.error);
+                }
+              },
+              updater: (store, data) => {
+                const root = store.getRoot();
+                const token = root.getLinkedRecord("tokens");
+                token?.setValue(data.addLends.validAccessToken, "accessToken");
+              },
+              onError: (error) => {
+                window.alert(error.message);
+              },
             });
             setLends([]);
           }}
