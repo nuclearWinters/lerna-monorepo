@@ -7,7 +7,8 @@ services:
       - nodemodules:/usr/src/service/node_modules
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/relay-gateway
-    command: ["npm", "run", "start"]
+    command:
+      ["./wait-for-it.sh", "backend-courses:4000", "--", "npm", "run", "start"]
     ports:
       - "4001:4001"
     depends_on:
@@ -22,7 +23,7 @@ services:
     env_file:
       - ./packages/backend-courses/.env
     working_dir: /usr/src/service/packages/backend-courses
-    command: ["npm", "run", "start"]
+    command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "npm", "run", "start"]
     ports:
       - "4000:4000"
     depends_on:
@@ -38,7 +39,7 @@ services:
     env_file:
       - ./packages/backend-auth/.env
     working_dir: /usr/src/service/packages/backend-auth
-    command: ["npm", "run", "start"]
+    command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "npm", "run", "start"]
     ports:
       - "4002:4002"
       - "1983:1983"
