@@ -7,8 +7,8 @@ import { FragmentRefs } from "relay-runtime";
 export type MyInvestmentsPaginationQueryVariables = {
   count?: number | null;
   cursor?: string | null;
-  id: string;
-  refreshToken: string;
+  id?: string | null;
+  refreshToken?: string | null;
 };
 export type MyInvestmentsPaginationQueryResponse = {
   readonly " $fragmentRefs": FragmentRefs<"MyInvestments_query">;
@@ -22,8 +22,8 @@ export type MyInvestmentsPaginationQuery = {
 query MyInvestmentsPaginationQuery(
   $count: Int = 2
   $cursor: String = ""
-  $id: String!
-  $refreshToken: String!
+  $id: String
+  $refreshToken: String
 ) {
   ...MyInvestments_query_1G22uz
 }
@@ -147,7 +147,7 @@ const node: ConcreteRequest = (function () {
                 {
                   alias: null,
                   args: null,
-                  concreteType: "Investments",
+                  concreteType: "Investment",
                   kind: "LinkedField",
                   name: "node",
                   plural: false,
@@ -254,13 +254,12 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "e1b2fa06ee098983004cbb97544d4906",
+      cacheID: "9e58e802914134bc3e6498a5b6e394e5",
       id: null,
       metadata: {},
       name: "MyInvestmentsPaginationQuery",
       operationKind: "query",
-      text:
-        'query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n  $refreshToken: String!\n) {\n  ...MyInvestments_query_1G22uz\n}\n\nfragment MyInvestments_query_1G22uz on Query {\n  investments(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+      text: 'query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String\n  $refreshToken: String\n) {\n  ...MyInvestments_query_1G22uz\n}\n\nfragment MyInvestments_query_1G22uz on Query {\n  investments(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();

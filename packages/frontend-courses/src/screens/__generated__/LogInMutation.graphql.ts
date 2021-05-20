@@ -106,8 +106,7 @@ const node: ConcreteRequest = (function () {
       metadata: {},
       name: "LogInMutation",
       operationKind: "mutation",
-      text:
-        "mutation LogInMutation(\n  $input: SignInInput!\n) {\n  signIn(input: $input) {\n    error\n    accessToken\n    refreshToken\n  }\n}\n",
+      text: "mutation LogInMutation(\n  $input: SignInInput!\n) {\n  signIn(input: $input) {\n    error\n    accessToken\n    refreshToken\n  }\n}\n",
     },
   } as any;
 })();

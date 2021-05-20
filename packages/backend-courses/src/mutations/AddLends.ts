@@ -14,7 +14,7 @@ import {
   UserMongo,
 } from "../types";
 import { ObjectID, BulkWriteUpdateOneOperation } from "mongodb";
-import { getContext, refreshTokenMiddleware } from "../utils";
+import { refreshTokenMiddleware } from "../utils";
 import { GraphQLUser, MXNScalarType, GraphQLLoan } from "../Nodes";
 
 interface Input {
@@ -78,17 +78,10 @@ export const AddLendsMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { refreshToken, lender_gid, lends: newLends }: Input,
-    ctx: Context
+    { users, accessToken, investments, loans, transactions }: Context
   ): Promise<Payload> => {
     try {
       const { id: lender_id } = fromGlobalId(lender_gid);
-      const {
-        users,
-        accessToken,
-        investments,
-        loans,
-        transactions,
-      } = getContext(ctx);
       const { _id, validAccessToken } = await refreshTokenMiddleware(
         accessToken,
         refreshToken

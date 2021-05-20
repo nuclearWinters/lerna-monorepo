@@ -2,7 +2,7 @@ import { ObjectID } from "bson";
 import { GraphQLString, GraphQLNonNull, GraphQLNullableType } from "graphql";
 import { GraphQLUser } from "./Nodes";
 import { RootUser, Context } from "./types";
-import { getContext, refreshTokenMiddleware } from "./utils";
+import { refreshTokenMiddleware } from "./utils";
 
 interface IQueryUser {
   type: GraphQLNonNull<GraphQLNullableType>;
@@ -27,15 +27,17 @@ const QueryUser: IQueryUser = {
     id: { type: new GraphQLNonNull(GraphQLString) },
     refreshToken: { type: new GraphQLNonNull(GraphQLString) },
   },
-  resolve: async (_, { id, refreshToken }, ctx) => {
+  resolve: async (_, { id, refreshToken }, { users, accessToken }) => {
     try {
-      const { users, accessToken } = getContext(ctx);
-      const { _id } = await refreshTokenMiddleware(accessToken, refreshToken);
-      if (_id !== id) {
+      const { _id: user_id } = await refreshTokenMiddleware(
+        accessToken,
+        refreshToken
+      );
+      if (user_id !== id) {
         throw new Error("No es el mismo usuario.");
       }
       const user = await users.findOne({
-        _id: new ObjectID(_id),
+        _id: new ObjectID(user_id),
       });
       if (!user) {
         throw new Error("El usuario no existe.");
@@ -52,7 +54,7 @@ const QueryUser: IQueryUser = {
         accountAvailable,
       } = user;
       return {
-        _id,
+        _id: user_id,
         name,
         apellidoPaterno,
         apellidoMaterno,

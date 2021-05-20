@@ -1,3 +1,4 @@
+import { ObjectID } from "mongodb";
 import {
   GraphQLFieldConfigArgumentMap,
   GraphQLNonNull,
@@ -13,7 +14,7 @@ import {
 } from "graphql-relay";
 import { LoanConnection } from "./Nodes";
 import { Context, LoanMongo } from "./types";
-import { base64, getContext, unbase64 } from "./utils";
+import { base64, unbase64 } from "./utils";
 
 interface IQuery {
   type: GraphQLNonNull<GraphQLNullableType>;
@@ -33,20 +34,24 @@ export const QueryLoans: IQuery = {
   resolve: async (
     _,
     args: ConnectionArguments,
-    ctx
+    { loans }
   ): Promise<Connection<LoanMongo>> => {
     try {
-      const { loans } = getContext(ctx);
-      const offset = unbase64(args.after || "YXJyYXljb25uZWN0aW9uOjA=");
-      const skip = Number(offset) === 0 ? 0 : Number(offset) + 1;
+      const loan_id = unbase64(args.after || "");
       const limit = args.first ? args.first + 1 : 0;
-      if (limit === 0) {
-        throw new Error("Se requiere 'first'");
+      if (limit <= 0) {
+        throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const result = await loans.find().skip(skip).limit(limit).toArray();
-      const edgesMapped = result.map((loan, idx) => {
+      const result = await (loan_id
+        ? loans
+            .find({ _id: { $lt: new ObjectID(loan_id) } })
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray()
+        : loans.find().limit(limit).sort({ $natural: -1 }).toArray());
+      const edgesMapped = result.map((loan) => {
         return {
-          cursor: base64(String(skip + idx)),
+          cursor: base64(loan._id.toHexString()),
           node: loan,
         };
       });

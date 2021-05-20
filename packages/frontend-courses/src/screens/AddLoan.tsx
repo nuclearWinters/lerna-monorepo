@@ -7,6 +7,7 @@ import {
 } from "react-relay";
 import { AddLoan_user$key } from "./__generated__/AddLoan_user.graphql";
 import { AddLoanMutation } from "./__generated__/AddLoanMutation.graphql";
+import { getRefreshToken } from "App";
 
 const addLoanFragment = graphql`
   fragment AddLoan_user on User {
@@ -100,9 +101,7 @@ export const AddLoan: FC<Props> = (props) => {
                 goal: form.goal,
                 term: Number(form.term),
                 user_gid: user.id,
-                refreshToken:
-                  (environment.getStore().getSource().get("client:root:tokens")
-                    ?.refreshToken as string) || "",
+                refreshToken: getRefreshToken(environment),
               },
             },
             onCompleted: (response) => {

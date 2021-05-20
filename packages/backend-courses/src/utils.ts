@@ -1,4 +1,4 @@
-import { Collection } from "mongodb";
+import { Db } from "mongodb";
 import {
   UserMongo,
   LoanMongo,
@@ -8,14 +8,12 @@ import {
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT, Context } from "./types";
 import { ACCESSSECRET } from "./config";
-//import { Channel } from "amqplib";
 import {
   RenewAccessTokenInput,
   RenewAccessTokenPayload,
 } from "./proto/auth_pb";
 import { AuthClient } from "./proto/auth_grpc_pb";
 import { credentials } from "@grpc/grpc-js";
-import { Channel } from "amqplib";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -36,24 +34,15 @@ export const jwt = {
   },
 };
 
-interface IContextResult {
-  users: Collection<UserMongo>;
-  loans: Collection<LoanMongo>;
-  investments: Collection<InvestmentMongo>;
-  transactions: Collection<BucketTransactionMongo>;
-  accessToken: string | undefined;
-  ch: Channel;
-}
-
-export const getContext = (ctx: Context): IContextResult => {
-  const db = ctx.req.app.locals.db;
-  const ch = ctx.req.app.locals.ch;
+export const getContext = (req: any): Context => {
+  const db = req.app.locals.db as Db;
+  const ch = req.app.locals.ch;
   return {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
     investments: db.collection<InvestmentMongo>("lends"),
     transactions: db.collection<BucketTransactionMongo>("transactions"),
-    accessToken: ctx.req.headers.authorization,
+    accessToken: req.headers.authorization,
     ch,
   };
 };
@@ -118,6 +107,6 @@ export const base64 = (i: string): string => {
   return Buffer.from("arrayconnection:" + i, "utf8").toString("base64");
 };
 
-export const unbase64 = (i: string): number => {
-  return Number(Buffer.from(i, "base64").toString("utf8").split(":")[1]);
+export const unbase64 = (i: string): string => {
+  return Buffer.from(i, "base64").toString("utf8").split(":")[1];
 };

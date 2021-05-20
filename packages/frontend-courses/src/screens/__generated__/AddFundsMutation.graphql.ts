@@ -167,8 +167,7 @@ const node: ConcreteRequest = (function () {
       metadata: {},
       name: "AddFundsMutation",
       operationKind: "mutation",
-      text:
-        "mutation AddFundsMutation(\n  $input: AddFundsInput!\n) {\n  addFunds(input: $input) {\n    error\n    validAccessToken\n    user {\n      accountTotal\n      accountAvailable\n      id\n    }\n  }\n}\n",
+      text: "mutation AddFundsMutation(\n  $input: AddFundsInput!\n) {\n  addFunds(input: $input) {\n    error\n    validAccessToken\n    user {\n      accountTotal\n      accountAvailable\n      id\n    }\n  }\n}\n",
     },
   } as any;
 })();

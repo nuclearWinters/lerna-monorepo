@@ -2,7 +2,7 @@ import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context, UserMongo } from "../types";
 import { ObjectID } from "mongodb";
-import { getContext, refreshTokenMiddleware } from "../utils";
+import { refreshTokenMiddleware } from "../utils";
 import { GraphQLUser, MXNScalarType } from "../Nodes";
 
 interface Input {
@@ -42,11 +42,10 @@ export const AddFundsMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { refreshToken, user_gid, quantity }: Input,
-    ctx: Context
+    { users, accessToken, transactions }: Context
   ): Promise<Payload> => {
     try {
       const { id: user_id } = fromGlobalId(user_gid);
-      const { users, accessToken, transactions } = getContext(ctx);
       const { _id, validAccessToken } = await refreshTokenMiddleware(
         accessToken,
         refreshToken
@@ -54,12 +53,12 @@ export const AddFundsMutation = mutationWithClientMutationId({
       if (user_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
-      const result = await users.findOneAndUpdate(
+      const resultUser = await users.findOneAndUpdate(
         { _id: new ObjectID(user_id) },
         { $inc: { accountTotal: quantity, accountAvailable: quantity } },
         { returnOriginal: false }
       );
-      const updatedUser = result.value;
+      const updatedUser = resultUser.value;
       if (!updatedUser) {
         throw new Error("El usuario no existe.");
       }

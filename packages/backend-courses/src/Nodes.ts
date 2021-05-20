@@ -102,9 +102,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
 );
 
 export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
-  name: "Investments",
+  name: "Investment",
   fields: {
-    id: globalIdField("Investments", ({ _id }): string => _id.toHexString()),
+    id: globalIdField("Investment", ({ _id }): string => _id.toHexString()),
     _id_borrower: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ _id_borrower }): string => _id_borrower.toHexString(),
@@ -169,8 +169,8 @@ export const GraphQLTransaction = new GraphQLObjectType<TransactionMongo>({
   },
 });
 
-export const GraphQLBucketTransaction = new GraphQLObjectType<BucketTransactionMongo>(
-  {
+export const GraphQLBucketTransaction =
+  new GraphQLObjectType<BucketTransactionMongo>({
     name: "BucketTransaction",
     fields: {
       id: globalIdField("BucketTransaction", ({ _id }): string => _id),
@@ -190,8 +190,7 @@ export const GraphQLBucketTransaction = new GraphQLObjectType<BucketTransactionM
       },
     },
     interfaces: [nodeInterface],
-  }
-);
+  });
 
 const {
   connectionType: BucketTransactionConnection,
@@ -237,13 +236,11 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
   interfaces: [nodeInterface],
 });
 
-const {
-  connectionType: LoanConnection,
-  edgeType: GraphQLLoanEdge,
-} = connectionDefinitions({
-  name: "Loan",
-  nodeType: GraphQLLoan,
-});
+const { connectionType: LoanConnection, edgeType: GraphQLLoanEdge } =
+  connectionDefinitions({
+    name: "Loan",
+    nodeType: GraphQLLoan,
+  });
 
 const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
   name: "User",

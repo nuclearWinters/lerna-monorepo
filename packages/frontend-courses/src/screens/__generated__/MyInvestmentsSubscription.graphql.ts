@@ -2,94 +2,76 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ReaderFragment } from "relay-runtime";
-import { FragmentRefs } from "relay-runtime";
-export type MyInvestments_query = {
-  readonly investments: {
-    readonly edges: ReadonlyArray<{
+import { ConcreteRequest } from "relay-runtime";
+export type SubscribeType = "INSERT" | "UPDATE" | "%future added value";
+export type MyInvestmentsSubscriptionVariables = {
+  user_gid: string;
+};
+export type MyInvestmentsSubscriptionResponse = {
+  readonly investments_subscribe: {
+    readonly investment_edge: {
       readonly node: {
         readonly id: string;
         readonly _id_borrower: string;
+        readonly _id_lender: string;
         readonly _id_loan: string;
         readonly quantity: number;
         readonly created: number;
         readonly updated: number;
       } | null;
-    } | null> | null;
-  } | null;
-  readonly " $refType": "MyInvestments_query";
+      readonly cursor: string;
+    };
+    readonly type: SubscribeType;
+  };
 };
-export type MyInvestments_query$data = MyInvestments_query;
-export type MyInvestments_query$key = {
-  readonly " $data"?: MyInvestments_query$data;
-  readonly " $fragmentRefs": FragmentRefs<"MyInvestments_query">;
+export type MyInvestmentsSubscription = {
+  readonly response: MyInvestmentsSubscriptionResponse;
+  readonly variables: MyInvestmentsSubscriptionVariables;
 };
 
-const node: ReaderFragment = (function () {
-  var v0 = ["investments"];
-  return {
-    argumentDefinitions: [
+/*
+subscription MyInvestmentsSubscription(
+  $user_gid: ID!
+) {
+  investments_subscribe(user_gid: $user_gid) {
+    investment_edge {
+      node {
+        id
+        _id_borrower
+        _id_lender
+        _id_loan
+        quantity
+        created
+        updated
+      }
+      cursor
+    }
+    type
+  }
+}
+*/
+
+const node: ConcreteRequest = (function () {
+  var v0 = [
       {
-        defaultValue: 2,
+        defaultValue: null,
         kind: "LocalArgument",
-        name: "count",
-      },
-      {
-        defaultValue: "",
-        kind: "LocalArgument",
-        name: "cursor",
-      },
-      {
-        kind: "RootArgument",
-        name: "id",
-      },
-      {
-        kind: "RootArgument",
-        name: "refreshToken",
-      },
+        name: "user_gid",
+      } as any,
     ],
-    kind: "Fragment",
-    metadata: {
-      connection: [
-        {
-          count: "count",
-          cursor: "cursor",
-          direction: "forward",
-          path: v0 /*: any*/,
-        },
-      ],
-      refetch: {
-        connection: {
-          forward: {
-            count: "count",
-            cursor: "cursor",
-          },
-          backward: null,
-          path: v0 /*: any*/,
-        },
-        fragmentPathInResult: [],
-        operation: require("./MyInvestmentsPaginationQuery.graphql.ts"),
-      },
-    },
-    name: "MyInvestments_query",
-    selections: [
+    v1 = [
       {
-        alias: "investments",
+        alias: null,
         args: [
           {
             kind: "Variable",
-            name: "refreshToken",
-            variableName: "refreshToken",
-          },
-          {
-            kind: "Variable",
-            name: "user_id",
-            variableName: "id",
+            name: "user_gid",
+            variableName: "user_gid",
           },
         ],
-        concreteType: "InvestmentsConnection",
+        concreteType: "Investment_Subscribe",
         kind: "LinkedField",
-        name: "__MyInvestments_query_investments_connection",
+        name: "investments_subscribe",
         plural: false,
         selections: [
           {
@@ -97,8 +79,8 @@ const node: ReaderFragment = (function () {
             args: null,
             concreteType: "InvestmentsEdge",
             kind: "LinkedField",
-            name: "edges",
-            plural: true,
+            name: "investment_edge",
+            plural: false,
             selections: [
               {
                 alias: null,
@@ -120,6 +102,13 @@ const node: ReaderFragment = (function () {
                     args: null,
                     kind: "ScalarField",
                     name: "_id_borrower",
+                    storageKey: null,
+                  },
+                  {
+                    alias: null,
+                    args: null,
+                    kind: "ScalarField",
+                    name: "_id_lender",
                     storageKey: null,
                   },
                   {
@@ -150,13 +139,6 @@ const node: ReaderFragment = (function () {
                     name: "updated",
                     storageKey: null,
                   },
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "__typename",
-                    storageKey: null,
-                  },
                 ],
                 storageKey: null,
               },
@@ -173,35 +155,40 @@ const node: ReaderFragment = (function () {
           {
             alias: null,
             args: null,
-            concreteType: "PageInfo",
-            kind: "LinkedField",
-            name: "pageInfo",
-            plural: false,
-            selections: [
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "endCursor",
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "hasNextPage",
-                storageKey: null,
-              },
-            ],
+            kind: "ScalarField",
+            name: "type",
             storageKey: null,
           },
         ],
         storageKey: null,
-      },
-    ],
-    type: "Query",
-    abstractKey: null,
+      } as any,
+    ];
+  return {
+    fragment: {
+      argumentDefinitions: v0 /*: any*/,
+      kind: "Fragment",
+      metadata: null,
+      name: "MyInvestmentsSubscription",
+      selections: v1 /*: any*/,
+      type: "Subscription",
+      abstractKey: null,
+    },
+    kind: "Request",
+    operation: {
+      argumentDefinitions: v0 /*: any*/,
+      kind: "Operation",
+      name: "MyInvestmentsSubscription",
+      selections: v1 /*: any*/,
+    },
+    params: {
+      cacheID: "e30571439af9a4522a14917d18f4642e",
+      id: null,
+      metadata: {},
+      name: "MyInvestmentsSubscription",
+      operationKind: "subscription",
+      text: "subscription MyInvestmentsSubscription(\n  $user_gid: ID!\n) {\n  investments_subscribe(user_gid: $user_gid) {\n    investment_edge {\n      node {\n        id\n        _id_borrower\n        _id_lender\n        _id_loan\n        quantity\n        created\n        updated\n      }\n      cursor\n    }\n    type\n  }\n}\n",
+    },
   } as any;
 })();
-(node as any).hash = "91b836d56ae4ca06a2dff2bb676e40b4";
+(node as any).hash = "19b107c3e8d22c873935325b55ec7984";
 export default node;

@@ -7,6 +7,7 @@ import {
 } from "react-relay";
 import { AddFunds_user$key } from "./__generated__/AddFunds_user.graphql";
 import { AddFundsMutation } from "./__generated__/AddFundsMutation.graphql";
+import { getRefreshToken } from "App";
 
 const addFundsFragment = graphql`
   fragment AddFunds_user on User {
@@ -66,9 +67,7 @@ export const AddFunds: FC<Props> = (props) => {
               input: {
                 user_gid: user.id,
                 quantity,
-                refreshToken:
-                  (environment.getStore().getSource().get("client:root:tokens")
-                    ?.refreshToken as string) || "",
+                refreshToken: getRefreshToken(environment),
               },
             },
             onCompleted: (response) => {

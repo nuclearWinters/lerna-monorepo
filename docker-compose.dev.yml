@@ -80,6 +80,7 @@ services:
       - "27017:27017"
     logging:
       driver: none
+    entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0"]
   redis-auth:
     container_name: redis-auth
     command: redis-server --appendonly yes

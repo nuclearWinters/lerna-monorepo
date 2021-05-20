@@ -253,8 +253,7 @@ const node: ConcreteRequest = (function () {
       metadata: {},
       name: "ProfileMutation",
       operationKind: "mutation",
-      text:
-        "mutation ProfileMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n    validAccessToken\n    user {\n      name\n      apellidoMaterno\n      apellidoPaterno\n      RFC\n      CURP\n      clabe\n      mobile\n      accountTotal\n      accountAvailable\n      id\n    }\n  }\n}\n",
+      text: "mutation ProfileMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n    validAccessToken\n    user {\n      name\n      apellidoMaterno\n      apellidoPaterno\n      RFC\n      CURP\n      clabe\n      mobile\n      accountTotal\n      accountAvailable\n      id\n    }\n  }\n}\n",
     },
   } as any;
 })();

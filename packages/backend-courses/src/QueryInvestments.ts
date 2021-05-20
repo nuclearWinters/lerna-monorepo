@@ -1,3 +1,4 @@
+import { ObjectID } from "mongodb";
 import {
   GraphQLFieldConfigArgumentMap,
   GraphQLNonNull,
@@ -14,7 +15,7 @@ import {
 } from "graphql-relay";
 import { InvestmentConnection } from "./Nodes";
 import { Context, InvestmentMongo } from "./types";
-import { base64, getContext, refreshTokenMiddleware, unbase64 } from "./utils";
+import { base64, refreshTokenMiddleware, unbase64 } from "./utils";
 
 interface IQuery {
   type: GraphQLNonNull<GraphQLNullableType>;
@@ -37,16 +38,19 @@ export const QueryInvestments: IQuery = {
   type: new GraphQLNonNull(InvestmentConnection),
   args: {
     user_id: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
     refreshToken: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
     ...connectionArgs,
   },
-  resolve: async (_, args: Args, ctx): Promise<Connection<InvestmentMongo>> => {
+  resolve: async (
+    _,
+    args: Args,
+    { investments, accessToken }
+  ): Promise<Connection<InvestmentMongo>> => {
     try {
-      const { investments, accessToken } = getContext(ctx);
       const { _id } = await refreshTokenMiddleware(
         accessToken,
         args.refreshToken || ""
@@ -54,21 +58,28 @@ export const QueryInvestments: IQuery = {
       if (args.user_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
-      const offset = unbase64(args.after || "YXJyYXljb25uZWN0aW9uOjA=");
-      const skip = Number(offset) === 0 ? 0 : Number(offset) + 1;
+      const investment_id = unbase64(args.after || "");
       const limit = args.first ? args.first + 1 : 0;
-      if (limit === 0) {
-        throw new Error("Se requiere 'first'");
+      if (limit <= 0) {
+        throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const result = await investments
-        .find()
-        .skip(skip)
-        .limit(limit)
-        .sort({ $natural: -1 })
-        .toArray();
-      const edgesMapped = result.map((investment, idx) => {
+      const result = await (investment_id
+        ? investments
+            .find({
+              _id: { $lt: new ObjectID(investment_id) },
+              _id_lender: new ObjectID(_id),
+            })
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray()
+        : investments
+            .find({ _id_lender: new ObjectID(_id) })
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray());
+      const edgesMapped = result.map((investment) => {
         return {
-          cursor: base64(String(skip + idx)),
+          cursor: base64(investment._id.toHexString()),
           node: investment,
         };
       });

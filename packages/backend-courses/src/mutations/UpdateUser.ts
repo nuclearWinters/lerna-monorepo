@@ -2,7 +2,7 @@ import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context, UserMongo } from "../types";
 import { ObjectID } from "mongodb";
-import { getContext, refreshTokenMiddleware } from "../utils";
+import { refreshTokenMiddleware } from "../utils";
 import { GraphQLUser } from "../Nodes";
 
 interface Input {
@@ -54,11 +54,10 @@ export const UpdateUserMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { refreshToken, user_gid, ...user }: Input,
-    ctx: Context
+    { users, accessToken }: Context
   ): Promise<Payload> => {
     try {
       const { id: user_id } = fromGlobalId(user_gid);
-      const { users, accessToken } = getContext(ctx);
       const { _id, validAccessToken } = await refreshTokenMiddleware(
         accessToken,
         refreshToken

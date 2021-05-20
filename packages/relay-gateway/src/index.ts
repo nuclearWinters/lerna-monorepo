@@ -105,14 +105,15 @@ const makeGatewaySchema = async () => {
 makeGatewaySchema().then((schema) => {
   app.use(
     "/relay/graphql",
-    graphqlHTTP((req) => ({
-      schema,
-      context: {
-        req,
-      },
-      subscriptionEndpoint: `ws://localhost/relay/graphql`,
-      graphiql: { subscriptionEndpoint: `ws://localhost/relay/graphql` } as any,
-    }))
+    graphqlHTTP((req) => {
+      return {
+        schema,
+        context: {
+          req,
+        },
+        graphiql: true,
+      };
+    })
   );
   const server = app.listen(4001, () => {
     const wsServer = new ws.Server({

@@ -1,17 +1,13 @@
 import { Channel } from "amqplib";
-import { ObjectId, Db } from "mongodb";
+import { ObjectId, Collection } from "mongodb";
 
 export interface Context {
-  refreshToken?: string;
-  req: {
-    app: {
-      locals: {
-        db: Db;
-        ch: Channel;
-      };
-    };
-    headers: { authorization: string | undefined; Cookie?: string };
-  };
+  users: Collection<UserMongo>;
+  loans: Collection<LoanMongo>;
+  investments: Collection<InvestmentMongo>;
+  transactions: Collection<BucketTransactionMongo>;
+  accessToken: string | undefined;
+  ch: Channel;
 }
 export interface RootUser {
   _id: string;

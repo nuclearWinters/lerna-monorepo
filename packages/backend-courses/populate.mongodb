@@ -52,13 +52,15 @@ updateOne: {
 
 */
 
-db.lends.bulkWrite([{
+/*db.lends.bulkWrite([{
   updateOne: {
     filter: { "_id": ObjectId("607b7338119cbd2f4c4ad525") },
     update: { $inc: { "quantity": 1000 } },
     upsert: true
   }
-}])
+}])*/
+
+//db.lends.find( { _id: { $lt: ObjectId("609f19c8ab321d006c748013") } }).limit( 1 ).sort({ $natural: -1 });
 
 /*db.lends.updateOne(
   { "_id": ObjectId("607b7338119cbd2f4c4ad524") },
@@ -75,3 +77,12 @@ db.lends.bulkWrite([{
   },
   { upsert: true }
 )*/
+
+rs.initiate(
+  {
+    _id : 'rs0',
+    members: [
+      { _id : 0, host : "mongo-courses:27017" },
+    ]
+  }
+)

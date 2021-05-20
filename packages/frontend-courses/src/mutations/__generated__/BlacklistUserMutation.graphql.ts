@@ -97,8 +97,7 @@ const node: ConcreteRequest = (function () {
       metadata: {},
       name: "BlacklistUserMutation",
       operationKind: "mutation",
-      text:
-        "mutation BlacklistUserMutation(\n  $input: BlacklistUserInput!\n) {\n  blacklistUser(input: $input) {\n    validAccessToken\n    error\n  }\n}\n",
+      text: "mutation BlacklistUserMutation(\n  $input: BlacklistUserInput!\n) {\n  blacklistUser(input: $input) {\n    validAccessToken\n    error\n  }\n}\n",
     },
   } as any;
 })();

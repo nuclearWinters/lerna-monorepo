@@ -1,4 +1,4 @@
-import { IJWT } from "App";
+import { getRefreshToken, IJWT } from "App";
 import jwtDecode from "jwt-decode";
 import React, { FC, useRef, useState } from "react";
 import {
@@ -147,14 +147,8 @@ export const Profile: FC<Props> = (props) => {
             <input
               placeholder="Email"
               value={
-                environment.getStore().getSource().get("client:root:tokens")
-                  ?.refreshToken
-                  ? jwtDecode<IJWT>(
-                      environment
-                        .getStore()
-                        .getSource()
-                        .get("client:root:tokens")?.refreshToken as string
-                    ).email
+                getRefreshToken(environment)
+                  ? jwtDecode<IJWT>(getRefreshToken(environment)).email
                   : ""
               }
               name="email"
@@ -169,9 +163,7 @@ export const Profile: FC<Props> = (props) => {
             variables: {
               input: {
                 ...formUser,
-                refreshToken:
-                  (environment.getStore().getSource().get("client:root:tokens")
-                    ?.refreshToken as string) || "",
+                refreshToken: getRefreshToken(environment),
               },
             },
             onCompleted: (response) => {

@@ -125,8 +125,8 @@ type Query {
     first: Int
     before: String
     last: Int
-    refreshToken: String!
-    user_id: String!
+    refreshToken: String
+    user_id: String
   ): InvestmentsConnection
   transactions(
     after: String
@@ -138,9 +138,31 @@ type Query {
   ): BucketTransactionConnection
 }
 
+type Loan_Subscribe {
+  loan_edge: LoanEdge!
+  type: SubscribeType!
+}
+
+type Investment_Subscribe {
+  investment_edge: InvestmentsEdge!
+  type: SubscribeType!
+}
+
+type Transaction_Subscribe {
+  transaction_edge: BucketTransactionEdge!
+  type: SubscribeType!
+}
+
+type Subscription {
+  loans_subscribe: Loan_Subscribe!
+  investments_subscribe(user_gid: ID!): Investment_Subscribe!
+  transactions_subscribe(user_gid: ID!): Transaction_Subscribe!
+}
+
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }
 
 interface Node {
@@ -154,7 +176,7 @@ type PageInfo {
   endCursor: String
 }
 
-type Investments {
+type Investment {
   id: ID!
   _id_borrower: String!
   _id_lender: String!
@@ -170,7 +192,7 @@ type InvestmentsConnection {
 }
 
 type InvestmentsEdge {
-  node: Investments
+  node: Investment
   cursor: String!
 }
 
@@ -199,6 +221,11 @@ enum TransactionType {
   CREDIT
   WITHDRAWAL
   INVEST
+}
+
+enum SubscribeType {
+  UPDATE
+  INSERT
 }
 
 type Transaction {

@@ -1,3 +1,4 @@
+import { ObjectID } from "bson";
 import {
   GraphQLFieldConfigArgumentMap,
   GraphQLNonNull,
@@ -14,7 +15,7 @@ import {
 } from "graphql-relay";
 import { BucketTransactionConnection } from "./Nodes";
 import { BucketTransactionMongo, Context } from "./types";
-import { base64, getContext, refreshTokenMiddleware, unbase64 } from "./utils";
+import { base64, refreshTokenMiddleware, unbase64 } from "./utils";
 
 interface IQuery {
   type: GraphQLNonNull<GraphQLNullableType>;
@@ -47,10 +48,9 @@ export const QueryTransactions: IQuery = {
   resolve: async (
     _,
     args: Args,
-    ctx
+    { transactions, accessToken }
   ): Promise<Connection<BucketTransactionMongo>> => {
     try {
-      const { transactions, accessToken } = getContext(ctx);
       const { _id } = await refreshTokenMiddleware(
         accessToken,
         args.refreshToken || ""
@@ -58,21 +58,25 @@ export const QueryTransactions: IQuery = {
       if (args.user_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
-      const offset = unbase64(args.after || "YXJyYXljb25uZWN0aW9uOjA=");
-      const skip = Number(offset) === 0 ? 0 : Number(offset) + 1;
+      const transaction_id = unbase64(args.after || "");
       const limit = args.first ? args.first + 1 : 0;
-      if (limit === 0) {
-        throw new Error("Se requiere 'first'");
+      if (limit <= 0) {
+        throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const result = await transactions
-        .find()
-        .skip(skip)
-        .limit(limit)
-        .sort({ $natural: -1 })
-        .toArray();
-      const edgesMapped = result.map((loan, idx) => {
+      const result = await (transaction_id
+        ? transactions
+            .find({ _id: { $lt: transaction_id }, _id_user: new ObjectID(_id) })
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray()
+        : transactions
+            .find({ _id_user: new ObjectID(_id) })
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray());
+      const edgesMapped = result.map((loan) => {
         return {
-          cursor: base64(String(skip + idx)),
+          cursor: base64(loan._id),
           node: loan,
         };
       });

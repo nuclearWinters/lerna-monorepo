@@ -1,10 +1,22 @@
 import { app, schema } from "./app";
-import { MongoClient, ObjectID } from "mongodb";
+import {
+  TRANSACTION,
+  LOAN,
+  INVESTMENT,
+  pubsub,
+} from "./subscriptions/subscriptions";
+import { MongoClient, ObjectID, ChangeEventCR } from "mongodb";
 import { MONGO_DB } from "./config";
 import amqp from "amqplib";
-import { SIGN_UP } from "./types";
+import {
+  LoanMongo,
+  SIGN_UP,
+  InvestmentMongo,
+  BucketTransactionMongo,
+} from "./types";
 import { useServer } from "graphql-ws/lib/use/ws";
 import ws from "ws";
+import { base64 } from "./utils";
 
 MongoClient.connect(MONGO_DB, {
   useNewUrlParser: true,
@@ -15,6 +27,64 @@ MongoClient.connect(MONGO_DB, {
   const conn = await amqp.connect("amqp://rabbitmq:5672");
   const ch = await conn.createChannel();
   await ch.assertQueue(SIGN_UP);
+  const options = { fullDocument: "updateLookup" as const };
+  const loansStream = db.collection<LoanMongo>("loans").watch([], options);
+  loansStream.on("change", (event) => {
+    if (["insert", "update"].includes(event.operationType)) {
+      const fullDocument = (event as ChangeEventCR<LoanMongo>).fullDocument;
+      if (fullDocument) {
+        pubsub.publish(LOAN, {
+          loans_subscribe: {
+            loan_edge: {
+              node: fullDocument,
+              cursor: base64(fullDocument._id.toHexString()),
+            },
+            type: event.operationType,
+          },
+        });
+      }
+    }
+  });
+  const investmentsStream = db
+    .collection<InvestmentMongo>("lends")
+    .watch([], options);
+  investmentsStream.on("change", (event) => {
+    if (["insert", "update"].includes(event.operationType)) {
+      const fullDocument = (event as ChangeEventCR<InvestmentMongo>)
+        .fullDocument;
+      if (fullDocument) {
+        pubsub.publish(INVESTMENT, {
+          investments_subscribe: {
+            investment_edge: {
+              node: fullDocument,
+              cursor: base64(fullDocument._id.toHexString()),
+            },
+            type: event.operationType,
+          },
+        });
+      }
+    }
+  });
+  const transactionsStream = db
+    .collection<BucketTransactionMongo>("transactions")
+    .watch([], options);
+  transactionsStream.on("change", (event) => {
+    if (["insert", "update"].includes(event.operationType)) {
+      const fullDocument = (event as ChangeEventCR<BucketTransactionMongo>)
+        .fullDocument;
+      if (fullDocument) {
+        pubsub.publish(TRANSACTION, {
+          transactions_subscribe: {
+            transaction_edge: {
+              node: fullDocument,
+              cursor: base64(fullDocument._id),
+            },
+            type: event.operationType,
+          },
+        });
+      }
+    }
+  });
   ch.consume(SIGN_UP, (msg) => {
     if (msg !== null) {
       db.collection("users").insertOne({
