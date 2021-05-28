@@ -15,17 +15,16 @@ import {
 } from "../types";
 import { ObjectID, BulkWriteUpdateOneOperation } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
-import { GraphQLUser, MXNScalarType, GraphQLLoan } from "../Nodes";
+import { GraphQLUser, MXNScalarType } from "../Nodes";
+import { addMonths, startOfMonth } from "date-fns";
 
 interface Input {
-  refreshToken: string;
   lender_gid: string;
   lends: { quantity: number; borrower_id: string; loan_gid: string }[];
 }
 
 type Payload = {
   validAccessToken: string;
-  loans: LoanMongo[] | null;
   error: string;
   user: UserMongo | null;
 };
@@ -50,7 +49,6 @@ export const AddLendsMutation = mutationWithClientMutationId({
   description:
     "Envía una lista de prestamos: recibe una lista con deudas actualizadas y un usuario actualizado.",
   inputFields: {
-    refreshToken: { type: new GraphQLNonNull(GraphQLString) },
     lender_gid: { type: new GraphQLNonNull(GraphQLID) },
     lends: {
       type: new GraphQLNonNull(
@@ -67,18 +65,21 @@ export const AddLendsMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ validAccessToken }: Payload): string => validAccessToken,
     },
-    loans: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLLoan)),
-      resolve: ({ loans }: Payload): LoanMongo[] | null => loans,
-    },
     user: {
       type: GraphQLUser,
       resolve: ({ user }: Payload): UserMongo | null => user,
     },
   },
   mutateAndGetPayload: async (
-    { refreshToken, lender_gid, lends: newLends }: Input,
-    { users, accessToken, investments, loans, transactions }: Context
+    { lender_gid, lends: newLends }: Input,
+    {
+      users,
+      accessToken,
+      investments,
+      loans,
+      transactions,
+      refreshToken,
+    }: Context
   ): Promise<Payload> => {
     try {
       const { id: lender_id } = fromGlobalId(lender_gid);
@@ -100,9 +101,33 @@ export const AddLendsMutation = mutationWithClientMutationId({
           quantity,
           _id_loan: new ObjectID(_id_loan),
           now,
+          goal: 0,
+          raised: 0,
+          completed: false,
+          term: 0,
+          ROI: 0,
         };
       });
-      const investmentsOperations = docs.map<
+      const loansResult = await loans
+        .find({ _id: { $in: docs.map((doc) => doc._id_loan) } })
+        .toArray();
+      loansResult.forEach((loan) => {
+        const index = docs.findIndex(
+          (doc) => doc._id_loan.toHexString() === loan._id.toHexString()
+        );
+        if (index !== -1) {
+          docs[index].goal = loan.goal;
+          docs[index].raised = loan.raised;
+          docs[index].term = loan.term;
+          docs[index].ROI = loan.ROI;
+          docs[index].completed =
+            docs[index].quantity + loan.raised === loan.goal;
+        }
+      });
+      const docsFiltered = docs.filter(
+        (doc) => !(doc.goal === 0 || doc.raised + doc.quantity > doc.goal)
+      );
+      const investmentsOperations = docsFiltered.map<
         BulkWriteUpdateOneOperation<InvestmentMongo>
       >(({ quantity, _id_loan, _id_borrower, _id_lender, now }) => ({
         updateOne: {
@@ -116,20 +141,40 @@ export const AddLendsMutation = mutationWithClientMutationId({
               _id_loan,
               created: now,
               updated: now,
+              status: "up to date",
             },
           },
           upsert: true,
         },
       }));
       investments.bulkWrite(investmentsOperations);
-      const loansOperations = docs.map<BulkWriteUpdateOneOperation<LoanMongo>>(
-        ({ quantity, _id_loan }) => ({
-          updateOne: {
-            filter: { _id: _id_loan },
-            update: { $inc: { raised: quantity } },
+      const loansOperations = docsFiltered.map<
+        BulkWriteUpdateOneOperation<LoanMongo>
+      >(({ quantity, _id_loan, term, goal, completed, ROI }) => ({
+        updateOne: {
+          filter: { _id: _id_loan },
+          update: {
+            $inc: { raised: quantity },
+            $set: {
+              scheduledPayments: completed
+                ? new Array(term).fill({}).map((pay, index) => {
+                    const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
+                    return {
+                      amortize: Math.round(
+                        goal / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
+                      ),
+                      scheduledDate: startOfMonth(
+                        addMonths(new Date(), index + 1)
+                      ),
+                      status: "to be paid",
+                    };
+                  })
+                : null,
+              status: completed ? "to be paid" : "financing",
+            },
           },
-        })
-      );
+        },
+      }));
       await loans.bulkWrite(loansOperations);
       const total = newLends.reduce((prev, next) => {
         return prev + next.quantity;
@@ -139,13 +184,11 @@ export const AddLendsMutation = mutationWithClientMutationId({
         { $inc: { accountAvailable: -total } },
         { returnOriginal: false }
       );
-      const ids = docs.map((doc) => doc._id_loan);
-      const updatedLoans = await loans.find({ _id: { $in: ids } }).toArray();
       const user = result.value;
       if (!user) {
         throw new Error("El usuario no existe.");
       }
-      const transactionsOperations = docs.map<
+      const transactionsOperations = docsFiltered.map<
         BulkWriteUpdateOneOperation<BucketTransactionMongo>
       >(({ quantity, _id_loan, _id_borrower, now }) => ({
         updateOne: {
@@ -171,12 +214,11 @@ export const AddLendsMutation = mutationWithClientMutationId({
         },
       }));
       transactions.bulkWrite(transactionsOperations);
-      return { validAccessToken, error: "", loans: updatedLoans, user };
+      return { validAccessToken, error: "", user };
     } catch (e) {
       return {
         validAccessToken: "",
         error: e.message,
-        loans: null,
         user: null,
       };
     }

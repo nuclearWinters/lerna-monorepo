@@ -3,31 +3,29 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
-export type AddLoanInput = {
+export type ApproveLoanInput = {
   clientMutationId?: string | null;
-  user_gid: string;
-  term: number;
-  goal: string;
+  loan_gid: string;
 };
-export type AddLoanMutationVariables = {
-  input: AddLoanInput;
+export type AddInvestmentsApproveLoanMutationVariables = {
+  input: ApproveLoanInput;
 };
-export type AddLoanMutationResponse = {
-  readonly addLoan: {
+export type AddInvestmentsApproveLoanMutationResponse = {
+  readonly approveLoan: {
     readonly error: string;
     readonly validAccessToken: string;
   };
 };
-export type AddLoanMutation = {
-  readonly response: AddLoanMutationResponse;
-  readonly variables: AddLoanMutationVariables;
+export type AddInvestmentsApproveLoanMutation = {
+  readonly response: AddInvestmentsApproveLoanMutationResponse;
+  readonly variables: AddInvestmentsApproveLoanMutationVariables;
 };
 
 /*
-mutation AddLoanMutation(
-  $input: AddLoanInput!
+mutation AddInvestmentsApproveLoanMutation(
+  $input: ApproveLoanInput!
 ) {
-  addLoan(input: $input) {
+  approveLoan(input: $input) {
     error
     validAccessToken
   }
@@ -52,9 +50,9 @@ const node: ConcreteRequest = (function () {
             variableName: "input",
           },
         ],
-        concreteType: "AddLoanPayload",
+        concreteType: "ApproveLoanPayload",
         kind: "LinkedField",
-        name: "addLoan",
+        name: "approveLoan",
         plural: false,
         selections: [
           {
@@ -80,7 +78,7 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
-      name: "AddLoanMutation",
+      name: "AddInvestmentsApproveLoanMutation",
       selections: v1 /*: any*/,
       type: "Mutation",
       abstractKey: null,
@@ -89,18 +87,18 @@ const node: ConcreteRequest = (function () {
     operation: {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
-      name: "AddLoanMutation",
+      name: "AddInvestmentsApproveLoanMutation",
       selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "ddc2af4eeaf57ce271d4bc2f7c4f7147",
+      cacheID: "2dc1b092a622bc95322d296101d490ac",
       id: null,
       metadata: {},
-      name: "AddLoanMutation",
+      name: "AddInvestmentsApproveLoanMutation",
       operationKind: "mutation",
-      text: "mutation AddLoanMutation(\n  $input: AddLoanInput!\n) {\n  addLoan(input: $input) {\n    error\n    validAccessToken\n  }\n}\n",
+      text: "mutation AddInvestmentsApproveLoanMutation(\n  $input: ApproveLoanInput!\n) {\n  approveLoan(input: $input) {\n    error\n    validAccessToken\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "fcd80089e064adae267565217b35b0c5";
+(node as any).hash = "cd2c4a3b3b8d2bf219c72447200fe8f6";
 export default node;

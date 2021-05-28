@@ -20,6 +20,7 @@ import {
   MyInvestments,
 } from "./screens";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
+import { tokensAndData } from "App";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -45,6 +46,7 @@ type Props = {
 export const Routes: FC<Props> = (props) => {
   const environment = useRelayEnvironment();
   const user = useFragment(routesFragment, props.user);
+  const { isBorrower, isSupport } = tokensAndData.data;
   return (
     <Router>
       <div
@@ -62,17 +64,36 @@ export const Routes: FC<Props> = (props) => {
             flexDirection: "column",
           }}
         >
-          <div>Valor de la cuenta</div>
-          <div>${user.accountTotal}</div>
-          <div>Saldo disponible</div>
-          <div>${user.accountAvailable}</div>
-          <Link to="/profile">Mi cuenta</Link>
-          <Link to="/addInvestments">Comprar</Link>
-          <Link to="/addFunds">Agregar fondos</Link>
-          <Link to="/retireFunds">Retirar fondos</Link>
-          <Link to="/addLoan">Pedir prestamo</Link>
-          <Link to="/myInvestments">Mis Inversiones</Link>
-          <Link to="/myTransactions">Mis movimientos</Link>
+          {isBorrower ? (
+            <>
+              <div>Valor de la cuenta</div>
+              <div>${user.accountTotal}</div>
+              <div>Saldo disponible</div>
+              <div>${user.accountAvailable}</div>
+              <Link to="/profile">Mi cuenta</Link>
+              <Link to="/addLoan">Pedir prestamo</Link>
+              <Link to="/myLoans">Mis prestamos</Link>
+              <Link to="/addFunds">Agregar fondos</Link>
+              <Link to="/retireFunds">Retirar fondos</Link>
+            </>
+          ) : isSupport ? (
+            <>
+              <Link to="/approveLoan">Aprobar prestamo</Link>
+            </>
+          ) : (
+            <>
+              <div>Valor de la cuenta</div>
+              <div>${user.accountTotal}</div>
+              <div>Saldo disponible</div>
+              <div>${user.accountAvailable}</div>
+              <Link to="/profile">Mi cuenta</Link>
+              <Link to="/addInvestments">Comprar</Link>
+              <Link to="/addFunds">Agregar fondos</Link>
+              <Link to="/retireFunds">Retirar fondos</Link>
+              <Link to="/myInvestments">Mis Inversiones</Link>
+              <Link to="/myTransactions">Mis movimientos</Link>
+            </>
+          )}
         </div>
         <div
           style={{
@@ -94,6 +115,16 @@ export const Routes: FC<Props> = (props) => {
                 style={{ textAlign: "end" }}
                 onClick={() => {
                   commitDeleteTokensLocally(environment);
+                  tokensAndData.tokens = { accessToken: "", refreshToken: "" };
+                  tokensAndData.data = {
+                    _id: "",
+                    email: "",
+                    iat: 0,
+                    exp: 0,
+                    isSupport: false,
+                    isLender: true,
+                    isBorrower: false,
+                  };
                   props.refetch();
                 }}
               >
@@ -108,35 +139,75 @@ export const Routes: FC<Props> = (props) => {
             </div>
           )}
           <div style={{ flex: 1 }}>
-            <Switch>
-              <Route path="/profile">
-                <Profile user={user} />
-              </Route>
-              <Route path="/addInvestments">
-                <AddInvestments user={{ id: user.id }} data={props.data} />
-              </Route>
-              <Route path="/addFunds">
-                <AddFunds user={user} />
-              </Route>
-              <Route path="/retireFunds">
-                <RetireFunds user={user} />
-              </Route>
-              <Route path="/addLoan">
-                <AddLoan user={user} />
-              </Route>
-              <Route path="/login">
-                <LogIn refetch={props.refetch} />
-              </Route>
-              <Route path="/register">
-                <SignUp refetch={props.refetch} />
-              </Route>
-              <Route path="/myTransactions">
-                <MyTransactions user={{ id: user.id }} data={props.data} />
-              </Route>
-              <Route path="/myInvestments">
-                <MyInvestments user={{ id: user.id }} data={props.data} />
-              </Route>
-            </Switch>
+            {isBorrower ? (
+              <Switch>
+                <Route path="/login">
+                  <LogIn refetch={props.refetch} />
+                </Route>
+                <Route path="/register">
+                  <SignUp refetch={props.refetch} />
+                </Route>
+                <Route path="/profile">
+                  <Profile user={user} />
+                </Route>
+                <Route path="/addLoan">
+                  <AddLoan user={user} />
+                </Route>
+                <Route path="/myLoans">
+                  <AddInvestments data={props.data} />
+                </Route>
+                <Route path="/addFunds">
+                  <AddFunds user={user} />
+                </Route>
+                <Route path="/retireFunds">
+                  <RetireFunds user={user} />
+                </Route>
+              </Switch>
+            ) : isSupport ? (
+              <Switch>
+                <Route path="/login">
+                  <LogIn refetch={props.refetch} />
+                </Route>
+                <Route path="/register">
+                  <SignUp refetch={props.refetch} />
+                </Route>
+                <Route path="/approveLoan">
+                  <AddInvestments data={props.data} />
+                </Route>
+              </Switch>
+            ) : (
+              <Switch>
+                <Route path="/login">
+                  <LogIn refetch={props.refetch} />
+                </Route>
+                <Route path="/register">
+                  <SignUp refetch={props.refetch} />
+                </Route>
+                <Route path="/profile">
+                  <Profile user={user} />
+                </Route>
+                <Route path="/addInvestments">
+                  <AddInvestments
+                    user={{
+                      id: user.id,
+                    }}
+                    data={props.data}
+                  />
+                </Route>
+                <Route path="/addFunds">
+                  <AddFunds user={user} />
+                </Route>
+                <Route path="/retireFunds">
+                  <RetireFunds user={user} />
+                </Route>
+                <Route path="/myTransactions">
+                  <MyTransactions user={{ id: user.id }} data={props.data} />
+                </Route>
+                <Route path="/myInvestments">
+                  <MyInvestments user={{ id: user.id }} data={props.data} />
+                </Route>
+              </Switch>
+            )}
           </div>
         </div>
       </div>

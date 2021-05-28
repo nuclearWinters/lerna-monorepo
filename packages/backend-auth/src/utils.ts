@@ -1,5 +1,5 @@
-import { Collection } from "mongodb";
-import { UserMongo, RedisPromises, Context, SIGN_UP } from "./types";
+import { Db } from "mongodb";
+import { UserMongo, Context, SIGN_UP } from "./types";
 import { ACCESSSECRET, REFRESHSECRET } from "./config";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
@@ -15,7 +15,13 @@ export const jwt = {
     return decoded as DecodeJWT | undefined;
   },
   sign: (
-    data: { _id: string; email: string },
+    data: {
+      _id: string;
+      email: string;
+      isLender: boolean;
+      isBorrower: boolean;
+      isSupport: boolean;
+    },
     secret: string,
     options: SignOptions
   ): string => {
@@ -46,13 +52,9 @@ export const refreshTokenMiddleware = async (
     if (e.message === "jwt expired") {
       const user = jwt.verify(refreshToken, REFRESHSECRET);
       if (!user) throw new Error("El token esta corrompido.");
-      const validAccessToken = jwt.sign(
-        { _id: user._id, email: user.email },
-        ACCESSSECRET,
-        {
-          expiresIn: "15m",
-        }
-      );
+      const validAccessToken = jwt.sign(user, ACCESSSECRET, {
+        expiresIn: "15m",
+      });
       return {
         validAccessToken,
         _id: user._id,
@@ -63,19 +65,16 @@ export const refreshTokenMiddleware = async (
   }
 };
 
-interface IContextResult {
-  users: Collection<UserMongo>;
-  rdb: RedisPromises;
-  accessToken?: string;
-  ch: Channel;
-}
-
-export const getContext = (ctx: Context): IContextResult => {
-  const { db, rdb, ch } = ctx.req.app.locals;
+export const getContext = (req: any): Context => {
+  const db = req.app.locals.db as Db;
+  const ch = req.app.locals.ch;
+  const rdb = req.app.locals.rdb;
+  const authorization = JSON.parse(req.headers.authorization || "{}");
   return {
     users: db.collection<UserMongo>("users"),
     rdb,
-    accessToken: ctx.req.headers.authorization,
+    accessToken: authorization.accessToken,
+    refreshToken: authorization.refreshToken,
     ch,
   };
 };

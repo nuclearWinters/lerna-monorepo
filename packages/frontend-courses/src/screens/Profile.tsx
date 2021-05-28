@@ -1,12 +1,6 @@
-import { getRefreshToken, IJWT } from "App";
-import jwtDecode from "jwt-decode";
+import { getDataFromToken, tokensAndData } from "App";
 import React, { FC, useRef, useState } from "react";
-import {
-  graphql,
-  useFragment,
-  useMutation,
-  useRelayEnvironment,
-} from "react-relay";
+import { graphql, useFragment, useMutation } from "react-relay";
 import { ProfileMutation } from "./__generated__/ProfileMutation.graphql";
 import { Profile_user$key } from "./__generated__/Profile_user.graphql";
 
@@ -30,7 +24,6 @@ type Props = {
 };
 
 export const Profile: FC<Props> = (props) => {
-  const environment = useRelayEnvironment();
   const [commit] = useMutation<ProfileMutation>(graphql`
     mutation ProfileMutation($input: UpdateUserInput!) {
       updateUser(input: $input) {
@@ -146,11 +139,7 @@ export const Profile: FC<Props> = (props) => {
             <div>Email</div>
             <input
               placeholder="Email"
-              value={
-                getRefreshToken(environment)
-                  ? jwtDecode<IJWT>(getRefreshToken(environment)).email
-                  : ""
-              }
+              value={tokensAndData.data.email}
               name="email"
               disabled={true}
             />
@@ -163,7 +152,6 @@ export const Profile: FC<Props> = (props) => {
             variables: {
               input: {
                 ...formUser,
-                refreshToken: getRefreshToken(environment),
               },
             },
             onCompleted: (response) => {
@@ -172,9 +160,10 @@ export const Profile: FC<Props> = (props) => {
               }
             },
             updater: (store, data) => {
-              const root = store.getRoot();
-              const token = root.getLinkedRecord("tokens");
-              token?.setValue(data.updateUser.validAccessToken, "accessToken");
+              tokensAndData.tokens.accessToken =
+                data.updateUser.validAccessToken;
+              const user = getDataFromToken(data.updateUser.validAccessToken);
+              tokensAndData.data = user;
             },
             onError: (error) => {
               window.alert(error.message);

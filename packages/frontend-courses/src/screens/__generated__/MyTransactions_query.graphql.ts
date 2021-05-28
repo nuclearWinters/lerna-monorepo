@@ -59,10 +59,6 @@ const node: ReaderFragment = (function () {
         kind: "RootArgument",
         name: "id",
       },
-      {
-        kind: "RootArgument",
-        name: "refreshToken",
-      },
     ],
     kind: "Fragment",
     metadata: {
@@ -92,11 +88,6 @@ const node: ReaderFragment = (function () {
       {
         alias: "transactions",
         args: [
-          {
-            kind: "Variable",
-            name: "refreshToken",
-            variableName: "refreshToken",
-          },
           {
             kind: "Variable",
             name: "user_id",
@@ -232,5 +223,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "0d508d4a1101b290f4666c6ced0c8bb0";
+(node as any).hash = "4176bb7778e068c8b609ce5a5b58fabb";
 export default node;

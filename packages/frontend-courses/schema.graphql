@@ -25,7 +25,6 @@ type SignUpPayload {
 }
 
 input BlacklistUserInput {
-  refreshToken: String!
   user_gid: String!
   clientMutationId: String
 }
@@ -38,7 +37,6 @@ type BlacklistUserPayload {
 
 input UpdateUserInput {
   clientMutationId: String
-  refreshToken: String!
   user_gid: String!
   name: String
   apellidoPaterno: String
@@ -64,7 +62,6 @@ input LendList {
 
 input AddLendsInput {
   clientMutationId: String
-  refreshToken: String!
   lender_gid: ID!
   lends: [LendList!]!
 }
@@ -74,12 +71,10 @@ type AddLendsPayload {
   error: String!
   clientMutationId: String
   user: User!
-  loans: [Loan!]
 }
 
 input AddLoanInput {
   clientMutationId: String
-  refreshToken: String!
   user_gid: ID!
   term: Int!
   goal: MXN!
@@ -89,12 +84,10 @@ type AddLoanPayload {
   validAccessToken: String!
   error: String!
   clientMutationId: String
-  loan: Loan
 }
 
 input AddFundsInput {
   clientMutationId: String
-  refreshToken: String!
   user_gid: ID!
   quantity: MXN!
 }
@@ -106,6 +99,17 @@ type AddFundsPayload {
   user: User
 }
 
+input ApproveLoanInput {
+  clientMutationId: String
+  loan_gid: ID!
+}
+
+type ApproveLoanPayload {
+  validAccessToken: String!
+  error: String!
+  clientMutationId: String
+}
+
 type Mutation {
   signIn(input: SignInInput!): SignInPayload!
   signUp(input: SignUpInput!): SignUpPayload!
@@ -114,18 +118,25 @@ type Mutation {
   addLends(input: AddLendsInput!): AddLendsPayload!
   addLoan(input: AddLoanInput!): AddLoanPayload!
   addFunds(input: AddFundsInput!): AddFundsPayload!
+  approveLoan(input: ApproveLoanInput!): ApproveLoanPayload!
 }
 
 type Query {
-  user(id: String!, refreshToken: String!): User!
+  user(id: String!): User!
   node(id: ID!): Node
-  loans(after: String, first: Int, before: String, last: Int): LoanConnection
+  loans(
+    after: String
+    first: Int
+    before: String
+    last: Int
+    status: [LoanStatus!]
+    borrower_id: String
+  ): LoanConnection
   investments(
     after: String
     first: Int
     before: String
     last: Int
-    refreshToken: String
     user_id: String
   ): InvestmentsConnection
   transactions(
@@ -133,7 +144,6 @@ type Query {
     first: Int
     before: String
     last: Int
-    refreshToken: String!
     user_id: String!
   ): BucketTransactionConnection
 }
@@ -184,6 +194,7 @@ type Investment {
   quantity: Int!
   created: Date!
   updated: Date!
+  status: InvestmentStatus!
 }
 
 type InvestmentsConnection {
@@ -205,6 +216,7 @@ type Loan {
   term: Int!
   raised: MXN!
   expiry: Date!
+  status: LoanStatus!
 }
 
 type LoanConnection {
@@ -221,6 +233,21 @@ enum TransactionType {
   CREDIT
   WITHDRAWAL
   INVEST
+}
+
+enum InvestmentStatus {
+  DELAY_PAYMENT
+  UP_TO_DATE
+  PAST_DUE
+  PAID
+}
+
+enum LoanStatus {
+  PAID
+  TO_BE_PAID
+  FINANCING
+  WAITING_FOR_APPROVAL
+  PAST_DUE
 }
 
 enum SubscribeType {

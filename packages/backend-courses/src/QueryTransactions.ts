@@ -13,8 +13,9 @@ import {
   connectionFromArray,
   ForwardConnectionArgs,
 } from "graphql-relay";
+import { FilterQuery } from "mongodb";
 import { BucketTransactionConnection } from "./Nodes";
-import { BucketTransactionMongo, Context } from "./types";
+import { Context, BucketTransactionMongo } from "./types";
 import { base64, refreshTokenMiddleware, unbase64 } from "./utils";
 
 interface IQuery {
@@ -31,7 +32,6 @@ interface IQuery {
 
 interface Args extends ConnectionArguments {
   user_id?: string | null;
-  refreshToken?: string | null;
 }
 
 export const QueryTransactions: IQuery = {
@@ -40,21 +40,15 @@ export const QueryTransactions: IQuery = {
     user_id: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    refreshToken: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
     ...connectionArgs,
   },
   resolve: async (
     _,
     args: Args,
-    { transactions, accessToken }
+    { transactions, accessToken, refreshToken }
   ): Promise<Connection<BucketTransactionMongo>> => {
     try {
-      const { _id } = await refreshTokenMiddleware(
-        accessToken,
-        args.refreshToken || ""
-      );
+      const { _id } = await refreshTokenMiddleware(accessToken, refreshToken);
       if (args.user_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
@@ -63,17 +57,17 @@ export const QueryTransactions: IQuery = {
       if (limit <= 0) {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const result = await (transaction_id
-        ? transactions
-            .find({ _id: { $lt: transaction_id }, _id_user: new ObjectID(_id) })
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray()
-        : transactions
-            .find({ _id_user: new ObjectID(_id) })
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray());
+      const query: FilterQuery<BucketTransactionMongo> = {
+        _id_user: new ObjectID(_id),
+      };
+      if (transaction_id) {
+        query._id = { $lt: transaction_id };
+      }
+      const result = await transactions
+        .find(query)
+        .limit(limit)
+        .sort({ $natural: -1 })
+        .toArray();
       const edgesMapped = result.map((loan) => {
         return {
           cursor: base64(loan._id),

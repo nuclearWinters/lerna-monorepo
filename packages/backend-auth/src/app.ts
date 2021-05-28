@@ -5,6 +5,7 @@ import cors from "cors";
 import { SignUpMutation } from "./mutations/SignUpMutation";
 import { SignInMutation } from "./mutations/SignInMutation";
 import { BlacklistUserMutation } from "./mutations/BlacklistUserMutation";
+import { getContext } from "./utils";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -46,9 +47,7 @@ app.use(
     return {
       schema: schema,
       graphiql: true,
-      context: {
-        req,
-      },
+      context: getContext(req),
     };
   })
 );

@@ -1,5 +1,5 @@
 import { Channel } from "amqplib";
-import { ObjectId, Db } from "mongodb";
+import { ObjectId, Collection } from "mongodb";
 
 export interface RedisPromises {
   get: (arg1: string) => Promise<string | null>;
@@ -12,29 +12,28 @@ export interface RedisPromises {
   keys: (arg1: string) => Promise<string[]>;
 }
 export interface Context {
-  req: {
-    headers: {
-      authorization: string | undefined;
-    };
-    app: {
-      locals: {
-        db: Db;
-        rdb: RedisPromises;
-        ch: Channel;
-      };
-    };
-  };
+  users: Collection<UserMongo>;
+  rdb: RedisPromises;
+  accessToken?: string;
+  ch: Channel;
+  refreshToken?: string;
 }
 
 export interface UserMongo {
   _id: ObjectId;
   email: string;
   password: string;
+  isLender: boolean;
+  isBorrower: boolean;
+  isSupport: boolean;
 }
 
 export interface DecodeJWT {
   _id: string;
   email: string;
+  isLender: boolean;
+  isBorrower: boolean;
+  isSupport: boolean;
 }
 
 export const SIGN_UP = "SIGN_UP";

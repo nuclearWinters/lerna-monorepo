@@ -3,6 +3,12 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
+export type InvestmentStatus =
+  | "DELAY_PAYMENT"
+  | "PAID"
+  | "PAST_DUE"
+  | "UP_TO_DATE"
+  | "%future added value";
 export type SubscribeType = "INSERT" | "UPDATE" | "%future added value";
 export type MyInvestmentsSubscriptionVariables = {
   user_gid: string;
@@ -18,6 +24,7 @@ export type MyInvestmentsSubscriptionResponse = {
         readonly quantity: number;
         readonly created: number;
         readonly updated: number;
+        readonly status: InvestmentStatus;
       } | null;
       readonly cursor: string;
     };
@@ -43,6 +50,7 @@ subscription MyInvestmentsSubscription(
         quantity
         created
         updated
+        status
       }
       cursor
     }
@@ -139,6 +147,13 @@ const node: ConcreteRequest = (function () {
                     name: "updated",
                     storageKey: null,
                   },
+                  {
+                    alias: null,
+                    args: null,
+                    kind: "ScalarField",
+                    name: "status",
+                    storageKey: null,
+                  },
                 ],
                 storageKey: null,
               },
@@ -181,14 +196,14 @@ const node: ConcreteRequest = (function () {
       selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "e30571439af9a4522a14917d18f4642e",
+      cacheID: "3cca6c7017aeb22a9851269a3f799701",
       id: null,
       metadata: {},
       name: "MyInvestmentsSubscription",
       operationKind: "subscription",
-      text: "subscription MyInvestmentsSubscription(\n  $user_gid: ID!\n) {\n  investments_subscribe(user_gid: $user_gid) {\n    investment_edge {\n      node {\n        id\n        _id_borrower\n        _id_lender\n        _id_loan\n        quantity\n        created\n        updated\n      }\n      cursor\n    }\n    type\n  }\n}\n",
+      text: "subscription MyInvestmentsSubscription(\n  $user_gid: ID!\n) {\n  investments_subscribe(user_gid: $user_gid) {\n    investment_edge {\n      node {\n        id\n        _id_borrower\n        _id_lender\n        _id_loan\n        quantity\n        created\n        updated\n        status\n      }\n      cursor\n    }\n    type\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "19b107c3e8d22c873935325b55ec7984";
+(node as any).hash = "3e562bf3f60b694522c0ef3b40d93bd5";
 export default node;

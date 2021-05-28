@@ -4,7 +4,6 @@ import {
   usePaginationFragment,
   useSubscription,
   ConnectionHandler,
-  useRelayEnvironment,
 } from "react-relay";
 import { MyInvestments_query$key } from "./__generated__/MyInvestments_query.graphql";
 import { MyInvestmentsPaginationQuery } from "./__generated__/MyInvestmentsPaginationQuery.graphql";
@@ -13,7 +12,7 @@ import es from "date-fns/locale/es";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { MyInvestmentsSubscription } from "./__generated__/MyInvestmentsSubscription.graphql";
-import { getIdFromToken, getRefreshToken } from "App";
+import { tokensAndData } from "App";
 
 const myInvestmentsFragment = graphql`
   fragment MyInvestments_query on Query
@@ -22,12 +21,8 @@ const myInvestmentsFragment = graphql`
     cursor: { type: "String", defaultValue: "" }
   )
   @refetchable(queryName: "MyInvestmentsPaginationQuery") {
-    investments(
-      first: $count
-      after: $cursor
-      refreshToken: $refreshToken
-      user_id: $id
-    ) @connection(key: "MyInvestments_query_investments") {
+    investments(first: $count, after: $cursor, user_id: $id)
+      @connection(key: "MyInvestments_query_investments") {
       edges {
         node {
           id
@@ -36,6 +31,7 @@ const myInvestmentsFragment = graphql`
           quantity
           created
           updated
+          status
         }
       }
     }
@@ -61,6 +57,7 @@ const subscription = graphql`
           quantity
           created
           updated
+          status
         }
         cursor
       }
@@ -70,7 +67,6 @@ const subscription = graphql`
 `;
 
 export const MyInvestments: FC<Props> = (props) => {
-  const environment = useRelayEnvironment();
   const user_gid = props?.user?.id || "";
   const config = useMemo<GraphQLSubscriptionConfig<MyInvestmentsSubscription>>(
     () => ({
@@ -83,8 +79,7 @@ export const MyInvestments: FC<Props> = (props) => {
             root,
             "MyInvestments_query_investments",
             {
-              refreshToken: getRefreshToken(environment),
-              user_id: getIdFromToken(environment),
+              user_id: tokensAndData.data._id,
             }
           );
           if (!connectionRecord) {
@@ -104,7 +99,7 @@ export const MyInvestments: FC<Props> = (props) => {
         }
       },
     }),
-    [user_gid, environment]
+    [user_gid]
   );
   useSubscription(config);
   const { data, loadNext, refetch } = usePaginationFragment<
@@ -144,6 +139,7 @@ export const MyInvestments: FC<Props> = (props) => {
                       {edge?.node?._id_loan}
                     </div>
                   )}
+                  <div>Status: {edge?.node?.status}</div>
                   <div>
                     Ultimo abono en:{" "}
                     {format(
@@ -152,7 +148,6 @@ export const MyInvestments: FC<Props> = (props) => {
                       { locale: es }
                     )}
                   </div>
-
                   <div>
                     Prestamo creado en:{" "}
                     {format(
@@ -180,8 +175,7 @@ export const MyInvestments: FC<Props> = (props) => {
         onClick={() =>
           refetch(
             {
-              refreshToken: getRefreshToken(environment),
-              id: getIdFromToken(environment),
+              id: tokensAndData.data._id,
             },
             { fetchPolicy: "network-only" }
           )

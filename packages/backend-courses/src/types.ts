@@ -7,6 +7,7 @@ export interface Context {
   investments: Collection<InvestmentMongo>;
   transactions: Collection<BucketTransactionMongo>;
   accessToken: string | undefined;
+  refreshToken: string | undefined;
   ch: Channel;
 }
 export interface RootUser {
@@ -36,9 +37,15 @@ export interface UserMongo {
   accountAvailable: number;
 }
 
+export type TransactionMongoType =
+  | "CREDIT"
+  | "WITHDRAWAL"
+  | "INVEST"
+  | "PAYMENT";
+
 export interface TransactionMongo {
   _id: ObjectId;
-  type: "CREDIT" | "WITHDRAWAL" | "INVEST";
+  type: TransactionMongoType;
   quantity: number;
   _id_borrower?: ObjectId;
   _id_loan?: ObjectId;
@@ -52,6 +59,21 @@ export interface BucketTransactionMongo {
   history: TransactionMongo[];
 }
 
+export type ILoanStatus =
+  | "paid"
+  | "to be paid"
+  | "financing"
+  | "waiting for approval"
+  | "past due";
+
+export type IScheduledPaymentsStatus = "paid" | "to be paid" | "delayed";
+
+export interface IScheduledPayments {
+  amortize: number;
+  status: IScheduledPaymentsStatus;
+  scheduledDate: Date;
+}
+
 export interface LoanMongo {
   _id: ObjectId;
   _id_user: ObjectId;
@@ -61,7 +83,15 @@ export interface LoanMongo {
   term: number;
   raised: number;
   expiry: Date;
+  status: ILoanStatus;
+  scheduledPayments: IScheduledPayments[] | null;
 }
+
+export type IInvestmentStatus =
+  | "delay payment"
+  | "up to date"
+  | "past due"
+  | "paid";
 
 export interface InvestmentMongo {
   _id: ObjectId;
@@ -71,6 +101,7 @@ export interface InvestmentMongo {
   quantity: number;
   created: Date;
   updated: Date;
+  status: IInvestmentStatus;
 }
 
 export interface DecodeJWT {

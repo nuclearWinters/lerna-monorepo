@@ -13,6 +13,7 @@ import {
   SIGN_UP,
   InvestmentMongo,
   BucketTransactionMongo,
+  UserMongo,
 } from "./types";
 import { useServer } from "graphql-ws/lib/use/ws";
 import ws from "ws";
@@ -87,7 +88,7 @@ MongoClient.connect(MONGO_DB, {
   });
   ch.consume(SIGN_UP, (msg) => {
     if (msg !== null) {
-      db.collection("users").insertOne({
+      db.collection<UserMongo>("users").insertOne({
         _id: new ObjectID(msg.content.toString()),
         name: "",
         apellidoPaterno: "",

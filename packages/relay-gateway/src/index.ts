@@ -73,7 +73,9 @@ const makeRemoteExecutor = (url: string): AsyncExecutor => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: authorization || "",
+        Authorization:
+          authorization ||
+          JSON.stringify({ accessToken: "", refreshToken: "" }),
       },
       body: JSON.stringify({ query, variables }),
     });

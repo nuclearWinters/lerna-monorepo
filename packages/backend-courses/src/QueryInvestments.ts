@@ -1,4 +1,4 @@
-import { ObjectID } from "mongodb";
+import { FilterQuery, ObjectID } from "mongodb";
 import {
   GraphQLFieldConfigArgumentMap,
   GraphQLNonNull,
@@ -31,7 +31,6 @@ interface IQuery {
 
 interface Args extends ConnectionArguments {
   user_id?: string | null;
-  refreshToken?: string | null;
 }
 
 export const QueryInvestments: IQuery = {
@@ -40,21 +39,15 @@ export const QueryInvestments: IQuery = {
     user_id: {
       type: GraphQLString,
     },
-    refreshToken: {
-      type: GraphQLString,
-    },
     ...connectionArgs,
   },
   resolve: async (
     _,
     args: Args,
-    { investments, accessToken }
+    { investments, accessToken, refreshToken }
   ): Promise<Connection<InvestmentMongo>> => {
     try {
-      const { _id } = await refreshTokenMiddleware(
-        accessToken,
-        args.refreshToken || ""
-      );
+      const { _id } = await refreshTokenMiddleware(accessToken, refreshToken);
       if (args.user_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
@@ -63,20 +56,17 @@ export const QueryInvestments: IQuery = {
       if (limit <= 0) {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const result = await (investment_id
-        ? investments
-            .find({
-              _id: { $lt: new ObjectID(investment_id) },
-              _id_lender: new ObjectID(_id),
-            })
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray()
-        : investments
-            .find({ _id_lender: new ObjectID(_id) })
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray());
+      const query: FilterQuery<InvestmentMongo> = {
+        _id_lender: new ObjectID(_id),
+      };
+      if (investment_id) {
+        query._id = { $lt: new ObjectID(investment_id) };
+      }
+      const result = await investments
+        .find(query)
+        .limit(limit)
+        .sort({ $natural: -1 })
+        .toArray();
       const edgesMapped = result.map((investment) => {
         return {
           cursor: base64(investment._id.toHexString()),

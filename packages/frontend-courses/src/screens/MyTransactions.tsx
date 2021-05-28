@@ -1,10 +1,5 @@
 import React, { FC, useMemo } from "react";
-import {
-  graphql,
-  usePaginationFragment,
-  useRelayEnvironment,
-  useSubscription,
-} from "react-relay";
+import { graphql, usePaginationFragment, useSubscription } from "react-relay";
 import { MyTransactions_query$key } from "./__generated__/MyTransactions_query.graphql";
 import { MyTransactionsPaginationQuery } from "./__generated__/MyTransactionsPaginationQuery.graphql";
 import { format } from "date-fns";
@@ -12,7 +7,7 @@ import es from "date-fns/locale/es";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import { MyTransactionsSubscription } from "./__generated__/MyTransactionsSubscription.graphql";
-import { getIdFromToken, getRefreshToken } from "App";
+import { tokensAndData } from "App";
 
 const transactionsFragment = graphql`
   fragment MyTransactions_query on Query
@@ -21,12 +16,8 @@ const transactionsFragment = graphql`
     cursor: { type: "String", defaultValue: "" }
   )
   @refetchable(queryName: "MyTransactionsPaginationQuery") {
-    transactions(
-      first: $count
-      after: $cursor
-      refreshToken: $refreshToken
-      user_id: $id
-    ) @connection(key: "MyTransactions_query_transactions") {
+    transactions(first: $count, after: $cursor, user_id: $id)
+      @connection(key: "MyTransactions_query_transactions") {
       edges {
         node {
           id
@@ -77,7 +68,6 @@ const subscription = graphql`
 `;
 
 export const MyTransactions: FC<Props> = (props) => {
-  const environment = useRelayEnvironment();
   const user_gid = props?.user?.id || "";
   const config = useMemo<GraphQLSubscriptionConfig<MyTransactionsSubscription>>(
     () => ({
@@ -90,8 +80,7 @@ export const MyTransactions: FC<Props> = (props) => {
             root,
             "MyTransactions_query_transactions",
             {
-              refreshToken: getRefreshToken(environment),
-              user_id: getIdFromToken(environment),
+              user_id: tokensAndData.data._id,
             }
           );
           if (!connectionRecord) {
@@ -111,7 +100,7 @@ export const MyTransactions: FC<Props> = (props) => {
         }
       },
     }),
-    [user_gid, environment]
+    [user_gid]
   );
   useSubscription(config);
   const { data, loadNext, refetch } = usePaginationFragment<
@@ -191,8 +180,7 @@ export const MyTransactions: FC<Props> = (props) => {
         onClick={() =>
           refetch(
             {
-              refreshToken: getRefreshToken(environment),
-              id: getIdFromToken(environment),
+              id: tokensAndData.data._id,
             },
             { fetchPolicy: "network-only" }
           )

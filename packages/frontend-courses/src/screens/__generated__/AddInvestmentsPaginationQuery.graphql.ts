@@ -4,9 +4,18 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
+export type LoanStatus =
+  | "FINANCING"
+  | "PAID"
+  | "PAST_DUE"
+  | "TO_BE_PAID"
+  | "WAITING_FOR_APPROVAL"
+  | "%future added value";
 export type AddInvestmentsPaginationQueryVariables = {
+  borrower_id?: string | null;
   count?: number | null;
   cursor?: string | null;
+  status?: Array<LoanStatus> | null;
 };
 export type AddInvestmentsPaginationQueryResponse = {
   readonly " $fragmentRefs": FragmentRefs<"AddInvestments_query">;
@@ -18,14 +27,16 @@ export type AddInvestmentsPaginationQuery = {
 
 /*
 query AddInvestmentsPaginationQuery(
+  $borrower_id: String
   $count: Int = 5
   $cursor: String = ""
+  $status: [LoanStatus!]
 ) {
   ...AddInvestments_query_1G22uz
 }
 
 fragment AddInvestments_query_1G22uz on Query {
-  loans(first: $count, after: $cursor) {
+  loans(first: $count, after: $cursor, status: $status, borrower_id: $borrower_id) {
     edges {
       node {
         id
@@ -36,6 +47,7 @@ fragment AddInvestments_query_1G22uz on Query {
         term
         raised
         expiry
+        status
         __typename
       }
       cursor
@@ -51,6 +63,11 @@ fragment AddInvestments_query_1G22uz on Query {
 const node: ConcreteRequest = (function () {
   var v0 = [
       {
+        defaultValue: null,
+        kind: "LocalArgument",
+        name: "borrower_id",
+      } as any,
+      {
         defaultValue: 5,
         kind: "LocalArgument",
         name: "count",
@@ -59,6 +76,11 @@ const node: ConcreteRequest = (function () {
         defaultValue: "",
         kind: "LocalArgument",
         name: "cursor",
+      } as any,
+      {
+        defaultValue: null,
+        kind: "LocalArgument",
+        name: "status",
       } as any,
     ],
     v1 = [
@@ -69,8 +91,18 @@ const node: ConcreteRequest = (function () {
       } as any,
       {
         kind: "Variable",
+        name: "borrower_id",
+        variableName: "borrower_id",
+      } as any,
+      {
+        kind: "Variable",
         name: "first",
         variableName: "count",
+      } as any,
+      {
+        kind: "Variable",
+        name: "status",
+        variableName: "status",
       } as any,
     ];
   return {
@@ -190,6 +222,13 @@ const node: ConcreteRequest = (function () {
                       alias: null,
                       args: null,
                       kind: "ScalarField",
+                      name: "status",
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: "ScalarField",
                       name: "__typename",
                       storageKey: null,
                     },
@@ -237,7 +276,7 @@ const node: ConcreteRequest = (function () {
         {
           alias: null,
           args: v1 /*: any*/,
-          filters: null,
+          filters: ["status", "borrower_id"],
           handle: "connection",
           key: "AddInvestments_query_loans",
           kind: "LinkedHandle",
@@ -246,14 +285,14 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "cde60407154eea25a992275307bbb39d",
+      cacheID: "07f1b8caa99230a0726540740ccaaa27",
       id: null,
       metadata: {},
       name: "AddInvestmentsPaginationQuery",
       operationKind: "query",
-      text: 'query AddInvestmentsPaginationQuery(\n  $count: Int = 5\n  $cursor: String = ""\n) {\n  ...AddInvestments_query_1G22uz\n}\n\nfragment AddInvestments_query_1G22uz on Query {\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+      text: 'query AddInvestmentsPaginationQuery(\n  $borrower_id: String\n  $count: Int = 5\n  $cursor: String = ""\n  $status: [LoanStatus!]\n) {\n  ...AddInvestments_query_1G22uz\n}\n\nfragment AddInvestments_query_1G22uz on Query {\n  loans(first: $count, after: $cursor, status: $status, borrower_id: $borrower_id) {\n    edges {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "e6946d8bf9ee093e14953914bdda246a";
+(node as any).hash = "ee3507a93eece348b7083803a0838daf";
 export default node;

@@ -4,6 +4,13 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
+export type LoanStatus =
+  | "FINANCING"
+  | "PAID"
+  | "PAST_DUE"
+  | "TO_BE_PAID"
+  | "WAITING_FOR_APPROVAL"
+  | "%future added value";
 export type AddInvestments_query = {
   readonly loans: {
     readonly edges: ReadonlyArray<{
@@ -16,6 +23,7 @@ export type AddInvestments_query = {
         readonly term: number;
         readonly raised: string;
         readonly expiry: number;
+        readonly status: LoanStatus;
       } | null;
     } | null> | null;
   } | null;
@@ -32,6 +40,10 @@ const node: ReaderFragment = (function () {
   return {
     argumentDefinitions: [
       {
+        kind: "RootArgument",
+        name: "borrower_id",
+      },
+      {
         defaultValue: 5,
         kind: "LocalArgument",
         name: "count",
@@ -40,6 +52,10 @@ const node: ReaderFragment = (function () {
         defaultValue: "",
         kind: "LocalArgument",
         name: "cursor",
+      },
+      {
+        kind: "RootArgument",
+        name: "status",
       },
     ],
     kind: "Fragment",
@@ -69,7 +85,18 @@ const node: ReaderFragment = (function () {
     selections: [
       {
         alias: "loans",
-        args: null,
+        args: [
+          {
+            kind: "Variable",
+            name: "borrower_id",
+            variableName: "borrower_id",
+          },
+          {
+            kind: "Variable",
+            name: "status",
+            variableName: "status",
+          },
+        ],
         concreteType: "LoanConnection",
         kind: "LinkedField",
         name: "__AddInvestments_query_loans_connection",
@@ -151,6 +178,13 @@ const node: ReaderFragment = (function () {
                     alias: null,
                     args: null,
                     kind: "ScalarField",
+                    name: "status",
+                    storageKey: null,
+                  },
+                  {
+                    alias: null,
+                    args: null,
+                    kind: "ScalarField",
                     name: "__typename",
                     storageKey: null,
                   },
@@ -200,5 +234,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "e6946d8bf9ee093e14953914bdda246a";
+(node as any).hash = "ee3507a93eece348b7083803a0838daf";
 export default node;

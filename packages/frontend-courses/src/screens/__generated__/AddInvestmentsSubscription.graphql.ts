@@ -3,6 +3,13 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
+export type LoanStatus =
+  | "FINANCING"
+  | "PAID"
+  | "PAST_DUE"
+  | "TO_BE_PAID"
+  | "WAITING_FOR_APPROVAL"
+  | "%future added value";
 export type SubscribeType = "INSERT" | "UPDATE" | "%future added value";
 export type AddInvestmentsSubscriptionVariables = {};
 export type AddInvestmentsSubscriptionResponse = {
@@ -17,6 +24,7 @@ export type AddInvestmentsSubscriptionResponse = {
         readonly term: number;
         readonly raised: string;
         readonly expiry: number;
+        readonly status: LoanStatus;
       } | null;
       readonly cursor: string;
     };
@@ -41,6 +49,7 @@ subscription AddInvestmentsSubscription {
         term
         raised
         expiry
+        status
       }
       cursor
     }
@@ -131,6 +140,13 @@ const node: ConcreteRequest = (function () {
                   name: "expiry",
                   storageKey: null,
                 },
+                {
+                  alias: null,
+                  args: null,
+                  kind: "ScalarField",
+                  name: "status",
+                  storageKey: null,
+                },
               ],
               storageKey: null,
             },
@@ -173,14 +189,14 @@ const node: ConcreteRequest = (function () {
       selections: v0 /*: any*/,
     },
     params: {
-      cacheID: "1575def09cf0ac416c7ba99262055440",
+      cacheID: "da251f7bdef803c3b2e205e44399adc7",
       id: null,
       metadata: {},
       name: "AddInvestmentsSubscription",
       operationKind: "subscription",
-      text: "subscription AddInvestmentsSubscription {\n  loans_subscribe {\n    loan_edge {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n      }\n      cursor\n    }\n    type\n  }\n}\n",
+      text: "subscription AddInvestmentsSubscription {\n  loans_subscribe {\n    loan_edge {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n      }\n      cursor\n    }\n    type\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "431e7687b0e57c0c7ef6df183ef54c34";
+(node as any).hash = "2fdf2de5c53f2ebaead6dba2d14780aa";
 export default node;

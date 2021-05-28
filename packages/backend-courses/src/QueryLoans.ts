@@ -1,8 +1,10 @@
-import { ObjectID } from "mongodb";
+import { FilterQuery, ObjectID } from "mongodb";
 import {
   GraphQLFieldConfigArgumentMap,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLNullableType,
+  GraphQLString,
 } from "graphql";
 import {
   BackwardConnectionArgs,
@@ -12,8 +14,8 @@ import {
   connectionFromArray,
   ForwardConnectionArgs,
 } from "graphql-relay";
-import { LoanConnection } from "./Nodes";
-import { Context, LoanMongo } from "./types";
+import { LoanConnection, LoanStatus } from "./Nodes";
+import { Context, ILoanStatus, LoanMongo } from "./types";
 import { base64, unbase64 } from "./utils";
 
 interface IQuery {
@@ -28,45 +30,66 @@ interface IQuery {
   ) => Promise<Connection<LoanMongo>>;
 }
 
+interface Args extends ConnectionArguments {
+  status?: ILoanStatus[];
+  borrower_id?: string;
+}
+
 export const QueryLoans: IQuery = {
   type: new GraphQLNonNull(LoanConnection),
-  args: connectionArgs,
+  args: {
+    borrower_id: {
+      type: GraphQLString,
+    },
+    status: {
+      type: new GraphQLList(new GraphQLNonNull(LoanStatus)),
+    },
+    ...connectionArgs,
+  },
   resolve: async (
     _,
-    args: ConnectionArguments,
+    { status, after, first, borrower_id }: Args,
     { loans }
   ): Promise<Connection<LoanMongo>> => {
     try {
-      const loan_id = unbase64(args.after || "");
-      const limit = args.first ? args.first + 1 : 0;
+      const loan_id = unbase64(after || "");
+      const limit = first ? first + 1 : 0;
       if (limit <= 0) {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const result = await (loan_id
-        ? loans
-            .find({ _id: { $lt: new ObjectID(loan_id) } })
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray()
-        : loans.find().limit(limit).sort({ $natural: -1 }).toArray());
+      const query: FilterQuery<LoanMongo> = {};
+      if (loan_id) {
+        query._id = { $lt: new ObjectID(loan_id) };
+      }
+      if (status) {
+        query.status = { $in: status };
+      }
+      if (borrower_id) {
+        query._id_user = new ObjectID(borrower_id);
+      }
+      const result = await loans
+        .find(query)
+        .limit(limit)
+        .sort({ $natural: -1 })
+        .toArray();
       const edgesMapped = result.map((loan) => {
         return {
           cursor: base64(loan._id.toHexString()),
           node: loan,
         };
       });
-      const edges = edgesMapped.slice(0, args.first || 5);
+      const edges = edgesMapped.slice(0, first || 5);
       return {
         edges,
         pageInfo: {
           startCursor: edges[0]?.cursor || null,
           endCursor: edges[edges.length - 1]?.cursor || null,
           hasPreviousPage: false,
-          hasNextPage: edgesMapped.length > (args.first || 0),
+          hasNextPage: edgesMapped.length > (first || 0),
         },
       };
     } catch (e) {
-      return connectionFromArray([], args);
+      return connectionFromArray([], { first, after });
     }
   },
 };

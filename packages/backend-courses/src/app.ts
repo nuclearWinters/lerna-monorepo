@@ -17,6 +17,7 @@ import {
   loans_subscribe,
   transactions_subscribe,
 } from "./subscriptions/subscriptions";
+import { ApproveLoanMutation } from "./mutations/ApproveLoan";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -36,6 +37,7 @@ const Mutation = new GraphQLObjectType({
     addLends: AddLendsMutation,
     addFunds: AddFundsMutation,
     addLoan: AddLoanMutation,
+    approveLoan: ApproveLoanMutation,
   },
 });
 
@@ -66,19 +68,10 @@ app.use(
 app.use(
   "/api/graphql",
   graphqlHTTP((req) => {
-    const { loans, transactions, users, investments, accessToken, ch } =
-      getContext(req);
     return {
       schema: schema,
       graphiql: true,
-      context: {
-        loans,
-        transactions,
-        users,
-        investments,
-        accessToken,
-        ch,
-      },
+      context: getContext(req),
     };
   })
 );

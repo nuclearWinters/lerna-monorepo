@@ -1,7 +1,8 @@
 import { app } from "./app";
 import supertest from "supertest";
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db, ObjectID } from "mongodb";
 import bcrypt from "bcryptjs";
+import { UserMongo } from "./types";
 
 const request = supertest(app);
 
@@ -14,7 +15,7 @@ describe("supertest example with mongodb", () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    dbInstance = client.db("auth");
+    dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
     app.locals.ch = { sendToQueue: jest.fn() };
   });
@@ -25,12 +26,15 @@ describe("supertest example with mongodb", () => {
   });
 
   it("SignInMutation: user exists and password is correct", async (done) => {
-    const users = dbInstance.collection("users");
-    const mockUser = {
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertOne({
+      _id: new ObjectID("000000000000000000000020"),
       email: "armandocorrect@hotmail.com",
       password: bcrypt.hashSync("correct", 12),
-    };
-    await users.insertOne(mockUser);
+      isLender: true,
+      isBorrower: false,
+      isSupport: false,
+    });
     const response = await request
       .post("/auth/graphql")
       .send({

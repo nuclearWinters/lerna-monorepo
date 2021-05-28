@@ -1,13 +1,8 @@
 import React, { FC, useState } from "react";
-import {
-  graphql,
-  useFragment,
-  useMutation,
-  useRelayEnvironment,
-} from "react-relay";
+import { graphql, useFragment, useMutation } from "react-relay";
 import { AddLoan_user$key } from "./__generated__/AddLoan_user.graphql";
 import { AddLoanMutation } from "./__generated__/AddLoanMutation.graphql";
-import { getRefreshToken } from "App";
+import { getDataFromToken, tokensAndData } from "App";
 
 const addLoanFragment = graphql`
   fragment AddLoan_user on User {
@@ -20,22 +15,11 @@ type Props = {
 };
 
 export const AddLoan: FC<Props> = (props) => {
-  const environment = useRelayEnvironment();
   const [commit] = useMutation<AddLoanMutation>(graphql`
     mutation AddLoanMutation($input: AddLoanInput!) {
       addLoan(input: $input) {
         error
         validAccessToken
-        loan {
-          id
-          _id_user
-          score
-          ROI
-          goal
-          term
-          raised
-          expiry
-        }
       }
     }
   `);
@@ -101,7 +85,6 @@ export const AddLoan: FC<Props> = (props) => {
                 goal: form.goal,
                 term: Number(form.term),
                 user_gid: user.id,
-                refreshToken: getRefreshToken(environment),
               },
             },
             onCompleted: (response) => {
@@ -110,9 +93,9 @@ export const AddLoan: FC<Props> = (props) => {
               }
             },
             updater: (store, data) => {
-              const root = store.getRoot();
-              const token = root.getLinkedRecord("tokens");
-              token?.setValue(data.addLoan.validAccessToken, "accessToken");
+              tokensAndData.tokens.accessToken = data.addLoan.validAccessToken;
+              const user = getDataFromToken(data.addLoan.validAccessToken);
+              tokensAndData.data = user;
             },
             onError: (error) => {
               window.alert(error.message);

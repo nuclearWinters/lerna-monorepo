@@ -23,6 +23,11 @@ import {
   LoanMongo,
   TransactionMongo,
   BucketTransactionMongo,
+  ILoanStatus,
+  IInvestmentStatus,
+  IScheduledPayments,
+  IScheduledPaymentsStatus,
+  TransactionMongoType,
 } from "./types";
 import { getContext } from "./utils";
 
@@ -64,6 +69,37 @@ export const TransactionType = new GraphQLEnumType({
     CREDIT: { value: "CREDIT" },
     WITHDRAWAL: { value: "WITHDRAWAL" },
     INVEST: { value: "INVEST" },
+    PAYMENT: { value: "PAYMENT" },
+  },
+});
+
+export const LoanStatus = new GraphQLEnumType({
+  name: "LoanStatus",
+  values: {
+    PAID: { value: "paid" },
+    TO_BE_PAID: { value: "to be paid" },
+    FINANCING: { value: "financing" },
+    WAITING_FOR_APPROVAL: { value: "waiting for approval" },
+    PAST_DUE: { value: "past due" },
+  },
+});
+
+export const InvestmentStatus = new GraphQLEnumType({
+  name: "InvestmentStatus",
+  values: {
+    DELAY_PAYMENT: { value: "delay payment" },
+    UP_TO_DATE: { value: "up to date" },
+    PAST_DUE: { value: "past due" },
+    PAID: { value: "paid" },
+  },
+});
+
+export const LoanScheduledPaymentStatus = new GraphQLEnumType({
+  name: "LoanScheduledPaymentStatus",
+  values: {
+    TO_BE_PAID: { value: "to be paid" },
+    DELAYED: { value: "delayed" },
+    PAID: { value: "paid" },
   },
 });
 
@@ -129,6 +165,10 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
       type: new GraphQLNonNull(DateScalarType),
       resolve: ({ updated }): Date => updated,
     },
+    status: {
+      type: new GraphQLNonNull(InvestmentStatus),
+      resolve: ({ status }): IInvestmentStatus => status,
+    },
   },
   interfaces: [nodeInterface],
 });
@@ -164,7 +204,7 @@ export const GraphQLTransaction = new GraphQLObjectType<TransactionMongo>({
     },
     type: {
       type: new GraphQLNonNull(TransactionType),
-      resolve: ({ type }): "CREDIT" | "WITHDRAWAL" | "INVEST" => type,
+      resolve: ({ type }): TransactionMongoType => type,
     },
   },
 });
@@ -200,6 +240,25 @@ const {
   nodeType: GraphQLBucketTransaction,
 });
 
+export const GraphQLScheduledPayments =
+  new GraphQLObjectType<IScheduledPayments>({
+    name: "ScheduledPayments",
+    fields: {
+      amortize: {
+        type: new GraphQLNonNull(MXNScalarType),
+        resolve: ({ amortize }): number => amortize,
+      },
+      status: {
+        type: new GraphQLNonNull(LoanScheduledPaymentStatus),
+        resolve: ({ status }): IScheduledPaymentsStatus => status,
+      },
+      scheduledDate: {
+        type: GraphQLString,
+        resolve: ({ scheduledDate }): Date => scheduledDate,
+      },
+    },
+  });
+
 export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
   name: "Loan",
   fields: {
@@ -231,6 +290,15 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
     expiry: {
       type: new GraphQLNonNull(DateScalarType),
       resolve: ({ expiry }): Date => expiry,
+    },
+    status: {
+      type: new GraphQLNonNull(LoanStatus),
+      resolve: ({ status }): ILoanStatus => status,
+    },
+    scheduledPayments: {
+      type: new GraphQLList(new GraphQLNonNull(LoanStatus)),
+      resolve: ({ scheduledPayments }): IScheduledPayments[] | null =>
+        scheduledPayments,
     },
   },
   interfaces: [nodeInterface],

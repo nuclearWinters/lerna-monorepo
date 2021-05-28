@@ -5,7 +5,6 @@
 import { ConcreteRequest } from "relay-runtime";
 export type AddFundsInput = {
   clientMutationId?: string | null;
-  refreshToken: string;
   user_gid: string;
   quantity: string;
 };

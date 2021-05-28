@@ -4,7 +4,7 @@ import { ACCESSSECRET, REFRESHSECRET } from "../config";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import { ObjectID } from "mongodb";
-import { getContext, channelSendToQueue, jwt } from "../utils";
+import { channelSendToQueue, jwt } from "../utils";
 
 interface Input {
   username: string;
@@ -42,10 +42,9 @@ export const SignUpMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
-    ctx: Context
+    { users, ch }: Context
   ): Promise<Payload> => {
     try {
-      const { users, ch } = getContext(ctx);
       const user = await users.findOne({ email });
       if (user) throw new Error("El email ya esta siendo usado.");
       const hash_password = await bcrypt.hash(password, 12);
@@ -54,14 +53,29 @@ export const SignUpMutation = mutationWithClientMutationId({
         _id,
         email,
         password: hash_password,
+        isLender: true,
+        isBorrower: false,
+        isSupport: false,
       });
       const refreshToken = jwt.sign(
-        { _id: _id.toHexString(), email },
+        {
+          _id: _id.toHexString(),
+          email,
+          isLender: true,
+          isBorrower: false,
+          isSupport: false,
+        },
         REFRESHSECRET,
         { expiresIn: "1h" }
       );
       const accessToken = jwt.sign(
-        { _id: _id.toHexString(), email },
+        {
+          _id: _id.toHexString(),
+          email,
+          isLender: true,
+          isBorrower: false,
+          isSupport: false,
+        },
         ACCESSSECRET,
         { expiresIn: "15m" }
       );

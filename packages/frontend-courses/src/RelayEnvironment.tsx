@@ -10,14 +10,16 @@ import {
 } from "relay-runtime";
 import { GraphQLError } from "graphql";
 import { createClient } from "graphql-ws";
+import { tokensAndData } from "App";
 
 const subscriptionsClient = createClient({
   url: "ws://localhost/relay/graphql",
   connectionParams: () => {
     return {
-      Authorization:
-        (RelayEnvironment?.getStore()?.getSource()?.get("client:root:tokens")
-          ?.accessToken as string) || "",
+      Authorization: JSON.stringify({
+        accessToken: tokensAndData.tokens.accessToken,
+        refreshToken: tokensAndData.tokens.refreshToken,
+      }),
     };
   },
 });
@@ -27,9 +29,10 @@ const fetchGraphQL = async (text: string, variables: Record<any, any>) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization:
-        (RelayEnvironment?.getStore()?.getSource()?.get("client:root:tokens")
-          ?.accessToken as string) || "",
+      Authorization: JSON.stringify({
+        accessToken: tokensAndData.tokens.accessToken,
+        refreshToken: tokensAndData.tokens.refreshToken,
+      }),
     },
     body: JSON.stringify({
       query: text,

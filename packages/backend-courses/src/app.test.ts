@@ -1,19 +1,20 @@
 import { app } from "./app";
 //import supertest from "supertest";
-import { MongoClient } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 
 //const request = supertest(app);
 
 describe("supertest example with mongodb", () => {
   let client: MongoClient;
+  let dbInstance: Db;
 
   beforeAll(async () => {
     client = await MongoClient.connect(process.env.MONGO_URL as string, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    const db = client.db();
-    app.locals.db = db;
+    dbInstance = client.db("auth");
+    app.locals.db = dbInstance;
   });
 
   afterAll(async () => {

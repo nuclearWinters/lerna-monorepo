@@ -4,7 +4,6 @@ import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import { REFRESHSECRET, ACCESSSECRET } from "../config";
 import { jwt } from "../utils";
-import { getContext } from "../utils";
 
 interface Input {
   email: string;
@@ -40,21 +39,20 @@ export const SignInMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
-    ctx: Context
+    { users }: Context
   ): Promise<Payload> => {
     try {
-      const { users } = getContext(ctx);
       const user = await users.findOne({ email });
       if (!user) throw new Error("El usuario no existe.");
       const hash = await bcrypt.compare(password, user.password);
       if (!hash) throw new Error("La contraseña no coincide.");
       const refreshToken = jwt.sign(
-        { _id: user._id.toHexString(), email: user.email },
+        { ...user, _id: user._id.toHexString() },
         REFRESHSECRET,
         { expiresIn: "1h" }
       );
       const accessToken = jwt.sign(
-        { _id: user._id.toHexString(), email: user.email },
+        { ...user, _id: user._id.toHexString() },
         ACCESSSECRET,
         { expiresIn: "15m" }
       );

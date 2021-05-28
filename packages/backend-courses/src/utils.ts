@@ -37,12 +37,14 @@ export const jwt = {
 export const getContext = (req: any): Context => {
   const db = req.app.locals.db as Db;
   const ch = req.app.locals.ch;
+  const authorization = JSON.parse(req.headers.authorization || "{}");
   return {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
     investments: db.collection<InvestmentMongo>("lends"),
     transactions: db.collection<BucketTransactionMongo>("transactions"),
-    accessToken: req.headers.authorization,
+    accessToken: authorization.accessToken,
+    refreshToken: authorization.refreshToken,
     ch,
   };
 };
@@ -109,4 +111,8 @@ export const base64 = (i: string): string => {
 
 export const unbase64 = (i: string): string => {
   return Buffer.from(i, "base64").toString("utf8").split(":")[1];
+};
+
+export const base64Name = (i: string, name: string): string => {
+  return Buffer.from(name + ":" + i, "utf8").toString("base64");
 };

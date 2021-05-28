@@ -6,7 +6,6 @@ import { refreshTokenMiddleware } from "../utils";
 import { GraphQLUser } from "../Nodes";
 
 interface Input {
-  refreshToken: string;
   user_gid: string;
   name: string;
   apellidoPaterno: string;
@@ -28,7 +27,6 @@ export const UpdateUserMutation = mutationWithClientMutationId({
   description:
     "Actualiza los datos personales: recibe el usuario actualizado y obtén un AccessToken valido.",
   inputFields: {
-    refreshToken: { type: new GraphQLNonNull(GraphQLString) },
     user_gid: { type: new GraphQLNonNull(GraphQLID) },
     name: { type: GraphQLString },
     apellidoMaterno: { type: GraphQLString },
@@ -53,8 +51,8 @@ export const UpdateUserMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { refreshToken, user_gid, ...user }: Input,
-    { users, accessToken }: Context
+    { user_gid, ...user }: Input,
+    { users, accessToken, refreshToken }: Context
   ): Promise<Payload> => {
     try {
       const { id: user_id } = fromGlobalId(user_gid);

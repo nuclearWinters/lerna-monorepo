@@ -5,7 +5,6 @@
 import { ConcreteRequest } from "relay-runtime";
 export type AddLendsInput = {
   clientMutationId?: string | null;
-  refreshToken: string;
   lender_gid: string;
   lends: Array<LendList>;
 };
@@ -24,10 +23,6 @@ export type AddInvestmentsMutationResponse = {
     readonly user: {
       readonly accountAvailable: string;
     };
-    readonly loans: ReadonlyArray<{
-      readonly id: string;
-      readonly raised: string;
-    }> | null;
   };
 };
 export type AddInvestmentsMutation = {
@@ -45,10 +40,6 @@ mutation AddInvestmentsMutation(
     user {
       accountAvailable
       id
-    }
-    loans {
-      id
-      raised
     }
   }
 }
@@ -89,32 +80,6 @@ const node: ConcreteRequest = (function () {
       kind: "ScalarField",
       name: "accountAvailable",
       storageKey: null,
-    } as any,
-    v5 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "id",
-      storageKey: null,
-    } as any,
-    v6 = {
-      alias: null,
-      args: null,
-      concreteType: "Loan",
-      kind: "LinkedField",
-      name: "loans",
-      plural: true,
-      selections: [
-        v5 /*: any*/,
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "raised",
-          storageKey: null,
-        },
-      ],
-      storageKey: null,
     } as any;
   return {
     fragment: {
@@ -143,7 +108,6 @@ const node: ConcreteRequest = (function () {
               selections: [v4 /*: any*/],
               storageKey: null,
             },
-            v6 /*: any*/,
           ],
           storageKey: null,
         },
@@ -174,24 +138,32 @@ const node: ConcreteRequest = (function () {
               kind: "LinkedField",
               name: "user",
               plural: false,
-              selections: [v4 /*: any*/, v5 /*: any*/],
+              selections: [
+                v4 /*: any*/,
+                {
+                  alias: null,
+                  args: null,
+                  kind: "ScalarField",
+                  name: "id",
+                  storageKey: null,
+                },
+              ],
               storageKey: null,
             },
-            v6 /*: any*/,
           ],
           storageKey: null,
         },
       ],
     },
     params: {
-      cacheID: "18ea106eb36e8d08d2d4858a3804cb1b",
+      cacheID: "21122b56fef0c2d9a534bb98b184a6af",
       id: null,
       metadata: {},
       name: "AddInvestmentsMutation",
       operationKind: "mutation",
-      text: "mutation AddInvestmentsMutation(\n  $input: AddLendsInput!\n) {\n  addLends(input: $input) {\n    error\n    validAccessToken\n    user {\n      accountAvailable\n      id\n    }\n    loans {\n      id\n      raised\n    }\n  }\n}\n",
+      text: "mutation AddInvestmentsMutation(\n  $input: AddLendsInput!\n) {\n  addLends(input: $input) {\n    error\n    validAccessToken\n    user {\n      accountAvailable\n      id\n    }\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "3492c25dfccd49af9174725d4ba4d474";
+(node as any).hash = "b5a778ed070715398b47ce62f6be0430";
 export default node;

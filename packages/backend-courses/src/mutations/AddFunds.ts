@@ -6,7 +6,6 @@ import { refreshTokenMiddleware } from "../utils";
 import { GraphQLUser, MXNScalarType } from "../Nodes";
 
 interface Input {
-  refreshToken: string;
   user_gid: string;
   quantity: number;
 }
@@ -22,7 +21,6 @@ export const AddFundsMutation = mutationWithClientMutationId({
   description:
     "Añade fondos a tu cuenta: recibe el usuario actualziao y obtén un AccessToken valido.",
   inputFields: {
-    refreshToken: { type: new GraphQLNonNull(GraphQLString) },
     user_gid: { type: new GraphQLNonNull(GraphQLID) },
     quantity: { type: new GraphQLNonNull(MXNScalarType) },
   },
@@ -41,8 +39,8 @@ export const AddFundsMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { refreshToken, user_gid, quantity }: Input,
-    { users, accessToken, transactions }: Context
+    { user_gid, quantity }: Input,
+    { users, accessToken, transactions, refreshToken }: Context
   ): Promise<Payload> => {
     try {
       const { id: user_id } = fromGlobalId(user_gid);

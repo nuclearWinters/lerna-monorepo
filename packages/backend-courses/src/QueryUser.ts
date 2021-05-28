@@ -10,9 +10,6 @@ interface IQueryUser {
     id: {
       type: GraphQLNonNull<GraphQLNullableType>;
     };
-    refreshToken: {
-      type: GraphQLNonNull<GraphQLNullableType>;
-    };
   };
   resolve: (
     root: { [argName: string]: string },
@@ -25,9 +22,8 @@ const QueryUser: IQueryUser = {
   type: new GraphQLNonNull(GraphQLUser),
   args: {
     id: { type: new GraphQLNonNull(GraphQLString) },
-    refreshToken: { type: new GraphQLNonNull(GraphQLString) },
   },
-  resolve: async (_, { id, refreshToken }, { users, accessToken }) => {
+  resolve: async (_, { id }, { users, accessToken, refreshToken }) => {
     try {
       const { _id: user_id } = await refreshTokenMiddleware(
         accessToken,
@@ -42,28 +38,9 @@ const QueryUser: IQueryUser = {
       if (!user) {
         throw new Error("El usuario no existe.");
       }
-      const {
-        name,
-        apellidoMaterno,
-        apellidoPaterno,
-        RFC,
-        CURP,
-        clabe,
-        mobile,
-        accountTotal,
-        accountAvailable,
-      } = user;
       return {
+        ...user,
         _id: user_id,
-        name,
-        apellidoPaterno,
-        apellidoMaterno,
-        RFC,
-        CURP,
-        clabe,
-        mobile,
-        accountTotal,
-        accountAvailable,
         error: "",
       };
     } catch (e) {

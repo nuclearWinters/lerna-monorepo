@@ -1,13 +1,8 @@
 import React, { FC, useState } from "react";
-import {
-  graphql,
-  useFragment,
-  useMutation,
-  useRelayEnvironment,
-} from "react-relay";
+import { graphql, useFragment, useMutation } from "react-relay";
 import { RetireFunds_user$key } from "./__generated__/RetireFunds_user.graphql";
 import { RetireFundsMutation } from "./__generated__/RetireFundsMutation.graphql";
-import { getRefreshToken } from "App";
+import { getDataFromToken, tokensAndData } from "App";
 
 const retireFundsFragment = graphql`
   fragment RetireFunds_user on User {
@@ -20,7 +15,6 @@ type Props = {
 };
 
 export const RetireFunds: FC<Props> = (props) => {
-  const environment = useRelayEnvironment();
   const [commit] = useMutation<RetireFundsMutation>(graphql`
     mutation RetireFundsMutation($input: AddFundsInput!) {
       addFunds(input: $input) {
@@ -67,7 +61,6 @@ export const RetireFunds: FC<Props> = (props) => {
               input: {
                 user_gid: user.id,
                 quantity: `-${quantity}`,
-                refreshToken: getRefreshToken(environment),
               },
             },
             onCompleted: (response) => {
@@ -76,9 +69,9 @@ export const RetireFunds: FC<Props> = (props) => {
               }
             },
             updater: (store, data) => {
-              const root = store.getRoot();
-              const token = root.getLinkedRecord("tokens");
-              token?.setValue(data.addFunds.validAccessToken, "accessToken");
+              tokensAndData.tokens.accessToken = data.addFunds.validAccessToken;
+              const user = getDataFromToken(data.addFunds.validAccessToken);
+              tokensAndData.data = user;
             },
             onError: (error) => {
               window.alert(error.message);

@@ -4,6 +4,12 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
+export type InvestmentStatus =
+  | "DELAY_PAYMENT"
+  | "PAID"
+  | "PAST_DUE"
+  | "UP_TO_DATE"
+  | "%future added value";
 export type MyInvestments_query = {
   readonly investments: {
     readonly edges: ReadonlyArray<{
@@ -14,6 +20,7 @@ export type MyInvestments_query = {
         readonly quantity: number;
         readonly created: number;
         readonly updated: number;
+        readonly status: InvestmentStatus;
       } | null;
     } | null> | null;
   } | null;
@@ -42,10 +49,6 @@ const node: ReaderFragment = (function () {
       {
         kind: "RootArgument",
         name: "id",
-      },
-      {
-        kind: "RootArgument",
-        name: "refreshToken",
       },
     ],
     kind: "Fragment",
@@ -76,11 +79,6 @@ const node: ReaderFragment = (function () {
       {
         alias: "investments",
         args: [
-          {
-            kind: "Variable",
-            name: "refreshToken",
-            variableName: "refreshToken",
-          },
           {
             kind: "Variable",
             name: "user_id",
@@ -154,6 +152,13 @@ const node: ReaderFragment = (function () {
                     alias: null,
                     args: null,
                     kind: "ScalarField",
+                    name: "status",
+                    storageKey: null,
+                  },
+                  {
+                    alias: null,
+                    args: null,
+                    kind: "ScalarField",
                     name: "__typename",
                     storageKey: null,
                   },
@@ -203,5 +208,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "91b836d56ae4ca06a2dff2bb676e40b4";
+(node as any).hash = "a25d13611b639299e8eb671e328250e8";
 export default node;

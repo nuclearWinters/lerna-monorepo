@@ -1,3 +1,4 @@
+import { getDataFromToken, tokensAndData } from "App";
 import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
@@ -48,19 +49,10 @@ export const SignUp: FC<Props> = ({ refetch }) => {
               refetch();
             },
             updater: (store, data) => {
-              const root = store.getRoot();
-              const tokenLinkedRecord = root.getOrCreateLinkedRecord(
-                "tokens",
-                "Tokens"
-              );
-              tokenLinkedRecord.setValue(
-                data.signUp.accessToken,
-                "accessToken"
-              );
-              tokenLinkedRecord.setValue(
-                data.signUp.refreshToken,
-                "refreshToken"
-              );
+              tokensAndData.tokens.accessToken = data.signUp.accessToken;
+              tokensAndData.tokens.refreshToken = data.signUp.refreshToken;
+              const user = getDataFromToken(data.signUp.accessToken);
+              tokensAndData.data = user;
             },
             onError: (error) => {
               window.alert(error.message);

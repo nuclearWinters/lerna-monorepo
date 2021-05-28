@@ -1,6 +1,8 @@
 
 use('fintech');
 
+db.loans.updateMany({}, { $set: { "scheduledPayments": null } })
+
 //db.users.findOneAndUpdate({ "_id": ObjectId("6095ed06f92be2001a15885a") }, { $set: {name: "Prueba"} });
 //db.users.find({ "_id": ObjectId("6095ed06f92be2001a15885a") });
 
@@ -78,11 +80,11 @@ updateOne: {
   { upsert: true }
 )*/
 
-rs.initiate(
+/*rs.initiate(
   {
     _id : 'rs0',
     members: [
       { _id : 0, host : "mongo-courses:27017" },
     ]
   }
-)
+)*/

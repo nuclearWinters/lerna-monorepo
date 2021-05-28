@@ -8,7 +8,6 @@ export type MyTransactionsPaginationQueryVariables = {
   count?: number | null;
   cursor?: string | null;
   id: string;
-  refreshToken: string;
 };
 export type MyTransactionsPaginationQueryResponse = {
   readonly " $fragmentRefs": FragmentRefs<"MyTransactions_query">;
@@ -23,13 +22,12 @@ query MyTransactionsPaginationQuery(
   $count: Int = 2
   $cursor: String = ""
   $id: String!
-  $refreshToken: String!
 ) {
   ...MyTransactions_query_1G22uz
 }
 
 fragment MyTransactions_query_1G22uz on Query {
-  transactions(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {
+  transactions(first: $count, after: $cursor, user_id: $id) {
     edges {
       node {
         id
@@ -71,11 +69,6 @@ const node: ConcreteRequest = (function () {
         kind: "LocalArgument",
         name: "id",
       } as any,
-      {
-        defaultValue: null,
-        kind: "LocalArgument",
-        name: "refreshToken",
-      } as any,
     ],
     v1 = [
       {
@@ -87,11 +80,6 @@ const node: ConcreteRequest = (function () {
         kind: "Variable",
         name: "first",
         variableName: "count",
-      } as any,
-      {
-        kind: "Variable",
-        name: "refreshToken",
-        variableName: "refreshToken",
       } as any,
       {
         kind: "Variable",
@@ -269,7 +257,7 @@ const node: ConcreteRequest = (function () {
         {
           alias: null,
           args: v1 /*: any*/,
-          filters: ["refreshToken", "user_id"],
+          filters: ["user_id"],
           handle: "connection",
           key: "MyTransactions_query_transactions",
           kind: "LinkedHandle",
@@ -278,14 +266,14 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "83d46bb59ec4a2196bd9f8ed5a1cca81",
+      cacheID: "b877d0dec97f3a37ed9f1c33d9a98759",
       id: null,
       metadata: {},
       name: "MyTransactionsPaginationQuery",
       operationKind: "query",
-      text: 'query MyTransactionsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n  $refreshToken: String!\n) {\n  ...MyTransactions_query_1G22uz\n}\n\nfragment MyTransactions_query_1G22uz on Query {\n  transactions(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+      text: 'query MyTransactionsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n) {\n  ...MyTransactions_query_1G22uz\n}\n\nfragment MyTransactions_query_1G22uz on Query {\n  transactions(first: $count, after: $cursor, user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "0d508d4a1101b290f4666c6ced0c8bb0";
+(node as any).hash = "4176bb7778e068c8b609ce5a5b58fabb";
 export default node;

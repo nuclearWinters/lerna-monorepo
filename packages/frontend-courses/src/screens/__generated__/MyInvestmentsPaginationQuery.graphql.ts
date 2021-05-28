@@ -8,7 +8,6 @@ export type MyInvestmentsPaginationQueryVariables = {
   count?: number | null;
   cursor?: string | null;
   id?: string | null;
-  refreshToken?: string | null;
 };
 export type MyInvestmentsPaginationQueryResponse = {
   readonly " $fragmentRefs": FragmentRefs<"MyInvestments_query">;
@@ -23,13 +22,12 @@ query MyInvestmentsPaginationQuery(
   $count: Int = 2
   $cursor: String = ""
   $id: String
-  $refreshToken: String
 ) {
   ...MyInvestments_query_1G22uz
 }
 
 fragment MyInvestments_query_1G22uz on Query {
-  investments(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {
+  investments(first: $count, after: $cursor, user_id: $id) {
     edges {
       node {
         id
@@ -38,6 +36,7 @@ fragment MyInvestments_query_1G22uz on Query {
         quantity
         created
         updated
+        status
         __typename
       }
       cursor
@@ -67,11 +66,6 @@ const node: ConcreteRequest = (function () {
         kind: "LocalArgument",
         name: "id",
       } as any,
-      {
-        defaultValue: null,
-        kind: "LocalArgument",
-        name: "refreshToken",
-      } as any,
     ],
     v1 = [
       {
@@ -83,11 +77,6 @@ const node: ConcreteRequest = (function () {
         kind: "Variable",
         name: "first",
         variableName: "count",
-      } as any,
-      {
-        kind: "Variable",
-        name: "refreshToken",
-        variableName: "refreshToken",
       } as any,
       {
         kind: "Variable",
@@ -198,6 +187,13 @@ const node: ConcreteRequest = (function () {
                       alias: null,
                       args: null,
                       kind: "ScalarField",
+                      name: "status",
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: "ScalarField",
                       name: "__typename",
                       storageKey: null,
                     },
@@ -245,7 +241,7 @@ const node: ConcreteRequest = (function () {
         {
           alias: null,
           args: v1 /*: any*/,
-          filters: ["refreshToken", "user_id"],
+          filters: ["user_id"],
           handle: "connection",
           key: "MyInvestments_query_investments",
           kind: "LinkedHandle",
@@ -254,14 +250,14 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "9e58e802914134bc3e6498a5b6e394e5",
+      cacheID: "aaf2771f0ffc9543bbdb5457d8b3efd3",
       id: null,
       metadata: {},
       name: "MyInvestmentsPaginationQuery",
       operationKind: "query",
-      text: 'query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String\n  $refreshToken: String\n) {\n  ...MyInvestments_query_1G22uz\n}\n\nfragment MyInvestments_query_1G22uz on Query {\n  investments(first: $count, after: $cursor, refreshToken: $refreshToken, user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+      text: 'query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String\n) {\n  ...MyInvestments_query_1G22uz\n}\n\nfragment MyInvestments_query_1G22uz on Query {\n  investments(first: $count, after: $cursor, user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        status\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "91b836d56ae4ca06a2dff2bb676e40b4";
+(node as any).hash = "a25d13611b639299e8eb671e328250e8";
 export default node;

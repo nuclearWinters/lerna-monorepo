@@ -1,0 +1,139 @@
+import { app } from "../app";
+import supertest from "supertest";
+import { Db, MongoClient, ObjectID } from "mongodb";
+import { LoanMongo, UserMongo } from "../types";
+import { base64Name, jwt } from "../utils";
+import { ACCESSSECRET } from "../config";
+
+const request = supertest(app);
+
+describe("ApproveLoan tests", () => {
+  let client: MongoClient;
+  let dbInstance: Db;
+
+  beforeAll(async () => {
+    client = await MongoClient.connect(process.env.MONGO_URL as string, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    dbInstance = client.db("fintech");
+    app.locals.db = dbInstance;
+  });
+
+  afterAll(async () => {
+    delete app.locals.db;
+    await dbInstance.collection<UserMongo>("users").deleteMany({
+      _id: {
+        $in: [
+          new ObjectID("000000000000000000000009"),
+          new ObjectID("000000000000000000000010"),
+        ],
+      },
+    });
+    await dbInstance
+      .collection<LoanMongo>("loans")
+      .deleteMany({ _id_user: new ObjectID("000000000000000000000010") });
+    await client.close();
+  });
+
+  it("test ApproveLoan valid access token", async (done) => {
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertMany([
+      {
+        _id: new ObjectID("000000000000000000000009"),
+        name: "Armando Narcizo",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Peréz",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
+        accountAvailable: 100000,
+        accountTotal: 100000,
+      },
+      {
+        _id: new ObjectID("000000000000000000000010"),
+        name: "Fernando Narcizo",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Peréz",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
+        accountAvailable: 100000,
+        accountTotal: 100000,
+      },
+    ]);
+    const loans = dbInstance.collection<LoanMongo>("loans");
+    await loans.insertOne({
+      _id: new ObjectID("000000000000000000000008"),
+      _id_user: new ObjectID("000000000000000000000010"),
+      score: "AAA",
+      ROI: 17,
+      goal: 100000,
+      term: 2,
+      raised: 0,
+      expiry: new Date(),
+      status: "waiting for approval",
+      scheduledPayments: null,
+    });
+    const response = await request
+      .post("/api/graphql")
+      .send({
+        query: `mutation ApproveLoanMutation($input: ApproveLoanInput!) {
+          approveLoan(input: $input) {
+            error
+            validAccessToken
+          }
+        }`,
+        variables: {
+          input: {
+            loan_gid: base64Name("000000000000000000000008", "Loan"),
+          },
+        },
+        operationName: "ApproveLoanMutation",
+      })
+      .set("Accept", "application/json")
+      .set(
+        "Authorization",
+        JSON.stringify({
+          accessToken: jwt.sign(
+            { _id: "000000000000000000000009", email: "" },
+            ACCESSSECRET,
+            { expiresIn: "15m" }
+          ),
+          refreshToken: "validRefreshToken",
+        })
+      );
+    expect(response.body.data.approveLoan.error).toBeFalsy();
+    expect(response.body.data.approveLoan.validAccessToken).toBeTruthy();
+    const allLoans = await loans
+      .find({ _id: new ObjectID("000000000000000000000008") })
+      .toArray();
+    expect(allLoans.length).toBe(1);
+    expect(
+      allLoans.map((loan) => ({
+        ROI: loan.ROI,
+        _id_user: loan._id_user.toHexString(),
+        goal: loan.goal,
+        raised: loan.raised,
+        scheduledPayments: loan.scheduledPayments,
+        score: loan.score,
+        status: loan.status,
+        term: loan.term,
+      }))
+    ).toEqual([
+      {
+        ROI: 17,
+        _id_user: "000000000000000000000010",
+        goal: 100000,
+        raised: 0,
+        scheduledPayments: null,
+        score: "AAA",
+        status: "financing",
+        term: 2,
+      },
+    ]);
+    done();
+  });
+});
