@@ -1,19 +1,11 @@
-import React, { CSSProperties, FC, useMemo, useState } from "react";
-import {
-  graphql,
-  useMutation,
-  usePaginationFragment,
-  useSubscription,
-} from "react-relay";
+import React, { CSSProperties, FC, useState } from "react";
+import { graphql, useMutation, usePaginationFragment } from "react-relay";
 import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
 import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
 import { useHistory } from "react-router";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { differenceInMonths, differenceInDays } from "date-fns";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
-import { GraphQLSubscriptionConfig } from "relay-runtime";
-import { AddInvestmentsSubscription } from "./__generated__/AddInvestmentsSubscription.graphql";
-import { ConnectionHandler } from "relay-runtime";
 import { getDataFromToken, tokensAndData } from "App";
 import { AddInvestmentsApproveLoanMutation } from "./__generated__/AddInvestmentsApproveLoanMutation.graphql";
 
@@ -54,61 +46,9 @@ type Props = {
   data: AppQueryResponse;
 };
 
-const subscription = graphql`
-  subscription AddInvestmentsSubscription {
-    loans_subscribe {
-      loan_edge {
-        node {
-          id
-          _id_user
-          score
-          ROI
-          goal
-          term
-          raised
-          expiry
-          status
-        }
-        cursor
-      }
-      type
-    }
-  }
-`;
-
 export const AddInvestments: FC<Props> = (props) => {
   const user_gid = props?.user?.id || "";
   const { isLender, isSupport } = tokensAndData.data;
-  const config = useMemo<GraphQLSubscriptionConfig<AddInvestmentsSubscription>>(
-    () => ({
-      variables: {},
-      subscription,
-      updater: (store, data) => {
-        if (data.loans_subscribe.type === "INSERT") {
-          const root = store.getRoot();
-          const connectionRecord = ConnectionHandler.getConnection(
-            root,
-            "AddInvestments_query_loans"
-          );
-          if (!connectionRecord) {
-            throw new Error("no existe el connectionRecord");
-          }
-          const payload = store.getRootField("loans_subscribe");
-          const serverEdge = payload?.getLinkedRecord("loan_edge");
-          const newEdge = ConnectionHandler.buildConnectionEdge(
-            store,
-            connectionRecord,
-            serverEdge
-          );
-          if (!newEdge) {
-            throw new Error("no existe el newEdge");
-          }
-          ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge);
-        }
-      },
-    }),
-    []
-  );
   const [commitApproveLoan] =
     useMutation<AddInvestmentsApproveLoanMutation>(graphql`
       mutation AddInvestmentsApproveLoanMutation($input: ApproveLoanInput!) {
@@ -118,7 +58,6 @@ export const AddInvestments: FC<Props> = (props) => {
         }
       }
     `);
-  useSubscription<AddInvestmentsSubscription>(config);
   const [commit] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {

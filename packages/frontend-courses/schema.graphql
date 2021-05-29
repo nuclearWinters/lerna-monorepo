@@ -137,7 +137,7 @@ type Query {
     first: Int
     before: String
     last: Int
-    user_id: String
+    user_id: String!
   ): InvestmentsConnection
   transactions(
     after: String

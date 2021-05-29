@@ -1,12 +1,10 @@
-import React, { FC, useMemo } from "react";
-import { graphql, usePaginationFragment, useSubscription } from "react-relay";
+import React, { FC } from "react";
+import { graphql, usePaginationFragment } from "react-relay";
 import { MyTransactions_query$key } from "./__generated__/MyTransactions_query.graphql";
 import { MyTransactionsPaginationQuery } from "./__generated__/MyTransactionsPaginationQuery.graphql";
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
-import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
-import { MyTransactionsSubscription } from "./__generated__/MyTransactionsSubscription.graphql";
 import { tokensAndData } from "App";
 
 const transactionsFragment = graphql`
@@ -37,72 +35,10 @@ const transactionsFragment = graphql`
 `;
 
 type Props = {
-  user: {
-    id: string;
-  };
   data: AppQueryResponse;
 };
 
-const subscription = graphql`
-  subscription MyTransactionsSubscription($user_gid: ID!) {
-    transactions_subscribe(user_gid: $user_gid) {
-      transaction_edge {
-        node {
-          id
-          _id_user
-          count
-          history {
-            id
-            _id_borrower
-            _id_loan
-            type
-            quantity
-            created
-          }
-        }
-        cursor
-      }
-      type
-    }
-  }
-`;
-
 export const MyTransactions: FC<Props> = (props) => {
-  const user_gid = props?.user?.id || "";
-  const config = useMemo<GraphQLSubscriptionConfig<MyTransactionsSubscription>>(
-    () => ({
-      variables: { user_gid },
-      subscription,
-      updater: (store, data) => {
-        if (data.transactions_subscribe.type === "INSERT") {
-          const root = store.getRoot();
-          const connectionRecord = ConnectionHandler.getConnection(
-            root,
-            "MyTransactions_query_transactions",
-            {
-              user_id: tokensAndData.data._id,
-            }
-          );
-          if (!connectionRecord) {
-            throw new Error("no existe el connectionRecord");
-          }
-          const payload = store.getRootField("transactions_subscribe");
-          const serverEdge = payload?.getLinkedRecord("transaction_edge");
-          const newEdge = ConnectionHandler.buildConnectionEdge(
-            store,
-            connectionRecord,
-            serverEdge
-          );
-          if (!newEdge) {
-            throw new Error("no existe el newEdge");
-          }
-          ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge);
-        }
-      },
-    }),
-    [user_gid]
-  );
-  useSubscription(config);
   const { data, loadNext, refetch } = usePaginationFragment<
     MyTransactionsPaginationQuery,
     MyTransactions_query$key

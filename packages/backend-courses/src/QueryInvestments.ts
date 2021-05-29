@@ -37,7 +37,7 @@ export const QueryInvestments: IQuery = {
   type: new GraphQLNonNull(InvestmentConnection),
   args: {
     user_id: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     ...connectionArgs,
   },

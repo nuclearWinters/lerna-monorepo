@@ -29,7 +29,6 @@ import {
   IScheduledPaymentsStatus,
   TransactionMongoType,
 } from "./types";
-import { getContext } from "./utils";
 
 export const DateScalarType = new GraphQLScalarType({
   name: "Date",
@@ -104,9 +103,8 @@ export const LoanScheduledPaymentStatus = new GraphQLEnumType({
 });
 
 const { nodeInterface, nodeField } = nodeDefinitions(
-  async (globalId, ctx) => {
+  async (globalId, { users, loans }) => {
     const { type, id } = fromGlobalId(globalId);
-    const { users, loans } = getContext(ctx);
     if (type === "User") {
       const user = await users.findOne({ _id: new ObjectID(id) });
       if (!user) {

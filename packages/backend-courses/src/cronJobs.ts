@@ -66,10 +66,11 @@ export const dayFunction = async (db: Db): Promise<void> => {
         },
         { upsert: true }
       );
-      await loans.updateOne(
+      const result_loan = await loans.findOneAndUpdate(
         { _id: loan._id },
         { $set: { "scheduledPayments.$[item].status": "paid" } },
         {
+          returnOriginal: false,
           arrayFilters: [
             {
               "item.scheduledDate": delayedPayment.scheduledDate,
@@ -77,6 +78,14 @@ export const dayFunction = async (db: Db): Promise<void> => {
           ],
         }
       );
+      if (
+        result_loan.value?.status !== "paid" &&
+        result_loan.value?.scheduledPayments?.filter(
+          (payment) => payment.status === "paid"
+        ).length === result_loan.value?.scheduledPayments?.length
+      ) {
+        await loans.updateOne({ _id: loan._id }, { $set: { status: "paid" } });
+      }
     });
   });
   return;
@@ -87,21 +96,21 @@ export const checkEveryMonth = (db: Db): CronJob =>
     monthFunction(db);
   });
 
-export const monthFunction = async (db: Db): Promise<void> => {
+export const monthFunction = async (db: Db): Promise<string> => {
   const loans = db.collection<LoanMongo>("loans");
   const transactions = db.collection<BucketTransactionMongo>("transactions");
   const results = await loans
     .find({ scheduledPayments: { $nin: [null] } })
     .toArray();
   const users = db.collection<UserMongo>("users");
-  results.forEach(async (loan) => {
+  for (const loan of results) {
     const now = new Date();
     const payments = loan.scheduledPayments?.filter((payment) => {
       return (
         isSameDay(payment.scheduledDate, now) && payment.status === "to be paid"
       );
     });
-    payments?.forEach(async (payment) => {
+    for (const payment of payments || []) {
       const delayedTotal = payment.amortize;
       const result = await users.updateOne(
         {
@@ -127,7 +136,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
             ],
           }
         );
-        return;
+        continue;
       }
       const user_id = loan._id_user.toHexString();
       await transactions.updateOne(
@@ -152,10 +161,12 @@ export const monthFunction = async (db: Db): Promise<void> => {
         },
         { upsert: true }
       );
-      await loans.updateOne(
+
+      const result_loan = await loans.findOneAndUpdate(
         { _id: loan._id },
         { $set: { "scheduledPayments.$[item].status": "paid" } },
         {
+          returnOriginal: false,
           arrayFilters: [
             {
               "item.scheduledDate": payment.scheduledDate,
@@ -163,6 +174,15 @@ export const monthFunction = async (db: Db): Promise<void> => {
           ],
         }
       );
-    });
-  });
+      if (
+        result_loan.value?.status !== "paid" &&
+        result_loan.value?.scheduledPayments?.filter(
+          (payment) => payment.status === "paid"
+        ).length === result_loan.value?.scheduledPayments?.length
+      ) {
+        await loans.updateOne({ _id: loan._id }, { $set: { status: "paid" } });
+      }
+    }
+  }
+  return "ok";
 };

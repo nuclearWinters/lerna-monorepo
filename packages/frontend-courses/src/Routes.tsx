@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {
   graphql,
@@ -6,6 +6,8 @@ import {
   commitLocalUpdate,
   Environment,
   useRelayEnvironment,
+  useSubscription,
+  ConnectionHandler,
 } from "react-relay";
 import { Routes_user$key } from "./__generated__/Routes_user.graphql";
 import {
@@ -21,6 +23,10 @@ import {
 } from "./screens";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { tokensAndData } from "App";
+import { GraphQLSubscriptionConfig } from "relay-runtime";
+import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
+import { RoutesInvestmentsSubscription } from "__generated__/RoutesInvestmentsSubscription.graphql";
+import { RoutesTransactionsSubscription } from "__generated__/RoutesTransactionsSubscription.graphql";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -43,9 +49,186 @@ type Props = {
   refetch: () => void;
 };
 
+const subscriptionLoans = graphql`
+  subscription RoutesLoansSubscription {
+    loans_subscribe {
+      loan_edge {
+        node {
+          id
+          _id_user
+          score
+          ROI
+          goal
+          term
+          raised
+          expiry
+          status
+        }
+        cursor
+      }
+      type
+    }
+  }
+`;
+
+const subscriptionTransactions = graphql`
+  subscription RoutesTransactionsSubscription($user_gid: ID!) {
+    transactions_subscribe(user_gid: $user_gid) {
+      transaction_edge {
+        node {
+          id
+          _id_user
+          count
+          history {
+            id
+            _id_borrower
+            _id_loan
+            type
+            quantity
+            created
+          }
+        }
+        cursor
+      }
+      type
+    }
+  }
+`;
+
+const subscriptionInvestments = graphql`
+  subscription RoutesInvestmentsSubscription($user_gid: ID!) {
+    investments_subscribe(user_gid: $user_gid) {
+      investment_edge {
+        node {
+          id
+          _id_borrower
+          _id_lender
+          _id_loan
+          quantity
+          created
+          updated
+          status
+        }
+        cursor
+      }
+      type
+    }
+  }
+`;
+
 export const Routes: FC<Props> = (props) => {
-  const environment = useRelayEnvironment();
   const user = useFragment(routesFragment, props.user);
+  const user_gid = user.id || "";
+  const environment = useRelayEnvironment();
+  const configLoans = useMemo<
+    GraphQLSubscriptionConfig<RoutesLoansSubscription>
+  >(
+    () => ({
+      variables: {},
+      subscription: subscriptionLoans,
+      updater: (store, data) => {
+        if (data.loans_subscribe.type === "INSERT") {
+          const root = store.getRoot();
+          const connectionRecord = ConnectionHandler.getConnection(
+            root,
+            "AddInvestments_query_loans"
+          );
+          if (!connectionRecord) {
+            throw new Error("no existe el connectionRecord");
+          }
+          const payload = store.getRootField("loans_subscribe");
+          const serverEdge = payload?.getLinkedRecord("loan_edge");
+          const newEdge = ConnectionHandler.buildConnectionEdge(
+            store,
+            connectionRecord,
+            serverEdge
+          );
+          if (!newEdge) {
+            throw new Error("no existe el newEdge");
+          }
+          ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge);
+        }
+      },
+    }),
+    []
+  );
+  const configInvestments = useMemo<
+    GraphQLSubscriptionConfig<RoutesInvestmentsSubscription>
+  >(
+    () => ({
+      variables: {
+        user_gid,
+      },
+      subscription: subscriptionInvestments,
+      updater: (store, data) => {
+        if (data.investments_subscribe.type === "INSERT") {
+          const root = store.getRoot();
+          const connectionRecord = ConnectionHandler.getConnection(
+            root,
+            "MyInvestments_query_investments",
+            {
+              user_id: tokensAndData.data._id,
+            }
+          );
+          if (!connectionRecord) {
+            throw new Error("no existe el connectionRecord");
+          }
+          const payload = store.getRootField("investments_subscribe");
+          const serverEdge = payload?.getLinkedRecord("investment_edge");
+          const newEdge = ConnectionHandler.buildConnectionEdge(
+            store,
+            connectionRecord,
+            serverEdge
+          );
+          if (!newEdge) {
+            throw new Error("no existe el newEdge");
+          }
+          ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge);
+        }
+      },
+    }),
+    [user_gid]
+  );
+  const configTransactions = useMemo<
+    GraphQLSubscriptionConfig<RoutesTransactionsSubscription>
+  >(
+    () => ({
+      variables: {
+        user_gid,
+      },
+      subscription: subscriptionTransactions,
+      updater: (store, data) => {
+        if (data.transactions_subscribe.type === "INSERT") {
+          const root = store.getRoot();
+          const connectionRecord = ConnectionHandler.getConnection(
+            root,
+            "MyTransactions_query_transactions",
+            {
+              user_id: tokensAndData.data._id,
+            }
+          );
+          if (!connectionRecord) {
+            throw new Error("no existe el connectionRecord");
+          }
+          const payload = store.getRootField("transactions_subscribe");
+          const serverEdge = payload?.getLinkedRecord("transaction_edge");
+          const newEdge = ConnectionHandler.buildConnectionEdge(
+            store,
+            connectionRecord,
+            serverEdge
+          );
+          if (!newEdge) {
+            throw new Error("no existe el newEdge");
+          }
+          ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge);
+        }
+      },
+    }),
+    [user_gid]
+  );
+  useSubscription<RoutesLoansSubscription>(configLoans);
+  useSubscription<RoutesInvestmentsSubscription>(configInvestments);
+  useSubscription<RoutesTransactionsSubscription>(configTransactions);
   const { isBorrower, isSupport } = tokensAndData.data;
   return (
     <Router>
@@ -201,10 +384,10 @@ export const Routes: FC<Props> = (props) => {
                   <RetireFunds user={user} />
                 </Route>
                 <Route path="/myTransactions">
-                  <MyTransactions user={{ id: user.id }} data={props.data} />
+                  <MyTransactions data={props.data} />
                 </Route>
                 <Route path="/myInvestments">
-                  <MyInvestments user={{ id: user.id }} data={props.data} />
+                  <MyInvestments data={props.data} />
                 </Route>
               </Switch>
             )}

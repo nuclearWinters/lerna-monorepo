@@ -38,7 +38,9 @@ describe("AddLends tests", () => {
     await dbInstance
       .collection<BucketTransactionMongo>("transactions")
       .deleteMany({ _id_user: new ObjectID("000000000000000000000004") });
-    await dbInstance.collection<InvestmentMongo>("lends").deleteMany({});
+    await dbInstance
+      .collection<InvestmentMongo>("lends")
+      .deleteMany({ _id_lender: new ObjectID("000000000000000000000004") });
     await dbInstance
       .collection<LoanMongo>("loans")
       .deleteMany({ _id_user: new ObjectID("000000000000000000000005") });
@@ -196,7 +198,9 @@ describe("AddLends tests", () => {
       },
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("lends");
-    const allInvestments = await investments.find().toArray();
+    const allInvestments = await investments
+      .find({ _id_lender: new ObjectID("000000000000000000000004") })
+      .toArray();
     expect(allInvestments.length).toBe(2);
     expect(
       allInvestments.map((investment) => ({
@@ -340,7 +344,9 @@ describe("AddLends tests", () => {
       },
     ]);
     const investments2 = dbInstance.collection<InvestmentMongo>("lends");
-    const allInvestments2 = await investments2.find().toArray();
+    const allInvestments2 = await investments2
+      .find({ _id_lender: new ObjectID("000000000000000000000004") })
+      .toArray();
     expect(allInvestments2.length).toBe(2);
     expect(
       allInvestments2.map((investment) => ({

@@ -1,4 +1,4 @@
-import { addSeconds, startOfDay } from "date-fns";
+import { addMonths, addSeconds, startOfDay } from "date-fns";
 import { Db, MongoClient, ObjectID } from "mongodb";
 import { dayFunction, monthFunction } from "./cronJobs";
 import { BucketTransactionMongo, LoanMongo, UserMongo } from "./types";
@@ -16,6 +16,32 @@ describe("cronJobs tests", () => {
   });
 
   afterAll(async () => {
+    await dbInstance.collection<UserMongo>("users").deleteMany({
+      _id: {
+        $in: [
+          new ObjectID("000000000000000000000013"),
+          new ObjectID("000000000000000000000011"),
+        ],
+      },
+    });
+    await dbInstance.collection<LoanMongo>("loans").deleteMany({
+      _id_user: {
+        $in: [
+          new ObjectID("000000000000000000000013"),
+          new ObjectID("000000000000000000000011"),
+        ],
+      },
+    });
+    await dbInstance
+      .collection<BucketTransactionMongo>("transactions")
+      .deleteMany({
+        _id_user: {
+          $in: [
+            new ObjectID("000000000000000000000013"),
+            new ObjectID("000000000000000000000011"),
+          ],
+        },
+      });
     await client.close();
   });
 
@@ -190,30 +216,23 @@ describe("cronJobs tests", () => {
       scheduledPayments: [
         {
           amortize: 342,
-          scheduledDate: startOfDay(new Date("2020-12-01")),
+          scheduledDate: addMonths(startOfDay(new Date()), -2),
           status: "paid",
         },
         {
           amortize: 342,
-          scheduledDate: startOfDay(new Date("2021-01-01")),
+          scheduledDate: addMonths(startOfDay(new Date()), -1),
           status: "paid",
         },
 
         {
           amortize: 342,
-          scheduledDate: startOfDay(new Date("2021-02-01")),
+          scheduledDate: startOfDay(new Date()),
           status: "to be paid",
         },
       ],
     });
-    const clock = jest.useFakeTimers("modern");
-    clock.setSystemTime(
-      addSeconds(startOfDay(new Date("2021-02-01")), -1).getTime()
-    );
-    const promise = monthFunction(dbInstance);
-    clock.advanceTimersByTime(2000);
-    await promise;
-    clock.useRealTimers();
+    await monthFunction(dbInstance);
     const user = await users.findOne({
       _id: new ObjectID("000000000000000000000013"),
     });
@@ -270,7 +289,7 @@ describe("cronJobs tests", () => {
       }))
     ).toEqual([
       {
-        status: "to be paid",
+        status: "paid",
         scheduledPayments: [
           {
             amortize: 342,
