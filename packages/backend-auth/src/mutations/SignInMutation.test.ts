@@ -1,12 +1,12 @@
-import { app } from "./app";
+import { app } from "../app";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectID } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo } from "./types";
+import { UserMongo } from "../types";
 
 const request = supertest(app);
 
-describe("supertest example with mongodb", () => {
+describe("SignInMutation tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
 
@@ -15,7 +15,7 @@ describe("supertest example with mongodb", () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    dbInstance = client.db("fintech");
+    dbInstance = client.db("auth");
     app.locals.db = dbInstance;
     app.locals.ch = { sendToQueue: jest.fn() };
     app.locals.rdb = { get: jest.fn() };
@@ -23,6 +23,9 @@ describe("supertest example with mongodb", () => {
 
   afterAll(async () => {
     delete app.locals.db;
+    await dbInstance
+      .collection<UserMongo>("users")
+      .deleteMany({ _id: new ObjectID("000000000000000000000020") });
     await client.close();
   });
 
@@ -110,60 +113,6 @@ describe("supertest example with mongodb", () => {
     expect(response.body.data.signIn.error).toBe("La contraseña no coincide.");
     expect(response.body.data.signIn.refreshToken).toBeFalsy();
     expect(response.body.data.signIn.accessToken).toBeFalsy();
-    done();
-  });
-
-  it("SignUpMutation: success", async (done) => {
-    const response = await request
-      .post("/auth/graphql")
-      .send({
-        query: `mutation signUpMutation($input: SignUpInput!) {
-          signUp(input: $input) {
-            error
-            accessToken
-            refreshToken
-          }
-        }`,
-        variables: {
-          input: {
-            password: "correct",
-            email: "armandocorrect@gmail.com",
-          },
-        },
-        operationName: "signUpMutation",
-      })
-      .set("Accept", "application/json");
-    expect(response.body.data.signUp.error).toBeFalsy();
-    expect(response.body.data.signUp.refreshToken).toBeTruthy();
-    expect(response.body.data.signUp.accessToken).toBeTruthy();
-    done();
-  });
-
-  it("SignUpMutation: user already exists", async (done) => {
-    const response = await request
-      .post("/auth/graphql")
-      .send({
-        query: `mutation signUpMutation($input: SignUpInput!) {
-          signUp(input: $input) {
-            error
-            accessToken
-            refreshToken
-          }
-        }`,
-        variables: {
-          input: {
-            password: "correct",
-            email: "armandocorrect@gmail.com",
-          },
-        },
-        operationName: "signUpMutation",
-      })
-      .set("Accept", "application/json");
-    expect(response.body.data.signUp.error).toBe(
-      "El email ya esta siendo usado."
-    );
-    expect(response.body.data.signUp.refreshToken).toBeFalsy();
-    expect(response.body.data.signUp.accessToken).toBeFalsy();
     done();
   });
 });

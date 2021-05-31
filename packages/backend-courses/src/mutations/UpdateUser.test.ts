@@ -7,7 +7,7 @@ import { ACCESSSECRET } from "../config";
 
 const request = supertest(app);
 
-describe("ApproveLoan tests", () => {
+describe("UpdateUser tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
 
@@ -28,7 +28,7 @@ describe("ApproveLoan tests", () => {
     await client.close();
   });
 
-  it("test ApproveLoan valid access token", async (done) => {
+  it("test UpdateUser valid access token", async (done) => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectID("000000000000000000000007"),

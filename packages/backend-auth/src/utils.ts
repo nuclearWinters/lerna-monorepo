@@ -82,3 +82,7 @@ export const getContext = (req: any): Context => {
 export const channelSendToQueue = (ch: Channel, message: string): void => {
   ch.sendToQueue(SIGN_UP, Buffer.from(message));
 };
+
+export const base64Name = (i: string, name: string): string => {
+  return Buffer.from(name + ":" + i, "utf8").toString("base64");
+};

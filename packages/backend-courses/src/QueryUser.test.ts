@@ -7,7 +7,7 @@ import { ACCESSSECRET } from "./config";
 
 const request = supertest(app);
 
-describe("QueryTransactions tests", () => {
+describe("QueryUser tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
 
@@ -28,7 +28,7 @@ describe("QueryTransactions tests", () => {
     await client.close();
   });
 
-  it("test TransactionsConnection valid access token", async (done) => {
+  it("test QueryUser valid access token", async (done) => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertMany([
       {
