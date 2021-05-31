@@ -7,3 +7,4 @@ export { RetireFunds } from "./RetireFunds";
 export { MyTransactions } from "./MyTransactions";
 export { AddLoan } from "./AddLoan";
 export { MyInvestments } from "./MyInvestments";
+export { Settings } from "./Settings";

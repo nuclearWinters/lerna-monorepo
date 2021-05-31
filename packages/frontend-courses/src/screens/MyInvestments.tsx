@@ -2,10 +2,9 @@ import React, { FC } from "react";
 import { graphql, usePaginationFragment } from "react-relay";
 import { MyInvestments_query$key } from "./__generated__/MyInvestments_query.graphql";
 import { MyInvestmentsPaginationQuery } from "./__generated__/MyInvestmentsPaginationQuery.graphql";
-import { format } from "date-fns";
-import es from "date-fns/locale/es";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { tokensAndData } from "App";
+import { InvestmentRow } from "../components/InvestmentRow";
 
 const myInvestmentsFragment = graphql`
   fragment MyInvestments_query on Query
@@ -19,12 +18,7 @@ const myInvestmentsFragment = graphql`
       edges {
         node {
           id
-          _id_borrower
-          _id_loan
-          quantity
-          created
-          updated
-          status
+          ...InvestmentRow_investment
         }
       }
     }
@@ -48,60 +42,12 @@ export const MyInvestments: FC<Props> = (props) => {
         {data.investments &&
           data.investments.edges &&
           data.investments.edges.map((edge) => {
-            return (
-              <div
-                style={{
-                  display: "flex",
-                  flex: 1,
-                  flexDirection: "row",
-                  height: 70,
-                  border: "1px solid black",
-                }}
-                key={edge?.node?.id}
-              >
-                <div
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                  }}
-                >
-                  {edge?.node?._id_borrower && (
-                    <div>
-                      Prestado a {edge?.node?._id_borrower} con folio:{" "}
-                      {edge?.node?._id_loan}
-                    </div>
-                  )}
-                  <div>Status: {edge?.node?.status}</div>
-                  <div>
-                    Ultimo abono en:{" "}
-                    {format(
-                      edge?.node?.updated || new Date(),
-                      "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
-                      { locale: es }
-                    )}
-                  </div>
-                  <div>
-                    Prestamo creado en:{" "}
-                    {format(
-                      edge?.node?.created || new Date(),
-                      "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
-                      { locale: es }
-                    )}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {edge?.node?.quantity}
-                </div>
-              </div>
-            );
+            if (edge && edge.node) {
+              return (
+                <InvestmentRow key={edge.node.id} investment={edge.node} />
+              );
+            }
+            return null;
           })}
       </div>
       <button onClick={() => loadNext(1)}>loadNext</button>

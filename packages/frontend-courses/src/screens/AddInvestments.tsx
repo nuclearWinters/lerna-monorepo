@@ -1,13 +1,12 @@
-import React, { CSSProperties, FC, useState } from "react";
+import React, { FC, useState } from "react";
 import { graphql, useMutation, usePaginationFragment } from "react-relay";
 import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
 import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
 import { useHistory } from "react-router";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
-import { differenceInMonths, differenceInDays } from "date-fns";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
 import { getDataFromToken, tokensAndData } from "App";
-import { AddInvestmentsApproveLoanMutation } from "./__generated__/AddInvestmentsApproveLoanMutation.graphql";
+import { LoanRow } from "components/LoanRow";
 
 const debtInSaleFragment = graphql`
   fragment AddInvestments_query on Query
@@ -25,14 +24,7 @@ const debtInSaleFragment = graphql`
       edges {
         node {
           id
-          _id_user
-          score
-          ROI
-          goal
-          term
-          raised
-          expiry
-          status
+          ...LoanRow_loan
         }
       }
     }
@@ -46,18 +38,15 @@ type Props = {
   data: AppQueryResponse;
 };
 
+interface ILends {
+  loan_gid: string;
+  quantity: string;
+  borrower_id: string;
+}
+
 export const AddInvestments: FC<Props> = (props) => {
   const user_gid = props?.user?.id || "";
-  const { isLender, isSupport } = tokensAndData.data;
-  const [commitApproveLoan] =
-    useMutation<AddInvestmentsApproveLoanMutation>(graphql`
-      mutation AddInvestmentsApproveLoanMutation($input: ApproveLoanInput!) {
-        approveLoan(input: $input) {
-          error
-          validAccessToken
-        }
-      }
-    `);
+  const { isLender } = tokensAndData.data;
   const [commit] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {
@@ -85,11 +74,10 @@ export const AddInvestments: FC<Props> = (props) => {
     { key: "raised", title: "Faltan" },
     { key: "expiry", title: "Termina" },
     { key: "lend", title: "Prestar" },
+    { key: "refetech", title: "Actualizar" },
   ];
 
-  const [lends, setLends] = useState<
-    { loan_gid: string; quantity: string; borrower_id: string }[]
-  >([]);
+  const [lends, setLends] = useState<ILends[]>([]);
 
   const getValue = (id: string | undefined) => {
     if (!id) {
@@ -115,121 +103,20 @@ export const AddInvestments: FC<Props> = (props) => {
         <div>
           {data.loans &&
             data.loans.edges &&
-            data.loans.edges.map((edge) => (
-              <div
-                key={edge?.node?.id}
-                style={{ display: "flex", flexDirection: "row" }}
-              >
-                <div style={style.cell}>{edge?.node?.id}</div>
-                <div style={style.cell}>{edge?.node?._id_user}</div>
-                <div style={style.cell}>{edge?.node?.score}</div>
-                <div style={style.cell}>{edge?.node?.ROI}%</div>
-                <div style={style.cell}>${edge?.node?.goal}</div>
-                <div style={style.cell}>{edge?.node?.term} meses</div>
-                <div style={style.cell}>
-                  $
-                  {(
-                    Number(edge?.node?.goal || 0) -
-                    Number(edge?.node?.raised || 0)
-                  ).toFixed(2)}
-                </div>
-                <div style={style.cell}>
-                  {differenceInMonths(
-                    new Date(edge?.node?.expiry || new Date()),
-                    new Date()
-                  ) ??
-                    differenceInDays(
-                      new Date(edge?.node?.expiry || new Date()),
-                      new Date()
-                    )}{" "}
-                  meses
-                </div>
-                {isLender ? (
-                  <input
-                    type="text"
-                    name={edge?.node?.id}
-                    style={style.cell}
-                    value={getValue(edge?.node?.id)}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (isNaN(Number(val))) {
-                        return;
-                      }
-                      setLends((state) => {
-                        const idx = state.findIndex(
-                          (lend) => edge?.node?.id === lend.loan_gid
-                        );
-                        if (Number(val) === 0) {
-                          state.splice(idx, 1);
-                          return [...state];
-                        }
-                        if (idx === -1) {
-                          return [
-                            ...state,
-                            {
-                              loan_gid: edge?.node?.id || "",
-                              quantity: val,
-                              borrower_id: edge?.node?._id_user || "",
-                            },
-                          ];
-                        }
-                        state[idx].quantity = val;
-                        return [...state];
-                      });
-                    }}
-                    onBlur={() => {
-                      setLends((state) => {
-                        const idx = state.findIndex(
-                          (lend) => edge?.node?.id === lend.loan_gid
-                        );
-                        if (idx === -1) {
-                          return state;
-                        }
-                        state[idx].quantity = Number(
-                          state[idx].quantity
-                        ).toFixed(2);
-                        return [...state];
-                      });
-                    }}
+            data.loans.edges.map((edge) => {
+              if (edge && edge.node) {
+                const value = getValue(edge.node.id);
+                return (
+                  <LoanRow
+                    key={edge.node.id}
+                    setLends={setLends}
+                    loan={edge.node}
+                    value={value}
                   />
-                ) : isSupport &&
-                  edge?.node?.status === "WAITING_FOR_APPROVAL" ? (
-                  <div style={style.cell}>
-                    <button
-                      onClick={() => {
-                        commitApproveLoan({
-                          variables: {
-                            input: {
-                              loan_gid: edge?.node?.id || "",
-                            },
-                          },
-                          onCompleted: (response) => {
-                            if (response.approveLoan.error) {
-                              throw new Error(response.approveLoan.error);
-                            }
-                          },
-                          updater: (store, data) => {
-                            tokensAndData.tokens.accessToken =
-                              data.approveLoan.validAccessToken;
-                            const user = getDataFromToken(
-                              data.approveLoan.validAccessToken
-                            );
-                            tokensAndData.data = user;
-                          },
-                          onError: (error) => {
-                            window.alert(error.message);
-                          },
-                        });
-                      }}
-                    >
-                      Aprobar
-                    </button>
-                  </div>
-                ) : (
-                  <div style={style.cell}>{edge?.node?.status}</div>
-                )}
-              </div>
-            ))}
+                );
+              }
+              return null;
+            })}
         </div>
         <button onClick={() => loadNext(5)}>loadNext</button>
       </div>
@@ -281,14 +168,4 @@ export const AddInvestments: FC<Props> = (props) => {
       )}
     </div>
   );
-};
-
-const style: Record<"cell", CSSProperties> = {
-  cell: {
-    flex: 1,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    border: "1px solid black",
-  },
 };

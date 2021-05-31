@@ -103,30 +103,28 @@ export const LoanScheduledPaymentStatus = new GraphQLEnumType({
 });
 
 const { nodeInterface, nodeField } = nodeDefinitions(
-  async (globalId, { users, loans }) => {
+  async (globalId, { users, loans, investments }) => {
     const { type, id } = fromGlobalId(globalId);
-    if (type === "User") {
-      const user = await users.findOne({ _id: new ObjectID(id) });
-      if (!user) {
+    switch (type) {
+      case "User":
+        return { ...(await users.findOne({ _id: new ObjectID(id) })), type };
+      case "Loan":
+        return { ...(await loans.findOne({ _id: new ObjectID(id) })), type };
+      case "Investment":
+        return {
+          ...(await investments.findOne({ _id: new ObjectID(id) })),
+          type,
+        };
+      default:
         return { type: "" };
-      }
-      const typedUser = { ...user, type };
-      return typedUser;
-    } else if (type === "Loan") {
-      const loan = await loans.findOne({ _id: new ObjectID(id) });
-      if (!loan) {
-        return { type: "" };
-      }
-      const typedUser = { ...loan, type };
-      return typedUser;
-    } else {
-      return { type: "" };
     }
   },
   (obj: { type: string }): GraphQLObjectType | null => {
     switch (obj.type) {
       case "Loan":
         return GraphQLLoan;
+      case "Investment":
+        return GraphQLInvestment;
       case "User":
         return GraphQLUser;
       default:

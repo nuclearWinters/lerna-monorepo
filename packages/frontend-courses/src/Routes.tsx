@@ -20,6 +20,7 @@ import {
   AddLoan,
   MyTransactions,
   MyInvestments,
+  Settings,
 } from "./screens";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { tokensAndData } from "App";
@@ -40,6 +41,7 @@ const routesFragment = graphql`
     ...AddFunds_user
     ...RetireFunds_user
     ...AddLoan_user
+    ...Settings_user
   }
 `;
 
@@ -258,10 +260,12 @@ export const Routes: FC<Props> = (props) => {
               <Link to="/myLoans">Mis prestamos</Link>
               <Link to="/addFunds">Agregar fondos</Link>
               <Link to="/retireFunds">Retirar fondos</Link>
+              <Link to="/settings">Settings</Link>
             </>
           ) : isSupport ? (
             <>
               <Link to="/approveLoan">Aprobar prestamo</Link>
+              <Link to="/settings">Settings</Link>
             </>
           ) : (
             <>
@@ -275,6 +279,7 @@ export const Routes: FC<Props> = (props) => {
               <Link to="/retireFunds">Retirar fondos</Link>
               <Link to="/myInvestments">Mis Inversiones</Link>
               <Link to="/myTransactions">Mis movimientos</Link>
+              <Link to="/settings">Settings</Link>
             </>
           )}
         </div>
@@ -345,6 +350,9 @@ export const Routes: FC<Props> = (props) => {
                 <Route path="/retireFunds">
                   <RetireFunds user={user} />
                 </Route>
+                <Route path="/settings">
+                  <Settings user={user} refetch={props.refetch} />
+                </Route>
               </Switch>
             ) : isSupport ? (
               <Switch>
@@ -356,6 +364,9 @@ export const Routes: FC<Props> = (props) => {
                 </Route>
                 <Route path="/approveLoan">
                   <AddInvestments data={props.data} />
+                </Route>
+                <Route path="/settings">
+                  <Settings user={user} refetch={props.refetch} />
                 </Route>
               </Switch>
             ) : (
@@ -388,6 +399,9 @@ export const Routes: FC<Props> = (props) => {
                 </Route>
                 <Route path="/myInvestments">
                   <MyInvestments data={props.data} />
+                </Route>
+                <Route path="/settings">
+                  <Settings user={user} refetch={props.refetch} />
                 </Route>
               </Switch>
             )}

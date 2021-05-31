@@ -3,33 +3,33 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
-export type BlacklistUserInput = {
-    user_gid: string;
+export type ApproveLoanInput = {
     clientMutationId?: string | null;
+    loan_gid: string;
 };
-export type BlacklistUserMutationVariables = {
-    input: BlacklistUserInput;
+export type LoanRowMutationVariables = {
+    input: ApproveLoanInput;
 };
-export type BlacklistUserMutationResponse = {
-    readonly blacklistUser: {
-        readonly validAccessToken: string;
+export type LoanRowMutationResponse = {
+    readonly approveLoan: {
         readonly error: string;
+        readonly validAccessToken: string;
     };
 };
-export type BlacklistUserMutation = {
-    readonly response: BlacklistUserMutationResponse;
-    readonly variables: BlacklistUserMutationVariables;
+export type LoanRowMutation = {
+    readonly response: LoanRowMutationResponse;
+    readonly variables: LoanRowMutationVariables;
 };
 
 
 
 /*
-mutation BlacklistUserMutation(
-  $input: BlacklistUserInput!
+mutation LoanRowMutation(
+  $input: ApproveLoanInput!
 ) {
-  blacklistUser(input: $input) {
-    validAccessToken
+  approveLoan(input: $input) {
     error
+    validAccessToken
   }
 }
 */
@@ -51,23 +51,23 @@ const node: ConcreteRequest = (function () {
                     "variableName": "input"
                 }
             ],
-            "concreteType": "BlacklistUserPayload",
+            "concreteType": "ApproveLoanPayload",
             "kind": "LinkedField",
-            "name": "blacklistUser",
+            "name": "approveLoan",
             "plural": false,
             "selections": [
                 {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "validAccessToken",
+                    "name": "error",
                     "storageKey": null
                 },
                 {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "error",
+                    "name": "validAccessToken",
                     "storageKey": null
                 }
             ],
@@ -79,7 +79,7 @@ const node: ConcreteRequest = (function () {
             "argumentDefinitions": (v0 /*: any*/),
             "kind": "Fragment",
             "metadata": null,
-            "name": "BlacklistUserMutation",
+            "name": "LoanRowMutation",
             "selections": (v1 /*: any*/),
             "type": "Mutation",
             "abstractKey": null
@@ -88,18 +88,18 @@ const node: ConcreteRequest = (function () {
         "operation": {
             "argumentDefinitions": (v0 /*: any*/),
             "kind": "Operation",
-            "name": "BlacklistUserMutation",
+            "name": "LoanRowMutation",
             "selections": (v1 /*: any*/)
         },
         "params": {
-            "cacheID": "d48b07f0d2761c36a6af3977b9ba751d",
+            "cacheID": "3de6dd34fe4a2380611c57580908532b",
             "id": null,
             "metadata": {},
-            "name": "BlacklistUserMutation",
+            "name": "LoanRowMutation",
             "operationKind": "mutation",
-            "text": "mutation BlacklistUserMutation(\n  $input: BlacklistUserInput!\n) {\n  blacklistUser(input: $input) {\n    validAccessToken\n    error\n  }\n}\n"
+            "text": "mutation LoanRowMutation(\n  $input: ApproveLoanInput!\n) {\n  approveLoan(input: $input) {\n    error\n    validAccessToken\n  }\n}\n"
         }
     } as any;
 })();
-(node as any).hash = '656d3506592c16a35bc4459c4e8f4eef';
+(node as any).hash = '0c4b70dd1481d0b641ba6bcabed0ba21';
 export default node;

@@ -39,7 +39,7 @@ describe("AddLends tests", () => {
       .collection<BucketTransactionMongo>("transactions")
       .deleteMany({ _id_user: new ObjectID("000000000000000000000004") });
     await dbInstance
-      .collection<InvestmentMongo>("lends")
+      .collection<InvestmentMongo>("investments")
       .deleteMany({ _id_lender: new ObjectID("000000000000000000000004") });
     await dbInstance
       .collection<LoanMongo>("loans")
@@ -197,7 +197,7 @@ describe("AddLends tests", () => {
         status: "financing",
       },
     ]);
-    const investments = dbInstance.collection<InvestmentMongo>("lends");
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
       .find({ _id_lender: new ObjectID("000000000000000000000004") })
       .toArray();
@@ -343,7 +343,7 @@ describe("AddLends tests", () => {
         ],
       },
     ]);
-    const investments2 = dbInstance.collection<InvestmentMongo>("lends");
+    const investments2 = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments2 = await investments2
       .find({ _id_lender: new ObjectID("000000000000000000000004") })
       .toArray();

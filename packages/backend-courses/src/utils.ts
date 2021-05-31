@@ -41,7 +41,7 @@ export const getContext = (req: any): Context => {
   return {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
-    investments: db.collection<InvestmentMongo>("lends"),
+    investments: db.collection<InvestmentMongo>("investments"),
     transactions: db.collection<BucketTransactionMongo>("transactions"),
     accessToken: authorization.accessToken,
     refreshToken: authorization.refreshToken,

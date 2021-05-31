@@ -42,13 +42,13 @@ export const LogIn: FC<Props> = ({ refetch }) => {
                 password,
               },
             },
-            onCompleted: (response) => {
-              if (response.signIn.error) {
-                throw new Error(response.signIn.error);
-              }
+            onCompleted: () => {
               refetch();
             },
             updater: (store, data) => {
+              if (data.signIn.error) {
+                throw new Error(data.signIn.error);
+              }
               tokensAndData.tokens.accessToken = data.signIn.accessToken;
               tokensAndData.tokens.refreshToken = data.signIn.refreshToken;
               const user = getDataFromToken(data.signIn.accessToken);

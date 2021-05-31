@@ -23,13 +23,13 @@ describe("QueryInvestments tests", () => {
   afterAll(async () => {
     delete app.locals.db;
     await dbInstance
-      .collection<InvestmentMongo>("lends")
+      .collection<InvestmentMongo>("investments")
       .deleteMany({ _id_lender: new ObjectID("000000000000000000000030") });
     await client.close();
   });
 
   it("test InvestmentConnection valid access token", async (done) => {
-    const investments = dbInstance.collection<InvestmentMongo>("lends");
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
     await investments.insertMany([
       {
         _id: new ObjectID("000000000000000000000032"),

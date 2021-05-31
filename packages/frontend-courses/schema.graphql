@@ -186,7 +186,7 @@ type PageInfo {
   endCursor: String
 }
 
-type Investment {
+type Investment implements Node {
   id: ID!
   _id_borrower: String!
   _id_lender: String!
@@ -207,7 +207,7 @@ type InvestmentsEdge {
   cursor: String!
 }
 
-type Loan {
+type Loan implements Node {
   id: ID!
   _id_user: String!
   score: String!

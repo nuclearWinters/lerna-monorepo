@@ -36,14 +36,7 @@ fragment AddInvestments_query_1G22uz on Query {
     edges {
       node {
         id
-        _id_user
-        score
-        ROI
-        goal
-        term
-        raised
-        expiry
-        status
+        ...LoanRow_loan
         __typename
       }
       cursor
@@ -53,6 +46,18 @@ fragment AddInvestments_query_1G22uz on Query {
       hasNextPage
     }
   }
+}
+
+fragment LoanRow_loan on Loan {
+  id
+  _id_user
+  score
+  ROI
+  goal
+  term
+  raised
+  expiry
+  status
 }
 */
 
@@ -283,14 +288,14 @@ const node: ConcreteRequest = (function () {
             ]
         },
         "params": {
-            "cacheID": "07f1b8caa99230a0726540740ccaaa27",
+            "cacheID": "32e74b697551ead96b315012d122a67a",
             "id": null,
             "metadata": {},
             "name": "AddInvestmentsPaginationQuery",
             "operationKind": "query",
-            "text": "query AddInvestmentsPaginationQuery(\n  $borrower_id: String\n  $count: Int = 5\n  $cursor: String = \"\"\n  $status: [LoanStatus!]\n) {\n  ...AddInvestments_query_1G22uz\n}\n\nfragment AddInvestments_query_1G22uz on Query {\n  loans(first: $count, after: $cursor, status: $status, borrower_id: $borrower_id) {\n    edges {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+            "text": "query AddInvestmentsPaginationQuery(\n  $borrower_id: String\n  $count: Int = 5\n  $cursor: String = \"\"\n  $status: [LoanStatus!]\n) {\n  ...AddInvestments_query_1G22uz\n}\n\nfragment AddInvestments_query_1G22uz on Query {\n  loans(first: $count, after: $cursor, status: $status, borrower_id: $borrower_id) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n}\n"
         }
     } as any;
 })();
-(node as any).hash = 'ee3507a93eece348b7083803a0838daf';
+(node as any).hash = '46cfad9d10a1c9cea1df501ff5312987';
 export default node;

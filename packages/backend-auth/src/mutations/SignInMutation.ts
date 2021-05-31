@@ -39,11 +39,15 @@ export const SignInMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
-    { users }: Context
+    { users, rdb }: Context
   ): Promise<Payload> => {
     try {
       const user = await users.findOne({ email });
       if (!user) throw new Error("El usuario no existe.");
+      const blacklistedUser = await rdb.get(user._id.toHexString());
+      if (blacklistedUser) {
+        throw new Error("El usuario estará bloqueado por una hora.");
+      }
       const hash = await bcrypt.compare(password, user.password);
       if (!hash) throw new Error("La contraseña no coincide.");
       const refreshToken = jwt.sign(

@@ -4,18 +4,12 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type InvestmentStatus = "DELAY_PAYMENT" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 export type MyInvestments_query = {
     readonly investments: {
         readonly edges: ReadonlyArray<{
             readonly node: {
                 readonly id: string;
-                readonly _id_borrower: string;
-                readonly _id_loan: string;
-                readonly quantity: number;
-                readonly created: number;
-                readonly updated: number;
-                readonly status: InvestmentStatus;
+                readonly " $fragmentRefs": FragmentRefs<"InvestmentRow_investment">;
             } | null;
         } | null> | null;
     } | null;
@@ -116,50 +110,13 @@ const node: ReaderFragment = (function () {
                                         "alias": null,
                                         "args": null,
                                         "kind": "ScalarField",
-                                        "name": "_id_borrower",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "_id_loan",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "quantity",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "created",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "updated",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "status",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
                                         "name": "__typename",
                                         "storageKey": null
+                                    },
+                                    {
+                                        "args": null,
+                                        "kind": "FragmentSpread",
+                                        "name": "InvestmentRow_investment"
                                     }
                                 ],
                                 "storageKey": null
@@ -207,5 +164,5 @@ const node: ReaderFragment = (function () {
         "abstractKey": null
     } as any;
 })();
-(node as any).hash = 'a25d13611b639299e8eb671e328250e8';
+(node as any).hash = '8faf7d6a2ad83a1ba91caee1cd54ab10';
 export default node;

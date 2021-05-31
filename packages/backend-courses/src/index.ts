@@ -47,7 +47,7 @@ MongoClient.connect(MONGO_DB, {
     }
   });
   const investmentsStream = db
-    .collection<InvestmentMongo>("lends")
+    .collection<InvestmentMongo>("investments")
     .watch([], options);
   investmentsStream.on("change", (event) => {
     if (["insert", "update"].includes(event.operationType)) {

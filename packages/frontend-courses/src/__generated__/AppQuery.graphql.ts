@@ -49,14 +49,7 @@ fragment AddInvestments_query on Query {
     edges {
       node {
         id
-        _id_user
-        score
-        ROI
-        goal
-        term
-        raised
-        expiry
-        status
+        ...LoanRow_loan
         __typename
       }
       cursor
@@ -72,17 +65,34 @@ fragment AddLoan_user on User {
   id
 }
 
+fragment InvestmentRow_investment on Investment {
+  id
+  _id_borrower
+  _id_loan
+  quantity
+  created
+  updated
+  status
+}
+
+fragment LoanRow_loan on Loan {
+  id
+  _id_user
+  score
+  ROI
+  goal
+  term
+  raised
+  expiry
+  status
+}
+
 fragment MyInvestments_query on Query {
   investments(first: 2, after: "", user_id: $id) {
     edges {
       node {
         id
-        _id_borrower
-        _id_loan
-        quantity
-        created
-        updated
-        status
+        ...InvestmentRow_investment
         __typename
       }
       cursor
@@ -147,6 +157,11 @@ fragment Routes_user on User {
   ...AddFunds_user
   ...RetireFunds_user
   ...AddLoan_user
+  ...Settings_user
+}
+
+fragment Settings_user on User {
+  id
 }
 */
 
@@ -652,12 +667,12 @@ const node: ConcreteRequest = (function () {
             ]
         },
         "params": {
-            "cacheID": "ec27452047d0fbed904dfde9d2b8e182",
+            "cacheID": "96bc15e69c97ac5944aa0c8b6e48c85e",
             "id": null,
             "metadata": {},
             "name": "AppQuery",
             "operationKind": "query",
-            "text": "query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  user(id: $id) {\n    ...Routes_user\n    error\n    id\n  }\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: \"\", status: $status, borrower_id: $borrower_id) {\n    edges {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: \"\", user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        status\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: \"\", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment Profile_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  accountTotal\n  accountAvailable\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...Profile_user\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n}\n"
+            "text": "query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  user(id: $id) {\n    ...Routes_user\n    error\n    id\n  }\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: \"\", status: $status, borrower_id: $borrower_id) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: \"\", user_id: $id) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: \"\", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment Profile_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  accountTotal\n  accountAvailable\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  accountTotal\n  accountAvailable\n  ...Profile_user\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n  ...Settings_user\n}\n\nfragment Settings_user on User {\n  id\n}\n"
         }
     } as any;
 })();

@@ -4,20 +4,12 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 export type AddInvestments_query = {
     readonly loans: {
         readonly edges: ReadonlyArray<{
             readonly node: {
                 readonly id: string;
-                readonly _id_user: string;
-                readonly score: string;
-                readonly ROI: number;
-                readonly goal: string;
-                readonly term: number;
-                readonly raised: string;
-                readonly expiry: number;
-                readonly status: LoanStatus;
+                readonly " $fragmentRefs": FragmentRefs<"LoanRow_loan">;
             } | null;
         } | null> | null;
     } | null;
@@ -127,64 +119,13 @@ const node: ReaderFragment = (function () {
                                         "alias": null,
                                         "args": null,
                                         "kind": "ScalarField",
-                                        "name": "_id_user",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "score",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "ROI",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "goal",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "term",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "raised",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "expiry",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "status",
-                                        "storageKey": null
-                                    },
-                                    {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
                                         "name": "__typename",
                                         "storageKey": null
+                                    },
+                                    {
+                                        "args": null,
+                                        "kind": "FragmentSpread",
+                                        "name": "LoanRow_loan"
                                     }
                                 ],
                                 "storageKey": null
@@ -232,5 +173,5 @@ const node: ReaderFragment = (function () {
         "abstractKey": null
     } as any;
 })();
-(node as any).hash = 'ee3507a93eece348b7083803a0838daf';
+(node as any).hash = '46cfad9d10a1c9cea1df501ff5312987';
 export default node;

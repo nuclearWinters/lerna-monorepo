@@ -18,6 +18,7 @@ describe("supertest example with mongodb", () => {
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
     app.locals.ch = { sendToQueue: jest.fn() };
+    app.locals.rdb = { get: jest.fn() };
   });
 
   afterAll(async () => {

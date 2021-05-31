@@ -28,17 +28,22 @@ query MyInvestmentsPaginationQuery(
   ...MyInvestments_query_1G22uz
 }
 
+fragment InvestmentRow_investment on Investment {
+  id
+  _id_borrower
+  _id_loan
+  quantity
+  created
+  updated
+  status
+}
+
 fragment MyInvestments_query_1G22uz on Query {
   investments(first: $count, after: $cursor, user_id: $id) {
     edges {
       node {
         id
-        _id_borrower
-        _id_loan
-        quantity
-        created
-        updated
-        status
+        ...InvestmentRow_investment
         __typename
       }
       cursor
@@ -253,14 +258,14 @@ const node: ConcreteRequest = (function () {
             ]
         },
         "params": {
-            "cacheID": "255a8faf300c055975fb51c36e79b562",
+            "cacheID": "3e8a58b52e85b855a6c6dd9d8998ed62",
             "id": null,
             "metadata": {},
             "name": "MyInvestmentsPaginationQuery",
             "operationKind": "query",
-            "text": "query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $id: String!\n) {\n  ...MyInvestments_query_1G22uz\n}\n\nfragment MyInvestments_query_1G22uz on Query {\n  investments(first: $count, after: $cursor, user_id: $id) {\n    edges {\n      node {\n        id\n        _id_borrower\n        _id_loan\n        quantity\n        created\n        updated\n        status\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+            "text": "query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $id: String!\n) {\n  ...MyInvestments_query_1G22uz\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n}\n\nfragment MyInvestments_query_1G22uz on Query {\n  investments(first: $count, after: $cursor, user_id: $id) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
         }
     } as any;
 })();
-(node as any).hash = 'a25d13611b639299e8eb671e328250e8';
+(node as any).hash = '8faf7d6a2ad83a1ba91caee1cd54ab10';
 export default node;
