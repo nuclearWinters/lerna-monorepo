@@ -54,19 +54,15 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
         <div>Status: {data.status}</div>
         <div>
           Ultimo abono en:{" "}
-          {format(
-            data.updated || new Date(),
-            "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
-            { locale: es }
-          )}
+          {format(data.updated, "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss", {
+            locale: es,
+          })}
         </div>
         <div>
           Prestamo creado en:{" "}
-          {format(
-            data.created || new Date(),
-            "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
-            { locale: es }
-          )}
+          {format(data.created, "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss", {
+            locale: es,
+          })}
         </div>
       </div>
       <div

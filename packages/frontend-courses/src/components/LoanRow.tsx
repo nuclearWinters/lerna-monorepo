@@ -61,8 +61,8 @@ export const LoanRow: FC<Props> = ({ setLends, loan, value }) => {
         ${(Number(data.goal) - Number(data.raised)).toFixed(2)}
       </div>
       <div style={style.cell}>
-        {differenceInMonths(new Date(data.expiry), new Date()) ??
-          differenceInDays(new Date(data.expiry), new Date())}{" "}
+        {differenceInMonths(data.expiry, new Date()) ??
+          differenceInDays(data.expiry, new Date())}{" "}
         meses
       </div>
       {isLender ? (

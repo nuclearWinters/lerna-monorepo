@@ -90,7 +90,7 @@ export const MyTransactions: FC<Props> = (props) => {
                       )}
                       <div>
                         {format(
-                          transaction.created || new Date(),
+                          transaction.created,
                           "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
                           { locale: es }
                         )}
