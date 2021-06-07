@@ -54,7 +54,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
       const resultUser = await users.findOneAndUpdate(
         { _id: new ObjectId(user_id) },
         { $inc: { accountAvailable: quantity } },
-        { returnOriginal: false }
+        { returnDocument: "after" }
       );
       const updatedUser = resultUser.value;
       if (!updatedUser) {

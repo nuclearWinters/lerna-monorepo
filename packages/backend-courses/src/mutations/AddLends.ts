@@ -223,7 +223,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
             },
           },
         },
-        { returnOriginal: false }
+        { returnDocument: "after" }
       );
       const user = result.value;
       if (!user) {

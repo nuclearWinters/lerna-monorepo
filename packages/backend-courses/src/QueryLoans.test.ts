@@ -28,7 +28,7 @@ describe("QueryLoans tests", () => {
     await client.close();
   });
 
-  it("test LoanConnection valid access token", async (done) => {
+  it("test LoanConnection valid access token", async () => {
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertMany([
       {
@@ -125,6 +125,5 @@ describe("QueryLoans tests", () => {
     expect(response.body.data.loans.edges[0].node.raised).toBeTruthy();
     expect(response.body.data.loans.edges[0].node.expiry).toBeTruthy();
     expect(response.body.data.loans.edges[0].node.status).toBeTruthy();
-    done();
   });
 });

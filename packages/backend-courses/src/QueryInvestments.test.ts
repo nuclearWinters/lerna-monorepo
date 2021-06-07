@@ -28,7 +28,7 @@ describe("QueryInvestments tests", () => {
     await client.close();
   });
 
-  it("test InvestmentConnection valid access token", async (done) => {
+  it("test InvestmentConnection valid access token", async () => {
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     await investments.insertMany([
       {
@@ -129,6 +129,5 @@ describe("QueryInvestments tests", () => {
     expect(response.body.data.investments.edges[0].node.status).toBe(
       "UP_TO_DATE"
     );
-    done();
   });
 });

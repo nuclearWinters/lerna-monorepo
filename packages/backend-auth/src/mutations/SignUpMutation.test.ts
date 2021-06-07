@@ -28,7 +28,7 @@ describe("SignUpMutation tests", () => {
     await client.close();
   });
 
-  it("SignUpMutation: success", async (done) => {
+  it("SignUpMutation: success", async () => {
     const response = await request
       .post("/auth/graphql")
       .send({
@@ -51,10 +51,9 @@ describe("SignUpMutation tests", () => {
     expect(response.body.data.signUp.error).toBeFalsy();
     expect(response.body.data.signUp.refreshToken).toBeTruthy();
     expect(response.body.data.signUp.accessToken).toBeTruthy();
-    done();
   });
 
-  it("SignUpMutation: user already exists", async (done) => {
+  it("SignUpMutation: user already exists", async () => {
     const response = await request
       .post("/auth/graphql")
       .send({
@@ -79,6 +78,5 @@ describe("SignUpMutation tests", () => {
     );
     expect(response.body.data.signUp.refreshToken).toBeFalsy();
     expect(response.body.data.signUp.accessToken).toBeFalsy();
-    done();
   });
 });

@@ -28,7 +28,7 @@ describe("UpdateUser tests", () => {
     await client.close();
   });
 
-  it("test UpdateUser valid access token", async (done) => {
+  it("test UpdateUser valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000007"),
@@ -95,6 +95,5 @@ describe("UpdateUser tests", () => {
     expect(response.body.data.updateUser.user.CURP).toBeTruthy();
     expect(response.body.data.updateUser.user.clabe).toBeTruthy();
     expect(response.body.data.updateUser.user.mobile).toBeTruthy();
-    done();
   });
 });

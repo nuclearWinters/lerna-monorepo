@@ -31,7 +31,7 @@ describe("BlacklistUserMutation tests", () => {
     await client.close();
   });
 
-  it("BlacklistUserMutation: success", async (done) => {
+  it("BlacklistUserMutation: success", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000070"),
@@ -77,10 +77,9 @@ describe("BlacklistUserMutation tests", () => {
       );
     expect(response.body.data.blacklistUser.error).toBeFalsy();
     expect(response.body.data.blacklistUser.validAccessToken).toBeFalsy();
-    done();
   });
 
-  it("BlacklistUserMutation: error", async (done) => {
+  it("BlacklistUserMutation: error", async () => {
     const response = await request
       .post("/auth/graphql")
       .send({
@@ -117,6 +116,5 @@ describe("BlacklistUserMutation tests", () => {
       );
     expect(response.body.data.blacklistUser.error).toBeTruthy();
     expect(response.body.data.blacklistUser.validAccessToken).toBeFalsy();
-    done();
   });
 });

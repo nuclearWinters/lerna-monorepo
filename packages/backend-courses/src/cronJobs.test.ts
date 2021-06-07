@@ -60,7 +60,7 @@ describe("cronJobs tests", () => {
     await client.close();
   });
 
-  it("dayFunction test", async (done) => {
+  it("dayFunction test", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
@@ -285,10 +285,9 @@ describe("cronJobs tests", () => {
         created: now,
       },
     ]);
-    done();
   });
 
-  it("monthFunction test", async (done) => {
+  it("monthFunction test", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
@@ -520,6 +519,5 @@ describe("cronJobs tests", () => {
         created: now,
       },
     ]);
-    done();
   });
 });

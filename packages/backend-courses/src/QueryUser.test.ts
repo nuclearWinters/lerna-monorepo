@@ -28,7 +28,7 @@ describe("QueryUser tests", () => {
     await client.close();
   });
 
-  it("test QueryUser valid access token", async (done) => {
+  it("test QueryUser valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertMany([
       {
@@ -90,6 +90,5 @@ describe("QueryUser tests", () => {
     expect(response.body.data.user.mobile).toBe("mobile");
     expect(response.body.data.user.accountAvailable).toBe("500.00");
     expect(response.body.data.user.investments.length).toBe(0);
-    done();
   });
 });

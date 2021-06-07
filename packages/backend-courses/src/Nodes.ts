@@ -103,7 +103,7 @@ export const LoanScheduledPaymentStatus = new GraphQLEnumType({
   },
 });
 
-const { nodeInterface, nodeField } = nodeDefinitions(
+const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   async (globalId, { users, loans, investments }) => {
     const { type, id } = fromGlobalId(globalId);
     switch (type) {

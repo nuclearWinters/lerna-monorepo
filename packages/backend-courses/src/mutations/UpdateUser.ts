@@ -66,7 +66,7 @@ export const UpdateUserMutation = mutationWithClientMutationId({
       const result = await users.findOneAndUpdate(
         { _id: new ObjectId(user_id) },
         { $set: user },
-        { returnOriginal: false }
+        { returnDocument: "after" }
       );
       const updatedUser = result.value;
       if (!updatedUser) {

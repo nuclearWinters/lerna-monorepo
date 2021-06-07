@@ -31,7 +31,7 @@ describe("AddLoan tests", () => {
     await client.close();
   });
 
-  it("test AddLoan valid access token", async (done) => {
+  it("test AddLoan valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000006"),
@@ -105,6 +105,5 @@ describe("AddLoan tests", () => {
         term: 2,
       },
     ]);
-    done();
   });
 });

@@ -47,7 +47,7 @@ describe("AddLends tests", () => {
     await client.close();
   });
 
-  it("test AddLends valid access token", async (done) => {
+  it("test AddLends valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertMany([
       {
@@ -482,6 +482,5 @@ describe("AddLends tests", () => {
         payments: 0,
       },
     ]);
-    done();
   });
 });

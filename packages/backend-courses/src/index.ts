@@ -28,6 +28,7 @@ MongoClient.connect(MONGO_DB, {
   const conn = await amqp.connect("amqp://rabbitmq:5672");
   const ch = await conn.createChannel();
   await ch.assertQueue(SIGN_UP);
+  //Remove updateLookup for performance?
   const options = { fullDocument: "updateLookup" as const };
   const loansStream = db.collection<LoanMongo>("loans").watch([], options);
   loansStream.on("change", (event) => {

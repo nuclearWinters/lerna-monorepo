@@ -29,7 +29,7 @@ describe("SignInMutation tests", () => {
     await client.close();
   });
 
-  it("SignInMutation: user exists and password is correct", async (done) => {
+  it("SignInMutation: user exists and password is correct", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000020"),
@@ -61,10 +61,9 @@ describe("SignInMutation tests", () => {
     expect(response.body.data.signIn.error).toBeFalsy();
     expect(response.body.data.signIn.refreshToken).toBeTruthy();
     expect(response.body.data.signIn.accessToken).toBeTruthy();
-    done();
   });
 
-  it("SignInMutation: user NOT exists", async (done) => {
+  it("SignInMutation: user NOT exists", async () => {
     const response = await request
       .post("/auth/graphql")
       .send({
@@ -87,10 +86,9 @@ describe("SignInMutation tests", () => {
     expect(response.body.data.signIn.error).toBe("El usuario no existe.");
     expect(response.body.data.signIn.refreshToken).toBeFalsy();
     expect(response.body.data.signIn.accessToken).toBeFalsy();
-    done();
   });
 
-  it("SignInMutation: password is NOT correct", async (done) => {
+  it("SignInMutation: password is NOT correct", async () => {
     const response = await request
       .post("/auth/graphql")
       .send({
@@ -113,6 +111,5 @@ describe("SignInMutation tests", () => {
     expect(response.body.data.signIn.error).toBe("La contraseña no coincide.");
     expect(response.body.data.signIn.refreshToken).toBeFalsy();
     expect(response.body.data.signIn.accessToken).toBeFalsy();
-    done();
   });
 });

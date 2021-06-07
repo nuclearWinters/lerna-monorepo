@@ -28,7 +28,7 @@ describe("QueryTransactions tests", () => {
     await client.close();
   });
 
-  it("test TransactionsConnection valid access token", async (done) => {
+  it("test TransactionsConnection valid access token", async () => {
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     await transactions.insertMany([
@@ -167,6 +167,5 @@ describe("QueryTransactions tests", () => {
     expect(
       response.body.data.transactions.edges[0].node.history[0].created
     ).toBeTruthy();
-    done();
   });
 });

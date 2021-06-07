@@ -99,7 +99,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
         { _id: loan._id },
         { $set: { "scheduledPayments.$[item].status": "paid" } },
         {
-          returnOriginal: false,
+          returnDocument: "after",
           arrayFilters: [
             {
               "item.scheduledDate": delayedPayment.scheduledDate,
@@ -295,7 +295,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
         { _id: loan._id },
         { $set: { "scheduledPayments.$[item].status": "paid" } },
         {
-          returnOriginal: false,
+          returnDocument: "after",
           arrayFilters: [
             {
               "item.scheduledDate": payment.scheduledDate,

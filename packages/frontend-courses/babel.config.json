@@ -1,18 +1,13 @@
 {
   "presets": [
-    "@babel/preset-typescript",
     [
       "@babel/preset-env",
       {
-        "useBuiltIns": "usage",
-        "corejs": 3
+        "targets": { "esmodules": true }
       }
     ],
+    "@babel/preset-typescript",
     "@babel/preset-react"
   ],
-  "plugins": [
-    "@babel/proposal-class-properties",
-    "@babel/proposal-object-rest-spread",
-    "relay"
-  ]
+  "plugins": ["relay"]
 }

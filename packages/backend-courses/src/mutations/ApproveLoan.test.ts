@@ -36,7 +36,7 @@ describe("ApproveLoan tests", () => {
     await client.close();
   });
 
-  it("test ApproveLoan valid access token", async (done) => {
+  it("test ApproveLoan valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertMany([
       {
@@ -135,6 +135,5 @@ describe("ApproveLoan tests", () => {
         term: 2,
       },
     ]);
-    done();
   });
 });

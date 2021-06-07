@@ -33,7 +33,7 @@ describe("AddFunds tests", () => {
     await client.close();
   });
 
-  it("test AddFunds increase valid access token", async (done) => {
+  it("test AddFunds increase valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000000"),
@@ -104,10 +104,9 @@ describe("AddFunds tests", () => {
         quantity: 50000,
       },
     ]);
-    done();
   });
 
-  it("test AddFunds decrease valid access token", async (done) => {
+  it("test AddFunds decrease valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000003"),
@@ -178,10 +177,9 @@ describe("AddFunds tests", () => {
         quantity: -50000,
       },
     ]);
-    done();
   });
 
-  it("test AddFunds increase invalid access token", async (done) => {
+  it("test AddFunds increase invalid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000001"),
@@ -249,10 +247,9 @@ describe("AddFunds tests", () => {
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     expect(response.body.data.addFunds.user.accountAvailable).toBe("1500.00");
     expect(response.body.data.addFunds.user.investments.length).toBe(0);
-    done();
   });
 
-  it("test AddFunds increase invalid refresh token", async (done) => {
+  it("test AddFunds increase invalid refresh token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000002"),
@@ -319,6 +316,5 @@ describe("AddFunds tests", () => {
     expect(response.body.data.addFunds.error).toBeTruthy();
     expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
     expect(response.body.data.addFunds.user).toBeFalsy();
-    done();
   });
 });
