@@ -27,7 +27,7 @@ export const Settings: FC<Props> = ({ refetch, user }) => {
   const data = useFragment(settingsFragment, user);
   return (
     <div>
-      {data.id !== "VXNlcjo=" && (
+      {data.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=" && (
         <button
           onClick={() => {
             commit({

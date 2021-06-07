@@ -3,7 +3,7 @@ import { GraphQLString, GraphQLNonNull } from "graphql";
 import { ACCESSSECRET, REFRESHSECRET } from "../config";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
-import { ObjectID } from "mongodb";
+import { ObjectId } from "mongodb";
 import { channelSendToQueue, jwt } from "../utils";
 
 interface Input {
@@ -48,7 +48,7 @@ export const SignUpMutation = mutationWithClientMutationId({
       const user = await users.findOne({ email });
       if (user) throw new Error("El email ya esta siendo usado.");
       const hash_password = await bcrypt.hash(password, 12);
-      const _id = new ObjectID();
+      const _id = new ObjectId();
       await users.insertOne({
         _id,
         email,

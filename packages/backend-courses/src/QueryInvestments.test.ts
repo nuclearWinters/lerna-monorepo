@@ -1,6 +1,6 @@
 import { app } from "./app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectID } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { InvestmentMongo } from "./types";
 import { jwt } from "./utils";
 import { ACCESSSECRET } from "./config";
@@ -24,7 +24,7 @@ describe("QueryInvestments tests", () => {
     delete app.locals.db;
     await dbInstance
       .collection<InvestmentMongo>("investments")
-      .deleteMany({ _id_lender: new ObjectID("000000000000000000000030") });
+      .deleteMany({ _id_lender: new ObjectId("000000000000000000000030") });
     await client.close();
   });
 
@@ -32,34 +32,46 @@ describe("QueryInvestments tests", () => {
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     await investments.insertMany([
       {
-        _id: new ObjectID("000000000000000000000032"),
-        _id_borrower: new ObjectID("000000000000000000000031"),
-        _id_lender: new ObjectID("000000000000000000000030"),
-        _id_loan: new ObjectID("000000000000000000000033"),
+        _id: new ObjectId("000000000000000000000032"),
+        _id_borrower: new ObjectId("000000000000000000000031"),
+        _id_lender: new ObjectId("000000000000000000000030"),
+        _id_loan: new ObjectId("000000000000000000000033"),
         quantity: 50000,
         status: "up to date",
         created: new Date(),
         updated: new Date(),
+        payments: 0,
+        term: 3,
+        ROI: 17,
+        moratory: 0,
       },
       {
-        _id: new ObjectID("000000000000000000000034"),
-        _id_borrower: new ObjectID("000000000000000000000037"),
-        _id_lender: new ObjectID("000000000000000000000030"),
-        _id_loan: new ObjectID("000000000000000000000038"),
+        _id: new ObjectId("000000000000000000000034"),
+        _id_borrower: new ObjectId("000000000000000000000037"),
+        _id_lender: new ObjectId("000000000000000000000030"),
+        _id_loan: new ObjectId("000000000000000000000038"),
         quantity: 50000,
         status: "up to date",
         created: new Date(),
         updated: new Date(),
+        payments: 0,
+        term: 50000,
+        ROI: 17,
+        moratory: 0,
       },
       {
-        _id: new ObjectID("000000000000000000000035"),
-        _id_borrower: new ObjectID("000000000000000000000036"),
-        _id_lender: new ObjectID("000000000000000000000030"),
-        _id_loan: new ObjectID("000000000000000000000039"),
+        _id: new ObjectId("000000000000000000000035"),
+        _id_borrower: new ObjectId("000000000000000000000036"),
+        _id_lender: new ObjectId("000000000000000000000030"),
+        _id_loan: new ObjectId("000000000000000000000039"),
         quantity: 50000,
         status: "up to date",
         created: new Date(),
         updated: new Date(),
+        payments: 0,
+        term: 50000,
+        ROI: 17,
+        moratory: 0,
       },
     ]);
     const response = await request
@@ -111,9 +123,7 @@ describe("QueryInvestments tests", () => {
       response.body.data.investments.edges[0].node._id_lender
     ).toBeTruthy();
     expect(response.body.data.investments.edges[0].node._id_loan).toBeTruthy();
-    expect(response.body.data.investments.edges[0].node.quantity).toBe(
-      "500.00"
-    );
+    expect(response.body.data.investments.edges[0].node.quantity).toBe(50000);
     expect(response.body.data.investments.edges[0].node.created).toBeTruthy();
     expect(response.body.data.investments.edges[0].node.updated).toBeTruthy();
     expect(response.body.data.investments.edges[0].node.status).toBe(

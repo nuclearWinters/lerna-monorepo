@@ -1,4 +1,4 @@
-import { FilterQuery, ObjectID } from "mongodb";
+import { FilterQuery, ObjectId } from "mongodb";
 import {
   GraphQLFieldConfigArgumentMap,
   GraphQLList,
@@ -59,13 +59,13 @@ export const QueryLoans: IQuery = {
       }
       const query: FilterQuery<LoanMongo> = {};
       if (loan_id) {
-        query._id = { $lt: new ObjectID(loan_id) };
+        query._id = { $lt: new ObjectId(loan_id) };
       }
       if (status) {
         query.status = { $in: status };
       }
       if (borrower_id) {
-        query._id_user = new ObjectID(borrower_id);
+        query._id_user = new ObjectId(borrower_id);
       }
       const result = await loans
         .find(query)

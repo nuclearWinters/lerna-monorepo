@@ -50,7 +50,7 @@ export const LoanRow: FC<Props> = ({ setLends, loan, value }) => {
   `);
 
   return (
-    <div key={data.id} style={{ display: "flex", flexDirection: "row" }}>
+    <div style={{ display: "flex", flexDirection: "row" }}>
       <div style={style.cell}>{data.id}</div>
       <div style={style.cell}>{data._id_user}</div>
       <div style={style.cell}>{data.score}</div>

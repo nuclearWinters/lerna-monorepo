@@ -1,4 +1,4 @@
-import { ObjectID } from "bson";
+import { ObjectId } from "bson";
 import {
   GraphQLFieldConfigArgumentMap,
   GraphQLNonNull,
@@ -58,7 +58,7 @@ export const QueryTransactions: IQuery = {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
       const query: FilterQuery<BucketTransactionMongo> = {
-        _id_user: new ObjectID(_id),
+        _id_user: new ObjectId(_id),
       };
       if (transaction_id) {
         query._id = { $lt: transaction_id };

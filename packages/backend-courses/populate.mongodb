@@ -1,7 +1,64 @@
 
 use('fintech');
 
-db.loans.updateMany({}, { $set: { "scheduledPayments": null } })
+db.investments.updateOne(
+   { "_id": ObjectId("607b7338119cbd2f4c4ad524") },
+   [
+      { $set: { "moratory": { $multipl "$ROI" * 2} } },
+   ]
+)
+
+
+//db.users.updateOne({"name": "Armando Narcizo"}, { $set: { investments: [] } })
+
+//db.investments.updateMany({}, { $set: { "ROI": 17, "payments": 0, "term": 3, "moratory": 0 } })
+
+//db.users.updateMany({}, { $unset: { accountTotal: "" } })
+
+/*db.users.updateMany({ "name": "Armando Narcizo" }, { $set: { investments: [
+  {
+    _id_loan: ObjectId("607b7338119cbd2f4c4ad525"),
+    quantity: 10000,
+    term: 2,
+    ROI: 17,
+    payments: 0,
+  },
+  {
+    _id_loan: ObjectId("607b7338119cbd2f4c4ad525"),
+    quantity: 5000,
+    term: 2,
+    ROI: 17,
+    payments: 0,
+  },
+  {
+    _id_loan: ObjectId("607b7338119cbd2f4c4ad526"),
+    quantity: 15000,
+    term: 3,
+    ROI: 10,
+    payments: 0,
+  },
+] } })*/
+
+
+/*db.users.updateMany(
+  { "investments._id_loan": ObjectId("607b7338119cbd2f4c4ad525") }, 
+  { $pull: { "investments": { "_id_loan": ObjectId("607b7338119cbd2f4c4ad525") } } },
+  { multi: true }
+)*/
+
+/*db.users.updateMany(
+  { "investments._id_loan": ObjectId("607b7338119cbd2f4c4ad525") }, 
+  { $inc: { "investments.$[item].payments": 1 } },
+  {
+    arrayFilters: [
+      {
+        "item._id_loan": ObjectId("607b7338119cbd2f4c4ad525"),
+      },
+    ],
+  }
+)*/
+
+//db.loans.updateMany({}, { $set: { "scheduledPayments": null } })
 
 //db.users.findOneAndUpdate({ "_id": ObjectId("6095ed06f92be2001a15885a") }, { $set: {name: "Prueba"} });
 //db.users.find({ "_id": ObjectId("6095ed06f92be2001a15885a") });
@@ -41,7 +98,7 @@ updateOne: {
               update: {
                 $inc: { quantity },
                 $setOnInsert: {
-                  _id: new ObjectID(),
+                  _id: new ObjectId(),
                   _id_lender,
                   _id_borrower,
                   _id_loan,

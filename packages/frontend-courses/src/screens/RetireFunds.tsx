@@ -21,7 +21,13 @@ export const RetireFunds: FC<Props> = (props) => {
         error
         validAccessToken
         user {
-          accountTotal
+          investments {
+            _id_loan
+            quantity
+            term
+            ROI
+            payments
+          }
           accountAvailable
         }
       }

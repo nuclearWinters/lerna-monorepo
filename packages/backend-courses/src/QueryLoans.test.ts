@@ -1,6 +1,6 @@
 import { app } from "./app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectID } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo } from "./types";
 import { jwt } from "./utils";
 import { ACCESSSECRET } from "./config";
@@ -24,7 +24,7 @@ describe("QueryLoans tests", () => {
     delete app.locals.db;
     await dbInstance
       .collection<LoanMongo>("loans")
-      .deleteMany({ _id_user: new ObjectID("000000000000000000000040") });
+      .deleteMany({ _id_user: new ObjectId("000000000000000000000040") });
     await client.close();
   });
 
@@ -32,8 +32,8 @@ describe("QueryLoans tests", () => {
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertMany([
       {
-        _id: new ObjectID("000000000000000000000041"),
-        _id_user: new ObjectID("000000000000000000000040"),
+        _id: new ObjectId("000000000000000000000041"),
+        _id_user: new ObjectId("000000000000000000000040"),
         score: "AAA",
         ROI: 17,
         goal: 100000,
@@ -48,10 +48,11 @@ describe("QueryLoans tests", () => {
           },
         ],
         expiry: new Date(),
+        investors: [],
       },
       {
-        _id: new ObjectID("000000000000000000000042"),
-        _id_user: new ObjectID("000000000000000000000040"),
+        _id: new ObjectId("000000000000000000000042"),
+        _id_user: new ObjectId("000000000000000000000040"),
         score: "BBB",
         ROI: 20,
         goal: 50000,
@@ -60,10 +61,11 @@ describe("QueryLoans tests", () => {
         status: "waiting for approval",
         scheduledPayments: null,
         expiry: new Date(),
+        investors: [],
       },
       {
-        _id: new ObjectID("000000000000000000000043"),
-        _id_user: new ObjectID("000000000000000000000040"),
+        _id: new ObjectId("000000000000000000000043"),
+        _id_user: new ObjectId("000000000000000000000040"),
         score: "CCC",
         ROI: 24,
         goal: 150000,
@@ -72,6 +74,7 @@ describe("QueryLoans tests", () => {
         status: "financing",
         scheduledPayments: null,
         expiry: new Date(),
+        investors: [],
       },
     ]);
     const response = await request

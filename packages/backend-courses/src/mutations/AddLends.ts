@@ -13,7 +13,7 @@ import {
   LoanMongo,
   UserMongo,
 } from "../types";
-import { ObjectID, BulkWriteUpdateOneOperation } from "mongodb";
+import { ObjectId, BulkWriteUpdateOneOperation } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
 import { GraphQLUser, MXNScalarType } from "../Nodes";
 import { addMonths, startOfMonth } from "date-fns";
@@ -90,16 +90,16 @@ export const AddLendsMutation = mutationWithClientMutationId({
       if (lender_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
-      const _id_lender = new ObjectID(lender_id);
+      const _id_lender = new ObjectId(lender_id);
       const now = new Date();
       const docs = newLends.map(({ loan_gid, quantity, borrower_id }) => {
         const _id_loan = fromGlobalId(loan_gid).id;
         return {
-          _id: new ObjectID(),
+          _id: new ObjectId(),
           _id_lender,
-          _id_borrower: new ObjectID(borrower_id),
+          _id_borrower: new ObjectId(borrower_id),
           quantity,
-          _id_loan: new ObjectID(_id_loan),
+          _id_loan: new ObjectId(_id_loan),
           now,
           goal: 0,
           raised: 0,
@@ -129,24 +129,46 @@ export const AddLendsMutation = mutationWithClientMutationId({
       );
       const investmentsOperations = docsFiltered.map<
         BulkWriteUpdateOneOperation<InvestmentMongo>
-      >(({ quantity, _id_loan, _id_borrower, _id_lender, now }) => ({
-        updateOne: {
-          filter: { _id_loan, _id_borrower, _id_lender },
-          update: {
-            $inc: { quantity },
-            $setOnInsert: {
-              _id: new ObjectID(),
-              _id_lender,
-              _id_borrower,
-              _id_loan,
-              created: now,
-              updated: now,
-              status: "up to date",
+      >(
+        ({
+          quantity,
+          _id_loan,
+          _id_borrower,
+          _id_lender,
+          now,
+          completed,
+          ROI,
+          term,
+        }) => {
+          return {
+            updateOne: {
+              filter: { _id_loan, _id_borrower, _id_lender },
+              update: {
+                $inc: { quantity },
+                $set: {
+                  startPayingDate: completed
+                    ? startOfMonth(addMonths(new Date(), 1))
+                    : null,
+                },
+                $setOnInsert: {
+                  _id: new ObjectId(),
+                  _id_lender,
+                  _id_borrower,
+                  _id_loan,
+                  created: now,
+                  updated: now,
+                  status: "up to date",
+                  payments: 0,
+                  term,
+                  ROI,
+                  moratory: 0,
+                },
+              },
+              upsert: true,
             },
-          },
-          upsert: true,
-        },
-      }));
+          };
+        }
+      );
       investments.bulkWrite(investmentsOperations);
       const loansOperations = docsFiltered.map<
         BulkWriteUpdateOneOperation<LoanMongo>
@@ -160,7 +182,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
                 ? new Array(term).fill({}).map((pay, index) => {
                     const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
                     return {
-                      amortize: Math.round(
+                      amortize: Math.floor(
                         goal / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
                       ),
                       scheduledDate: startOfMonth(
@@ -172,6 +194,12 @@ export const AddLendsMutation = mutationWithClientMutationId({
                 : null,
               status: completed ? "to be paid" : "financing",
             },
+            $push: {
+              investors: {
+                _id_lender,
+                quantity,
+              },
+            },
           },
         },
       }));
@@ -181,7 +209,20 @@ export const AddLendsMutation = mutationWithClientMutationId({
       }, 0);
       const result = await users.findOneAndUpdate(
         { _id: _id_lender },
-        { $inc: { accountAvailable: -total } },
+        {
+          $inc: { accountAvailable: -total },
+          $push: {
+            investments: {
+              $each: docsFiltered.map(({ ROI, term, _id_loan, quantity }) => ({
+                _id_loan,
+                quantity,
+                term,
+                ROI,
+                payments: 0,
+              })),
+            },
+          },
+        },
         { returnOriginal: false }
       );
       const user = result.value;
@@ -196,7 +237,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
           update: {
             $push: {
               history: {
-                _id: new ObjectID(),
+                _id: new ObjectId(),
                 type: "INVEST" as const,
                 quantity,
                 created: now,

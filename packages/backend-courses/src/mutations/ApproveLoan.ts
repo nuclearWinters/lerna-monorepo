@@ -1,7 +1,7 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context } from "../types";
-import { ObjectID } from "mongodb";
+import { ObjectId } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
 
 interface Input {
@@ -40,7 +40,7 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
         refreshToken
       );
       await loans.updateOne(
-        { _id: new ObjectID(loan_id) },
+        { _id: new ObjectId(loan_id) },
         { $set: { status: "financing" } }
       );
       return { validAccessToken, error: "" };

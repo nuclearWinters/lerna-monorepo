@@ -1,7 +1,7 @@
-import { ObjectID } from "bson";
+import { ObjectId } from "bson";
 import { GraphQLString, GraphQLNonNull, GraphQLNullableType } from "graphql";
 import { GraphQLUser } from "./Nodes";
-import { RootUser, Context } from "./types";
+import { Context, UserMongo } from "./types";
 import { refreshTokenMiddleware } from "./utils";
 
 interface IQueryUser {
@@ -15,7 +15,7 @@ interface IQueryUser {
     root: { [argName: string]: string },
     args: { [argName: string]: string },
     ctx: Context
-  ) => Promise<RootUser>;
+  ) => Promise<UserMongo>;
 }
 
 const QueryUser: IQueryUser = {
@@ -33,19 +33,15 @@ const QueryUser: IQueryUser = {
         throw new Error("No es el mismo usuario.");
       }
       const user = await users.findOne({
-        _id: new ObjectID(user_id),
+        _id: new ObjectId(user_id),
       });
       if (!user) {
         throw new Error("El usuario no existe.");
       }
-      return {
-        ...user,
-        _id: user_id,
-        error: "",
-      };
+      return user;
     } catch (e) {
       return {
-        _id: "",
+        _id: new ObjectId("000000000000000000000000"),
         name: "",
         apellidoPaterno: "",
         apellidoMaterno: "",
@@ -53,9 +49,8 @@ const QueryUser: IQueryUser = {
         CURP: "",
         clabe: "",
         mobile: "",
-        accountTotal: 0,
         accountAvailable: 0,
-        error: e.message,
+        investments: [],
       };
     }
   },

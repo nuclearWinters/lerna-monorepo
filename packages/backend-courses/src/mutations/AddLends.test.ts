@@ -1,6 +1,6 @@
 import { app } from "../app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectID } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import {
   BucketTransactionMongo,
   InvestmentMongo,
@@ -30,20 +30,20 @@ describe("AddLends tests", () => {
     await dbInstance.collection<UserMongo>("users").deleteMany({
       _id: {
         $in: [
-          new ObjectID("000000000000000000000004"),
-          new ObjectID("000000000000000000000005"),
+          new ObjectId("000000000000000000000004"),
+          new ObjectId("000000000000000000000005"),
         ],
       },
     });
     await dbInstance
       .collection<BucketTransactionMongo>("transactions")
-      .deleteMany({ _id_user: new ObjectID("000000000000000000000004") });
+      .deleteMany({ _id_user: new ObjectId("000000000000000000000004") });
     await dbInstance
       .collection<InvestmentMongo>("investments")
-      .deleteMany({ _id_lender: new ObjectID("000000000000000000000004") });
+      .deleteMany({ _id_lender: new ObjectId("000000000000000000000004") });
     await dbInstance
       .collection<LoanMongo>("loans")
-      .deleteMany({ _id_user: new ObjectID("000000000000000000000005") });
+      .deleteMany({ _id_user: new ObjectId("000000000000000000000005") });
     await client.close();
   });
 
@@ -51,7 +51,7 @@ describe("AddLends tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertMany([
       {
-        _id: new ObjectID("000000000000000000000004"),
+        _id: new ObjectId("000000000000000000000004"),
         name: "Armando Narcizo",
         apellidoPaterno: "Rueda",
         apellidoMaterno: "Peréz",
@@ -60,10 +60,10 @@ describe("AddLends tests", () => {
         clabe: "",
         mobile: "",
         accountAvailable: 100000,
-        accountTotal: 100000,
+        investments: [],
       },
       {
-        _id: new ObjectID("000000000000000000000005"),
+        _id: new ObjectId("000000000000000000000005"),
         name: "Luis Fernando",
         apellidoPaterno: "Rueda",
         apellidoMaterno: "Peréz",
@@ -72,14 +72,14 @@ describe("AddLends tests", () => {
         clabe: "",
         mobile: "",
         accountAvailable: 100000,
-        accountTotal: 100000,
+        investments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertMany([
       {
-        _id: new ObjectID("000000000000000000000002"),
-        _id_user: new ObjectID("000000000000000000000005"),
+        _id: new ObjectId("000000000000000000000002"),
+        _id_user: new ObjectId("000000000000000000000005"),
         score: "AAA",
         ROI: 10,
         goal: 50000,
@@ -88,10 +88,11 @@ describe("AddLends tests", () => {
         expiry: new Date(),
         status: "financing",
         scheduledPayments: null,
+        investors: [],
       },
       {
-        _id: new ObjectID("000000000000000000000003"),
-        _id_user: new ObjectID("000000000000000000000005"),
+        _id: new ObjectId("000000000000000000000003"),
+        _id_user: new ObjectId("000000000000000000000005"),
         score: "AAA",
         ROI: 10,
         goal: 50000,
@@ -100,6 +101,7 @@ describe("AddLends tests", () => {
         expiry: new Date(),
         status: "financing",
         scheduledPayments: null,
+        investors: [],
       },
     ]);
     const transactions =
@@ -113,7 +115,13 @@ describe("AddLends tests", () => {
             validAccessToken
             user {
               accountAvailable
-              accountTotal
+              investments {
+                _id_loan
+                quantity
+                term
+                ROI
+                payments
+              }
             }
           }
         }`,
@@ -151,9 +159,24 @@ describe("AddLends tests", () => {
     expect(response.body.data.addLends.error).toBeFalsy();
     expect(response.body.data.addLends.validAccessToken).toBeTruthy();
     expect(response.body.data.addLends.user.accountAvailable).toBe("850.00");
-    expect(response.body.data.addLends.user.accountTotal).toBe("1000.00");
+    expect(response.body.data.addLends.user.investments).toEqual([
+      {
+        ROI: 10,
+        _id_loan: "000000000000000000000002",
+        payments: 0,
+        quantity: "100.00",
+        term: 2,
+      },
+      {
+        ROI: 10,
+        _id_loan: "000000000000000000000003",
+        payments: 0,
+        quantity: "50.00",
+        term: 2,
+      },
+    ]);
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectID("000000000000000000000004") })
+      .find({ _id_user: new ObjectId("000000000000000000000004") })
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions[0].history.length).toBe(2);
@@ -179,39 +202,67 @@ describe("AddLends tests", () => {
       },
     ]);
     const allLoans = await loans
-      .find({ _id_user: new ObjectID("000000000000000000000005") })
+      .find({ _id_user: new ObjectId("000000000000000000000005") })
       .toArray();
     expect(allLoans.length).toBe(2);
     expect(
       allLoans.map((loan) => ({
         raised: loan.raised,
         status: loan.status,
+        investors: loan.investors.map((investor) => ({
+          ...investor,
+          _id_lender: investor._id_lender.toHexString(),
+        })),
       }))
     ).toEqual([
       {
         raised: 10000,
         status: "financing",
+        investors: [
+          {
+            _id_lender: "000000000000000000000004",
+            quantity: 10000,
+          },
+        ],
       },
       {
         raised: 5000,
         status: "financing",
+        investors: [
+          {
+            _id_lender: "000000000000000000000004",
+            quantity: 5000,
+          },
+        ],
       },
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ _id_lender: new ObjectID("000000000000000000000004") })
+      .find({ _id_lender: new ObjectId("000000000000000000000004") })
       .toArray();
     expect(allInvestments.length).toBe(2);
     expect(
       allInvestments.map((investment) => ({
         quantity: investment.quantity,
+        payments: investment.payments,
+        term: investment.term,
+        moratory: investment.moratory,
+        ROI: investment.ROI,
       }))
     ).toEqual([
       {
         quantity: 10000,
+        ROI: 10,
+        payments: 0,
+        moratory: 0,
+        term: 2,
       },
       {
         quantity: 5000,
+        ROI: 10,
+        moratory: 0,
+        term: 2,
+        payments: 0,
       },
     ]);
     const response2 = await request
@@ -223,7 +274,13 @@ describe("AddLends tests", () => {
             validAccessToken
             user {
               accountAvailable
-              accountTotal
+              investments {
+                _id_loan
+                quantity
+                term
+                ROI
+                payments
+              }
             }
           }
         }`,
@@ -261,9 +318,38 @@ describe("AddLends tests", () => {
     expect(response2.body.data.addLends.error).toBeFalsy();
     expect(response2.body.data.addLends.validAccessToken).toBeTruthy();
     expect(response2.body.data.addLends.user.accountAvailable).toBe("0.00");
-    expect(response2.body.data.addLends.user.accountTotal).toBe("1000.00");
+    expect(response2.body.data.addLends.user.investments).toEqual([
+      {
+        ROI: 10,
+        _id_loan: "000000000000000000000002",
+        payments: 0,
+        quantity: "100.00",
+        term: 2,
+      },
+      {
+        ROI: 10,
+        _id_loan: "000000000000000000000003",
+        payments: 0,
+        quantity: "50.00",
+        term: 2,
+      },
+      {
+        ROI: 10,
+        _id_loan: "000000000000000000000002",
+        payments: 0,
+        quantity: "400.00",
+        term: 2,
+      },
+      {
+        ROI: 10,
+        _id_loan: "000000000000000000000003",
+        payments: 0,
+        quantity: "450.00",
+        term: 2,
+      },
+    ]);
     const allTransactions2 = await transactions
-      .find({ _id_user: new ObjectID("000000000000000000000004") })
+      .find({ _id_user: new ObjectId("000000000000000000000004") })
       .toArray();
     expect(allTransactions2.length).toBe(1);
     expect(allTransactions2[0].history.length).toBe(4);
@@ -301,13 +387,17 @@ describe("AddLends tests", () => {
       },
     ]);
     const allLoans2 = await loans
-      .find({ _id_user: new ObjectID("000000000000000000000005") })
+      .find({ _id_user: new ObjectId("000000000000000000000005") })
       .toArray();
     expect(allLoans2.length).toBe(2);
     expect(
       allLoans2.map((loan) => ({
         raised: loan.raised,
         status: loan.status,
+        investors: loan.investors.map((investor) => ({
+          ...investor,
+          _id_lender: investor._id_lender.toHexString(),
+        })),
         scheduledPayments: loan.scheduledPayments?.map((payment) => ({
           amortize: payment.amortize,
           status: payment.status,
@@ -327,6 +417,16 @@ describe("AddLends tests", () => {
             status: "to be paid",
           },
         ],
+        investors: [
+          {
+            _id_lender: "000000000000000000000004",
+            quantity: 10000,
+          },
+          {
+            _id_lender: "000000000000000000000004",
+            quantity: 40000,
+          },
+        ],
       },
       {
         raised: 50000,
@@ -341,23 +441,45 @@ describe("AddLends tests", () => {
             status: "to be paid",
           },
         ],
+        investors: [
+          {
+            _id_lender: "000000000000000000000004",
+            quantity: 5000,
+          },
+          {
+            _id_lender: "000000000000000000000004",
+            quantity: 45000,
+          },
+        ],
       },
     ]);
     const investments2 = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments2 = await investments2
-      .find({ _id_lender: new ObjectID("000000000000000000000004") })
+      .find({ _id_lender: new ObjectId("000000000000000000000004") })
       .toArray();
     expect(allInvestments2.length).toBe(2);
     expect(
       allInvestments2.map((investment) => ({
         quantity: investment.quantity,
+        payments: investment.payments,
+        term: investment.term,
+        moratory: investment.moratory,
+        ROI: investment.ROI,
       }))
     ).toEqual([
       {
         quantity: 50000,
+        ROI: 10,
+        moratory: 0,
+        term: 2,
+        payments: 0,
       },
       {
         quantity: 50000,
+        ROI: 10,
+        moratory: 0,
+        term: 2,
+        payments: 0,
       },
     ]);
     done();

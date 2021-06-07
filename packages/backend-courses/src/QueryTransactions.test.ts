@@ -1,6 +1,6 @@
 import { app } from "./app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectID } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { BucketTransactionMongo } from "./types";
 import { jwt } from "./utils";
 import { ACCESSSECRET } from "./config";
@@ -24,7 +24,7 @@ describe("QueryTransactions tests", () => {
     delete app.locals.db;
     await dbInstance
       .collection<BucketTransactionMongo>("transactions")
-      .deleteMany({ _id_user: new ObjectID("000000000000000000000050") });
+      .deleteMany({ _id_user: new ObjectId("000000000000000000000050") });
     await client.close();
   });
 
@@ -34,35 +34,35 @@ describe("QueryTransactions tests", () => {
     await transactions.insertMany([
       {
         _id: "000000000000000000000050_0",
-        _id_user: new ObjectID("000000000000000000000050"),
+        _id_user: new ObjectId("000000000000000000000050"),
         count: 5,
         history: [
           {
-            _id: new ObjectID("000000000000000000000051"),
+            _id: new ObjectId("000000000000000000000051"),
             type: "CREDIT",
             quantity: 100,
             created: new Date(),
           },
           {
-            _id: new ObjectID("000000000000000000000052"),
+            _id: new ObjectId("000000000000000000000052"),
             type: "INVEST",
             quantity: -100,
             created: new Date(),
           },
           {
-            _id: new ObjectID("000000000000000000000053"),
+            _id: new ObjectId("000000000000000000000053"),
             type: "PAYMENT",
             quantity: -100,
             created: new Date(),
           },
           {
-            _id: new ObjectID("000000000000000000000054"),
+            _id: new ObjectId("000000000000000000000054"),
             type: "WITHDRAWAL",
             quantity: -100,
             created: new Date(),
           },
           {
-            _id: new ObjectID("000000000000000000000055"),
+            _id: new ObjectId("000000000000000000000055"),
             type: "CREDIT",
             quantity: 100,
             created: new Date(),
@@ -71,35 +71,35 @@ describe("QueryTransactions tests", () => {
       },
       {
         _id: "000000000000000000000050_1",
-        _id_user: new ObjectID("000000000000000000000050"),
+        _id_user: new ObjectId("000000000000000000000050"),
         count: 5,
         history: [
           {
-            _id: new ObjectID("000000000000000000000051"),
+            _id: new ObjectId("000000000000000000000051"),
             type: "CREDIT",
             quantity: 200,
             created: new Date(),
           },
           {
-            _id: new ObjectID("000000000000000000000052"),
+            _id: new ObjectId("000000000000000000000052"),
             type: "INVEST",
             quantity: -200,
             created: new Date(),
           },
           {
-            _id: new ObjectID("000000000000000000000053"),
+            _id: new ObjectId("000000000000000000000053"),
             type: "PAYMENT",
             quantity: -200,
             created: new Date(),
           },
           {
-            _id: new ObjectID("000000000000000000000054"),
+            _id: new ObjectId("000000000000000000000054"),
             type: "WITHDRAWAL",
             quantity: -200,
             created: new Date(),
           },
           {
-            _id: new ObjectID("000000000000000000000055"),
+            _id: new ObjectId("000000000000000000000055"),
             type: "CREDIT",
             quantity: 200,
             created: new Date(),

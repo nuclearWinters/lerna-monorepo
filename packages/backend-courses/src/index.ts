@@ -5,7 +5,7 @@ import {
   INVESTMENT,
   pubsub,
 } from "./subscriptions/subscriptions";
-import { MongoClient, ObjectID, ChangeEventCR } from "mongodb";
+import { MongoClient, ObjectId, ChangeEventCR } from "mongodb";
 import { MONGO_DB } from "./config";
 import amqp from "amqplib";
 import {
@@ -89,7 +89,7 @@ MongoClient.connect(MONGO_DB, {
   ch.consume(SIGN_UP, (msg) => {
     if (msg !== null) {
       db.collection<UserMongo>("users").insertOne({
-        _id: new ObjectID(msg.content.toString()),
+        _id: new ObjectId(msg.content.toString()),
         name: "",
         apellidoPaterno: "",
         apellidoMaterno: "",
@@ -97,7 +97,7 @@ MongoClient.connect(MONGO_DB, {
         CURP: "",
         clabe: "",
         mobile: "",
-        accountTotal: 0,
+        investments: [],
         accountAvailable: 0,
       });
       ch.ack(msg);

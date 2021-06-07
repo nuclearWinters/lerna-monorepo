@@ -1,6 +1,6 @@
 import { app } from "../app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectID } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
 import { ACCESSSECRET } from "../config";
@@ -24,17 +24,17 @@ describe("AddLoan tests", () => {
     delete app.locals.db;
     await dbInstance
       .collection<UserMongo>("users")
-      .deleteMany({ _id: new ObjectID("000000000000000000000006") });
+      .deleteMany({ _id: new ObjectId("000000000000000000000006") });
     await dbInstance
       .collection<LoanMongo>("loans")
-      .deleteMany({ _id_user: new ObjectID("000000000000000000000006") });
+      .deleteMany({ _id_user: new ObjectId("000000000000000000000006") });
     await client.close();
   });
 
   it("test AddLoan valid access token", async (done) => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
-      _id: new ObjectID("000000000000000000000006"),
+      _id: new ObjectId("000000000000000000000006"),
       name: "Armando Narcizo",
       apellidoPaterno: "Rueda",
       apellidoMaterno: "Peréz",
@@ -43,7 +43,7 @@ describe("AddLoan tests", () => {
       clabe: "",
       mobile: "",
       accountAvailable: 100000,
-      accountTotal: 100000,
+      investments: [],
     });
     const response = await request
       .post("/api/graphql")
@@ -79,7 +79,7 @@ describe("AddLoan tests", () => {
     expect(response.body.data.addLoan.validAccessToken).toBeTruthy();
     const loans = dbInstance.collection<LoanMongo>("loans");
     const allLoans = await loans
-      .find({ _id_user: new ObjectID("000000000000000000000006") })
+      .find({ _id_user: new ObjectId("000000000000000000000006") })
       .toArray();
     expect(allLoans.length).toBe(1);
     expect(

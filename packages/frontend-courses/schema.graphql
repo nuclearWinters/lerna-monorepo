@@ -192,6 +192,10 @@ type Investment implements Node {
   _id_lender: String!
   _id_loan: String!
   quantity: Int!
+  ROI: Float!
+  payments: Int!
+  term: Int!
+  moratory: MXN!
   created: Date!
   updated: Date!
   status: InvestmentStatus!
@@ -281,6 +285,14 @@ type BucketTransactionEdge {
   cursor: String!
 }
 
+type InvestmentsUser {
+  _id_loan: String!
+  quantity: Int!
+  term: Int!
+  ROI: Float!
+  payments: Int!
+}
+
 type User implements Node {
   id: ID!
   name: String!
@@ -290,9 +302,8 @@ type User implements Node {
   CURP: String!
   clabe: String!
   mobile: String!
-  accountTotal: MXN!
   accountAvailable: MXN!
-  error: String!
+  investments: [InvestmentsUser!]!
 }
 
 scalar Date

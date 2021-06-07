@@ -1,6 +1,6 @@
 import { app } from "./app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectID } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "./types";
 import { jwt } from "./utils";
 import { ACCESSSECRET } from "./config";
@@ -24,7 +24,7 @@ describe("QueryUser tests", () => {
     delete app.locals.db;
     await dbInstance
       .collection<UserMongo>("users")
-      .deleteMany({ _id: new ObjectID("000000000000000000000060") });
+      .deleteMany({ _id: new ObjectId("000000000000000000000060") });
     await client.close();
   });
 
@@ -32,7 +32,7 @@ describe("QueryUser tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertMany([
       {
-        _id: new ObjectID("000000000000000000000060"),
+        _id: new ObjectId("000000000000000000000060"),
         name: "Armando Narcizo",
         apellidoPaterno: "Rueda",
         apellidoMaterno: "Peréz",
@@ -41,7 +41,7 @@ describe("QueryUser tests", () => {
         clabe: "clabe",
         mobile: "mobile",
         accountAvailable: 50000,
-        accountTotal: 50000,
+        investments: [],
       },
     ]);
     const response = await request
@@ -58,7 +58,9 @@ describe("QueryUser tests", () => {
             clabe
             mobile
             accountAvailable
-            accountTotal
+            investments {
+              _id_loan
+            }
           }  
         }`,
         variables: {
@@ -87,7 +89,7 @@ describe("QueryUser tests", () => {
     expect(response.body.data.user.clabe).toBe("clabe");
     expect(response.body.data.user.mobile).toBe("mobile");
     expect(response.body.data.user.accountAvailable).toBe("500.00");
-    expect(response.body.data.user.accountTotal).toBe("500.00");
+    expect(response.body.data.user.investments.length).toBe(0);
     done();
   });
 });

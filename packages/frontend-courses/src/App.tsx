@@ -12,7 +12,7 @@ import AppQuery, {
 import { graphql } from "react-relay";
 import { Routes } from "./Routes";
 import jwtDecode from "jwt-decode";
-import { LoanStatus } from "screens/__generated__/AddInvestmentsSubscription.graphql";
+import { LoanStatus } from "./__generated__/AppQuery.graphql";
 
 const { Suspense } = React;
 
@@ -64,7 +64,6 @@ const RepositoryNameQuery = graphql`
     ...MyInvestments_query
     user(id: $id) {
       ...Routes_user
-      error
     }
   }
 `;

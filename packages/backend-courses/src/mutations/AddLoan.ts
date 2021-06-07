@@ -1,7 +1,7 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLInt, GraphQLID } from "graphql";
 import { Context } from "../types";
-import { ObjectID } from "mongodb";
+import { ObjectId } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
 import { add } from "date-fns";
 import { MXNScalarType } from "../Nodes";
@@ -49,8 +49,8 @@ export const AddLoanMutation = mutationWithClientMutationId({
       if (user_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
-      const _id_loan = new ObjectID();
-      const _id_user = new ObjectID(user_id);
+      const _id_loan = new ObjectId();
+      const _id_user = new ObjectId(user_id);
       const expiry = add(new Date(), { months: 3 });
       await loans.insertOne({
         _id: _id_loan,
@@ -61,6 +61,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
         ROI: 17.0,
         status: "waiting for approval",
         scheduledPayments: null,
+        investors: [],
         ...loan,
       });
       return {

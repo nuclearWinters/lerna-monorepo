@@ -1,7 +1,7 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context, UserMongo } from "../types";
-import { ObjectID } from "mongodb";
+import { ObjectId } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
 import { GraphQLUser } from "../Nodes";
 
@@ -64,7 +64,7 @@ export const UpdateUserMutation = mutationWithClientMutationId({
         throw new Error("No es el mismo usuario.");
       }
       const result = await users.findOneAndUpdate(
-        { _id: new ObjectID(user_id) },
+        { _id: new ObjectId(user_id) },
         { $set: user },
         { returnOriginal: false }
       );

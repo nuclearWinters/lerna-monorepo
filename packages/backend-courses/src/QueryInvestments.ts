@@ -1,4 +1,4 @@
-import { FilterQuery, ObjectID } from "mongodb";
+import { FilterQuery, ObjectId } from "mongodb";
 import {
   GraphQLFieldConfigArgumentMap,
   GraphQLNonNull,
@@ -57,10 +57,10 @@ export const QueryInvestments: IQuery = {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
       const query: FilterQuery<InvestmentMongo> = {
-        _id_lender: new ObjectID(_id),
+        _id_lender: new ObjectId(_id),
       };
       if (investment_id) {
-        query._id = { $lt: new ObjectID(investment_id) };
+        query._id = { $lt: new ObjectId(investment_id) };
       }
       const result = await investments
         .find(query)

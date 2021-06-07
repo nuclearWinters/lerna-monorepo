@@ -10,18 +10,13 @@ export interface Context {
   refreshToken: string | undefined;
   ch: Channel;
 }
-export interface RootUser {
-  _id: string;
-  name: string;
-  apellidoPaterno: string;
-  apellidoMaterno: string;
-  RFC: string;
-  CURP: string;
-  clabe: string;
-  mobile: string;
-  accountTotal: number;
-  accountAvailable: number;
-  error: string;
+
+export interface InvestmentsUserMongo {
+  _id_loan: ObjectId;
+  quantity: number;
+  term: number;
+  ROI: number;
+  payments: number;
 }
 
 export interface UserMongo {
@@ -33,8 +28,8 @@ export interface UserMongo {
   CURP: string;
   clabe: string;
   mobile: string;
-  accountTotal: number;
   accountAvailable: number;
+  investments: InvestmentsUserMongo[];
 }
 
 export type TransactionMongoType =
@@ -74,6 +69,11 @@ export interface IScheduledPayments {
   scheduledDate: Date;
 }
 
+export interface ILoanInvestors {
+  _id_lender: ObjectId;
+  quantity: number;
+}
+
 export interface LoanMongo {
   _id: ObjectId;
   _id_user: ObjectId;
@@ -85,6 +85,7 @@ export interface LoanMongo {
   expiry: Date;
   status: ILoanStatus;
   scheduledPayments: IScheduledPayments[] | null;
+  investors: ILoanInvestors[];
 }
 
 export type IInvestmentStatus =
@@ -102,6 +103,10 @@ export interface InvestmentMongo {
   created: Date;
   updated: Date;
   status: IInvestmentStatus;
+  ROI: number;
+  term: number;
+  payments: number;
+  moratory: number;
 }
 
 export interface DecodeJWT {

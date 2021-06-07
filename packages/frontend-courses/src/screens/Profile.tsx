@@ -14,7 +14,13 @@ const generalDataFragment = graphql`
     CURP
     clabe
     mobile
-    accountTotal
+    investments {
+      _id_loan
+      quantity
+      term
+      ROI
+      payments
+    }
     accountAvailable
   }
 `;
@@ -37,7 +43,13 @@ export const Profile: FC<Props> = (props) => {
           CURP
           clabe
           mobile
-          accountTotal
+          investments {
+            _id_loan
+            quantity
+            term
+            ROI
+            payments
+          }
           accountAvailable
         }
       }

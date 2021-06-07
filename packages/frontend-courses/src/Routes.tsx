@@ -35,7 +35,13 @@ const routesFragment = graphql`
     name
     apellidoPaterno
     apellidoMaterno
-    accountTotal
+    investments {
+      _id_loan
+      quantity
+      term
+      ROI
+      payments
+    }
     accountAvailable
     ...Profile_user
     ...AddFunds_user
@@ -50,6 +56,14 @@ type Props = {
   data: AppQueryResponse;
   refetch: () => void;
 };
+
+interface IUserInvestments {
+  _id_loan: string;
+  quantity: number;
+  term: number;
+  ROI: number;
+  payments: number;
+}
 
 const subscriptionLoans = graphql`
   subscription RoutesLoansSubscription {
@@ -232,6 +246,27 @@ export const Routes: FC<Props> = (props) => {
   useSubscription<RoutesInvestmentsSubscription>(configInvestments);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   const { isBorrower, isSupport } = tokensAndData.data;
+  const reducedInvestments = user.investments.reduce<IUserInvestments[]>(
+    (acc, item) => {
+      const index = acc.findIndex((acc) => acc._id_loan === item._id_loan);
+      if (index === -1) {
+        acc.push({ ...item, quantity: Number(item.quantity) * 100 });
+      } else {
+        acc[index].quantity += Number(item.quantity) * 100;
+      }
+      return acc;
+    },
+    []
+  );
+  const accountTotal =
+    reducedInvestments.reduce((acc, { term, ROI, quantity, payments }) => {
+      const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
+      const owes =
+        Math.floor(quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)) *
+        (term - payments);
+      return acc + owes;
+    }, 0) +
+    Number(user.accountAvailable) * 100;
   return (
     <Router>
       <div
@@ -252,7 +287,7 @@ export const Routes: FC<Props> = (props) => {
           {isBorrower ? (
             <>
               <div>Valor de la cuenta</div>
-              <div>${user.accountTotal}</div>
+              <div>${(accountTotal / 100).toFixed(2)}</div>
               <div>Saldo disponible</div>
               <div>${user.accountAvailable}</div>
               <Link to="/profile">Mi cuenta</Link>
@@ -270,7 +305,7 @@ export const Routes: FC<Props> = (props) => {
           ) : (
             <>
               <div>Valor de la cuenta</div>
-              <div>${user.accountTotal}</div>
+              <div>${(accountTotal / 100).toFixed(2)}</div>
               <div>Saldo disponible</div>
               <div>${user.accountAvailable}</div>
               <Link to="/profile">Mi cuenta</Link>
@@ -291,7 +326,7 @@ export const Routes: FC<Props> = (props) => {
             flexDirection: "column",
           }}
         >
-          {user.id !== "VXNlcjo=" ? (
+          {user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=" ? (
             <>
               <Link to="/profile" style={{ textAlign: "end" }}>
                 ¡Bienvenido!{" "}

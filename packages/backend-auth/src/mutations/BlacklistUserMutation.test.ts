@@ -1,6 +1,6 @@
 import { app } from "../app";
 import supertest from "supertest";
-import { MongoClient, Db, ObjectID } from "mongodb";
+import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
@@ -27,14 +27,14 @@ describe("BlacklistUserMutation tests", () => {
     delete app.locals.db;
     await dbInstance
       .collection<UserMongo>("users")
-      .deleteMany({ _id: new ObjectID("000000000000000000000070") });
+      .deleteMany({ _id: new ObjectId("000000000000000000000070") });
     await client.close();
   });
 
   it("BlacklistUserMutation: success", async (done) => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
-      _id: new ObjectID("000000000000000000000070"),
+      _id: new ObjectId("000000000000000000000070"),
       email: "armandocorrect@hotmail.com",
       password: bcrypt.hashSync("correct", 12),
       isLender: true,

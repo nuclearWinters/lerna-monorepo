@@ -35,10 +35,32 @@ export const MyInvestments: FC<Props> = (props) => {
     MyInvestments_query$key
   >(myInvestmentsFragment, props.data);
 
+  const columns = [
+    { key: "id", title: "ID" },
+    { key: "_id_borrower", title: "Prestado a" },
+    { key: "_id_loan", title: "ID Deuda" },
+    { key: "quantity", title: "Cantidad" },
+    { key: "status", title: "Estatus" },
+    { key: "paid", title: "Pagado" },
+    { key: "owe", title: "Adeudo" },
+    { key: "interests", title: "Intereses" },
+    { key: "moratory", title: "Interés por mora" },
+    { key: "created", title: "Creado en:" },
+    { key: "updated", title: "Último cambio en:" },
+    { key: "refetch", title: "Actualizar" },
+  ];
+
   return (
     <div>
       <div>Mis inversiones</div>
-      <div style={{ display: "flex", flexDirection: "column", maxWidth: 600 }}>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          {columns.map((column) => (
+            <div key={column.key} style={{ flex: 1 }}>
+              {column.title}
+            </div>
+          ))}
+        </div>
         {data.investments &&
           data.investments.edges &&
           data.investments.edges.map((edge) => {

@@ -5,99 +5,148 @@
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type Routes_user = {
-    readonly id: string;
-    readonly name: string;
-    readonly apellidoPaterno: string;
-    readonly apellidoMaterno: string;
-    readonly accountTotal: string;
-    readonly accountAvailable: string;
-    readonly " $fragmentRefs": FragmentRefs<"Profile_user" | "AddFunds_user" | "RetireFunds_user" | "AddLoan_user" | "Settings_user">;
-    readonly " $refType": "Routes_user";
+  readonly id: string;
+  readonly name: string;
+  readonly apellidoPaterno: string;
+  readonly apellidoMaterno: string;
+  readonly investments: ReadonlyArray<{
+    readonly _id_loan: string;
+    readonly quantity: number;
+    readonly term: number;
+    readonly ROI: number;
+    readonly payments: number;
+  }>;
+  readonly accountAvailable: string;
+  readonly " $fragmentRefs": FragmentRefs<
+    | "Profile_user"
+    | "AddFunds_user"
+    | "RetireFunds_user"
+    | "AddLoan_user"
+    | "Settings_user"
+  >;
+  readonly " $refType": "Routes_user";
 };
 export type Routes_user$data = Routes_user;
 export type Routes_user$key = {
-    readonly " $data"?: Routes_user$data;
-    readonly " $fragmentRefs": FragmentRefs<"Routes_user">;
+  readonly " $data"?: Routes_user$data;
+  readonly " $fragmentRefs": FragmentRefs<"Routes_user">;
 };
 
-
-
 const node: ReaderFragment = {
-    "argumentDefinitions": [],
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "Routes_user",
-    "selections": [
+  argumentDefinitions: [],
+  kind: "Fragment",
+  metadata: null,
+  name: "Routes_user",
+  selections: [
+    {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "id",
+      storageKey: null,
+    },
+    {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "name",
+      storageKey: null,
+    },
+    {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "apellidoPaterno",
+      storageKey: null,
+    },
+    {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "apellidoMaterno",
+      storageKey: null,
+    },
+    {
+      alias: null,
+      args: null,
+      concreteType: "InvestmentsUser",
+      kind: "LinkedField",
+      name: "investments",
+      plural: true,
+      selections: [
         {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "id",
-            "storageKey": null
+          alias: null,
+          args: null,
+          kind: "ScalarField",
+          name: "_id_loan",
+          storageKey: null,
         },
         {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "name",
-            "storageKey": null
+          alias: null,
+          args: null,
+          kind: "ScalarField",
+          name: "quantity",
+          storageKey: null,
         },
         {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "apellidoPaterno",
-            "storageKey": null
+          alias: null,
+          args: null,
+          kind: "ScalarField",
+          name: "term",
+          storageKey: null,
         },
         {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "apellidoMaterno",
-            "storageKey": null
+          alias: null,
+          args: null,
+          kind: "ScalarField",
+          name: "ROI",
+          storageKey: null,
         },
         {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "accountTotal",
-            "storageKey": null
+          alias: null,
+          args: null,
+          kind: "ScalarField",
+          name: "payments",
+          storageKey: null,
         },
-        {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "accountAvailable",
-            "storageKey": null
-        },
-        {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "Profile_user"
-        },
-        {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "AddFunds_user"
-        },
-        {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "RetireFunds_user"
-        },
-        {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "AddLoan_user"
-        },
-        {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "Settings_user"
-        }
-    ],
-    "type": "User",
-    "abstractKey": null
+      ],
+      storageKey: null,
+    },
+    {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "accountAvailable",
+      storageKey: null,
+    },
+    {
+      args: null,
+      kind: "FragmentSpread",
+      name: "Profile_user",
+    },
+    {
+      args: null,
+      kind: "FragmentSpread",
+      name: "AddFunds_user",
+    },
+    {
+      args: null,
+      kind: "FragmentSpread",
+      name: "RetireFunds_user",
+    },
+    {
+      args: null,
+      kind: "FragmentSpread",
+      name: "AddLoan_user",
+    },
+    {
+      args: null,
+      kind: "FragmentSpread",
+      name: "Settings_user",
+    },
+  ],
+  type: "User",
+  abstractKey: null,
 } as any;
-(node as any).hash = '930bbc3f47847f450c83c8ac1a77fa81';
+(node as any).hash = "2e454dd16815c1bebf2af561aead9232";
 export default node;

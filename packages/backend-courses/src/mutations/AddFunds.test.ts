@@ -1,6 +1,6 @@
 import { app } from "../app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectID } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { BucketTransactionMongo, UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
 import { ACCESSSECRET } from "../config";
@@ -26,17 +26,17 @@ describe("AddFunds tests", () => {
     delete app.locals.db;
     await dbInstance
       .collection<UserMongo>("users")
-      .deleteMany({ _id: new ObjectID("000000000000000000000000") });
+      .deleteMany({ _id: new ObjectId("000000000000000000000000") });
     await dbInstance
       .collection<BucketTransactionMongo>("transactions")
-      .deleteMany({ _id_user: new ObjectID("000000000000000000000000") });
+      .deleteMany({ _id_user: new ObjectId("000000000000000000000000") });
     await client.close();
   });
 
   it("test AddFunds increase valid access token", async (done) => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
-      _id: new ObjectID("000000000000000000000000"),
+      _id: new ObjectId("000000000000000000000000"),
       name: "Armando Narcizo",
       apellidoPaterno: "Rueda",
       apellidoMaterno: "Peréz",
@@ -45,7 +45,7 @@ describe("AddFunds tests", () => {
       clabe: "",
       mobile: "",
       accountAvailable: 100000,
-      accountTotal: 100000,
+      investments: [],
     });
     const response = await request
       .post("/api/graphql")
@@ -56,7 +56,9 @@ describe("AddFunds tests", () => {
             validAccessToken
             user {
               accountAvailable
-              accountTotal
+              investments {
+                _id_loan
+              }
             }
           }
         }`,
@@ -83,11 +85,11 @@ describe("AddFunds tests", () => {
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     expect(response.body.data.addFunds.user.accountAvailable).toBe("1500.00");
-    expect(response.body.data.addFunds.user.accountTotal).toBe("1500.00");
+    expect(response.body.data.addFunds.user.investments.length).toBe(0);
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectID("000000000000000000000000") })
+      .find({ _id_user: new ObjectId("000000000000000000000000") })
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions[0].history.length).toBe(1);
@@ -108,7 +110,7 @@ describe("AddFunds tests", () => {
   it("test AddFunds decrease valid access token", async (done) => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
-      _id: new ObjectID("000000000000000000000003"),
+      _id: new ObjectId("000000000000000000000003"),
       name: "Armando Narcizo",
       apellidoPaterno: "Rueda",
       apellidoMaterno: "Peréz",
@@ -117,7 +119,7 @@ describe("AddFunds tests", () => {
       clabe: "",
       mobile: "",
       accountAvailable: 100000,
-      accountTotal: 100000,
+      investments: [],
     });
     const response = await request
       .post("/api/graphql")
@@ -128,7 +130,9 @@ describe("AddFunds tests", () => {
             validAccessToken
             user {
               accountAvailable
-              accountTotal
+              investments {
+                _id_loan
+              }
             }
           }
         }`,
@@ -155,11 +159,11 @@ describe("AddFunds tests", () => {
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     expect(response.body.data.addFunds.user.accountAvailable).toBe("500.00");
-    expect(response.body.data.addFunds.user.accountTotal).toBe("500.00");
+    expect(response.body.data.addFunds.user.investments.length).toBe(0);
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectID("000000000000000000000003") })
+      .find({ _id_user: new ObjectId("000000000000000000000003") })
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions[0].history.length).toBe(1);
@@ -180,7 +184,7 @@ describe("AddFunds tests", () => {
   it("test AddFunds increase invalid access token", async (done) => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
-      _id: new ObjectID("000000000000000000000001"),
+      _id: new ObjectId("000000000000000000000001"),
       name: "Armando Narcizo",
       apellidoPaterno: "Rueda",
       apellidoMaterno: "Peréz",
@@ -189,7 +193,7 @@ describe("AddFunds tests", () => {
       clabe: "",
       mobile: "",
       accountAvailable: 100000,
-      accountTotal: 100000,
+      investments: [],
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
@@ -215,7 +219,9 @@ describe("AddFunds tests", () => {
             validAccessToken
             user {
               accountAvailable
-              accountTotal
+              investments {
+                _id_loan
+              }
             }
           }
         }`,
@@ -242,14 +248,14 @@ describe("AddFunds tests", () => {
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     expect(response.body.data.addFunds.user.accountAvailable).toBe("1500.00");
-    expect(response.body.data.addFunds.user.accountTotal).toBe("1500.00");
+    expect(response.body.data.addFunds.user.investments.length).toBe(0);
     done();
   });
 
   it("test AddFunds increase invalid refresh token", async (done) => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
-      _id: new ObjectID("000000000000000000000002"),
+      _id: new ObjectId("000000000000000000000002"),
       name: "Armando Narcizo",
       apellidoPaterno: "Rueda",
       apellidoMaterno: "Peréz",
@@ -258,7 +264,7 @@ describe("AddFunds tests", () => {
       clabe: "",
       mobile: "",
       accountAvailable: 100000,
-      accountTotal: 100000,
+      investments: [],
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
@@ -284,7 +290,9 @@ describe("AddFunds tests", () => {
             validAccessToken
             user {
               accountAvailable
-              accountTotal
+              investments {
+                _id_loan
+              }
             }
           }
         }`,

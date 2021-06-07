@@ -1,6 +1,6 @@
 import { app } from "../app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectID } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
 import { ACCESSSECRET } from "../config";
@@ -25,14 +25,14 @@ describe("ApproveLoan tests", () => {
     await dbInstance.collection<UserMongo>("users").deleteMany({
       _id: {
         $in: [
-          new ObjectID("000000000000000000000009"),
-          new ObjectID("000000000000000000000010"),
+          new ObjectId("000000000000000000000009"),
+          new ObjectId("000000000000000000000010"),
         ],
       },
     });
     await dbInstance
       .collection<LoanMongo>("loans")
-      .deleteMany({ _id_user: new ObjectID("000000000000000000000010") });
+      .deleteMany({ _id_user: new ObjectId("000000000000000000000010") });
     await client.close();
   });
 
@@ -40,7 +40,7 @@ describe("ApproveLoan tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertMany([
       {
-        _id: new ObjectID("000000000000000000000009"),
+        _id: new ObjectId("000000000000000000000009"),
         name: "Armando Narcizo",
         apellidoPaterno: "Rueda",
         apellidoMaterno: "Peréz",
@@ -49,10 +49,10 @@ describe("ApproveLoan tests", () => {
         clabe: "",
         mobile: "",
         accountAvailable: 100000,
-        accountTotal: 100000,
+        investments: [],
       },
       {
-        _id: new ObjectID("000000000000000000000010"),
+        _id: new ObjectId("000000000000000000000010"),
         name: "Fernando Narcizo",
         apellidoPaterno: "Rueda",
         apellidoMaterno: "Peréz",
@@ -61,13 +61,13 @@ describe("ApproveLoan tests", () => {
         clabe: "",
         mobile: "",
         accountAvailable: 100000,
-        accountTotal: 100000,
+        investments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertOne({
-      _id: new ObjectID("000000000000000000000008"),
-      _id_user: new ObjectID("000000000000000000000010"),
+      _id: new ObjectId("000000000000000000000008"),
+      _id_user: new ObjectId("000000000000000000000010"),
       score: "AAA",
       ROI: 17,
       goal: 100000,
@@ -76,6 +76,7 @@ describe("ApproveLoan tests", () => {
       expiry: new Date(),
       status: "waiting for approval",
       scheduledPayments: null,
+      investors: [],
     });
     const response = await request
       .post("/api/graphql")
@@ -108,7 +109,7 @@ describe("ApproveLoan tests", () => {
     expect(response.body.data.approveLoan.error).toBeFalsy();
     expect(response.body.data.approveLoan.validAccessToken).toBeTruthy();
     const allLoans = await loans
-      .find({ _id: new ObjectID("000000000000000000000008") })
+      .find({ _id: new ObjectId("000000000000000000000008") })
       .toArray();
     expect(allLoans.length).toBe(1);
     expect(

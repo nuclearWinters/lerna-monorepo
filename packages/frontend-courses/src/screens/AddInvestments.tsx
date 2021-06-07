@@ -131,7 +131,7 @@ export const AddInvestments: FC<Props> = (props) => {
         >
           <button
             onClick={() => {
-              if (user_gid === "VXNlcjo=") {
+              if (user_gid === "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=") {
                 return history.push("/login");
               }
               commit({

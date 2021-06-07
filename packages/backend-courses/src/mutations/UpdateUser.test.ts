@@ -1,6 +1,6 @@
 import { app } from "../app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectID } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
 import { ACCESSSECRET } from "../config";
@@ -24,14 +24,14 @@ describe("UpdateUser tests", () => {
     delete app.locals.db;
     await dbInstance
       .collection<UserMongo>("users")
-      .deleteMany({ _id: new ObjectID("000000000000000000000007") });
+      .deleteMany({ _id: new ObjectId("000000000000000000000007") });
     await client.close();
   });
 
   it("test UpdateUser valid access token", async (done) => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
-      _id: new ObjectID("000000000000000000000007"),
+      _id: new ObjectId("000000000000000000000007"),
       name: "",
       apellidoPaterno: "",
       apellidoMaterno: "",
@@ -40,7 +40,7 @@ describe("UpdateUser tests", () => {
       clabe: "",
       mobile: "",
       accountAvailable: 0,
-      accountTotal: 0,
+      investments: [],
     });
     const response = await request
       .post("/api/graphql")

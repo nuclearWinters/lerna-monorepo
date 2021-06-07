@@ -1,7 +1,7 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context, UserMongo } from "../types";
-import { ObjectID } from "mongodb";
+import { ObjectId } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
 import { GraphQLUser, MXNScalarType } from "../Nodes";
 
@@ -52,8 +52,8 @@ export const AddFundsMutation = mutationWithClientMutationId({
         throw new Error("No es el mismo usuario.");
       }
       const resultUser = await users.findOneAndUpdate(
-        { _id: new ObjectID(user_id) },
-        { $inc: { accountTotal: quantity, accountAvailable: quantity } },
+        { _id: new ObjectId(user_id) },
+        { $inc: { accountAvailable: quantity } },
         { returnOriginal: false }
       );
       const updatedUser = resultUser.value;
@@ -65,7 +65,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
         {
           $push: {
             history: {
-              _id: new ObjectID(),
+              _id: new ObjectId(),
               type: quantity > 0 ? "CREDIT" : "WITHDRAWAL",
               quantity,
               created: new Date(),
@@ -74,7 +74,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
           $inc: { count: 1 },
           $setOnInsert: {
             _id: `${user_id}_${new Date().getTime()}`,
-            _id_user: new ObjectID(user_id),
+            _id_user: new ObjectId(user_id),
           },
         },
         { upsert: true }

@@ -1,4 +1,4 @@
-import { ObjectID } from "bson";
+import { ObjectId } from "bson";
 import {
   GraphQLNonNull,
   GraphQLObjectType,
@@ -17,7 +17,6 @@ import {
   connectionDefinitions,
 } from "graphql-relay";
 import {
-  RootUser,
   Context,
   InvestmentMongo,
   LoanMongo,
@@ -28,6 +27,8 @@ import {
   IScheduledPayments,
   IScheduledPaymentsStatus,
   TransactionMongoType,
+  UserMongo,
+  InvestmentsUserMongo,
 } from "./types";
 
 export const DateScalarType = new GraphQLScalarType({
@@ -107,12 +108,12 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     const { type, id } = fromGlobalId(globalId);
     switch (type) {
       case "User":
-        return { ...(await users.findOne({ _id: new ObjectID(id) })), type };
+        return { ...(await users.findOne({ _id: new ObjectId(id) })), type };
       case "Loan":
-        return { ...(await loans.findOne({ _id: new ObjectID(id) })), type };
+        return { ...(await loans.findOne({ _id: new ObjectId(id) })), type };
       case "Investment":
         return {
-          ...(await investments.findOne({ _id: new ObjectID(id) })),
+          ...(await investments.findOne({ _id: new ObjectId(id) })),
           type,
         };
       default:
@@ -150,8 +151,24 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
       resolve: ({ _id_loan }): string => _id_loan.toHexString(),
     },
     quantity: {
-      type: new GraphQLNonNull(MXNScalarType),
+      type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ quantity }): number => quantity,
+    },
+    ROI: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ ROI }): number => ROI,
+    },
+    payments: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ payments }): number => payments,
+    },
+    term: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ term }): number => term,
+    },
+    moratory: {
+      type: new GraphQLNonNull(MXNScalarType),
+      resolve: ({ moratory }): number => moratory,
     },
     created: {
       type: new GraphQLNonNull(DateScalarType),
@@ -306,10 +323,37 @@ const { connectionType: LoanConnection, edgeType: GraphQLLoanEdge } =
     nodeType: GraphQLLoan,
   });
 
-const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
+export const GraphQLInvestmentsUser =
+  new GraphQLObjectType<InvestmentsUserMongo>({
+    name: "InvestmentsUser",
+    fields: {
+      _id_loan: {
+        type: new GraphQLNonNull(GraphQLString),
+        resolve: ({ _id_loan }): string => _id_loan.toHexString(),
+      },
+      quantity: {
+        type: new GraphQLNonNull(MXNScalarType),
+        resolve: ({ quantity }): number => quantity,
+      },
+      term: {
+        type: new GraphQLNonNull(GraphQLInt),
+        resolve: ({ term }): number => term,
+      },
+      ROI: {
+        type: new GraphQLNonNull(GraphQLFloat),
+        resolve: ({ ROI }): number => ROI,
+      },
+      payments: {
+        type: new GraphQLNonNull(GraphQLInt),
+        resolve: ({ payments }): number => payments,
+      },
+    },
+  });
+
+const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
   name: "User",
   fields: {
-    id: globalIdField("User", ({ _id }): string => _id),
+    id: globalIdField("User", ({ _id }): string => _id.toHexString()),
     name: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ name }): string => name,
@@ -338,17 +382,13 @@ const GraphQLUser = new GraphQLObjectType<RootUser, Context>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ mobile }): string => mobile,
     },
-    accountTotal: {
-      type: new GraphQLNonNull(MXNScalarType),
-      resolve: ({ accountTotal }): number => accountTotal,
-    },
     accountAvailable: {
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountAvailable }): number => accountAvailable,
     },
-    error: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ error }): string => error,
+    investments: {
+      type: new GraphQLNonNull(new GraphQLList(GraphQLInvestmentsUser)),
+      resolve: ({ investments }): InvestmentsUserMongo[] => investments,
     },
   },
   interfaces: [nodeInterface],
