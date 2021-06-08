@@ -24,12 +24,30 @@ describe("AddFunds tests", () => {
 
   afterAll(async () => {
     delete app.locals.db;
-    await dbInstance
-      .collection<UserMongo>("users")
-      .deleteMany({ _id: new ObjectId("000000000000000000000000") });
+    await dbInstance.collection<UserMongo>("users").deleteMany({
+      _id: {
+        $in: [
+          new ObjectId("000000000000000000000000"),
+          new ObjectId("000000000000000000000001"),
+          new ObjectId("000000000000000000000002"),
+          new ObjectId("000000000000000000000003"),
+          new ObjectId("100000000000000000000002"),
+        ],
+      },
+    });
     await dbInstance
       .collection<BucketTransactionMongo>("transactions")
-      .deleteMany({ _id_user: new ObjectId("000000000000000000000000") });
+      .deleteMany({
+        _id_user: {
+          $in: [
+            new ObjectId("000000000000000000000000"),
+            new ObjectId("000000000000000000000001"),
+            new ObjectId("000000000000000000000002"),
+            new ObjectId("000000000000000000000003"),
+            new ObjectId("100000000000000000000002"),
+          ],
+        },
+      });
     await client.close();
   });
 
@@ -78,6 +96,21 @@ describe("AddFunds tests", () => {
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
+    const user = await users.findOne({
+      _id: new ObjectId("000000000000000000000000"),
+    });
+    expect(user).toEqual({
+      _id: new ObjectId("000000000000000000000000"),
+      name: "Armando Narcizo",
+      apellidoPaterno: "Rueda",
+      apellidoMaterno: "Peréz",
+      RFC: "",
+      CURP: "",
+      clabe: "",
+      mobile: "",
+      accountAvailable: 150000,
+      investments: [],
+    });
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
@@ -143,6 +176,21 @@ describe("AddFunds tests", () => {
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
+    const user = await users.findOne({
+      _id: new ObjectId("000000000000000000000003"),
+    });
+    expect(user).toEqual({
+      _id: new ObjectId("000000000000000000000003"),
+      name: "Armando Narcizo",
+      apellidoPaterno: "Rueda",
+      apellidoMaterno: "Peréz",
+      RFC: "",
+      CURP: "",
+      clabe: "",
+      mobile: "",
+      accountAvailable: 50000,
+      investments: [],
+    });
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
@@ -223,6 +271,39 @@ describe("AddFunds tests", () => {
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
+    const user = await users.findOne({
+      _id: new ObjectId("000000000000000000000001"),
+    });
+    expect(user).toEqual({
+      _id: new ObjectId("000000000000000000000001"),
+      name: "Armando Narcizo",
+      apellidoPaterno: "Rueda",
+      apellidoMaterno: "Peréz",
+      RFC: "",
+      CURP: "",
+      clabe: "",
+      mobile: "",
+      accountAvailable: 150000,
+      investments: [],
+    });
+    const transactions =
+      dbInstance.collection<BucketTransactionMongo>("transactions");
+    const allTransactions = await transactions
+      .find({ _id_user: new ObjectId("000000000000000000000001") })
+      .toArray();
+    expect(allTransactions.length).toBe(1);
+    expect(allTransactions[0].history.length).toBe(1);
+    expect(
+      allTransactions[0].history.map((transaction) => ({
+        type: transaction.type,
+        quantity: transaction.quantity,
+      }))
+    ).toEqual([
+      {
+        type: "CREDIT",
+        quantity: 50000,
+      },
+    ]);
   });
 
   it("test AddFunds increase invalid refresh token", async () => {
@@ -283,7 +364,114 @@ describe("AddFunds tests", () => {
           refreshToken: "invalidRefreshToken",
         })
       );
-    expect(response.body.data.addFunds.error).toBeTruthy();
+    expect(response.body.data.addFunds.error).toBe("Error");
     expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
+    const user = await users.findOne({
+      _id: new ObjectId("000000000000000000000002"),
+    });
+    expect(user).toEqual({
+      _id: new ObjectId("000000000000000000000002"),
+      name: "Armando Narcizo",
+      apellidoPaterno: "Rueda",
+      apellidoMaterno: "Peréz",
+      RFC: "",
+      CURP: "",
+      clabe: "",
+      mobile: "",
+      accountAvailable: 100000,
+      investments: [],
+    });
+    const transactions =
+      dbInstance.collection<BucketTransactionMongo>("transactions");
+    const allTransactions = await transactions
+      .find({ _id_user: new ObjectId("000000000000000000000002") })
+      .toArray();
+    expect(allTransactions.length).toBe(0);
+  });
+
+  it("test AddFunds try decrease more than available valid refresh token", async () => {
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertOne({
+      _id: new ObjectId("100000000000000000000002"),
+      name: "Armando Narcizo",
+      apellidoPaterno: "Rueda",
+      apellidoMaterno: "Peréz",
+      RFC: "",
+      CURP: "",
+      clabe: "",
+      mobile: "",
+      accountAvailable: 100000,
+      investments: [],
+    });
+    jest
+      .spyOn(grpcClient, "renewAccessToken")
+      .mockImplementationOnce((request, callback: any) => {
+        callback(
+          {
+            name: "Error Auth Service",
+            message: "Error",
+            code: 1,
+            details: "",
+            metadata: new Metadata(),
+          },
+          null
+        );
+        return {} as any;
+      });
+    const response = await request
+      .post("/api/graphql")
+      .send({
+        query: `mutation addFundsMutation($input: AddFundsInput!) {
+          addFunds(input: $input) {
+            error
+            validAccessToken
+          }
+        }`,
+        variables: {
+          input: {
+            user_gid: base64Name("100000000000000000000002", "User"),
+            quantity: "-1500.00",
+          },
+        },
+        operationName: "addFundsMutation",
+      })
+      .set("Accept", "application/json")
+      .set(
+        "Authorization",
+        JSON.stringify({
+          accessToken: jwt.sign(
+            { _id: "100000000000000000000002", email: "" },
+            ACCESSSECRET,
+            { expiresIn: "15s" }
+          ),
+          refreshToken: "validRefreshToken",
+        })
+      );
+    expect(response.body.data.addFunds.error).toBe(
+      "No cuentas con fondos suficientes."
+    );
+    expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
+    const user = await users.findOne({
+      _id: new ObjectId("100000000000000000000002"),
+    });
+    expect(user).toEqual({
+      _id: new ObjectId("100000000000000000000002"),
+      name: "Armando Narcizo",
+      apellidoPaterno: "Rueda",
+      apellidoMaterno: "Peréz",
+      RFC: "",
+      CURP: "",
+      clabe: "",
+      mobile: "",
+      accountAvailable: 100000,
+      investments: [],
+    });
+
+    const transactions =
+      dbInstance.collection<BucketTransactionMongo>("transactions");
+    const allTransactions = await transactions
+      .find({ _id_user: new ObjectId("000000000000000000000002") })
+      .toArray();
+    expect(allTransactions.length).toBe(0);
   });
 });

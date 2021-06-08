@@ -46,10 +46,13 @@ export const AddFundsMutation = mutationWithClientMutationId({
       if (user_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
-      await users.updateOne(
-        { _id: new ObjectId(user_id) },
+      const result = await users.updateOne(
+        { _id: new ObjectId(user_id), accountAvailable: { $gte: -quantity } },
         { $inc: { accountAvailable: quantity } }
       );
+      if (!result.modifiedCount) {
+        throw new Error("No cuentas con fondos suficientes.");
+      }
       transactions.updateOne(
         { _id: new RegExp(`^${user_id}`), count: { $lt: 5 } },
         {
