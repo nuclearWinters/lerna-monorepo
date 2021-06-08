@@ -3,6 +3,7 @@ import { graphql, useFragment, useMutation } from "react-relay";
 import { RetireFunds_user$key } from "./__generated__/RetireFunds_user.graphql";
 import { RetireFundsMutation } from "./__generated__/RetireFundsMutation.graphql";
 import { getDataFromToken, tokensAndData } from "App";
+import { Spinner } from "components/Spinner";
 
 const retireFundsFragment = graphql`
   fragment RetireFunds_user on User {
@@ -15,21 +16,11 @@ type Props = {
 };
 
 export const RetireFunds: FC<Props> = (props) => {
-  const [commit] = useMutation<RetireFundsMutation>(graphql`
+  const [commit, isInFlight] = useMutation<RetireFundsMutation>(graphql`
     mutation RetireFundsMutation($input: AddFundsInput!) {
       addFunds(input: $input) {
         error
         validAccessToken
-        user {
-          investments {
-            _id_loan
-            quantity
-            term
-            ROI
-            payments
-          }
-          accountAvailable
-        }
       }
     }
   `);
@@ -60,33 +51,38 @@ export const RetireFunds: FC<Props> = (props) => {
         onChange={handleQuantityOnChange}
         onBlur={handleQuantityOnBlur}
       />
-      <button
-        onClick={() => {
-          commit({
-            variables: {
-              input: {
-                user_gid: user.id,
-                quantity: `-${quantity}`,
+      {isInFlight ? (
+        <Spinner />
+      ) : (
+        <button
+          onClick={() => {
+            commit({
+              variables: {
+                input: {
+                  user_gid: user.id,
+                  quantity: `-${quantity}`,
+                },
               },
-            },
-            onCompleted: (response) => {
-              if (response.addFunds.error) {
-                throw new Error(response.addFunds.error);
-              }
-            },
-            updater: (store, data) => {
-              tokensAndData.tokens.accessToken = data.addFunds.validAccessToken;
-              const user = getDataFromToken(data.addFunds.validAccessToken);
-              tokensAndData.data = user;
-            },
-            onError: (error) => {
-              window.alert(error.message);
-            },
-          });
-        }}
-      >
-        Añadir
-      </button>
+              onCompleted: (response) => {
+                if (response.addFunds.error) {
+                  throw new Error(response.addFunds.error);
+                }
+              },
+              updater: (store, data) => {
+                tokensAndData.tokens.accessToken =
+                  data.addFunds.validAccessToken;
+                const user = getDataFromToken(data.addFunds.validAccessToken);
+                tokensAndData.data = user;
+              },
+              onError: (error) => {
+                window.alert(error.message);
+              },
+            });
+          }}
+        >
+          Añadir
+        </button>
+      )}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
 import { getDataFromToken, tokensAndData } from "App";
 import { LoanRow } from "components/LoanRow";
+import { Spinner } from "components/Spinner";
 
 const debtInSaleFragment = graphql`
   fragment AddInvestments_query on Query
@@ -42,19 +43,19 @@ interface ILends {
   loan_gid: string;
   quantity: string;
   borrower_id: string;
+  goal: string;
+  ROI: number;
+  term: number;
 }
 
 export const AddInvestments: FC<Props> = (props) => {
   const user_gid = props?.user?.id || "";
   const { isLender } = tokensAndData.data;
-  const [commit] = useMutation<AddInvestmentsMutation>(graphql`
+  const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {
         error
         validAccessToken
-        user {
-          accountAvailable
-        }
       }
     }
   `);
@@ -129,41 +130,47 @@ export const AddInvestments: FC<Props> = (props) => {
             alignItems: "center",
           }}
         >
-          <button
-            onClick={() => {
-              if (user_gid === "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=") {
-                return history.push("/login");
-              }
-              commit({
-                variables: {
-                  input: {
-                    lends: lends.map((lend) => ({
-                      ...lend,
-                      quantity: lend.quantity,
-                    })),
-                    lender_gid: user_gid,
+          {isInFlight ? (
+            <Spinner />
+          ) : (
+            <button
+              onClick={() => {
+                if (user_gid === "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=") {
+                  return history.push("/login");
+                }
+                commit({
+                  variables: {
+                    input: {
+                      lends: lends.map((lend) => ({
+                        ...lend,
+                        quantity: lend.quantity,
+                      })),
+                      lender_gid: user_gid,
+                    },
                   },
-                },
-                onCompleted: (response) => {
-                  if (response.addLends.error) {
-                    throw new Error(response.addLends.error);
-                  }
-                },
-                updater: (store, data) => {
-                  tokensAndData.tokens.accessToken =
-                    data.addLends.validAccessToken;
-                  const user = getDataFromToken(data.addLends.validAccessToken);
-                  tokensAndData.data = user;
-                },
-                onError: (error) => {
-                  window.alert(error.message);
-                },
-              });
-              setLends([]);
-            }}
-          >
-            Prestar
-          </button>
+                  onCompleted: (response) => {
+                    if (response.addLends.error) {
+                      throw new Error(response.addLends.error);
+                    }
+                  },
+                  updater: (store, data) => {
+                    tokensAndData.tokens.accessToken =
+                      data.addLends.validAccessToken;
+                    const user = getDataFromToken(
+                      data.addLends.validAccessToken
+                    );
+                    tokensAndData.data = user;
+                  },
+                  onError: (error) => {
+                    window.alert(error.message);
+                  },
+                });
+                setLends([]);
+              }}
+            >
+              Prestar
+            </button>
+          )}
         </div>
       )}
     </div>

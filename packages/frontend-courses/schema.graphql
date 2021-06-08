@@ -38,26 +38,28 @@ type BlacklistUserPayload {
 input UpdateUserInput {
   clientMutationId: String
   user_gid: String!
-  name: String
-  apellidoPaterno: String
-  apellidoMaterno: String
-  RFC: String
-  CURP: String
-  clabe: String
-  mobile: String
+  name: String!
+  apellidoPaterno: String!
+  apellidoMaterno: String!
+  RFC: String!
+  CURP: String!
+  clabe: String!
+  mobile: String!
 }
 
 type UpdateUserPayload {
   validAccessToken: String!
   error: String!
   clientMutationId: String
-  user: User!
 }
 
 input LendList {
   loan_gid: ID!
   quantity: MXN!
   borrower_id: String!
+  term: Int!
+  goal: MXN!
+  ROI: Float!
 }
 
 input AddLendsInput {
@@ -70,7 +72,6 @@ type AddLendsPayload {
   validAccessToken: String!
   error: String!
   clientMutationId: String
-  user: User!
 }
 
 input AddLoanInput {
@@ -96,7 +97,6 @@ type AddFundsPayload {
   validAccessToken: String!
   error: String!
   clientMutationId: String
-  user: User
 }
 
 input ApproveLoanInput {
@@ -148,6 +148,10 @@ type Query {
   ): BucketTransactionConnection
 }
 
+type User_Subscribe {
+  user: User!
+}
+
 type Loan_Subscribe {
   loan_edge: LoanEdge!
   type: SubscribeType!
@@ -164,6 +168,7 @@ type Transaction_Subscribe {
 }
 
 type Subscription {
+  user_subscribe(user_gid: ID!): User_Subscribe!
   loans_subscribe: Loan_Subscribe!
   investments_subscribe(user_gid: ID!): Investment_Subscribe!
   transactions_subscribe(user_gid: ID!): Transaction_Subscribe!

@@ -1,4 +1,5 @@
 import { getDataFromToken, tokensAndData } from "App";
+import { Spinner } from "components/Spinner";
 import React, { FC, useRef, useState } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { ProfileMutation } from "./__generated__/ProfileMutation.graphql";
@@ -30,28 +31,11 @@ type Props = {
 };
 
 export const Profile: FC<Props> = (props) => {
-  const [commit] = useMutation<ProfileMutation>(graphql`
+  const [commit, isInFlight] = useMutation<ProfileMutation>(graphql`
     mutation ProfileMutation($input: UpdateUserInput!) {
       updateUser(input: $input) {
         error
         validAccessToken
-        user {
-          name
-          apellidoMaterno
-          apellidoPaterno
-          RFC
-          CURP
-          clabe
-          mobile
-          investments {
-            _id_loan
-            quantity
-            term
-            ROI
-            payments
-          }
-          accountAvailable
-        }
       }
     }
   `);
@@ -158,33 +142,37 @@ export const Profile: FC<Props> = (props) => {
           </div>
         }
       </div>
-      <button
-        onClick={() => {
-          commit({
-            variables: {
-              input: {
-                ...formUser,
+      {isInFlight ? (
+        <Spinner />
+      ) : (
+        <button
+          onClick={() => {
+            commit({
+              variables: {
+                input: {
+                  ...formUser,
+                },
               },
-            },
-            onCompleted: (response) => {
-              if (response.updateUser.error) {
-                throw new Error(response.updateUser.error);
-              }
-            },
-            updater: (store, data) => {
-              tokensAndData.tokens.accessToken =
-                data.updateUser.validAccessToken;
-              const user = getDataFromToken(data.updateUser.validAccessToken);
-              tokensAndData.data = user;
-            },
-            onError: (error) => {
-              window.alert(error.message);
-            },
-          });
-        }}
-      >
-        Update
-      </button>
+              onCompleted: (response) => {
+                if (response.updateUser.error) {
+                  throw new Error(response.updateUser.error);
+                }
+              },
+              updater: (store, data) => {
+                tokensAndData.tokens.accessToken =
+                  data.updateUser.validAccessToken;
+                const user = getDataFromToken(data.updateUser.validAccessToken);
+                tokensAndData.data = user;
+              },
+              onError: (error) => {
+                window.alert(error.message);
+              },
+            });
+          }}
+        >
+          Update
+        </button>
+      )}
       {isChanged.current && (
         <button
           onClick={() => {

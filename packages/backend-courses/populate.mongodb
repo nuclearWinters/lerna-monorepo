@@ -1,12 +1,14 @@
 
 use('fintech');
 
-db.investments.updateOne(
-   { "_id": ObjectId("607b7338119cbd2f4c4ad524") },
-   [
-      { $set: { "moratory": { $multipl "$ROI" * 2} } },
-   ]
-)
+db.loans.findOneAndUpdate({
+  "_id": ObjectId("609875a48f2814002aaefe24"),
+  "raised": { $lte: 500 } 
+}, {
+  $inc: {
+    raised: 500
+  }
+})
 
 
 //db.users.updateOne({"name": "Armando Narcizo"}, { $set: { investments: [] } })

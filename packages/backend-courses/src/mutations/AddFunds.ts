@@ -1,9 +1,9 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
-import { Context, UserMongo } from "../types";
+import { Context } from "../types";
 import { ObjectId } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
-import { GraphQLUser, MXNScalarType } from "../Nodes";
+import { MXNScalarType } from "../Nodes";
 
 interface Input {
   user_gid: string;
@@ -12,7 +12,6 @@ interface Input {
 
 type Payload = {
   validAccessToken: string;
-  user: UserMongo | null;
   error: string;
 };
 
@@ -33,10 +32,6 @@ export const AddFundsMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ validAccessToken }: Payload): string => validAccessToken,
     },
-    user: {
-      type: GraphQLUser,
-      resolve: ({ user }: Payload): UserMongo | null => user,
-    },
   },
   mutateAndGetPayload: async (
     { user_gid, quantity }: Input,
@@ -51,15 +46,10 @@ export const AddFundsMutation = mutationWithClientMutationId({
       if (user_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
-      const resultUser = await users.findOneAndUpdate(
+      await users.updateOne(
         { _id: new ObjectId(user_id) },
-        { $inc: { accountAvailable: quantity } },
-        { returnDocument: "after" }
+        { $inc: { accountAvailable: quantity } }
       );
-      const updatedUser = resultUser.value;
-      if (!updatedUser) {
-        throw new Error("El usuario no existe.");
-      }
       transactions.updateOne(
         { _id: new RegExp(`^${user_id}`), count: { $lt: 5 } },
         {
@@ -79,9 +69,9 @@ export const AddFundsMutation = mutationWithClientMutationId({
         },
         { upsert: true }
       );
-      return { validAccessToken, error: "", user: updatedUser };
+      return { validAccessToken, error: "" };
     } catch (e) {
-      return { validAccessToken: "", error: e.message, user: null };
+      return { validAccessToken: "", error: e.message };
     }
   },
 });

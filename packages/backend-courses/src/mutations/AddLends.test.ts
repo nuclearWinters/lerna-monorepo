@@ -113,16 +113,6 @@ describe("AddLends tests", () => {
           addLends(input: $input) {
             error
             validAccessToken
-            user {
-              accountAvailable
-              investments {
-                _id_loan
-                quantity
-                term
-                ROI
-                payments
-              }
-            }
           }
         }`,
         variables: {
@@ -133,11 +123,17 @@ describe("AddLends tests", () => {
                 loan_gid: base64Name("000000000000000000000002", "Loan"),
                 quantity: "100.00",
                 borrower_id: "000000000000000000000005",
+                term: 2,
+                goal: "500.00",
+                ROI: 10,
               },
               {
                 loan_gid: base64Name("000000000000000000000003", "Loan"),
                 quantity: "50.00",
                 borrower_id: "000000000000000000000005",
+                term: 2,
+                goal: "500.00",
+                ROI: 10,
               },
             ],
           },
@@ -158,20 +154,23 @@ describe("AddLends tests", () => {
       );
     expect(response.body.data.addLends.error).toBeFalsy();
     expect(response.body.data.addLends.validAccessToken).toBeTruthy();
-    expect(response.body.data.addLends.user.accountAvailable).toBe("850.00");
-    expect(response.body.data.addLends.user.investments).toEqual([
+    const user = await users.findOne({
+      _id: new ObjectId("000000000000000000000004"),
+    });
+    expect(user?.accountAvailable).toBe(85000);
+    expect(user?.investments).toEqual([
       {
         ROI: 10,
-        _id_loan: "000000000000000000000002",
+        _id_loan: new ObjectId("000000000000000000000002"),
         payments: 0,
-        quantity: "100.00",
+        quantity: 10000,
         term: 2,
       },
       {
         ROI: 10,
-        _id_loan: "000000000000000000000003",
+        _id_loan: new ObjectId("000000000000000000000003"),
         payments: 0,
-        quantity: "50.00",
+        quantity: 5000,
         term: 2,
       },
     ]);
@@ -272,16 +271,6 @@ describe("AddLends tests", () => {
           addLends(input: $input) {
             error
             validAccessToken
-            user {
-              accountAvailable
-              investments {
-                _id_loan
-                quantity
-                term
-                ROI
-                payments
-              }
-            }
           }
         }`,
         variables: {
@@ -292,11 +281,17 @@ describe("AddLends tests", () => {
                 loan_gid: base64Name("000000000000000000000002", "Loan"),
                 quantity: "400.00",
                 borrower_id: "000000000000000000000005",
+                term: 2,
+                goal: "500.00",
+                ROI: 10,
               },
               {
                 loan_gid: base64Name("000000000000000000000003", "Loan"),
                 quantity: "450.00",
                 borrower_id: "000000000000000000000005",
+                term: 2,
+                goal: "500.00",
+                ROI: 10,
               },
             ],
           },
@@ -317,34 +312,37 @@ describe("AddLends tests", () => {
       );
     expect(response2.body.data.addLends.error).toBeFalsy();
     expect(response2.body.data.addLends.validAccessToken).toBeTruthy();
-    expect(response2.body.data.addLends.user.accountAvailable).toBe("0.00");
-    expect(response2.body.data.addLends.user.investments).toEqual([
+    const user2 = await users.findOne({
+      _id: new ObjectId("000000000000000000000004"),
+    });
+    expect(user2?.accountAvailable).toBe(0);
+    expect(user2?.investments).toEqual([
       {
         ROI: 10,
-        _id_loan: "000000000000000000000002",
+        _id_loan: new ObjectId("000000000000000000000002"),
         payments: 0,
-        quantity: "100.00",
+        quantity: 10000,
         term: 2,
       },
       {
         ROI: 10,
-        _id_loan: "000000000000000000000003",
+        _id_loan: new ObjectId("000000000000000000000003"),
         payments: 0,
-        quantity: "50.00",
+        quantity: 5000,
         term: 2,
       },
       {
         ROI: 10,
-        _id_loan: "000000000000000000000002",
+        _id_loan: new ObjectId("000000000000000000000002"),
         payments: 0,
-        quantity: "400.00",
+        quantity: 40000,
         term: 2,
       },
       {
         ROI: 10,
-        _id_loan: "000000000000000000000003",
+        _id_loan: new ObjectId("000000000000000000000003"),
         payments: 0,
-        quantity: "450.00",
+        quantity: 45000,
         term: 2,
       },
     ]);

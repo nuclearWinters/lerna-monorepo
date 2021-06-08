@@ -49,15 +49,6 @@ describe("UpdateUser tests", () => {
           updateUser(input: $input) {
             error
             validAccessToken
-            user {
-              name
-              apellidoPaterno
-              apellidoMaterno
-              RFC
-              CURP
-              clabe
-              mobile
-            }
           }
         }`,
         variables: {
@@ -88,12 +79,5 @@ describe("UpdateUser tests", () => {
       );
     expect(response.body.data.updateUser.error).toBeFalsy();
     expect(response.body.data.updateUser.validAccessToken).toBeTruthy();
-    expect(response.body.data.updateUser.user.name).toBeTruthy();
-    expect(response.body.data.updateUser.user.apellidoPaterno).toBeTruthy();
-    expect(response.body.data.updateUser.user.apellidoMaterno).toBeTruthy();
-    expect(response.body.data.updateUser.user.RFC).toBeTruthy();
-    expect(response.body.data.updateUser.user.CURP).toBeTruthy();
-    expect(response.body.data.updateUser.user.clabe).toBeTruthy();
-    expect(response.body.data.updateUser.user.mobile).toBeTruthy();
   });
 });

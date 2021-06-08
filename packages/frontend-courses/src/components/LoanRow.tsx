@@ -28,6 +28,9 @@ type Props = {
         loan_gid: string;
         quantity: string;
         borrower_id: string;
+        goal: string;
+        ROI: number;
+        term: number;
       }[]
     >
   >;
@@ -89,6 +92,9 @@ export const LoanRow: FC<Props> = ({ setLends, loan, value }) => {
                     loan_gid: data.id,
                     quantity: val,
                     borrower_id: data._id_user,
+                    goal: data.goal,
+                    term: data.term,
+                    ROI: data.ROI,
                   },
                 ];
               }

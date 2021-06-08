@@ -3,6 +3,7 @@ import { graphql, useFragment, useMutation } from "react-relay";
 import { AddLoan_user$key } from "./__generated__/AddLoan_user.graphql";
 import { AddLoanMutation } from "./__generated__/AddLoanMutation.graphql";
 import { getDataFromToken, tokensAndData } from "App";
+import { Spinner } from "components/Spinner";
 
 const addLoanFragment = graphql`
   fragment AddLoan_user on User {
@@ -15,7 +16,7 @@ type Props = {
 };
 
 export const AddLoan: FC<Props> = (props) => {
-  const [commit] = useMutation<AddLoanMutation>(graphql`
+  const [commit, isInFlight] = useMutation<AddLoanMutation>(graphql`
     mutation AddLoanMutation($input: AddLoanInput!) {
       addLoan(input: $input) {
         error
@@ -77,34 +78,39 @@ export const AddLoan: FC<Props> = (props) => {
         </select>
         Meses
       </label>
-      <button
-        onClick={() => {
-          commit({
-            variables: {
-              input: {
-                goal: form.goal,
-                term: Number(form.term),
-                user_gid: user.id,
+      {isInFlight ? (
+        <Spinner />
+      ) : (
+        <button
+          onClick={() => {
+            commit({
+              variables: {
+                input: {
+                  goal: form.goal,
+                  term: Number(form.term),
+                  user_gid: user.id,
+                },
               },
-            },
-            onCompleted: (response) => {
-              if (response.addLoan.error) {
-                throw new Error(response.addLoan.error);
-              }
-            },
-            updater: (store, data) => {
-              tokensAndData.tokens.accessToken = data.addLoan.validAccessToken;
-              const user = getDataFromToken(data.addLoan.validAccessToken);
-              tokensAndData.data = user;
-            },
-            onError: (error) => {
-              window.alert(error.message);
-            },
-          });
-        }}
-      >
-        Enviar solicitud
-      </button>
+              onCompleted: (response) => {
+                if (response.addLoan.error) {
+                  throw new Error(response.addLoan.error);
+                }
+              },
+              updater: (store, data) => {
+                tokensAndData.tokens.accessToken =
+                  data.addLoan.validAccessToken;
+                const user = getDataFromToken(data.addLoan.validAccessToken);
+                tokensAndData.data = user;
+              },
+              onError: (error) => {
+                window.alert(error.message);
+              },
+            });
+          }}
+        >
+          Enviar solicitud
+        </button>
+      )}
     </div>
   );
 };

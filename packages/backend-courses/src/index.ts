@@ -4,6 +4,7 @@ import {
   LOAN,
   INVESTMENT,
   pubsub,
+  USER,
 } from "./subscriptions/subscriptions";
 import { MongoClient, ObjectId, ChangeEventCR } from "mongodb";
 import { MONGO_DB } from "./config";
@@ -28,8 +29,20 @@ MongoClient.connect(MONGO_DB, {
   const conn = await amqp.connect("amqp://rabbitmq:5672");
   const ch = await conn.createChannel();
   await ch.assertQueue(SIGN_UP);
-  //Remove updateLookup for performance?
   const options = { fullDocument: "updateLookup" as const };
+  const usersStream = db.collection<UserMongo>("users").watch([], options);
+  usersStream.on("change", (event) => {
+    if (["update"].includes(event.operationType)) {
+      const fullDocument = (event as ChangeEventCR<UserMongo>).fullDocument;
+      if (fullDocument) {
+        pubsub.publish(USER, {
+          user_subscribe: {
+            user: fullDocument,
+          },
+        });
+      }
+    }
+  });
   const loansStream = db.collection<LoanMongo>("loans").watch([], options);
   loansStream.on("change", (event) => {
     if (["insert", "update"].includes(event.operationType)) {

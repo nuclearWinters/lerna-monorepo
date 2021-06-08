@@ -5,28 +5,30 @@ import {
   GraphQLID,
   GraphQLList,
   GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLFloat,
 } from "graphql";
-import {
-  BucketTransactionMongo,
-  Context,
-  InvestmentMongo,
-  LoanMongo,
-  UserMongo,
-} from "../types";
+import { BucketTransactionMongo, Context, InvestmentMongo } from "../types";
 import { ObjectId, BulkWriteUpdateOneOperation } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
-import { GraphQLUser, MXNScalarType } from "../Nodes";
+import { MXNScalarType } from "../Nodes";
 import { addMonths, startOfMonth } from "date-fns";
 
 interface Input {
   lender_gid: string;
-  lends: { quantity: number; borrower_id: string; loan_gid: string }[];
+  lends: {
+    quantity: number;
+    borrower_id: string;
+    loan_gid: string;
+    goal: number;
+    term: number;
+    ROI: number;
+  }[];
 }
 
 type Payload = {
   validAccessToken: string;
   error: string;
-  user: UserMongo | null;
 };
 
 export const GraphQLLendList = new GraphQLInputObjectType({
@@ -40,6 +42,15 @@ export const GraphQLLendList = new GraphQLInputObjectType({
     },
     borrower_id: {
       type: new GraphQLNonNull(GraphQLString),
+    },
+    goal: {
+      type: new GraphQLNonNull(MXNScalarType),
+    },
+    term: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    ROI: {
+      type: new GraphQLNonNull(GraphQLFloat),
     },
   },
 });
@@ -65,10 +76,6 @@ export const AddLendsMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ validAccessToken }: Payload): string => validAccessToken,
     },
-    user: {
-      type: GraphQLUser,
-      resolve: ({ user }: Payload): UserMongo | null => user,
-    },
   },
   mutateAndGetPayload: async (
     { lender_gid, lends: newLends }: Input,
@@ -92,122 +99,81 @@ export const AddLendsMutation = mutationWithClientMutationId({
       }
       const _id_lender = new ObjectId(lender_id);
       const now = new Date();
-      const docs = newLends.map(({ loan_gid, quantity, borrower_id }) => {
-        const _id_loan = fromGlobalId(loan_gid).id;
-        return {
-          _id: new ObjectId(),
-          _id_lender,
-          _id_borrower: new ObjectId(borrower_id),
-          quantity,
-          _id_loan: new ObjectId(_id_loan),
-          now,
-          goal: 0,
-          raised: 0,
-          completed: false,
-          term: 0,
-          ROI: 0,
-        };
-      });
-      const loansResult = await loans
-        .find({ _id: { $in: docs.map((doc) => doc._id_loan) } })
-        .toArray();
-      loansResult.forEach((loan) => {
-        const index = docs.findIndex(
-          (doc) => doc._id_loan.toHexString() === loan._id.toHexString()
-        );
-        if (index !== -1) {
-          docs[index].goal = loan.goal;
-          docs[index].raised = loan.raised;
-          docs[index].term = loan.term;
-          docs[index].ROI = loan.ROI;
-          docs[index].completed =
-            docs[index].quantity + loan.raised === loan.goal;
-        }
-      });
-      const docsFiltered = docs.filter(
-        (doc) => !(doc.goal === 0 || doc.raised + doc.quantity > doc.goal)
-      );
-      const investmentsOperations = docsFiltered.map<
-        BulkWriteUpdateOneOperation<InvestmentMongo>
-      >(
-        ({
-          quantity,
-          _id_loan,
-          _id_borrower,
-          _id_lender,
-          now,
-          completed,
-          ROI,
-          term,
-        }) => {
+      const docs = newLends.map(
+        ({ loan_gid, quantity, borrower_id, goal, term, ROI }) => {
+          const _id_loan = fromGlobalId(loan_gid).id;
           return {
-            updateOne: {
-              filter: { _id_loan, _id_borrower, _id_lender },
-              update: {
-                $inc: { quantity },
-                $set: {
-                  startPayingDate: completed
-                    ? startOfMonth(addMonths(new Date(), 1))
-                    : null,
-                },
-                $setOnInsert: {
-                  _id: new ObjectId(),
-                  _id_lender,
-                  _id_borrower,
-                  _id_loan,
-                  created: now,
-                  updated: now,
-                  status: "up to date",
-                  payments: 0,
-                  term,
-                  ROI,
-                  moratory: 0,
-                },
-              },
-              upsert: true,
-            },
+            _id: new ObjectId(),
+            _id_lender,
+            _id_borrower: new ObjectId(borrower_id),
+            quantity,
+            _id_loan: new ObjectId(_id_loan),
+            goal,
+            raised: 0,
+            term,
+            ROI,
           };
         }
       );
-      investments.bulkWrite(investmentsOperations);
-      const loansOperations = docsFiltered.map<
-        BulkWriteUpdateOneOperation<LoanMongo>
-      >(({ quantity, _id_loan, term, goal, completed, ROI }) => ({
-        updateOne: {
-          filter: { _id: _id_loan },
-          update: {
-            $inc: { raised: quantity },
-            $set: {
-              scheduledPayments: completed
-                ? new Array(term).fill({}).map((pay, index) => {
-                    const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
-                    return {
-                      amortize: Math.floor(
-                        goal / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
-                      ),
-                      scheduledDate: startOfMonth(
-                        addMonths(new Date(), index + 1)
-                      ),
-                      status: "to be paid",
-                    };
-                  })
-                : null,
-              status: completed ? "to be paid" : "financing",
+      const docsFiltered = docs.filter(() => false);
+      for (const doc of docs) {
+        const result = await loans.findOneAndUpdate(
+          {
+            _id: doc._id_loan,
+            raised: { $lte: doc.goal - doc.quantity },
+          },
+          {
+            $inc: {
+              raised: doc.quantity,
             },
             $push: {
               investors: {
                 _id_lender,
-                quantity,
+                quantity: doc.quantity,
               },
             },
           },
-        },
-      }));
-      await loans.bulkWrite(loansOperations);
-      const total = newLends.reduce((prev, next) => {
+          { returnDocument: "after" }
+        );
+        if (!result.value) {
+          continue;
+        }
+        docsFiltered.push(doc);
+        if (!(result.value.raised === result.value.goal)) {
+          continue;
+        }
+        await loans.updateOne(
+          {
+            _id: doc._id_loan,
+          },
+          {
+            $set: {
+              scheduledPayments: new Array(doc.term)
+                .fill({})
+                .map((pay, index) => {
+                  const TEM = Math.pow(1 + doc.ROI / 100, 1 / 12) - 1;
+                  return {
+                    amortize: Math.floor(
+                      doc.goal / ((1 - Math.pow(1 / (1 + TEM), doc.term)) / TEM)
+                    ),
+                    scheduledDate: startOfMonth(addMonths(now, index + 1)),
+                    status: "to be paid",
+                  };
+                }),
+              status: "to be paid",
+            },
+          }
+        );
+      }
+      if (docsFiltered.length === 0) {
+        throw new Error(
+          "Error: no se realizó ninguna operación. Intenta de nuevo."
+        );
+      }
+      const total = docsFiltered.reduce((prev, next) => {
         return prev + next.quantity;
       }, 0);
-      const result = await users.findOneAndUpdate(
+      await users.updateOne(
         { _id: _id_lender },
         {
           $inc: { accountAvailable: -total },
@@ -222,16 +188,11 @@ export const AddLendsMutation = mutationWithClientMutationId({
               })),
             },
           },
-        },
-        { returnDocument: "after" }
+        }
       );
-      const user = result.value;
-      if (!user) {
-        throw new Error("El usuario no existe.");
-      }
       const transactionsOperations = docsFiltered.map<
         BulkWriteUpdateOneOperation<BucketTransactionMongo>
-      >(({ quantity, _id_loan, _id_borrower, now }) => ({
+      >(({ quantity, _id_loan, _id_borrower }) => ({
         updateOne: {
           filter: { _id: new RegExp(`^${lender_id}`), count: { $lt: 5 } },
           update: {
@@ -255,12 +216,38 @@ export const AddLendsMutation = mutationWithClientMutationId({
         },
       }));
       transactions.bulkWrite(transactionsOperations);
-      return { validAccessToken, error: "", user };
+      const investmentsOperations = docsFiltered.map<
+        BulkWriteUpdateOneOperation<InvestmentMongo>
+      >(({ quantity, _id_loan, _id_borrower, _id_lender, ROI, term }) => {
+        return {
+          updateOne: {
+            filter: { _id_loan, _id_borrower, _id_lender },
+            update: {
+              $inc: { quantity },
+              $setOnInsert: {
+                _id: new ObjectId(),
+                _id_lender,
+                _id_borrower,
+                _id_loan,
+                created: now,
+                updated: now,
+                status: "up to date",
+                payments: 0,
+                term,
+                ROI,
+                moratory: 0,
+              },
+            },
+            upsert: true,
+          },
+        };
+      });
+      investments.bulkWrite(investmentsOperations);
+      return { validAccessToken, error: "" };
     } catch (e) {
       return {
         validAccessToken: "",
         error: e.message,
-        user: null,
       };
     }
   },

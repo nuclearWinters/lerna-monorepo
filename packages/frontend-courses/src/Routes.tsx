@@ -28,6 +28,7 @@ import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
 import { RoutesInvestmentsSubscription } from "__generated__/RoutesInvestmentsSubscription.graphql";
 import { RoutesTransactionsSubscription } from "__generated__/RoutesTransactionsSubscription.graphql";
+import { RoutesUserSubscription } from "__generated__/RoutesUserSubscription.graphql";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -132,6 +133,31 @@ const subscriptionInvestments = graphql`
   }
 `;
 
+const subscriptionUser = graphql`
+  subscription RoutesUserSubscription($user_gid: ID!) {
+    user_subscribe(user_gid: $user_gid) {
+      user {
+        id
+        name
+        apellidoPaterno
+        apellidoMaterno
+        RFC
+        CURP
+        clabe
+        mobile
+        accountAvailable
+        investments {
+          _id_loan
+          quantity
+          term
+          ROI
+          payments
+        }
+      }
+    }
+  }
+`;
+
 export const Routes: FC<Props> = (props) => {
   const user = useFragment(routesFragment, props.user);
   const user_gid = user.id || "";
@@ -205,6 +231,15 @@ export const Routes: FC<Props> = (props) => {
     }),
     [user_gid]
   );
+  const configUser = useMemo<GraphQLSubscriptionConfig<RoutesUserSubscription>>(
+    () => ({
+      variables: {
+        user_gid,
+      },
+      subscription: subscriptionUser,
+    }),
+    [user_gid]
+  );
   const configTransactions = useMemo<
     GraphQLSubscriptionConfig<RoutesTransactionsSubscription>
   >(
@@ -245,6 +280,7 @@ export const Routes: FC<Props> = (props) => {
   useSubscription<RoutesLoansSubscription>(configLoans);
   useSubscription<RoutesInvestmentsSubscription>(configInvestments);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
+  useSubscription<RoutesUserSubscription>(configUser);
   const { isBorrower, isSupport } = tokensAndData.data;
   const reducedInvestments = user.investments.reduce<IUserInvestments[]>(
     (acc, item) => {

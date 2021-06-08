@@ -1,4 +1,5 @@
 import { getDataFromToken, tokensAndData } from "App";
+import { Spinner } from "components/Spinner";
 import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
@@ -8,7 +9,7 @@ interface Props {
 }
 
 export const SignUp: FC<Props> = ({ refetch }) => {
-  const [commit] = useMutation<SignUpMutation>(graphql`
+  const [commit, isInFlight] = useMutation<SignUpMutation>(graphql`
     mutation SignUpMutation($input: SignUpInput!) {
       signUp(input: $input) {
         error
@@ -33,35 +34,39 @@ export const SignUp: FC<Props> = ({ refetch }) => {
         value={password}
         onChange={handlePassword}
       />
-      <button
-        onClick={() => {
-          commit({
-            variables: {
-              input: {
-                email,
-                password,
+      {isInFlight ? (
+        <Spinner />
+      ) : (
+        <button
+          onClick={() => {
+            commit({
+              variables: {
+                input: {
+                  email,
+                  password,
+                },
               },
-            },
-            onCompleted: () => {
-              refetch();
-            },
-            updater: (store, data) => {
-              if (data.signUp.error) {
-                throw new Error(data.signUp.error);
-              }
-              tokensAndData.tokens.accessToken = data.signUp.accessToken;
-              tokensAndData.tokens.refreshToken = data.signUp.refreshToken;
-              const user = getDataFromToken(data.signUp.accessToken);
-              tokensAndData.data = user;
-            },
-            onError: (error) => {
-              window.alert(error.message);
-            },
-          });
-        }}
-      >
-        Sign Up
-      </button>
+              onCompleted: () => {
+                refetch();
+              },
+              updater: (store, data) => {
+                if (data.signUp.error) {
+                  throw new Error(data.signUp.error);
+                }
+                tokensAndData.tokens.accessToken = data.signUp.accessToken;
+                tokensAndData.tokens.refreshToken = data.signUp.refreshToken;
+                const user = getDataFromToken(data.signUp.accessToken);
+                tokensAndData.data = user;
+              },
+              onError: (error) => {
+                window.alert(error.message);
+              },
+            });
+          }}
+        >
+          Sign Up
+        </button>
+      )}
     </div>
   );
 };

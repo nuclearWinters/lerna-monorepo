@@ -15,16 +15,6 @@ export type RetireFundsMutationResponse = {
   readonly addFunds: {
     readonly error: string;
     readonly validAccessToken: string;
-    readonly user: {
-      readonly investments: ReadonlyArray<{
-        readonly _id_loan: string;
-        readonly quantity: number;
-        readonly term: number;
-        readonly ROI: number;
-        readonly payments: number;
-      }>;
-      readonly accountAvailable: string;
-    } | null;
   };
 };
 export type RetireFundsMutation = {
@@ -39,17 +29,6 @@ mutation RetireFundsMutation(
   addFunds(input: $input) {
     error
     validAccessToken
-    user {
-      investments {
-        _id_loan
-        quantity
-        term
-        ROI
-        payments
-      }
-      accountAvailable
-      id
-    }
   }
 }
 */
@@ -64,109 +43,44 @@ const node: ConcreteRequest = (function () {
     ],
     v1 = [
       {
-        kind: "Variable",
-        name: "input",
-        variableName: "input",
+        alias: null,
+        args: [
+          {
+            kind: "Variable",
+            name: "input",
+            variableName: "input",
+          },
+        ],
+        concreteType: "AddFundsPayload",
+        kind: "LinkedField",
+        name: "addFunds",
+        plural: false,
+        selections: [
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "error",
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "validAccessToken",
+            storageKey: null,
+          },
+        ],
+        storageKey: null,
       } as any,
-    ],
-    v2 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "error",
-      storageKey: null,
-    } as any,
-    v3 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "validAccessToken",
-      storageKey: null,
-    } as any,
-    v4 = {
-      alias: null,
-      args: null,
-      concreteType: "InvestmentsUser",
-      kind: "LinkedField",
-      name: "investments",
-      plural: true,
-      selections: [
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "_id_loan",
-          storageKey: null,
-        },
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "quantity",
-          storageKey: null,
-        },
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "term",
-          storageKey: null,
-        },
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "ROI",
-          storageKey: null,
-        },
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "payments",
-          storageKey: null,
-        },
-      ],
-      storageKey: null,
-    } as any,
-    v5 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "accountAvailable",
-      storageKey: null,
-    } as any;
+    ];
   return {
     fragment: {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
       name: "RetireFundsMutation",
-      selections: [
-        {
-          alias: null,
-          args: v1 /*: any*/,
-          concreteType: "AddFundsPayload",
-          kind: "LinkedField",
-          name: "addFunds",
-          plural: false,
-          selections: [
-            v2 /*: any*/,
-            v3 /*: any*/,
-            {
-              alias: null,
-              args: null,
-              concreteType: "User",
-              kind: "LinkedField",
-              name: "user",
-              plural: false,
-              selections: [v4 /*: any*/, v5 /*: any*/],
-              storageKey: null,
-            },
-          ],
-          storageKey: null,
-        },
-      ],
+      selections: v1 /*: any*/,
       type: "Mutation",
       abstractKey: null,
     },
@@ -175,51 +89,17 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
       name: "RetireFundsMutation",
-      selections: [
-        {
-          alias: null,
-          args: v1 /*: any*/,
-          concreteType: "AddFundsPayload",
-          kind: "LinkedField",
-          name: "addFunds",
-          plural: false,
-          selections: [
-            v2 /*: any*/,
-            v3 /*: any*/,
-            {
-              alias: null,
-              args: null,
-              concreteType: "User",
-              kind: "LinkedField",
-              name: "user",
-              plural: false,
-              selections: [
-                v4 /*: any*/,
-                v5 /*: any*/,
-                {
-                  alias: null,
-                  args: null,
-                  kind: "ScalarField",
-                  name: "id",
-                  storageKey: null,
-                },
-              ],
-              storageKey: null,
-            },
-          ],
-          storageKey: null,
-        },
-      ],
+      selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "c660743499c0a3f84df3a23dcdadf515",
+      cacheID: "c9cf9ad9437d6066c128b952ee3e8617",
       id: null,
       metadata: {},
       name: "RetireFundsMutation",
       operationKind: "mutation",
-      text: "mutation RetireFundsMutation(\n  $input: AddFundsInput!\n) {\n  addFunds(input: $input) {\n    error\n    validAccessToken\n    user {\n      investments {\n        _id_loan\n        quantity\n        term\n        ROI\n        payments\n      }\n      accountAvailable\n      id\n    }\n  }\n}\n",
+      text: "mutation RetireFundsMutation(\n  $input: AddFundsInput!\n) {\n  addFunds(input: $input) {\n    error\n    validAccessToken\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "68e23075be5dfd42b865f13a4fb13a1f";
+(node as any).hash = "94db9d4b4b3d89a14ae3dc2cc190b7fe";
 export default node;

@@ -54,12 +54,6 @@ describe("AddFunds tests", () => {
           addFunds(input: $input) {
             error
             validAccessToken
-            user {
-              accountAvailable
-              investments {
-                _id_loan
-              }
-            }
           }
         }`,
         variables: {
@@ -84,8 +78,6 @@ describe("AddFunds tests", () => {
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
-    expect(response.body.data.addFunds.user.accountAvailable).toBe("1500.00");
-    expect(response.body.data.addFunds.user.investments.length).toBe(0);
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
@@ -127,12 +119,6 @@ describe("AddFunds tests", () => {
           addFunds(input: $input) {
             error
             validAccessToken
-            user {
-              accountAvailable
-              investments {
-                _id_loan
-              }
-            }
           }
         }`,
         variables: {
@@ -157,8 +143,6 @@ describe("AddFunds tests", () => {
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
-    expect(response.body.data.addFunds.user.accountAvailable).toBe("500.00");
-    expect(response.body.data.addFunds.user.investments.length).toBe(0);
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
@@ -215,12 +199,6 @@ describe("AddFunds tests", () => {
           addFunds(input: $input) {
             error
             validAccessToken
-            user {
-              accountAvailable
-              investments {
-                _id_loan
-              }
-            }
           }
         }`,
         variables: {
@@ -245,8 +223,6 @@ describe("AddFunds tests", () => {
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
-    expect(response.body.data.addFunds.user.accountAvailable).toBe("1500.00");
-    expect(response.body.data.addFunds.user.investments.length).toBe(0);
   });
 
   it("test AddFunds increase invalid refresh token", async () => {
@@ -285,12 +261,6 @@ describe("AddFunds tests", () => {
           addFunds(input: $input) {
             error
             validAccessToken
-            user {
-              accountAvailable
-              investments {
-                _id_loan
-              }
-            }
           }
         }`,
         variables: {
@@ -315,6 +285,5 @@ describe("AddFunds tests", () => {
       );
     expect(response.body.data.addFunds.error).toBeTruthy();
     expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
-    expect(response.body.data.addFunds.user).toBeFalsy();
   });
 });
