@@ -4,10 +4,17 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
+export type InvestmentStatus =
+  | "DELAY_PAYMENT"
+  | "PAID"
+  | "PAST_DUE"
+  | "UP_TO_DATE"
+  | "%future added value";
 export type MyInvestmentsPaginationQueryVariables = {
   count?: number | null;
   cursor?: string | null;
   id: string;
+  status: Array<InvestmentStatus>;
 };
 export type MyInvestmentsPaginationQueryResponse = {
   readonly " $fragmentRefs": FragmentRefs<"MyInvestments_query">;
@@ -22,8 +29,9 @@ query MyInvestmentsPaginationQuery(
   $count: Int = 2
   $cursor: String = ""
   $id: String!
+  $status: [InvestmentStatus!]! = [DELAY_PAYMENT, UP_TO_DATE]
 ) {
-  ...MyInvestments_query_1G22uz
+  ...MyInvestments_query_4qXjrI
 }
 
 fragment InvestmentRow_investment on Investment {
@@ -40,8 +48,8 @@ fragment InvestmentRow_investment on Investment {
   moratory
 }
 
-fragment MyInvestments_query_1G22uz on Query {
-  investments(first: $count, after: $cursor, user_id: $id) {
+fragment MyInvestments_query_4qXjrI on Query {
+  investments(first: $count, after: $cursor, user_id: $id, status: $status) {
     edges {
       node {
         id
@@ -75,8 +83,18 @@ const node: ConcreteRequest = (function () {
         kind: "LocalArgument",
         name: "id",
       } as any,
+      {
+        defaultValue: ["DELAY_PAYMENT", "UP_TO_DATE"],
+        kind: "LocalArgument",
+        name: "status",
+      } as any,
     ],
-    v1 = [
+    v1 = {
+      kind: "Variable",
+      name: "status",
+      variableName: "status",
+    } as any,
+    v2 = [
       {
         kind: "Variable",
         name: "after",
@@ -87,6 +105,7 @@ const node: ConcreteRequest = (function () {
         name: "first",
         variableName: "count",
       } as any,
+      v1 /*: any*/,
       {
         kind: "Variable",
         name: "user_id",
@@ -112,6 +131,7 @@ const node: ConcreteRequest = (function () {
               name: "cursor",
               variableName: "cursor",
             },
+            v1 /*: any*/,
           ],
           kind: "FragmentSpread",
           name: "MyInvestments_query",
@@ -128,7 +148,7 @@ const node: ConcreteRequest = (function () {
       selections: [
         {
           alias: null,
-          args: v1 /*: any*/,
+          args: v2 /*: any*/,
           concreteType: "InvestmentsConnection",
           kind: "LinkedField",
           name: "investments",
@@ -277,8 +297,8 @@ const node: ConcreteRequest = (function () {
         },
         {
           alias: null,
-          args: v1 /*: any*/,
-          filters: ["user_id"],
+          args: v2 /*: any*/,
+          filters: ["user_id", "status"],
           handle: "connection",
           key: "MyInvestments_query_investments",
           kind: "LinkedHandle",
@@ -287,14 +307,14 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "fc66f91e029a759ca06529381f81ee52",
+      cacheID: "261dbf834866439ac67390c11098f911",
       id: null,
       metadata: {},
       name: "MyInvestmentsPaginationQuery",
       operationKind: "query",
-      text: 'query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n) {\n  ...MyInvestments_query_1G22uz\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment MyInvestments_query_1G22uz on Query {\n  investments(first: $count, after: $cursor, user_id: $id) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+      text: 'query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n  $status: [InvestmentStatus!]! = [DELAY_PAYMENT, UP_TO_DATE]\n) {\n  ...MyInvestments_query_4qXjrI\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment MyInvestments_query_4qXjrI on Query {\n  investments(first: $count, after: $cursor, user_id: $id, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "8faf7d6a2ad83a1ba91caee1cd54ab10";
+(node as any).hash = "d5d035c6f594f401bce142fa5b3e0dfa";
 export default node;

@@ -21,10 +21,6 @@ describe("QueryLoans tests", () => {
   });
 
   afterAll(async () => {
-    delete app.locals.db;
-    await dbInstance
-      .collection<LoanMongo>("loans")
-      .deleteMany({ _id_user: new ObjectId("000000000000000000000040") });
     await client.close();
   });
 
@@ -80,8 +76,8 @@ describe("QueryLoans tests", () => {
     const response = await request
       .post("/api/graphql")
       .send({
-        query: `query GetLoansConnection($first: Int, $after: String!) {
-          loans(first: $first, after: $after) {
+        query: `query GetLoansConnection($first: Int, $after: String!, $status: [LoanStatus!]!) {
+          loans(first: $first, after: $after, status: $status) {
             edges {
               cursor
               node {
@@ -101,6 +97,7 @@ describe("QueryLoans tests", () => {
         variables: {
           first: 2,
           after: "",
+          status: ["FINANCING", "WAITING_FOR_APPROVAL", "TO_BE_PAID"],
         },
         operationName: "GetLoansConnection",
       })

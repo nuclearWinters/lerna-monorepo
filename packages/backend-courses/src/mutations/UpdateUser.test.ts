@@ -21,10 +21,6 @@ describe("UpdateUser tests", () => {
   });
 
   afterAll(async () => {
-    delete app.locals.db;
-    await dbInstance
-      .collection<UserMongo>("users")
-      .deleteMany({ _id: new ObjectId("000000000000000000000007") });
     await client.close();
   });
 

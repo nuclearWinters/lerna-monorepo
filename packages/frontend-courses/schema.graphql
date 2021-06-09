@@ -129,7 +129,7 @@ type Query {
     first: Int
     before: String
     last: Int
-    status: [LoanStatus!]
+    status: [LoanStatus!]!
     borrower_id: String
   ): LoanConnection
   investments(
@@ -137,6 +137,7 @@ type Query {
     first: Int
     before: String
     last: Int
+    status: [InvestmentStatus!]!
     user_id: String!
   ): InvestmentsConnection
   transactions(
@@ -169,8 +170,11 @@ type Transaction_Subscribe {
 
 type Subscription {
   user_subscribe(user_gid: ID!): User_Subscribe!
-  loans_subscribe: Loan_Subscribe!
-  investments_subscribe(user_gid: ID!): Investment_Subscribe!
+  loans_subscribe(status: [LoanStatus!]!): Loan_Subscribe!
+  investments_subscribe(
+    user_gid: ID!
+    status: [InvestmentStatus!]!
+  ): Investment_Subscribe!
   transactions_subscribe(user_gid: ID!): Transaction_Subscribe!
 }
 

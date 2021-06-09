@@ -26,24 +26,6 @@ describe("AddLends tests", () => {
   });
 
   afterAll(async () => {
-    delete app.locals.db;
-    await dbInstance.collection<UserMongo>("users").deleteMany({
-      _id: {
-        $in: [
-          new ObjectId("000000000000000000000004"),
-          new ObjectId("000000000000000000000005"),
-        ],
-      },
-    });
-    await dbInstance
-      .collection<BucketTransactionMongo>("transactions")
-      .deleteMany({ _id_user: new ObjectId("000000000000000000000004") });
-    await dbInstance
-      .collection<InvestmentMongo>("investments")
-      .deleteMany({ _id_lender: new ObjectId("000000000000000000000004") });
-    await dbInstance
-      .collection<LoanMongo>("loans")
-      .deleteMany({ _id_user: new ObjectId("000000000000000000000005") });
     await client.close();
   });
 

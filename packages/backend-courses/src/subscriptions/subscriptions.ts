@@ -1,6 +1,7 @@
 import {
   GraphQLEnumType,
   GraphQLID,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
 } from "graphql";
@@ -10,6 +11,8 @@ import {
   GraphQLInvestmentEdge,
   GraphQLLoanEdge,
   GraphQLUser,
+  InvestmentStatus,
+  LoanStatus,
 } from "../Nodes";
 import {
   Context,
@@ -118,9 +121,19 @@ export const Investment_Subscribe = new GraphQLObjectType<
 export const loans_subscribe = {
   type: new GraphQLNonNull(Loan_Subscribe),
   description: "New or updated loans",
-  subscribe: (): AsyncIterator<ILoanSubscribe> => {
-    return pubsub.asyncIterator<ILoanSubscribe>(LOAN);
+  args: {
+    status: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LoanStatus))),
+    },
   },
+  subscribe: withFilter(
+    () => pubsub.asyncIterator<ILoanSubscribe>(LOAN),
+    (payload, variables) => {
+      return variables.status.includes(
+        payload.loans_subscribe.loan_edge.node.status
+      );
+    }
+  ),
 };
 
 export const transactions_subscribe = {
@@ -144,6 +157,11 @@ export const investments_subscribe = {
   type: new GraphQLNonNull(Investment_Subscribe),
   args: {
     user_gid: { type: new GraphQLNonNull(GraphQLID) },
+    status: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(InvestmentStatus))
+      ),
+    },
   },
   description: "New or updated investment",
   subscribe: withFilter(
@@ -151,7 +169,8 @@ export const investments_subscribe = {
     (payload, variables) => {
       return (
         payload.investments_subscribe.investment_edge.node._id_lender.toHexString() ===
-        unbase64(variables.user_gid)
+          unbase64(variables.user_gid) &&
+        variables.status.includes(payload.loans_subscribe.loan_edge.node.status)
       );
     }
   ),

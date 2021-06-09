@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useMemo, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {
   graphql,
@@ -23,10 +23,13 @@ import {
   Settings,
 } from "./screens";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
-import { tokensAndData } from "App";
+import { getStatus, tokensAndData } from "App";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
-import { RoutesInvestmentsSubscription } from "__generated__/RoutesInvestmentsSubscription.graphql";
+import {
+  InvestmentStatus,
+  RoutesInvestmentsSubscription,
+} from "__generated__/RoutesInvestmentsSubscription.graphql";
 import { RoutesTransactionsSubscription } from "__generated__/RoutesTransactionsSubscription.graphql";
 import { RoutesUserSubscription } from "__generated__/RoutesUserSubscription.graphql";
 
@@ -67,8 +70,8 @@ interface IUserInvestments {
 }
 
 const subscriptionLoans = graphql`
-  subscription RoutesLoansSubscription {
-    loans_subscribe {
+  subscription RoutesLoansSubscription($status: [LoanStatus!]!) {
+    loans_subscribe(status: $status) {
       loan_edge {
         node {
           id
@@ -113,8 +116,11 @@ const subscriptionTransactions = graphql`
 `;
 
 const subscriptionInvestments = graphql`
-  subscription RoutesInvestmentsSubscription($user_gid: ID!) {
-    investments_subscribe(user_gid: $user_gid) {
+  subscription RoutesInvestmentsSubscription(
+    $user_gid: ID!
+    $status: [InvestmentStatus!]!
+  ) {
+    investments_subscribe(user_gid: $user_gid, status: $status) {
       investment_edge {
         node {
           id
@@ -160,13 +166,13 @@ const subscriptionUser = graphql`
 
 export const Routes: FC<Props> = (props) => {
   const user = useFragment(routesFragment, props.user);
-  const user_gid = user.id || "";
+  const user_gid = user.id;
   const environment = useRelayEnvironment();
   const configLoans = useMemo<
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
   >(
     () => ({
-      variables: {},
+      variables: { status: user_gid && getStatus() },
       subscription: subscriptionLoans,
       updater: (store, data) => {
         if (data.loans_subscribe.type === "INSERT") {
@@ -192,7 +198,10 @@ export const Routes: FC<Props> = (props) => {
         }
       },
     }),
-    []
+    [user_gid]
+  );
+  const [investmentStatus, setInvestmentStatus] = useState<"on_going" | "over">(
+    "on_going"
   );
   const configInvestments = useMemo<
     GraphQLSubscriptionConfig<RoutesInvestmentsSubscription>
@@ -200,6 +209,10 @@ export const Routes: FC<Props> = (props) => {
     () => ({
       variables: {
         user_gid,
+        status:
+          investmentStatus === "on_going"
+            ? (["UP_TO_DATE", "DELAY_PAYMENT"] as InvestmentStatus[])
+            : (["PAID", "PAST_DUE"] as InvestmentStatus[]),
       },
       subscription: subscriptionInvestments,
       updater: (store, data) => {
@@ -229,7 +242,7 @@ export const Routes: FC<Props> = (props) => {
         }
       },
     }),
-    [user_gid]
+    [user_gid, investmentStatus]
   );
   const configUser = useMemo<GraphQLSubscriptionConfig<RoutesUserSubscription>>(
     () => ({
@@ -469,7 +482,11 @@ export const Routes: FC<Props> = (props) => {
                   <MyTransactions data={props.data} />
                 </Route>
                 <Route path="/myInvestments">
-                  <MyInvestments data={props.data} />
+                  <MyInvestments
+                    data={props.data}
+                    setInvestmentStatus={setInvestmentStatus}
+                    investmentStatus={investmentStatus}
+                  />
                 </Route>
                 <Route path="/settings">
                   <Settings user={user} refetch={props.refetch} />

@@ -12,7 +12,7 @@ import AppQuery, {
 import { graphql } from "react-relay";
 import { Routes } from "./Routes";
 import jwtDecode from "jwt-decode";
-import { LoanStatus } from "./__generated__/AppQuery.graphql";
+import { LoanStatus } from "__generated__/RoutesLoansSubscription.graphql";
 
 const { Suspense } = React;
 
@@ -49,12 +49,10 @@ export const getDataFromToken = (token: string): IJWT => {
 export const getStatus = () => {
   const user = tokensAndData.data;
   const isLender = user.isLender;
-  const status: LoanStatus[] = [];
   if (isLender) {
-    status.push("FINANCING");
+    return ["FINANCING"] as LoanStatus[];
   }
-  if (!status.length) return undefined;
-  return status;
+  return ["WAITING_FOR_APPROVAL"] as LoanStatus[];
 };
 
 const RepositoryNameQuery = graphql`

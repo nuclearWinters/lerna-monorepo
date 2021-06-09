@@ -23,31 +23,6 @@ describe("AddFunds tests", () => {
   });
 
   afterAll(async () => {
-    delete app.locals.db;
-    await dbInstance.collection<UserMongo>("users").deleteMany({
-      _id: {
-        $in: [
-          new ObjectId("000000000000000000000000"),
-          new ObjectId("000000000000000000000001"),
-          new ObjectId("000000000000000000000002"),
-          new ObjectId("000000000000000000000003"),
-          new ObjectId("100000000000000000000002"),
-        ],
-      },
-    });
-    await dbInstance
-      .collection<BucketTransactionMongo>("transactions")
-      .deleteMany({
-        _id_user: {
-          $in: [
-            new ObjectId("000000000000000000000000"),
-            new ObjectId("000000000000000000000001"),
-            new ObjectId("000000000000000000000002"),
-            new ObjectId("000000000000000000000003"),
-            new ObjectId("100000000000000000000002"),
-          ],
-        },
-      });
     await client.close();
   });
 

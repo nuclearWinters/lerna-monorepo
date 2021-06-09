@@ -21,10 +21,6 @@ describe("QueryInvestments tests", () => {
   });
 
   afterAll(async () => {
-    delete app.locals.db;
-    await dbInstance
-      .collection<InvestmentMongo>("investments")
-      .deleteMany({ _id_lender: new ObjectId("000000000000000000000030") });
     await client.close();
   });
 
@@ -77,8 +73,8 @@ describe("QueryInvestments tests", () => {
     const response = await request
       .post("/api/graphql")
       .send({
-        query: `query GetInvestmentsConnection($first: Int, $after: String, $user_id: String!) {
-          investments(first: $first, after: $after, user_id: $user_id) {
+        query: `query GetInvestmentsConnection($first: Int, $after: String, $user_id: String!, $status: [InvestmentStatus!]!) {
+          investments(first: $first, after: $after, user_id: $user_id, status: $status) {
             edges {
               cursor
               node {
@@ -98,6 +94,7 @@ describe("QueryInvestments tests", () => {
           first: 2,
           after: "",
           user_id: "000000000000000000000030",
+          status: ["UP_TO_DATE"],
         },
         operationName: "GetInvestmentsConnection",
       })

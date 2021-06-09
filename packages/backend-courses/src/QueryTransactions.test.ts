@@ -21,10 +21,6 @@ describe("QueryTransactions tests", () => {
   });
 
   afterAll(async () => {
-    delete app.locals.db;
-    await dbInstance
-      .collection<BucketTransactionMongo>("transactions")
-      .deleteMany({ _id_user: new ObjectId("000000000000000000000050") });
     await client.close();
   });
 

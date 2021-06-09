@@ -19,8 +19,8 @@ const debtInSaleFragment = graphql`
     loans(
       first: $count
       after: $cursor
-      status: $status
       borrower_id: $borrower_id
+      status: $status
     ) @connection(key: "AddInvestments_query_loans") {
       edges {
         node {

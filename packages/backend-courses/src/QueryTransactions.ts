@@ -6,12 +6,10 @@ import {
   GraphQLString,
 } from "graphql";
 import {
-  BackwardConnectionArgs,
   Connection,
   connectionArgs,
   ConnectionArguments,
   connectionFromArray,
-  ForwardConnectionArgs,
 } from "graphql-relay";
 import { FilterQuery } from "mongodb";
 import { BucketTransactionConnection } from "./Nodes";
@@ -20,9 +18,7 @@ import { base64, refreshTokenMiddleware, unbase64 } from "./utils";
 
 interface IQuery {
   type: GraphQLNonNull<GraphQLNullableType>;
-  args: GraphQLFieldConfigArgumentMap &
-    ForwardConnectionArgs &
-    BackwardConnectionArgs;
+  args: GraphQLFieldConfigArgumentMap;
   resolve: (
     root: { [argName: string]: string },
     args: { [argName: string]: string },

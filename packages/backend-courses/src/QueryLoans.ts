@@ -7,12 +7,10 @@ import {
   GraphQLString,
 } from "graphql";
 import {
-  BackwardConnectionArgs,
   Connection,
   connectionArgs,
   ConnectionArguments,
   connectionFromArray,
-  ForwardConnectionArgs,
 } from "graphql-relay";
 import { LoanConnection, LoanStatus } from "./Nodes";
 import { Context, ILoanStatus, LoanMongo } from "./types";
@@ -20,9 +18,7 @@ import { base64, unbase64 } from "./utils";
 
 interface IQuery {
   type: GraphQLNonNull<GraphQLNullableType>;
-  args: GraphQLFieldConfigArgumentMap &
-    ForwardConnectionArgs &
-    BackwardConnectionArgs;
+  args: GraphQLFieldConfigArgumentMap;
   resolve: (
     root: { [argName: string]: string },
     args: { [argName: string]: string },
@@ -42,7 +38,7 @@ export const QueryLoans: IQuery = {
       type: GraphQLString,
     },
     status: {
-      type: new GraphQLList(new GraphQLNonNull(LoanStatus)),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LoanStatus))),
     },
     ...connectionArgs,
   },
@@ -57,7 +53,7 @@ export const QueryLoans: IQuery = {
       if (limit <= 0) {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const query: FilterQuery<LoanMongo> = {};
+      const query: FilterQuery<LoanMongo> = { status: "financing" };
       if (loan_id) {
         query._id = { $lt: new ObjectId(loan_id) };
       }

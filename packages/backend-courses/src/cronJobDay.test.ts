@@ -21,42 +21,6 @@ describe("cronJobs tests", () => {
   });
 
   afterAll(async () => {
-    await dbInstance.collection<UserMongo>("users").deleteMany({
-      _id: {
-        $in: [
-          new ObjectId("000000000000000000000013"),
-          new ObjectId("000000000000000000000011"),
-        ],
-      },
-    });
-    await dbInstance.collection<LoanMongo>("loans").deleteMany({
-      _id_user: {
-        $in: [
-          new ObjectId("000000000000000000000013"),
-          new ObjectId("000000000000000000000011"),
-        ],
-      },
-    });
-    await dbInstance
-      .collection<BucketTransactionMongo>("transactions")
-      .deleteMany({
-        _id_user: {
-          $in: [
-            new ObjectId("000000000000000000000013"),
-            new ObjectId("000000000000000000000011"),
-            new ObjectId("000000000000000000000100"),
-            new ObjectId("000000000000000000000101"),
-          ],
-        },
-      });
-    await dbInstance.collection<InvestmentMongo>("investments").deleteMany({
-      _id: {
-        $in: [
-          new ObjectId("000000000000000000000110"),
-          new ObjectId("000000000000000000000111"),
-        ],
-      },
-    });
     await client.close();
   });
 

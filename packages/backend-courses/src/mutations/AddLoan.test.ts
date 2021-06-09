@@ -21,13 +21,6 @@ describe("AddLoan tests", () => {
   });
 
   afterAll(async () => {
-    delete app.locals.db;
-    await dbInstance
-      .collection<UserMongo>("users")
-      .deleteMany({ _id: new ObjectId("000000000000000000000006") });
-    await dbInstance
-      .collection<LoanMongo>("loans")
-      .deleteMany({ _id_user: new ObjectId("000000000000000000000006") });
     await client.close();
   });
 

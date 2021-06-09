@@ -49,7 +49,7 @@ fragment AddFunds_user on User {
 }
 
 fragment AddInvestments_query on Query {
-  loans(first: 5, after: "", status: $status, borrower_id: $borrower_id) {
+  loans(first: 5, after: "", borrower_id: $borrower_id, status: $status) {
     edges {
       node {
         id
@@ -96,7 +96,7 @@ fragment LoanRow_loan on Loan {
 }
 
 fragment MyInvestments_query on Query {
-  investments(first: 2, after: "", user_id: $id) {
+  investments(first: 2, after: "", user_id: $id, status: [DELAY_PAYMENT, UP_TO_DATE]) {
     edges {
       node {
         id
@@ -298,49 +298,56 @@ const node: ConcreteRequest = (function () {
       ],
       storageKey: null,
     } as any,
-    v13 = [
-      v4 /*: any*/,
-      {
-        kind: "Literal",
-        name: "first",
-        value: 2,
-      } as any,
-      {
-        kind: "Variable",
-        name: "user_id",
-        variableName: "id",
-      } as any,
-    ],
+    v13 = {
+      kind: "Literal",
+      name: "first",
+      value: 2,
+    } as any,
     v14 = {
+      kind: "Variable",
+      name: "user_id",
+      variableName: "id",
+    } as any,
+    v15 = [v4 /*: any*/, v13 /*: any*/, v14 /*: any*/],
+    v16 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "_id_borrower",
       storageKey: null,
     } as any,
-    v15 = {
+    v17 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "_id_loan",
       storageKey: null,
     } as any,
-    v16 = {
+    v18 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "quantity",
       storageKey: null,
     } as any,
-    v17 = {
+    v19 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "created",
       storageKey: null,
     } as any,
-    v18 = ["user_id"],
-    v19 = {
+    v20 = [
+      v4 /*: any*/,
+      v13 /*: any*/,
+      {
+        kind: "Literal",
+        name: "status",
+        value: ["DELAY_PAYMENT", "UP_TO_DATE"],
+      } as any,
+      v14 /*: any*/,
+    ],
+    v21 = {
       alias: null,
       args: null,
       kind: "ScalarField",
@@ -473,7 +480,7 @@ const node: ConcreteRequest = (function () {
         {
           alias: null,
           args: v5 /*: any*/,
-          filters: ["status", "borrower_id"],
+          filters: ["borrower_id", "status"],
           handle: "connection",
           key: "AddInvestments_query_loans",
           kind: "LinkedHandle",
@@ -481,7 +488,7 @@ const node: ConcreteRequest = (function () {
         },
         {
           alias: null,
-          args: v13 /*: any*/,
+          args: v15 /*: any*/,
           concreteType: "BucketTransactionConnection",
           kind: "LinkedField",
           name: "transactions",
@@ -520,8 +527,8 @@ const node: ConcreteRequest = (function () {
                       plural: true,
                       selections: [
                         v6 /*: any*/,
-                        v14 /*: any*/,
-                        v15 /*: any*/,
+                        v16 /*: any*/,
+                        v17 /*: any*/,
                         {
                           alias: null,
                           args: null,
@@ -529,8 +536,8 @@ const node: ConcreteRequest = (function () {
                           name: "type",
                           storageKey: null,
                         },
-                        v16 /*: any*/,
-                        v17 /*: any*/,
+                        v18 /*: any*/,
+                        v19 /*: any*/,
                       ],
                       storageKey: null,
                     },
@@ -548,8 +555,8 @@ const node: ConcreteRequest = (function () {
         },
         {
           alias: null,
-          args: v13 /*: any*/,
-          filters: v18 /*: any*/,
+          args: v15 /*: any*/,
+          filters: ["user_id"],
           handle: "connection",
           key: "MyTransactions_query_transactions",
           kind: "LinkedHandle",
@@ -557,7 +564,7 @@ const node: ConcreteRequest = (function () {
         },
         {
           alias: null,
-          args: v13 /*: any*/,
+          args: v20 /*: any*/,
           concreteType: "InvestmentsConnection",
           kind: "LinkedField",
           name: "investments",
@@ -580,10 +587,10 @@ const node: ConcreteRequest = (function () {
                   plural: false,
                   selections: [
                     v6 /*: any*/,
-                    v14 /*: any*/,
-                    v15 /*: any*/,
                     v16 /*: any*/,
                     v17 /*: any*/,
+                    v18 /*: any*/,
+                    v19 /*: any*/,
                     {
                       alias: null,
                       args: null,
@@ -592,7 +599,7 @@ const node: ConcreteRequest = (function () {
                       storageKey: null,
                     },
                     v9 /*: any*/,
-                    v19 /*: any*/,
+                    v21 /*: any*/,
                     v7 /*: any*/,
                     v8 /*: any*/,
                     {
@@ -616,8 +623,8 @@ const node: ConcreteRequest = (function () {
         },
         {
           alias: null,
-          args: v13 /*: any*/,
-          filters: v18 /*: any*/,
+          args: v20 /*: any*/,
+          filters: ["user_id", "status"],
           handle: "connection",
           key: "MyInvestments_query_investments",
           kind: "LinkedHandle",
@@ -661,11 +668,11 @@ const node: ConcreteRequest = (function () {
               name: "investments",
               plural: true,
               selections: [
-                v15 /*: any*/,
-                v16 /*: any*/,
+                v17 /*: any*/,
+                v18 /*: any*/,
                 v8 /*: any*/,
                 v7 /*: any*/,
-                v19 /*: any*/,
+                v21 /*: any*/,
               ],
               storageKey: null,
             },
@@ -710,12 +717,12 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "1c761851a3da33bd55f009c8d7da3083",
+      cacheID: "ac26d8fb1d15fbbb3ba695e72ad05c51",
       id: null,
       metadata: {},
       name: "AppQuery",
       operationKind: "query",
-      text: 'query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  user(id: $id) {\n    ...Routes_user\n    id\n  }\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: "", status: $status, borrower_id: $borrower_id) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: "", user_id: $id) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: "", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment Profile_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n  ...Profile_user\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n  ...Settings_user\n}\n\nfragment Settings_user on User {\n  id\n}\n',
+      text: 'query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  user(id: $id) {\n    ...Routes_user\n    id\n  }\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: "", borrower_id: $borrower_id, status: $status) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: "", user_id: $id, status: [DELAY_PAYMENT, UP_TO_DATE]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: "", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment Profile_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n  ...Profile_user\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n  ...Settings_user\n}\n\nfragment Settings_user on User {\n  id\n}\n',
     },
   } as any;
 })();

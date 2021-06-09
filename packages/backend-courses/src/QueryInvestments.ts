@@ -1,27 +1,24 @@
 import { FilterQuery, ObjectId } from "mongodb";
 import {
   GraphQLFieldConfigArgumentMap,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLNullableType,
   GraphQLString,
 } from "graphql";
 import {
-  BackwardConnectionArgs,
   Connection,
   connectionArgs,
   connectionFromArray,
-  ForwardConnectionArgs,
   ConnectionArguments,
 } from "graphql-relay";
-import { InvestmentConnection } from "./Nodes";
-import { Context, InvestmentMongo } from "./types";
+import { InvestmentConnection, InvestmentStatus } from "./Nodes";
+import { Context, IInvestmentStatus, InvestmentMongo } from "./types";
 import { base64, refreshTokenMiddleware, unbase64 } from "./utils";
 
 interface IQuery {
   type: GraphQLNonNull<GraphQLNullableType>;
-  args: GraphQLFieldConfigArgumentMap &
-    ForwardConnectionArgs &
-    BackwardConnectionArgs;
+  args: GraphQLFieldConfigArgumentMap;
   resolve: (
     root: { [argName: string]: string },
     args: { [argName: string]: string },
@@ -31,6 +28,7 @@ interface IQuery {
 
 interface Args extends ConnectionArguments {
   user_id?: string | null;
+  status?: IInvestmentStatus[];
 }
 
 export const QueryInvestments: IQuery = {
@@ -39,28 +37,37 @@ export const QueryInvestments: IQuery = {
     user_id: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    status: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(InvestmentStatus))
+      ),
+    },
     ...connectionArgs,
   },
   resolve: async (
     _,
-    args: Args,
+    { status, user_id, first, after }: Args,
     { investments, accessToken, refreshToken }
   ): Promise<Connection<InvestmentMongo>> => {
     try {
       const { _id } = await refreshTokenMiddleware(accessToken, refreshToken);
-      if (args.user_id !== _id) {
+      if (user_id !== _id) {
         throw new Error("No es el mismo usuario.");
       }
-      const investment_id = unbase64(args.after || "");
-      const limit = args.first ? args.first + 1 : 0;
+      const investment_id = unbase64(after || "");
+      const limit = first ? first + 1 : 0;
       if (limit <= 0) {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
       const query: FilterQuery<InvestmentMongo> = {
         _id_lender: new ObjectId(_id),
+        status: { $in: ["delay payment", "up to date"] },
       };
       if (investment_id) {
         query._id = { $lt: new ObjectId(investment_id) };
+      }
+      if (status) {
+        query.status = { $in: status };
       }
       const result = await investments
         .find(query)
@@ -73,18 +80,18 @@ export const QueryInvestments: IQuery = {
           node: investment,
         };
       });
-      const edges = edgesMapped.slice(0, args.first || 5);
+      const edges = edgesMapped.slice(0, first || 5);
       return {
         edges,
         pageInfo: {
           startCursor: edges[0]?.cursor || null,
           endCursor: edges[edges.length - 1]?.cursor || null,
           hasPreviousPage: false,
-          hasNextPage: edgesMapped.length > (args.first || 0),
+          hasNextPage: edgesMapped.length > (first || 0),
         },
       };
     } catch (e) {
-      return connectionFromArray([], args);
+      return connectionFromArray([], { first, after });
     }
   },
 };
