@@ -114,6 +114,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
       });
       //Actualizar el los intereses moratorios en las inversiones
       await investments.bulkWrite(investmentWrites);
+      //La propiedad investors cantidades añadidas en diferentes momentos, se itera para hacer calculos sobre un solo monto prestado
       const investors = loan.investors.reduce<ILoanInvestors[]>((acc, item) => {
         const index = acc.findIndex(
           (acc) =>

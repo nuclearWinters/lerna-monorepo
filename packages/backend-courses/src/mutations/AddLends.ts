@@ -99,6 +99,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
       }
       const _id_lender = new ObjectId(lender_id);
       const now = new Date();
+      //Crear lista de elementos con datos en el input
       const docs = newLends.map(
         ({ loan_gid, quantity, borrower_id, goal, term, ROI }) => {
           const _id_loan = fromGlobalId(loan_gid).id;
@@ -115,8 +116,35 @@ export const AddLendsMutation = mutationWithClientMutationId({
           };
         }
       );
+      //Calcular el total que se le restará al usuario
+      const total = docs.reduce((prev, next) => {
+        return prev + next.quantity;
+      }, 0);
+      //Actualizar el usuario
+      const result = await users.updateOne(
+        { _id: _id_lender, accountAvailable: { $gte: total } },
+        {
+          $inc: { accountAvailable: -total },
+          $push: {
+            investments: {
+              $each: docs.map(({ ROI, term, _id_loan, quantity }) => ({
+                _id_loan,
+                quantity,
+                term,
+                ROI,
+                payments: 0,
+              })),
+            },
+          },
+        }
+      );
+      if (!result.modifiedCount) {
+        throw new Error("No se tienen suficientes fondos.");
+      }
+      //Crear lista filtrada vacía
       const docsFiltered = docs.filter(() => false);
       for (const doc of docs) {
+        //Aumentar propiedad raised de la deuda si no se sobrepasa la propiedad goal
         const result = await loans.findOneAndUpdate(
           {
             _id: doc._id_loan,
@@ -135,13 +163,24 @@ export const AddLendsMutation = mutationWithClientMutationId({
           },
           { returnDocument: "after" }
         );
+        //Si NO se realizó la operación: no realizar más acciones
         if (!result.value) {
+          await users.updateOne(
+            { _id: _id_lender },
+            {
+              $inc: { accountAvailable: doc.quantity },
+              $pull: { "investments._id_loan": doc._id_loan },
+            }
+          );
           continue;
         }
+        //Si se realizó la operación: agregar elemento a la lista
         docsFiltered.push(doc);
+        //Si raised NO es igual a goal: no realizar más acciones
         if (!(result.value.raised === result.value.goal)) {
           continue;
         }
+        //Si raised es igual a goal: Actualizar scheduledPayments y status
         await loans.updateOne(
           {
             _id: doc._id_loan,
@@ -165,31 +204,13 @@ export const AddLendsMutation = mutationWithClientMutationId({
           }
         );
       }
+      //Si no se realizó nungun cambio en loans arrojar error
       if (docsFiltered.length === 0) {
         throw new Error(
           "Error: no se realizó ninguna operación. Intenta de nuevo."
         );
       }
-      const total = docsFiltered.reduce((prev, next) => {
-        return prev + next.quantity;
-      }, 0);
-      await users.updateOne(
-        { _id: _id_lender },
-        {
-          $inc: { accountAvailable: -total },
-          $push: {
-            investments: {
-              $each: docsFiltered.map(({ ROI, term, _id_loan, quantity }) => ({
-                _id_loan,
-                quantity,
-                term,
-                ROI,
-                payments: 0,
-              })),
-            },
-          },
-        }
-      );
+      //Crear lista de operaciones para el bulkWrite en transacciones
       const transactionsOperations = docsFiltered.map<
         BulkWriteUpdateOneOperation<BucketTransactionMongo>
       >(({ quantity, _id_loan, _id_borrower }) => ({
@@ -215,7 +236,9 @@ export const AddLendsMutation = mutationWithClientMutationId({
           upsert: true,
         },
       }));
+      //Actualizar transacciones
       transactions.bulkWrite(transactionsOperations);
+      //Crear lista de operaciones para el bulkWrite en inversiones
       const investmentsOperations = docsFiltered.map<
         BulkWriteUpdateOneOperation<InvestmentMongo>
       >(({ quantity, _id_loan, _id_borrower, _id_lender, ROI, term }) => {
@@ -242,6 +265,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
           },
         };
       });
+      //Actualizar inversiones
       investments.bulkWrite(investmentsOperations);
       return { validAccessToken, error: "" };
     } catch (e) {
