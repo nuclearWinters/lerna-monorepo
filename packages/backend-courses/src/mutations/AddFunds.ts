@@ -38,6 +38,9 @@ export const AddFundsMutation = mutationWithClientMutationId({
     { users, accessToken, transactions, refreshToken }: Context
   ): Promise<Payload> => {
     try {
+      if (quantity === 0) {
+        throw new Error("La cantidad no puede ser cero.");
+      }
       const { id: user_id } = fromGlobalId(user_gid);
       const { _id, validAccessToken } = await refreshTokenMiddleware(
         accessToken,

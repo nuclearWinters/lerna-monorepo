@@ -430,7 +430,78 @@ describe("AddFunds tests", () => {
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("000000000000000000000002") })
+      .find({ _id_user: new ObjectId("100000000000000000000002") })
+      .toArray();
+    expect(allTransactions.length).toBe(0);
+  });
+
+  it("test AddFunds try increase cero valid refresh token", async () => {
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertOne({
+      _id: new ObjectId("100000000000000000000003"),
+      name: "Armando Narcizo",
+      apellidoPaterno: "Rueda",
+      apellidoMaterno: "Peréz",
+      RFC: "",
+      CURP: "",
+      clabe: "",
+      mobile: "",
+      accountAvailable: 100000,
+      investments: [],
+    });
+    const response = await request
+      .post("/api/graphql")
+      .send({
+        query: `mutation addFundsMutation($input: AddFundsInput!) {
+          addFunds(input: $input) {
+            error
+            validAccessToken
+          }
+        }`,
+        variables: {
+          input: {
+            user_gid: base64Name("100000000000000000000003", "User"),
+            quantity: "0.00",
+          },
+        },
+        operationName: "addFundsMutation",
+      })
+      .set("Accept", "application/json")
+      .set(
+        "Authorization",
+        JSON.stringify({
+          accessToken: jwt.sign(
+            { _id: "100000000000000000000003", email: "" },
+            ACCESSSECRET,
+            { expiresIn: "15s" }
+          ),
+          refreshToken: "validRefreshToken",
+        })
+      );
+    expect(response.body.data.addFunds.error).toBe(
+      "La cantidad no puede ser cero."
+    );
+    expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
+    const user = await users.findOne({
+      _id: new ObjectId("100000000000000000000003"),
+    });
+    expect(user).toEqual({
+      _id: new ObjectId("100000000000000000000003"),
+      name: "Armando Narcizo",
+      apellidoPaterno: "Rueda",
+      apellidoMaterno: "Peréz",
+      RFC: "",
+      CURP: "",
+      clabe: "",
+      mobile: "",
+      accountAvailable: 100000,
+      investments: [],
+    });
+
+    const transactions =
+      dbInstance.collection<BucketTransactionMongo>("transactions");
+    const allTransactions = await transactions
+      .find({ _id_user: new ObjectId("100000000000000000000003") })
       .toArray();
     expect(allTransactions.length).toBe(0);
   });
