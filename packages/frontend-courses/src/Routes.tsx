@@ -172,7 +172,7 @@ export const Routes: FC<Props> = (props) => {
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
   >(
     () => ({
-      variables: { status: user_gid && getStatus() },
+      variables: { status: user_gid ? getStatus() : getStatus() },
       subscription: subscriptionLoans,
       updater: (store, data) => {
         if (data.loans_subscribe.type === "INSERT") {
@@ -211,7 +211,11 @@ export const Routes: FC<Props> = (props) => {
         user_gid,
         status:
           investmentStatus === "on_going"
-            ? (["UP_TO_DATE", "DELAY_PAYMENT"] as InvestmentStatus[])
+            ? ([
+                "UP_TO_DATE",
+                "DELAY_PAYMENT",
+                "FINANCING",
+              ] as InvestmentStatus[])
             : (["PAID", "PAST_DUE"] as InvestmentStatus[]),
       },
       subscription: subscriptionInvestments,

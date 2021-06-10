@@ -70,7 +70,7 @@ export const MyInvestments: FC<Props> = (props) => {
         id: tokensAndData.data._id,
         status:
           props.investmentStatus === "on_going"
-            ? ["DELAY_PAYMENT", "UP_TO_DATE"]
+            ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
             : ["PAID", "PAST_DUE"],
       },
       { fetchPolicy: "network-only" }

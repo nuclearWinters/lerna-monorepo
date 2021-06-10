@@ -170,7 +170,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
             { _id: _id_lender },
             {
               $inc: { accountAvailable: doc.quantity },
-              $pull: { "investments._id_loan": doc._id_loan },
+              $pull: { investments: { _id_loan: doc._id_loan } },
             }
           );
           continue;

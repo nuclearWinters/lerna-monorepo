@@ -378,21 +378,6 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       investments: [],
     });
-    jest
-      .spyOn(grpcClient, "renewAccessToken")
-      .mockImplementationOnce((request, callback: any) => {
-        callback(
-          {
-            name: "Error Auth Service",
-            message: "Error",
-            code: 1,
-            details: "",
-            metadata: new Metadata(),
-          },
-          null
-        );
-        return {} as any;
-      });
     const response = await request
       .post("/api/graphql")
       .send({

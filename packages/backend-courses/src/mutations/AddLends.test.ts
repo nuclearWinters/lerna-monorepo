@@ -463,4 +463,446 @@ describe("AddLends tests", () => {
       },
     ]);
   });
+
+  it("test AddLends not enough money valid access token", async () => {
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertMany([
+      {
+        _id: new ObjectId("400000000000000000000004"),
+        name: "Armando Narcizo",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Peréz",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
+        accountAvailable: 10000,
+        investments: [],
+      },
+      {
+        _id: new ObjectId("400000000000000000000005"),
+        name: "Luis Fernando",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Peréz",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
+        accountAvailable: 10000,
+        investments: [],
+      },
+    ]);
+    const loans = dbInstance.collection<LoanMongo>("loans");
+    await loans.insertMany([
+      {
+        _id: new ObjectId("400000000000000000000002"),
+        _id_user: new ObjectId("400000000000000000000005"),
+        score: "AAA",
+        ROI: 10,
+        goal: 50000,
+        term: 2,
+        raised: 0,
+        expiry: new Date(),
+        status: "financing",
+        scheduledPayments: null,
+        investors: [],
+      },
+    ]);
+    const transactions =
+      dbInstance.collection<BucketTransactionMongo>("transactions");
+    const response = await request
+      .post("/api/graphql")
+      .send({
+        query: `mutation addLendsMutation($input: AddLendsInput!) {
+          addLends(input: $input) {
+            error
+            validAccessToken
+          }
+        }`,
+        variables: {
+          input: {
+            lender_gid: base64Name("400000000000000000000004", "User"),
+            lends: [
+              {
+                loan_gid: base64Name("400000000000000000000002", "Loan"),
+                quantity: "150.00",
+                borrower_id: "400000000000000000000005",
+                term: 2,
+                goal: "500.00",
+                ROI: 10,
+              },
+            ],
+          },
+        },
+        operationName: "addLendsMutation",
+      })
+      .set("Accept", "application/json")
+      .set(
+        "Authorization",
+        JSON.stringify({
+          accessToken: jwt.sign(
+            { _id: "400000000000000000000004", email: "" },
+            ACCESSSECRET,
+            { expiresIn: "15m" }
+          ),
+          refreshToken: "validRefreshToken",
+        })
+      );
+    expect(response.body.data.addLends.error).toBe(
+      "No se tienen suficientes fondos."
+    );
+    expect(response.body.data.addLends.validAccessToken).toBeFalsy();
+    const user = await users.findOne({
+      _id: new ObjectId("400000000000000000000004"),
+    });
+    expect(user?.accountAvailable).toBe(10000);
+    expect(user?.investments).toEqual([]);
+    const allTransactions = await transactions
+      .find({ _id_user: new ObjectId("400000000000000000000004") })
+      .toArray();
+    expect(allTransactions.length).toBe(0);
+    const allLoans = await loans
+      .find({ _id_user: new ObjectId("400000000000000000000005") })
+      .toArray();
+    expect(allLoans.length).toBe(1);
+    expect(
+      allLoans.map((loan) => ({
+        raised: loan.raised,
+        status: loan.status,
+        investors: loan.investors.map((investor) => ({
+          ...investor,
+          _id_lender: investor._id_lender.toHexString(),
+        })),
+      }))
+    ).toEqual([
+      {
+        raised: 0,
+        status: "financing",
+        investors: [],
+      },
+    ]);
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
+    const allInvestments = await investments
+      .find({ _id_lender: new ObjectId("400000000000000000000004") })
+      .toArray();
+    expect(allInvestments.length).toBe(0);
+  });
+
+  it("test AddLends no investments done valid access token", async () => {
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertMany([
+      {
+        _id: new ObjectId("500000000000000000000004"),
+        name: "Armando Narcizo",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Peréz",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
+        accountAvailable: 10000,
+        investments: [],
+      },
+      {
+        _id: new ObjectId("500000000000000000000005"),
+        name: "Luis Fernando",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Peréz",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
+        accountAvailable: 10000,
+        investments: [],
+      },
+    ]);
+    const loans = dbInstance.collection<LoanMongo>("loans");
+    await loans.insertMany([
+      {
+        _id: new ObjectId("500000000000000000000002"),
+        _id_user: new ObjectId("500000000000000000000005"),
+        score: "AAA",
+        ROI: 10,
+        goal: 50000,
+        term: 2,
+        raised: 50000,
+        expiry: new Date(),
+        status: "to be paid",
+        scheduledPayments: null,
+        investors: [],
+      },
+    ]);
+    const transactions =
+      dbInstance.collection<BucketTransactionMongo>("transactions");
+    const response = await request
+      .post("/api/graphql")
+      .send({
+        query: `mutation addLendsMutation($input: AddLendsInput!) {
+          addLends(input: $input) {
+            error
+            validAccessToken
+          }
+        }`,
+        variables: {
+          input: {
+            lender_gid: base64Name("500000000000000000000004", "User"),
+            lends: [
+              {
+                loan_gid: base64Name("500000000000000000000002", "Loan"),
+                quantity: "50.00",
+                borrower_id: "500000000000000000000005",
+                term: 2,
+                goal: "500.00",
+                ROI: 10,
+              },
+            ],
+          },
+        },
+        operationName: "addLendsMutation",
+      })
+      .set("Accept", "application/json")
+      .set(
+        "Authorization",
+        JSON.stringify({
+          accessToken: jwt.sign(
+            { _id: "500000000000000000000004", email: "" },
+            ACCESSSECRET,
+            { expiresIn: "15m" }
+          ),
+          refreshToken: "validRefreshToken",
+        })
+      );
+    expect(response.body.data.addLends.error).toBe(
+      "Error: no se realizó ninguna operación. Intenta de nuevo."
+    );
+    expect(response.body.data.addLends.validAccessToken).toBeFalsy();
+    const user = await users.findOne({
+      _id: new ObjectId("500000000000000000000004"),
+    });
+    expect(user?.accountAvailable).toBe(10000);
+    expect(user?.investments).toEqual([]);
+    const allTransactions = await transactions
+      .find({ _id_user: new ObjectId("500000000000000000000004") })
+      .toArray();
+    expect(allTransactions.length).toBe(0);
+    const allLoans = await loans
+      .find({ _id_user: new ObjectId("500000000000000000000005") })
+      .toArray();
+    expect(allLoans.length).toBe(1);
+    expect(
+      allLoans.map((loan) => ({
+        raised: loan.raised,
+        status: loan.status,
+        investors: loan.investors.map((investor) => ({
+          ...investor,
+          _id_lender: investor._id_lender.toHexString(),
+        })),
+      }))
+    ).toEqual([
+      {
+        raised: 50000,
+        status: "to be paid",
+        investors: [],
+      },
+    ]);
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
+    const allInvestments = await investments
+      .find({ _id_lender: new ObjectId("500000000000000000000004") })
+      .toArray();
+    expect(allInvestments.length).toBe(0);
+  });
+
+  it("test AddLends not all investments are done valid access token", async () => {
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertMany([
+      {
+        _id: new ObjectId("600000000000000000000004"),
+        name: "Armando Narcizo",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Peréz",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
+        accountAvailable: 10000,
+        investments: [],
+      },
+      {
+        _id: new ObjectId("600000000000000000000005"),
+        name: "Luis Fernando",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Peréz",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
+        accountAvailable: 10000,
+        investments: [],
+      },
+    ]);
+    const loans = dbInstance.collection<LoanMongo>("loans");
+    await loans.insertMany([
+      {
+        _id: new ObjectId("600000000000000000000002"),
+        _id_user: new ObjectId("600000000000000000000005"),
+        score: "AAA",
+        ROI: 10,
+        goal: 50000,
+        term: 2,
+        raised: 50000,
+        expiry: new Date(),
+        status: "to be paid",
+        scheduledPayments: null,
+        investors: [],
+      },
+      {
+        _id: new ObjectId("600000000000000000000003"),
+        _id_user: new ObjectId("600000000000000000000005"),
+        score: "AAA",
+        ROI: 10,
+        goal: 50000,
+        term: 2,
+        raised: 0,
+        expiry: new Date(),
+        status: "financing",
+        scheduledPayments: null,
+        investors: [],
+      },
+    ]);
+    const transactions =
+      dbInstance.collection<BucketTransactionMongo>("transactions");
+    const response = await request
+      .post("/api/graphql")
+      .send({
+        query: `mutation addLendsMutation($input: AddLendsInput!) {
+          addLends(input: $input) {
+            error
+            validAccessToken
+          }
+        }`,
+        variables: {
+          input: {
+            lender_gid: base64Name("600000000000000000000004", "User"),
+            lends: [
+              {
+                loan_gid: base64Name("600000000000000000000002", "Loan"),
+                quantity: "50.00",
+                borrower_id: "600000000000000000000005",
+                term: 2,
+                goal: "500.00",
+                ROI: 10,
+              },
+              {
+                loan_gid: base64Name("600000000000000000000003", "Loan"),
+                quantity: "50.00",
+                borrower_id: "600000000000000000000005",
+                term: 2,
+                goal: "500.00",
+                ROI: 10,
+              },
+            ],
+          },
+        },
+        operationName: "addLendsMutation",
+      })
+      .set("Accept", "application/json")
+      .set(
+        "Authorization",
+        JSON.stringify({
+          accessToken: jwt.sign(
+            { _id: "600000000000000000000004", email: "" },
+            ACCESSSECRET,
+            { expiresIn: "15m" }
+          ),
+          refreshToken: "validRefreshToken",
+        })
+      );
+    expect(response.body.data.addLends.error).toBeFalsy();
+    expect(response.body.data.addLends.validAccessToken).toBeTruthy();
+    const user = await users.findOne({
+      _id: new ObjectId("600000000000000000000004"),
+    });
+    expect(user?.accountAvailable).toBe(5000);
+    expect(user?.investments).toEqual([
+      {
+        ROI: 10,
+        _id_loan: new ObjectId("600000000000000000000003"),
+        payments: 0,
+        quantity: 5000,
+        term: 2,
+      },
+    ]);
+    const allTransactions = await transactions
+      .find({ _id_user: new ObjectId("600000000000000000000004") })
+      .toArray();
+    expect(allTransactions.length).toBe(1);
+    expect(allTransactions[0].history.length).toBe(1);
+    expect(
+      allTransactions[0].history.map((transaction) => ({
+        type: transaction.type,
+        quantity: transaction.quantity,
+        _id_borrower: transaction._id_borrower?.toHexString(),
+        _id_loan: transaction._id_loan?.toHexString(),
+      }))
+    ).toEqual([
+      {
+        type: "invest",
+        quantity: 5000,
+        _id_borrower: "600000000000000000000005",
+        _id_loan: "600000000000000000000003",
+      },
+    ]);
+    const allLoans = await loans
+      .find({ _id_user: new ObjectId("600000000000000000000005") })
+      .toArray();
+    expect(allLoans.length).toBe(2);
+    expect(
+      allLoans.map((loan) => ({
+        raised: loan.raised,
+        status: loan.status,
+        investors: loan.investors.map((investor) => ({
+          ...investor,
+          _id_lender: investor._id_lender.toHexString(),
+        })),
+      }))
+    ).toEqual([
+      {
+        raised: 50000,
+        status: "to be paid",
+        investors: [],
+      },
+      {
+        raised: 5000,
+        status: "financing",
+        investors: [
+          {
+            _id_lender: "600000000000000000000004",
+            quantity: 5000,
+          },
+        ],
+      },
+    ]);
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
+    const allInvestments = await investments
+      .find({ _id_lender: new ObjectId("600000000000000000000004") })
+      .toArray();
+    expect(allInvestments.length).toBe(1);
+    expect(
+      allInvestments.map((investment) => ({
+        quantity: investment.quantity,
+        payments: investment.payments,
+        term: investment.term,
+        moratory: investment.moratory,
+        ROI: investment.ROI,
+      }))
+    ).toEqual([
+      {
+        quantity: 5000,
+        ROI: 10,
+        payments: 0,
+        moratory: 0,
+        term: 2,
+      },
+    ]);
+  });
 });

@@ -66,8 +66,10 @@ export const dayFunction = async (db: Db): Promise<void> => {
       await loans.updateOne(
         { _id: loan._id },
         {
-          $set: { "scheduledPayments.$[item].status": "paid" },
-          ...(allPaid ? { status: "paid" } : {}),
+          $set: {
+            "scheduledPayments.$[item].status": "paid",
+            ...(allPaid ? { status: "paid" } : {}),
+          },
         },
         {
           arrayFilters: [
@@ -169,6 +171,8 @@ export const dayFunction = async (db: Db): Promise<void> => {
                     type: "collect",
                     quantity: amortize,
                     created: now,
+                    _id_borrower: loan._id_user,
+                    _id_loan: loan._id,
                   },
                 },
                 $inc: { count: 1 },

@@ -1,4 +1,4 @@
-import { addDays, startOfDay } from "date-fns";
+import { addDays, addMonths, startOfDay } from "date-fns";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { dayFunction } from "./cronJobDay";
 import {
@@ -17,7 +17,7 @@ describe("cronJobs tests", () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    dbInstance = client.db("fintech");
+    dbInstance = client.db("fintech2");
   });
 
   afterAll(async () => {
@@ -40,7 +40,7 @@ describe("cronJobs tests", () => {
         CURP: "",
         clabe: "",
         mobile: "",
-        accountAvailable: 100000,
+        accountAvailable: 1000000,
         investments: [],
       },
       {
@@ -57,70 +57,186 @@ describe("cronJobs tests", () => {
           {
             _id_loan: new ObjectId("300000000000000000000012"),
             quantity: 10000,
-            term: 3,
+            term: 2,
             ROI: 17,
             payments: 0,
           },
           {
             _id_loan: new ObjectId("300000000000000000000102"),
             quantity: 10000,
-            term: 6,
-            ROI: 10,
-            payments: 0,
+            term: 2,
+            ROI: 17,
+            payments: 1,
+          },
+          {
+            _id_loan: new ObjectId("300000000000000000000021"),
+            quantity: 10000,
+            term: 2,
+            ROI: 17,
+            payments: 1,
           },
         ],
       },
+      {
+        _id: new ObjectId("300000000000000000000017"),
+        name: "Mariano Alejandro",
+        apellidoPaterno: "Rueda",
+        apellidoMaterno: "Peréz",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
+        accountAvailable: 0,
+        investments: [],
+      },
     ]);
-    await loans.insertOne({
-      _id: new ObjectId("300000000000000000000012"),
-      _id_user: new ObjectId("300000000000000000000011"),
-      score: "AAA",
-      ROI: 17,
-      goal: 100000,
-      expiry: new Date(),
-      term: 3,
-      raised: 100000,
-      status: "to be paid",
-      scheduledPayments: [
-        {
-          amortize: 34215,
-          scheduledDate: addDays(startOfDay(new Date()), -60),
-          status: "delayed",
-        },
-        {
-          amortize: 34215,
-          scheduledDate: addDays(startOfDay(new Date()), -30),
-          status: "delayed",
-        },
-
-        {
-          amortize: 34215,
-          scheduledDate: startOfDay(new Date()),
-          status: "to be paid",
-        },
-      ],
-      investors: [
-        {
-          _id_lender: new ObjectId("300000000000000000000100"),
-          quantity: 10000,
-        },
-      ],
-    });
+    await loans.insertMany([
+      {
+        _id: new ObjectId("300000000000000000000012"),
+        _id_user: new ObjectId("300000000000000000000011"),
+        score: "AAA",
+        ROI: 17,
+        goal: 100000,
+        expiry: new Date(),
+        term: 2,
+        raised: 100000,
+        status: "to be paid",
+        scheduledPayments: [
+          {
+            amortize: 50989,
+            scheduledDate: addDays(startOfDay(new Date()), -30),
+            status: "delayed",
+          },
+          {
+            amortize: 50989,
+            scheduledDate: startOfDay(new Date()),
+            status: "to be paid",
+          },
+        ],
+        investors: [
+          {
+            _id_lender: new ObjectId("300000000000000000000100"),
+            quantity: 10000,
+          },
+        ],
+      },
+      {
+        _id: new ObjectId("300000000000000000000020"),
+        _id_user: new ObjectId("300000000000000000000011"),
+        score: "AAA",
+        ROI: 17,
+        goal: 100000,
+        expiry: new Date(),
+        term: 2,
+        raised: 100000,
+        status: "to be paid",
+        scheduledPayments: [
+          {
+            amortize: 50989,
+            scheduledDate: startOfDay(addMonths(new Date(), -2)),
+            status: "paid",
+          },
+          {
+            amortize: 50989,
+            scheduledDate: addDays(startOfDay(new Date()), -30),
+            status: "delayed",
+          },
+        ],
+        investors: [
+          {
+            _id_lender: new ObjectId("300000000000000000000100"),
+            quantity: 10000,
+          },
+        ],
+      },
+      {
+        _id: new ObjectId("300000000000000000000022"),
+        _id_user: new ObjectId("300000000000000000000017"),
+        score: "AAA",
+        ROI: 17,
+        goal: 100000,
+        expiry: new Date(),
+        term: 2,
+        raised: 100000,
+        status: "to be paid",
+        scheduledPayments: [
+          {
+            amortize: 50989,
+            scheduledDate: startOfDay(addMonths(new Date(), -2)),
+            status: "paid",
+          },
+          {
+            amortize: 50989,
+            scheduledDate: addDays(startOfDay(new Date()), -30),
+            status: "delayed",
+          },
+        ],
+        investors: [
+          {
+            _id_lender: new ObjectId("300000000000000000000100"),
+            quantity: 10000,
+          },
+        ],
+      },
+      {
+        _id: new ObjectId("300000000000000000000018"),
+        _id_user: new ObjectId("300000000000000000000019"),
+        score: "AAA",
+        ROI: 17,
+        goal: 100000,
+        expiry: new Date(),
+        term: 2,
+        raised: 0,
+        status: "financing",
+        scheduledPayments: null,
+        investors: [],
+      },
+    ]);
     const now = new Date();
-    await investments.insertOne({
-      _id: new ObjectId("000000000000000000000110"),
-      _id_borrower: new ObjectId("300000000000000000000011"),
-      _id_lender: new ObjectId("300000000000000000000100"),
-      _id_loan: new ObjectId("300000000000000000000012"),
-      quantity: 10000,
-      status: "delay payment",
-      created: now,
-      updated: now,
-      payments: 0,
-      term: 3,
-      ROI: 17,
-      moratory: 0,
-    });
+    await investments.insertMany([
+      {
+        _id: new ObjectId("000000000000000000000110"),
+        _id_borrower: new ObjectId("300000000000000000000011"),
+        _id_lender: new ObjectId("300000000000000000000100"),
+        _id_loan: new ObjectId("300000000000000000000012"),
+        quantity: 10000,
+        status: "delay payment",
+        created: now,
+        updated: now,
+        payments: 0,
+        term: 2,
+        ROI: 17,
+        moratory: 0,
+      },
+      {
+        _id: new ObjectId("000000000000000000000115"),
+        _id_borrower: new ObjectId("300000000000000000000011"),
+        _id_lender: new ObjectId("300000000000000000000100"),
+        _id_loan: new ObjectId("300000000000000000000020"),
+        quantity: 10000,
+        status: "delay payment",
+        created: now,
+        updated: now,
+        payments: 0,
+        term: 2,
+        ROI: 17,
+        moratory: 0,
+      },
+      {
+        _id: new ObjectId("000000000000000000000116"),
+        _id_borrower: new ObjectId("300000000000000000000017"),
+        _id_lender: new ObjectId("300000000000000000000100"),
+        _id_loan: new ObjectId("300000000000000000000022"),
+        quantity: 10000,
+        status: "delay payment",
+        created: now,
+        updated: now,
+        payments: 0,
+        term: 2,
+        ROI: 17,
+        moratory: 0,
+      },
+    ]);
     await dayFunction(dbInstance);
     const user = await users.findOne({
       _id: new ObjectId("300000000000000000000011"),
@@ -134,7 +250,7 @@ describe("cronJobs tests", () => {
       CURP: "",
       clabe: "",
       mobile: "",
-      accountAvailable: 30115,
+      accountAvailable: 896576,
       investments: [],
     });
     const user2 = await users.findOne({
@@ -149,33 +265,40 @@ describe("cronJobs tests", () => {
       CURP: "",
       clabe: "",
       mobile: "",
-      accountAvailable: 106986,
+      accountAvailable: 110340,
       investments: [
         {
           ROI: 17,
           _id_loan: new ObjectId("300000000000000000000012"),
-          payments: 2,
+          payments: 1,
           quantity: 10000,
-          term: 3,
+          term: 2,
         },
         {
-          ROI: 10,
+          ROI: 17,
           _id_loan: new ObjectId("300000000000000000000102"),
-          payments: 0,
+          payments: 1,
           quantity: 10000,
-          term: 6,
+          term: 2,
+        },
+        {
+          ROI: 17,
+          _id_loan: new ObjectId("300000000000000000000021"),
+          payments: 1,
+          quantity: 10000,
+          term: 2,
         },
       ],
     });
-    const allTransactions = await transactions
+    const transactions_borrower = await transactions
       .find({
         _id_user: new ObjectId("300000000000000000000011"),
       })
       .toArray();
-    expect(allTransactions.length).toEqual(1);
-    expect(allTransactions[0].history.length).toEqual(2);
+    expect(transactions_borrower.length).toEqual(1);
+    expect(transactions_borrower[0].history.length).toEqual(2);
     expect(
-      allTransactions[0].history.map((transaction) => ({
+      transactions_borrower[0].history.map((transaction) => ({
         ...transaction,
         _id: "",
         created: "",
@@ -184,22 +307,58 @@ describe("cronJobs tests", () => {
       {
         _id: "",
         created: "",
-        quantity: -35185,
+        quantity: -51712,
         type: "payment",
       },
       {
         _id: "",
         created: "",
-        quantity: -34700,
+        quantity: -51712,
         type: "payment",
+      },
+    ]);
+    const transactions_lender = await transactions
+      .find({
+        _id_user: new ObjectId("300000000000000000000100"),
+      })
+      .toArray();
+    expect(transactions_lender.length).toEqual(1);
+    expect(transactions_lender[0].history.length).toEqual(2);
+    expect(
+      transactions_lender[0].history.map((transaction) => ({
+        ...transaction,
+        _id: "",
+        created: "",
+      }))
+    ).toEqual([
+      {
+        _id: "",
+        created: "",
+        quantity: 5098,
+        type: "collect",
+        _id_borrower: new ObjectId("300000000000000000000011"),
+        _id_loan: new ObjectId("300000000000000000000012"),
+      },
+      {
+        _id: "",
+        created: "",
+        quantity: 5098,
+        type: "collect",
+        _id_borrower: new ObjectId("300000000000000000000011"),
+        _id_loan: new ObjectId("300000000000000000000020"),
       },
     ]);
     const allLoans = await loans
       .find({
-        _id_user: new ObjectId("300000000000000000000011"),
+        _id_user: {
+          $in: [
+            new ObjectId("300000000000000000000011"),
+            new ObjectId("300000000000000000000017"),
+          ],
+        },
       })
       .toArray();
-    expect(allLoans.length).toEqual(1);
+    expect(allLoans.length).toEqual(3);
     expect(
       allLoans.map((loan) => ({
         status: loan.status,
@@ -210,29 +369,54 @@ describe("cronJobs tests", () => {
         status: "to be paid",
         scheduledPayments: [
           {
-            amortize: 34215,
-            status: "paid",
-            scheduledDate: addDays(startOfDay(new Date()), -60),
-          },
-          {
-            amortize: 34215,
+            amortize: 50989,
             status: "paid",
             scheduledDate: addDays(startOfDay(new Date()), -30),
           },
           {
-            amortize: 34215,
+            amortize: 50989,
             status: "to be paid",
             scheduledDate: startOfDay(new Date()),
           },
         ],
       },
+      {
+        scheduledPayments: [
+          {
+            amortize: 50989,
+            scheduledDate: startOfDay(addMonths(new Date(), -2)),
+            status: "paid",
+          },
+          {
+            amortize: 50989,
+            scheduledDate: addDays(startOfDay(new Date()), -30),
+            status: "paid",
+          },
+        ],
+        status: "paid",
+      },
+      {
+        scheduledPayments: [
+          {
+            amortize: 50989,
+            scheduledDate: startOfDay(addMonths(new Date(), -2)),
+            status: "paid",
+          },
+          {
+            amortize: 50989,
+            scheduledDate: addDays(startOfDay(new Date()), -30),
+            status: "delayed",
+          },
+        ],
+        status: "to be paid",
+      },
     ]);
     const allInvestments = await investments
       .find({
-        _id: new ObjectId("000000000000000000000110"),
+        _id_lender: new ObjectId("300000000000000000000100"),
       })
       .toArray();
-    expect(allInvestments.length).toBe(1);
+    expect(allInvestments.length).toBe(3);
     expect(allInvestments).toEqual([
       {
         ROI: 17,
@@ -240,13 +424,41 @@ describe("cronJobs tests", () => {
         _id_borrower: new ObjectId("300000000000000000000011"),
         _id_lender: new ObjectId("300000000000000000000100"),
         _id_loan: new ObjectId("300000000000000000000012"),
-        moratory: 146,
-        payments: 2,
+        moratory: 73,
+        payments: 1,
         quantity: 10000,
         status: "up to date",
-        term: 3,
+        term: 2,
         updated: now,
         created: now,
+      },
+      {
+        ROI: 17,
+        _id: new ObjectId("000000000000000000000115"),
+        _id_borrower: new ObjectId("300000000000000000000011"),
+        _id_lender: new ObjectId("300000000000000000000100"),
+        _id_loan: new ObjectId("300000000000000000000020"),
+        created: now,
+        moratory: 73,
+        payments: 1,
+        quantity: 10000,
+        status: "paid",
+        term: 2,
+        updated: now,
+      },
+      {
+        ROI: 17,
+        _id: new ObjectId("000000000000000000000116"),
+        _id_borrower: new ObjectId("300000000000000000000017"),
+        _id_lender: new ObjectId("300000000000000000000100"),
+        _id_loan: new ObjectId("300000000000000000000022"),
+        created: now,
+        moratory: 0,
+        payments: 0,
+        quantity: 10000,
+        status: "delay payment",
+        term: 2,
+        updated: now,
       },
     ]);
   });

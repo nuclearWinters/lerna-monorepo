@@ -145,6 +145,8 @@ export const monthFunction = async (db: Db): Promise<void> => {
                     type: "collect",
                     quantity: amortize,
                     created: now,
+                    _id_borrower: loan._id_user,
+                    _id_loan: loan._id,
                   },
                 },
                 $inc: { count: 1 },
