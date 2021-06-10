@@ -6,3 +6,4 @@ data/**
 .eslintcache
 globalConfig.json
 redis/**
+*.mongodb
