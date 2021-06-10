@@ -35,31 +35,31 @@ describe("QueryTransactions tests", () => {
         history: [
           {
             _id: new ObjectId("000000000000000000000051"),
-            type: "CREDIT",
+            type: "credit",
             quantity: 100,
             created: new Date(),
           },
           {
             _id: new ObjectId("000000000000000000000052"),
-            type: "INVEST",
+            type: "invest",
             quantity: -100,
             created: new Date(),
           },
           {
             _id: new ObjectId("000000000000000000000053"),
-            type: "PAYMENT",
+            type: "payment",
             quantity: -100,
             created: new Date(),
           },
           {
             _id: new ObjectId("000000000000000000000054"),
-            type: "WITHDRAWAL",
+            type: "withdrawal",
             quantity: -100,
             created: new Date(),
           },
           {
             _id: new ObjectId("000000000000000000000055"),
-            type: "CREDIT",
+            type: "credit",
             quantity: 100,
             created: new Date(),
           },
@@ -72,31 +72,31 @@ describe("QueryTransactions tests", () => {
         history: [
           {
             _id: new ObjectId("000000000000000000000051"),
-            type: "CREDIT",
+            type: "credit",
             quantity: 200,
             created: new Date(),
           },
           {
             _id: new ObjectId("000000000000000000000052"),
-            type: "INVEST",
+            type: "invest",
             quantity: -200,
             created: new Date(),
           },
           {
             _id: new ObjectId("000000000000000000000053"),
-            type: "PAYMENT",
+            type: "payment",
             quantity: -200,
             created: new Date(),
           },
           {
             _id: new ObjectId("000000000000000000000054"),
-            type: "WITHDRAWAL",
+            type: "withdrawal",
             quantity: -200,
             created: new Date(),
           },
           {
             _id: new ObjectId("000000000000000000000055"),
-            type: "CREDIT",
+            type: "credit",
             quantity: 200,
             created: new Date(),
           },

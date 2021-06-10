@@ -166,7 +166,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
                 $push: {
                   history: {
                     _id: new ObjectId(),
-                    type: "CREDIT" as const,
+                    type: "collect",
                     quantity: amortize,
                     created: now,
                   },
@@ -213,7 +213,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
               $push: {
                 history: {
                   _id: new ObjectId(),
-                  type: "PAYMENT" as const,
+                  type: "payment",
                   quantity: -delayedTotal,
                   created: now,
                 },

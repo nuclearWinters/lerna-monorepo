@@ -66,10 +66,11 @@ export const MXNScalarType = new GraphQLScalarType({
 export const TransactionType = new GraphQLEnumType({
   name: "TransactionType",
   values: {
-    CREDIT: { value: "CREDIT" },
-    WITHDRAWAL: { value: "WITHDRAWAL" },
-    INVEST: { value: "INVEST" },
-    PAYMENT: { value: "PAYMENT" },
+    CREDIT: { value: "credit" },
+    WITHDRAWAL: { value: "withdrawal" },
+    INVEST: { value: "invest" },
+    PAYMENT: { value: "payment" },
+    COLLECT: { value: "collect" },
   },
 });
 
@@ -77,8 +78,8 @@ export const LoanStatus = new GraphQLEnumType({
   name: "LoanStatus",
   values: {
     PAID: { value: "paid" },
-    TO_BE_PAID: { value: "to be paid" },
     FINANCING: { value: "financing" },
+    TO_BE_PAID: { value: "to be paid" },
     WAITING_FOR_APPROVAL: { value: "waiting for approval" },
     PAST_DUE: { value: "past due" },
   },
@@ -87,10 +88,11 @@ export const LoanStatus = new GraphQLEnumType({
 export const InvestmentStatus = new GraphQLEnumType({
   name: "InvestmentStatus",
   values: {
+    PAID: { value: "paid" },
+    FINANCING: { value: "financing" },
     DELAY_PAYMENT: { value: "delay payment" },
     UP_TO_DATE: { value: "up to date" },
     PAST_DUE: { value: "past due" },
-    PAID: { value: "paid" },
   },
 });
 

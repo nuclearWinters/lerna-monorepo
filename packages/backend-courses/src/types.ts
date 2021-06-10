@@ -33,10 +33,11 @@ export interface UserMongo {
 }
 
 export type TransactionMongoType =
-  | "CREDIT"
-  | "WITHDRAWAL"
-  | "INVEST"
-  | "PAYMENT";
+  | "credit"
+  | "withdrawal"
+  | "invest"
+  | "payment"
+  | "collect";
 
 export interface TransactionMongo {
   _id: ObjectId;
@@ -91,6 +92,7 @@ export interface LoanMongo {
 export type IInvestmentStatus =
   | "delay payment"
   | "up to date"
+  | "financing"
   | "past due"
   | "paid";
 

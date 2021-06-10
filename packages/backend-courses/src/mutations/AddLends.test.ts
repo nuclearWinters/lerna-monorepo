@@ -170,13 +170,13 @@ describe("AddLends tests", () => {
       }))
     ).toEqual([
       {
-        type: "INVEST",
+        type: "invest",
         quantity: 10000,
         _id_borrower: "000000000000000000000005",
         _id_loan: "000000000000000000000002",
       },
       {
-        type: "INVEST",
+        type: "invest",
         quantity: 5000,
         _id_borrower: "000000000000000000000005",
         _id_loan: "000000000000000000000003",
@@ -342,25 +342,25 @@ describe("AddLends tests", () => {
       }))
     ).toEqual([
       {
-        type: "INVEST",
+        type: "invest",
         quantity: 10000,
         _id_borrower: "000000000000000000000005",
         _id_loan: "000000000000000000000002",
       },
       {
-        type: "INVEST",
+        type: "invest",
         quantity: 5000,
         _id_borrower: "000000000000000000000005",
         _id_loan: "000000000000000000000003",
       },
       {
-        type: "INVEST",
+        type: "invest",
         quantity: 40000,
         _id_borrower: "000000000000000000000005",
         _id_loan: "000000000000000000000002",
       },
       {
-        type: "INVEST",
+        type: "invest",
         quantity: 45000,
         _id_borrower: "000000000000000000000005",
         _id_loan: "000000000000000000000003",

@@ -6,6 +6,7 @@ import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type InvestmentStatus =
   | "DELAY_PAYMENT"
+  | "FINANCING"
   | "PAID"
   | "PAST_DUE"
   | "UP_TO_DATE"

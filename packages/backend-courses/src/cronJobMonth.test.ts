@@ -177,7 +177,7 @@ describe("cronJobs tests", () => {
         _id: "",
         created: "",
         quantity: -34215,
-        type: "PAYMENT",
+        type: "payment",
       },
     ]);
     const lender_transactions = await transactions
@@ -198,7 +198,7 @@ describe("cronJobs tests", () => {
         _id: "",
         created: "",
         quantity: 3421,
-        type: "CREDIT",
+        type: "collect",
       },
     ]);
     const allLoans = await loans

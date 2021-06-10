@@ -113,6 +113,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
             raised: 0,
             term,
             ROI,
+            completed: false,
           };
         }
       );
@@ -180,6 +181,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
         if (!(result.value.raised === result.value.goal)) {
           continue;
         }
+        docsFiltered[docsFiltered.length - 1].completed = true;
         //Si raised es igual a goal: Actualizar scheduledPayments y status
         await loans.updateOne(
           {
@@ -220,7 +222,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
             $push: {
               history: {
                 _id: new ObjectId(),
-                type: "INVEST" as const,
+                type: "invest",
                 quantity,
                 created: now,
                 _id_loan,
@@ -241,30 +243,40 @@ export const AddLendsMutation = mutationWithClientMutationId({
       //Crear lista de operaciones para el bulkWrite en inversiones
       const investmentsOperations = docsFiltered.map<
         BulkWriteUpdateOneOperation<InvestmentMongo>
-      >(({ quantity, _id_loan, _id_borrower, _id_lender, ROI, term }) => {
-        return {
-          updateOne: {
-            filter: { _id_loan, _id_borrower, _id_lender },
-            update: {
-              $inc: { quantity },
-              $setOnInsert: {
-                _id: new ObjectId(),
-                _id_lender,
-                _id_borrower,
-                _id_loan,
-                created: now,
-                updated: now,
-                status: "up to date",
-                payments: 0,
-                term,
-                ROI,
-                moratory: 0,
+      >(
+        ({
+          quantity,
+          _id_loan,
+          _id_borrower,
+          _id_lender,
+          ROI,
+          term,
+          completed,
+        }) => {
+          return {
+            updateOne: {
+              filter: { _id_loan, _id_borrower, _id_lender },
+              update: {
+                $inc: { quantity },
+                $setOnInsert: {
+                  _id: new ObjectId(),
+                  _id_lender,
+                  _id_borrower,
+                  _id_loan,
+                  created: now,
+                  updated: now,
+                  status: completed ? "up to date" : "financing",
+                  payments: 0,
+                  term,
+                  ROI,
+                  moratory: 0,
+                },
               },
+              upsert: true,
             },
-            upsert: true,
-          },
-        };
-      });
+          };
+        }
+      );
       //Actualizar inversiones
       investments.bulkWrite(investmentsOperations);
       return { validAccessToken, error: "" };

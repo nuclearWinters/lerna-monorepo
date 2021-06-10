@@ -100,7 +100,7 @@ describe("AddFunds tests", () => {
       }))
     ).toEqual([
       {
-        type: "CREDIT",
+        type: "credit",
         quantity: 50000,
       },
     ]);
@@ -180,7 +180,7 @@ describe("AddFunds tests", () => {
       }))
     ).toEqual([
       {
-        type: "WITHDRAWAL",
+        type: "withdrawal",
         quantity: -50000,
       },
     ]);
@@ -275,7 +275,7 @@ describe("AddFunds tests", () => {
       }))
     ).toEqual([
       {
-        type: "CREDIT",
+        type: "credit",
         quantity: 50000,
       },
     ]);

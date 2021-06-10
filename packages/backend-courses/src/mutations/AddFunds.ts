@@ -59,7 +59,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
           $push: {
             history: {
               _id: new ObjectId(),
-              type: quantity > 0 ? "CREDIT" : "WITHDRAWAL",
+              type: quantity > 0 ? "credit" : "withdrawal",
               quantity,
               created: new Date(),
             },

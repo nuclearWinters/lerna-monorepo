@@ -246,11 +246,13 @@ enum TransactionType {
   CREDIT
   WITHDRAWAL
   INVEST
+  COLLECT
 }
 
 enum InvestmentStatus {
   DELAY_PAYMENT
   UP_TO_DATE
+  FINANCING
   PAST_DUE
   PAID
 }

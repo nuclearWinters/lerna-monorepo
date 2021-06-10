@@ -91,7 +91,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
         { _id_loan: loan._id },
         {
           $inc: { payments: 1 },
-          $set: allPaid ? { status: "paid" } : {},
+          ...(allPaid ? { $set: { status: "paid" } } : {}),
         }
       );
       //La propiedad investors cantidades añadidas en diferentes momentos, se itera para hacer calculos sobre un solo monto prestado
@@ -142,7 +142,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
                 $push: {
                   history: {
                     _id: new ObjectId(),
-                    type: "CREDIT" as const,
+                    type: "collect",
                     quantity: amortize,
                     created: now,
                   },
@@ -189,7 +189,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
               $push: {
                 history: {
                   _id: new ObjectId(),
-                  type: "PAYMENT" as const,
+                  type: "payment",
                   quantity: -delayedTotal,
                   created: now,
                 },
