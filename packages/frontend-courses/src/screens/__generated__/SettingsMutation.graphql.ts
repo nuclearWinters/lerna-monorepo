@@ -14,22 +14,22 @@ export type UpdateUserInput = {
   clabe: string;
   mobile: string;
 };
-export type ProfileMutationVariables = {
+export type SettingsMutationVariables = {
   input: UpdateUserInput;
 };
-export type ProfileMutationResponse = {
+export type SettingsMutationResponse = {
   readonly updateUser: {
     readonly error: string;
     readonly validAccessToken: string;
   };
 };
-export type ProfileMutation = {
-  readonly response: ProfileMutationResponse;
-  readonly variables: ProfileMutationVariables;
+export type SettingsMutation = {
+  readonly response: SettingsMutationResponse;
+  readonly variables: SettingsMutationVariables;
 };
 
 /*
-mutation ProfileMutation(
+mutation SettingsMutation(
   $input: UpdateUserInput!
 ) {
   updateUser(input: $input) {
@@ -85,7 +85,7 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
-      name: "ProfileMutation",
+      name: "SettingsMutation",
       selections: v1 /*: any*/,
       type: "Mutation",
       abstractKey: null,
@@ -94,18 +94,18 @@ const node: ConcreteRequest = (function () {
     operation: {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
-      name: "ProfileMutation",
+      name: "SettingsMutation",
       selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "8b554baaf690a1bc29d96db7737a3817",
+      cacheID: "2f59602b39989d38c8915828d03ed896",
       id: null,
       metadata: {},
-      name: "ProfileMutation",
+      name: "SettingsMutation",
       operationKind: "mutation",
-      text: "mutation ProfileMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n    validAccessToken\n  }\n}\n",
+      text: "mutation SettingsMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n    validAccessToken\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "19132681145b201a23190a791746ac7c";
+(node as any).hash = "e8a6824be5ad701e4f26e139156c3567";
 export default node;

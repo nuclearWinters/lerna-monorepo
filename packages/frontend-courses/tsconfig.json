@@ -19,5 +19,5 @@
       "src/*": ["./src/*"]
     }
   },
-  "include": ["./src/**/*", "modules.d.ts"]
+  "include": ["./src/**/*", "src/modules.d.ts"]
 }

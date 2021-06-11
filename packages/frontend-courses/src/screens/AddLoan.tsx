@@ -93,17 +93,14 @@ export const AddLoan: FC<Props> = (props) => {
               },
               onCompleted: (response) => {
                 if (response.addLoan.error) {
-                  throw new Error(response.addLoan.error);
+                  return window.alert(response.addLoan.error);
                 }
-              },
-              updater: (store, data) => {
                 tokensAndData.tokens.accessToken =
-                  data.addLoan.validAccessToken;
-                const user = getDataFromToken(data.addLoan.validAccessToken);
+                  response.addLoan.validAccessToken;
+                const user = getDataFromToken(
+                  response.addLoan.validAccessToken
+                );
                 tokensAndData.data = user;
-              },
-              onError: (error) => {
-                window.alert(error.message);
               },
             });
           }}

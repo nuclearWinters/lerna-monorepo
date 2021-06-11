@@ -56,7 +56,7 @@ export const getStatus = () => {
 };
 
 const RepositoryNameQuery = graphql`
-  query AppQuery($id: String!, $status: [LoanStatus!], $borrower_id: String) {
+  query AppQuery($id: String!, $status: [LoanStatus!]!, $borrower_id: String) {
     ...AddInvestments_query
     ...MyTransactions_query
     ...MyInvestments_query

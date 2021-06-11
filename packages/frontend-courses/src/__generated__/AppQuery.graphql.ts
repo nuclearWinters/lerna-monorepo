@@ -13,7 +13,7 @@ export type LoanStatus =
   | "%future added value";
 export type AppQueryVariables = {
   id: string;
-  status?: Array<LoanStatus> | null;
+  status: Array<LoanStatus>;
   borrower_id?: string | null;
 };
 export type AppQueryResponse = {
@@ -32,7 +32,7 @@ export type AppQuery = {
 /*
 query AppQuery(
   $id: String!
-  $status: [LoanStatus!]
+  $status: [LoanStatus!]!
   $borrower_id: String
 ) {
   ...AddInvestments_query
@@ -137,25 +137,6 @@ fragment MyTransactions_query on Query {
   }
 }
 
-fragment Profile_user on User {
-  id
-  name
-  apellidoPaterno
-  apellidoMaterno
-  RFC
-  CURP
-  clabe
-  mobile
-  investments {
-    _id_loan
-    quantity
-    term
-    ROI
-    payments
-  }
-  accountAvailable
-}
-
 fragment RetireFunds_user on User {
   id
 }
@@ -173,15 +154,29 @@ fragment Routes_user on User {
     payments
   }
   accountAvailable
-  ...Profile_user
+  ...Settings_user
   ...AddFunds_user
   ...RetireFunds_user
   ...AddLoan_user
-  ...Settings_user
 }
 
 fragment Settings_user on User {
   id
+  name
+  apellidoPaterno
+  apellidoMaterno
+  RFC
+  CURP
+  clabe
+  mobile
+  investments {
+    _id_loan
+    quantity
+    term
+    ROI
+    payments
+  }
+  accountAvailable
 }
 */
 
@@ -717,14 +712,14 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "ac26d8fb1d15fbbb3ba695e72ad05c51",
+      cacheID: "32c8f2308cafc4f5709c513113609931",
       id: null,
       metadata: {},
       name: "AppQuery",
       operationKind: "query",
-      text: 'query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  user(id: $id) {\n    ...Routes_user\n    id\n  }\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: "", borrower_id: $borrower_id, status: $status) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: "", user_id: $id, status: [DELAY_PAYMENT, UP_TO_DATE]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: "", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment Profile_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n  ...Profile_user\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n  ...Settings_user\n}\n\nfragment Settings_user on User {\n  id\n}\n',
+      text: 'query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]!\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  user(id: $id) {\n    ...Routes_user\n    id\n  }\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: "", borrower_id: $borrower_id, status: $status) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: "", user_id: $id, status: [DELAY_PAYMENT, UP_TO_DATE]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: "", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n  ...Settings_user\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n}\n\nfragment Settings_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "a780f069a630b603c47e79b0bf921382";
+(node as any).hash = "05449b956ceb55baa2cbac819453fb94";
 export default node;

@@ -18,11 +18,7 @@ export type Routes_user = {
   }>;
   readonly accountAvailable: string;
   readonly " $fragmentRefs": FragmentRefs<
-    | "Profile_user"
-    | "AddFunds_user"
-    | "RetireFunds_user"
-    | "AddLoan_user"
-    | "Settings_user"
+    "Settings_user" | "AddFunds_user" | "RetireFunds_user" | "AddLoan_user"
   >;
   readonly " $refType": "Routes_user";
 };
@@ -122,7 +118,7 @@ const node: ReaderFragment = {
     {
       args: null,
       kind: "FragmentSpread",
-      name: "Profile_user",
+      name: "Settings_user",
     },
     {
       args: null,
@@ -139,14 +135,9 @@ const node: ReaderFragment = {
       kind: "FragmentSpread",
       name: "AddLoan_user",
     },
-    {
-      args: null,
-      kind: "FragmentSpread",
-      name: "Settings_user",
-    },
   ],
   type: "User",
   abstractKey: null,
 } as any;
-(node as any).hash = "2e454dd16815c1bebf2af561aead9232";
+(node as any).hash = "d76f1814fcd43a448335f929cc5baed1";
 export default node;

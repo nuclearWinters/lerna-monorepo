@@ -3,15 +3,12 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {
   graphql,
   useFragment,
-  commitLocalUpdate,
-  Environment,
-  useRelayEnvironment,
   useSubscription,
   ConnectionHandler,
 } from "react-relay";
 import { Routes_user$key } from "./__generated__/Routes_user.graphql";
 import {
-  Profile,
+  Account,
   AddInvestments,
   LogIn,
   SignUp,
@@ -32,6 +29,24 @@ import {
 } from "__generated__/RoutesInvestmentsSubscription.graphql";
 import { RoutesTransactionsSubscription } from "__generated__/RoutesTransactionsSubscription.graphql";
 import { RoutesUserSubscription } from "__generated__/RoutesUserSubscription.graphql";
+import { Icon } from "components/Icon";
+import { AccountInfo } from "components/AccountInfo";
+import { AccountLink } from "components/AccountLink";
+import {
+  faCartPlus,
+  faFileAlt,
+  faFunnelDollar,
+  faHandHoldingUsd,
+  faExchangeAlt,
+  faFolderOpen,
+  faUserAlt,
+  faUserCircle,
+  faSignOutAlt,
+  faFileContract,
+  faMoneyCheck,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AuthButton } from "components/AuthButton";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -47,7 +62,7 @@ const routesFragment = graphql`
       payments
     }
     accountAvailable
-    ...Profile_user
+    ...Settings_user
     ...AddFunds_user
     ...RetireFunds_user
     ...AddLoan_user
@@ -167,7 +182,6 @@ const subscriptionUser = graphql`
 export const Routes: FC<Props> = (props) => {
   const user = useFragment(routesFragment, props.user);
   const user_gid = user.id;
-  const environment = useRelayEnvironment();
   const configLoans = useMemo<
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
   >(
@@ -299,6 +313,7 @@ export const Routes: FC<Props> = (props) => {
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   useSubscription<RoutesUserSubscription>(configUser);
   const { isBorrower, isSupport } = tokensAndData.data;
+  const isLogged = user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=";
   const reducedInvestments = user.investments.reduce<IUserInvestments[]>(
     (acc, item) => {
       const index = acc.findIndex((acc) => acc._id_loan === item._id_loan);
@@ -332,65 +347,147 @@ export const Routes: FC<Props> = (props) => {
       >
         <div
           style={{
-            border: "1px solid black",
             display: "flex",
             flexDirection: "column",
           }}
         >
           {isBorrower ? (
             <>
-              <div>Valor de la cuenta</div>
-              <div>${(accountTotal / 100).toFixed(2)}</div>
-              <div>Saldo disponible</div>
-              <div>${user.accountAvailable}</div>
-              <Link to="/profile">Mi cuenta</Link>
-              <Link to="/addLoan">Pedir prestamo</Link>
-              <Link to="/myLoans">Mis prestamos</Link>
-              <Link to="/addFunds">Agregar fondos</Link>
-              <Link to="/retireFunds">Retirar fondos</Link>
-              <Link to="/settings">Settings</Link>
+              <Icon
+                isLogged={isLogged}
+                isBorrower={isBorrower}
+                isSupport={isSupport}
+              />
+              <AccountInfo
+                value={(accountTotal / 100).toFixed(2)}
+                title={"Valor de la cuenta"}
+                colorValue="rgb(1,120,221)"
+              />
+              <AccountInfo
+                value={user.accountAvailable}
+                title={"Saldo disponible"}
+                colorValue="rgb(58,179,152)"
+              />
+              <AccountLink icon={faFileAlt} title="Mi cuenta" path="/account" />
+              <AccountLink
+                icon={faMoneyCheck}
+                title="Pedir prestamo"
+                path="/addLoan"
+              />
+              <AccountLink
+                icon={faFileContract}
+                title="Mis prestamos"
+                path="/myLoans"
+              />
+              <AccountLink
+                icon={faFunnelDollar}
+                title="Agregar fondos"
+                path="/addFunds"
+              />
+              <AccountLink
+                icon={faHandHoldingUsd}
+                title="Retirar fondos"
+                path="/retireFunds"
+              />
+              <AccountLink icon={faUserAlt} title="Settings" path="/settings" />
             </>
           ) : isSupport ? (
             <>
-              <Link to="/approveLoan">Aprobar prestamo</Link>
-              <Link to="/settings">Settings</Link>
+              <Icon
+                isLogged={isLogged}
+                isBorrower={isBorrower}
+                isSupport={isSupport}
+              />
+              <AccountLink
+                icon={faFileContract}
+                title="Aprobar prestamo"
+                path="/approveLoan"
+              />
+              <AccountLink icon={faUserAlt} title="Settings" path="/settings" />
             </>
           ) : (
             <>
-              <div>Valor de la cuenta</div>
-              <div>${(accountTotal / 100).toFixed(2)}</div>
-              <div>Saldo disponible</div>
-              <div>${user.accountAvailable}</div>
-              <Link to="/profile">Mi cuenta</Link>
-              <Link to="/addInvestments">Comprar</Link>
-              <Link to="/addFunds">Agregar fondos</Link>
-              <Link to="/retireFunds">Retirar fondos</Link>
-              <Link to="/myInvestments">Mis Inversiones</Link>
-              <Link to="/myTransactions">Mis movimientos</Link>
-              <Link to="/settings">Settings</Link>
+              <Icon
+                isLogged={isLogged}
+                isBorrower={isBorrower}
+                isSupport={isSupport}
+              />
+              <AccountInfo
+                value={(accountTotal / 100).toFixed(2)}
+                title={"Valor de la cuenta"}
+                colorValue="rgb(1,120,221)"
+              />
+              <AccountInfo
+                value={user.accountAvailable}
+                title={"Saldo disponible"}
+                colorValue="rgb(58,179,152)"
+              />
+              <AccountLink icon={faFileAlt} title="Mi cuenta" path="/account" />
+              <AccountLink
+                icon={faCartPlus}
+                title="Comprar"
+                path="/addInvestments"
+              />
+              <AccountLink
+                icon={faFunnelDollar}
+                title="Agregar fondos"
+                path="/addFunds"
+              />
+              <AccountLink
+                icon={faHandHoldingUsd}
+                title="Retirar fondos"
+                path="/retireFunds"
+              />
+              <AccountLink
+                icon={faFolderOpen}
+                title="Mis Inversiones"
+                path="/myInvestments"
+              />
+              <AccountLink
+                icon={faExchangeAlt}
+                title="Mis movimientos"
+                path="/myTransactions"
+              />
+              <AccountLink icon={faUserAlt} title="Settings" path="/settings" />
             </>
           )}
         </div>
         <div
           style={{
-            border: "1px solid black",
             flex: 1,
             display: "flex",
             flexDirection: "column",
           }}
         >
-          {user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=" ? (
-            <>
-              <Link to="/profile" style={{ textAlign: "end" }}>
-                ¡Bienvenido!{" "}
+          {isLogged ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faUserCircle}
+                size={"2x"}
+                color={"rgba(255,90,96,0.5)"}
+                style={{ margin: "12px 0px 12px 0px" }}
+              />
+              <Link
+                to="/settings"
+                style={{
+                  textAlign: "end",
+                  textDecoration: "none",
+                  color: "black",
+                  marginLeft: 10,
+                }}
+              >
                 {`${user.name || ""} ${user.apellidoPaterno || ""} ${
                   user.apellidoMaterno || ""
-                }`}
+                }`.toUpperCase()}
               </Link>
-              <div
-                style={{ textAlign: "end" }}
+              <FontAwesomeIcon
                 onClick={() => {
-                  commitDeleteTokensLocally(environment);
                   tokensAndData.tokens = { accessToken: "", refreshToken: "" };
                   tokensAndData.data = {
                     _id: "",
@@ -403,18 +500,39 @@ export const Routes: FC<Props> = (props) => {
                   };
                   props.refetch();
                 }}
-              >
-                Log Out
-              </div>
-            </>
+                icon={faSignOutAlt}
+                size={"2x"}
+                color={"rgba(62,62,62)"}
+                style={{ margin: "0px 10px" }}
+              />
+            </div>
           ) : (
-            <div>
-              <Link to="/login">Log In</Link>
-              <Link to="/register">Register</Link>
-              <span>No user</span>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faUserCircle}
+                color={"rgb(140,140,140)"}
+                size={"2x"}
+                style={{ margin: "12px 0px 12px 0px" }}
+              />
+              <AuthButton
+                text="Iniciar sesión"
+                style={{ backgroundColor: "#1bbc9b" }}
+                path="/login"
+              />
+              <AuthButton
+                text="Crear cuenta"
+                style={{ backgroundColor: "#2c92db" }}
+                path="/register"
+              />
             </div>
           )}
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, display: "flex" }}>
             {isBorrower ? (
               <Switch>
                 <Route path="/login">
@@ -423,8 +541,8 @@ export const Routes: FC<Props> = (props) => {
                 <Route path="/register">
                   <SignUp refetch={props.refetch} />
                 </Route>
-                <Route path="/profile">
-                  <Profile user={user} />
+                <Route path="/account">
+                  <Account />
                 </Route>
                 <Route path="/addLoan">
                   <AddLoan user={user} />
@@ -465,8 +583,8 @@ export const Routes: FC<Props> = (props) => {
                 <Route path="/register">
                   <SignUp refetch={props.refetch} />
                 </Route>
-                <Route path="/profile">
-                  <Profile user={user} />
+                <Route path="/account">
+                  <Account />
                 </Route>
                 <Route path="/addInvestments">
                   <AddInvestments
@@ -503,12 +621,3 @@ export const Routes: FC<Props> = (props) => {
     </Router>
   );
 };
-
-function commitDeleteTokensLocally(environment: Environment) {
-  return commitLocalUpdate(environment, (store) => {
-    const root = store.getRoot();
-    const tokens = root.getLinkedRecord("tokens");
-    tokens?.setValue("", "accessToken");
-    tokens?.setValue("", "refreshToken");
-  });
-}
