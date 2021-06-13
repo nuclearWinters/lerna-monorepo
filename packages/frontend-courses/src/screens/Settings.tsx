@@ -7,6 +7,14 @@ import { Settings_user$key } from "./__generated__/Settings_user.graphql";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
 import { SettingsBlacklistUserMutation } from "./__generated__/SettingsBlacklistUserMutation.graphql";
+import { WrapperBig } from "components/WrapperBig";
+import { Main } from "components/Main";
+import { Title } from "components/Title";
+import { Input } from "components/Input";
+import { Space } from "components/Space";
+import { Rows } from "components/Rows";
+import { Columns } from "components/Colums";
+import { useTranslation } from "react-i18next";
 
 const settingsFragment = graphql`
   fragment Settings_user on User {
@@ -35,6 +43,7 @@ type Props = {
 };
 
 export const Settings: FC<Props> = (props) => {
+  const { t } = useTranslation();
   const [commitBlacklist, isInFlightBlacklist] =
     useMutation<SettingsBlacklistUserMutation>(graphql`
       mutation SettingsBlacklistUserMutation($input: BlacklistUserInput!) {
@@ -75,215 +84,174 @@ export const Settings: FC<Props> = (props) => {
   };
   const isChanged = useRef(false);
   return (
-    <div style={styles.main}>
-      <div style={styles.wrapper}>
-        <div style={styles.title}>Datos generales</div>
+    <Main>
+      <WrapperBig style={{ margin: "30px 60px" }}>
+        <Title text={t("Datos generales")} />
         <div style={styles.form}>
-          <Label label="Nombre(s)" />
-          <input
-            placeholder="Nombre(s)"
+          <Label label={t("Nombre(s)")} />
+          <Input
+            placeholder={t("Nombre(s)")}
             value={formUser.name}
             name="name"
             onChange={handleFormUser}
-            style={styles.input}
           />
-          <div style={styles.twoColumns}>
-            <div style={styles.columnLeft}>
-              <Label label="Apellido paterno" />
-              <input
-                placeholder="Apellido paterno"
+          <Columns>
+            <Rows style={styles.flex}>
+              <Label label={t("Apellido paterno")} />
+              <Input
+                placeholder={t("Apellido paterno")}
                 value={formUser.apellidoPaterno}
                 name="apellidoPaterno"
                 onChange={handleFormUser}
-                style={styles.input}
               />
-            </div>
-            <div style={styles.columnRight}>
-              <Label label="Apellido materno" />
-              <input
-                placeholder="Apellido materno"
+            </Rows>
+            <Space w={20} />
+            <Rows style={styles.flex}>
+              <Label label={t("Apellido materno")} />
+              <Input
+                placeholder={t("Apellido materno")}
                 value={formUser.apellidoMaterno}
                 name="apellidoMaterno"
                 onChange={handleFormUser}
-                style={styles.input}
               />
-            </div>
-          </div>
-          <Label label="RFC" />
-          <input
-            placeholder="RFC"
+            </Rows>
+          </Columns>
+          <Label label={t("RFC")} />
+          <Input
+            placeholder={t("RFC")}
             value={formUser.RFC}
             name="RFC"
             onChange={handleFormUser}
-            style={styles.input}
           />
-          <div style={styles.twoColumns}>
-            <div style={styles.columnLeft}>
-              <Label label="CURP" />
-              <input
-                placeholder="CURP"
+          <Columns>
+            <Rows style={styles.flex}>
+              <Label label={t("CURP")} />
+              <Input
+                placeholder={t("CURP")}
                 value={formUser.CURP}
                 name="CURP"
                 onChange={handleFormUser}
-                style={styles.input}
               />
-            </div>
-            <div style={styles.columnRight}>
-              <Label label="Clabe" />
-              <input
-                placeholder="Clabe"
+            </Rows>
+            <Space w={20} />
+            <Rows style={styles.flex}>
+              <Label label={t("Clabe")} />
+              <Input
+                placeholder={t("Clabe")}
                 value={formUser.clabe}
                 name="clabe"
                 onChange={handleFormUser}
-                style={styles.input}
               />
-            </div>
-          </div>
-          <div style={styles.twoColumns}>
-            <div style={styles.columnLeft}>
-              <Label label="Celular" />
-              <input
-                placeholder="Celular"
+            </Rows>
+          </Columns>
+          <Columns>
+            <Rows style={styles.flex}>
+              <Label label={t("Celular")} />
+              <Input
+                placeholder={t("Celular")}
                 value={formUser.mobile}
                 name="mobile"
                 onChange={handleFormUser}
-                style={styles.input}
               />
-            </div>
-            <div style={styles.columnRight}>
-              <Label label="Email" />
-              <input
-                placeholder="Email"
+            </Rows>
+            <Space w={20} />
+            <Rows style={styles.flex}>
+              <Label label={t("Email")} />
+              <Input
+                placeholder={t("Email")}
                 value={tokensAndData.data.email}
                 name="email"
-                style={styles.input}
                 disabled={true}
               />
-            </div>
-          </div>
-          {isInFlight ? (
-            <Spinner />
-          ) : (
-            <CustomButton
-              text="Actualizar"
-              style={{ backgroundColor: "#1bbc9b", marginTop: 30 }}
-              onClick={() => {
-                commit({
-                  variables: {
-                    input: {
-                      ...formUser,
-                    },
-                  },
-                  onCompleted: (response) => {
-                    if (response.updateUser.error) {
-                      return window.alert(response.updateUser.error);
-                    }
-                    tokensAndData.tokens.accessToken =
-                      response.updateUser.validAccessToken;
-                    const user = getDataFromToken(
-                      response.updateUser.validAccessToken
-                    );
-                    tokensAndData.data = user;
-                  },
-                });
-              }}
-            />
-          )}
-          {isChanged.current && (
-            <CustomButton
-              text="Restaurar"
-              style={{ margin: "30px 0px" }}
-              onClick={() => {
-                isChanged.current = false;
-                setFormUser({
-                  user_gid: user.id,
-                  name: user.name,
-                  apellidoMaterno: user.apellidoMaterno,
-                  apellidoPaterno: user.apellidoPaterno,
-                  CURP: user.CURP,
-                  RFC: user.RFC,
-                  mobile: user.mobile,
-                  clabe: user.clabe,
-                });
-              }}
-            />
-          )}
-          {user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=" &&
-            (isInFlightBlacklist ? (
+            </Rows>
+          </Columns>
+          <Space h={30} />
+          <Columns style={{ justifyContent: "center" }}>
+            {isInFlight ? (
               <Spinner />
             ) : (
               <CustomButton
-                text="Bloquear cuenta"
-                style={{
-                  margin: "30px 0px",
-                  backgroundColor: "rgb(130,130,130)",
-                }}
+                text={t("Refrescar")}
                 onClick={() => {
-                  commitBlacklist({
+                  commit({
                     variables: {
                       input: {
-                        user_gid: user.id,
+                        ...formUser,
                       },
                     },
                     onCompleted: (response) => {
-                      if (response.blacklistUser.error) {
-                        return window.alert(response.blacklistUser.error);
+                      if (response.updateUser.error) {
+                        return window.alert(response.updateUser.error);
                       }
                       tokensAndData.tokens.accessToken =
-                        response.blacklistUser.validAccessToken;
-                      tokensAndData.tokens.refreshToken =
-                        response.blacklistUser.validAccessToken;
-                      props.refetch();
+                        response.updateUser.validAccessToken;
+                      const user = getDataFromToken(
+                        response.updateUser.validAccessToken
+                      );
+                      tokensAndData.data = user;
                     },
                   });
                 }}
               />
-            ))}
+            )}
+            <Space w={30} />
+            {isChanged.current && (
+              <CustomButton
+                text={t("Restaurar")}
+                color="secondary"
+                onClick={() => {
+                  isChanged.current = false;
+                  setFormUser({
+                    user_gid: user.id,
+                    name: user.name,
+                    apellidoMaterno: user.apellidoMaterno,
+                    apellidoPaterno: user.apellidoPaterno,
+                    CURP: user.CURP,
+                    RFC: user.RFC,
+                    mobile: user.mobile,
+                    clabe: user.clabe,
+                  });
+                }}
+              />
+            )}
+            <Space w={30} />
+            {user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=" &&
+              (isInFlightBlacklist ? (
+                <Spinner />
+              ) : (
+                <CustomButton
+                  text={t("Bloquear cuenta")}
+                  color="warning"
+                  onClick={() => {
+                    commitBlacklist({
+                      variables: {
+                        input: {
+                          user_gid: user.id,
+                        },
+                      },
+                      onCompleted: (response) => {
+                        if (response.blacklistUser.error) {
+                          return window.alert(response.blacklistUser.error);
+                        }
+                        tokensAndData.tokens.accessToken =
+                          response.blacklistUser.validAccessToken;
+                        tokensAndData.tokens.refreshToken =
+                          response.blacklistUser.validAccessToken;
+                        props.refetch();
+                      },
+                    });
+                  }}
+                />
+              ))}
+          </Columns>
+          <Space h={30} />
         </div>
-      </div>
-    </div>
+      </WrapperBig>
+    </Main>
   );
 };
 
-const styles: Record<
-  | "input"
-  | "wrapper"
-  | "main"
-  | "title"
-  | "form"
-  | "twoColumns"
-  | "columnRight"
-  | "columnLeft",
-  CSSProperties
-> = {
-  input: {
-    borderColor: "rgba(118,118,118,0.3)",
-    borderWidth: 1,
-    borderRadius: 8,
-    fontSize: 20,
-    color: "rgb(62,62,62)",
-    padding: "6px 6px",
-  },
-  wrapper: {
-    backgroundColor: "rgb(255,255,255)",
-    margin: "30px 60px",
-    borderRadius: 8,
-    border: "1px solid rgb(203,203,203)",
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-  },
-  main: {
-    backgroundColor: "rgb(248,248,248)",
-    flex: 1,
-    display: "flex",
-  },
-  title: {
-    borderBottom: "1px solid rgb(203,203,203)",
-    textAlign: "center",
-    fontSize: 26,
-    padding: "14px 0px",
-  },
+const styles: Record<"form" | "flex", CSSProperties> = {
   form: {
     flex: 1,
     display: "flex",
@@ -291,20 +259,7 @@ const styles: Record<
     width: "70%",
     flexDirection: "column",
   },
-  twoColumns: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  columnRight: {
-    display: "flex",
-    flexDirection: "column",
+  flex: {
     flex: 1,
-    marginLeft: 10,
-  },
-  columnLeft: {
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-    marginRight: 10,
   },
 };

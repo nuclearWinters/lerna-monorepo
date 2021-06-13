@@ -24,10 +24,6 @@ describe("BlacklistUserMutation tests", () => {
   });
 
   afterAll(async () => {
-    delete app.locals.db;
-    await dbInstance
-      .collection<UserMongo>("users")
-      .deleteMany({ _id: new ObjectId("000000000000000000000070") });
     await client.close();
   });
 

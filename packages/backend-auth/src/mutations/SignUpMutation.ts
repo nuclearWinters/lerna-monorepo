@@ -1,5 +1,5 @@
 import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull } from "graphql";
+import { GraphQLString, GraphQLNonNull, GraphQLBoolean } from "graphql";
 import { ACCESSSECRET, REFRESHSECRET } from "../config";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
@@ -7,9 +7,9 @@ import { ObjectId } from "mongodb";
 import { channelSendToQueue, jwt } from "../utils";
 
 interface Input {
-  username: string;
   email: string;
   password: string;
+  isLender: boolean;
 }
 
 type Payload = {
@@ -25,6 +25,7 @@ export const SignUpMutation = mutationWithClientMutationId({
   inputFields: {
     password: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
+    isLender: { type: new GraphQLNonNull(GraphQLBoolean) },
   },
   outputFields: {
     error: {
@@ -41,7 +42,7 @@ export const SignUpMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { email, password }: Input,
+    { email, password, isLender }: Input,
     { users, ch }: Context
   ): Promise<Payload> => {
     try {
@@ -53,8 +54,8 @@ export const SignUpMutation = mutationWithClientMutationId({
         _id,
         email,
         password: hash_password,
-        isLender: true,
-        isBorrower: false,
+        isLender: isLender,
+        isBorrower: !isLender,
         isSupport: false,
       });
       const refreshToken = jwt.sign(

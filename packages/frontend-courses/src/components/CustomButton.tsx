@@ -5,11 +5,30 @@ interface IProps {
   onClick: () => void;
   text: string;
   style?: CSSProperties;
+  color?: "primary" | "secondary" | "warning";
 }
 
-export const CustomButton: FC<IProps> = ({ onClick, style, text }) => {
+export const CustomButton: FC<IProps> = ({
+  onClick,
+  style,
+  text,
+  color = "primary",
+}) => {
   return (
-    <Button onClick={onClick} style={{ ...container, ...style }} text={text} />
+    <Button
+      onClick={onClick}
+      style={{
+        ...container,
+        ...style,
+        backgroundColor:
+          color === "primary"
+            ? "rgb(0,100,180)"
+            : color === "secondary"
+            ? "#1bbc9b"
+            : "rgb(130,130,130)",
+      }}
+      text={text}
+    />
   );
 };
 

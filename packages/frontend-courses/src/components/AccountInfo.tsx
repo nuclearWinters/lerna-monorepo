@@ -22,7 +22,7 @@ export const AccountInfo: FC<Props> = ({ title, value, colorValue }) => {
         {title}
       </div>
       <div style={{ color: colorValue, fontSize: 16, fontWeight: "bold" }}>
-        ${value}
+        {value}
       </div>
     </div>
   );

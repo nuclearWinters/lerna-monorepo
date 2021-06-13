@@ -13,6 +13,7 @@ import { graphql } from "react-relay";
 import { Routes } from "./Routes";
 import jwtDecode from "jwt-decode";
 import { LoanStatus } from "__generated__/RoutesLoansSubscription.graphql";
+import { useTranslation } from "react-i18next";
 
 const { Suspense } = React;
 
@@ -103,9 +104,10 @@ const AppQueryRoot: FC = () => {
 };
 
 export const App: FC = () => {
+  const { t } = useTranslation();
   return (
     <RelayEnvironmentProvider environment={RelayEnvironment}>
-      <Suspense fallback={"Loading..."}>
+      <Suspense fallback={t("Loading") + "..."}>
         <AppQueryRoot />
       </Suspense>
     </RelayEnvironmentProvider>

@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, useMemo, useRef, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {
   graphql,
@@ -47,6 +47,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthButton } from "components/AuthButton";
+import { Rows } from "components/Rows";
+import { generateCents, generateCurrency } from "utils";
+import { useTranslation } from "react-i18next";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -67,6 +70,7 @@ const routesFragment = graphql`
     ...RetireFunds_user
     ...AddLoan_user
     ...Settings_user
+    ...Account_user
   }
 `;
 
@@ -76,7 +80,7 @@ type Props = {
   refetch: () => void;
 };
 
-interface IUserInvestments {
+export interface IUserInvestments {
   _id_loan: string;
   quantity: number;
   term: number;
@@ -180,8 +184,10 @@ const subscriptionUser = graphql`
 `;
 
 export const Routes: FC<Props> = (props) => {
+  const { t } = useTranslation();
   const user = useFragment(routesFragment, props.user);
   const user_gid = user.id;
+  const userRef = useRef(user_gid);
   const configLoans = useMemo<
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
   >(
@@ -193,7 +199,8 @@ export const Routes: FC<Props> = (props) => {
           const root = store.getRoot();
           const connectionRecord = ConnectionHandler.getConnection(
             root,
-            "AddInvestments_query_loans"
+            "AddInvestments_query_loans",
+            { status: getStatus() }
           );
           if (!connectionRecord) {
             throw new Error("no existe el connectionRecord");
@@ -224,7 +231,13 @@ export const Routes: FC<Props> = (props) => {
       variables: {
         user_gid,
         status:
-          investmentStatus === "on_going"
+          userRef.current !== user_gid
+            ? ([
+                "UP_TO_DATE",
+                "DELAY_PAYMENT",
+                "FINANCING",
+              ] as InvestmentStatus[])
+            : investmentStatus === "on_going"
             ? ([
                 "UP_TO_DATE",
                 "DELAY_PAYMENT",
@@ -241,6 +254,20 @@ export const Routes: FC<Props> = (props) => {
             "MyInvestments_query_investments",
             {
               user_id: tokensAndData.data._id,
+              status:
+                userRef.current !== user_gid
+                  ? ([
+                      "UP_TO_DATE",
+                      "DELAY_PAYMENT",
+                      "FINANCING",
+                    ] as InvestmentStatus[])
+                  : investmentStatus === "on_going"
+                  ? ([
+                      "UP_TO_DATE",
+                      "DELAY_PAYMENT",
+                      "FINANCING",
+                    ] as InvestmentStatus[])
+                  : (["PAID", "PAST_DUE"] as InvestmentStatus[]),
             }
           );
           if (!connectionRecord) {
@@ -318,9 +345,9 @@ export const Routes: FC<Props> = (props) => {
     (acc, item) => {
       const index = acc.findIndex((acc) => acc._id_loan === item._id_loan);
       if (index === -1) {
-        acc.push({ ...item, quantity: Number(item.quantity) * 100 });
+        acc.push({ ...item, quantity: item.quantity });
       } else {
-        acc[index].quantity += Number(item.quantity) * 100;
+        acc[index].quantity += item.quantity;
       }
       return acc;
     },
@@ -333,8 +360,7 @@ export const Routes: FC<Props> = (props) => {
         Math.floor(quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)) *
         (term - payments);
       return acc + owes;
-    }, 0) +
-    Number(user.accountAvailable) * 100;
+    }, 0) + generateCents(user.accountAvailable);
   return (
     <Router>
       <div
@@ -345,12 +371,7 @@ export const Routes: FC<Props> = (props) => {
           width: "100vw",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <Rows>
           {isBorrower ? (
             <>
               <Icon
@@ -359,34 +380,38 @@ export const Routes: FC<Props> = (props) => {
                 isSupport={isSupport}
               />
               <AccountInfo
-                value={(accountTotal / 100).toFixed(2)}
-                title={"Valor de la cuenta"}
+                value={generateCurrency(accountTotal)}
+                title={t("Valor de la cuenta")}
                 colorValue="rgb(1,120,221)"
               />
               <AccountInfo
                 value={user.accountAvailable}
-                title={"Saldo disponible"}
+                title={t("Saldo disponible")}
                 colorValue="rgb(58,179,152)"
               />
-              <AccountLink icon={faFileAlt} title="Mi cuenta" path="/account" />
+              <AccountLink
+                icon={faFileAlt}
+                title={t("Mi cuenta")}
+                path="/account"
+              />
               <AccountLink
                 icon={faMoneyCheck}
-                title="Pedir prestamo"
+                title={t("Pedir prestamo")}
                 path="/addLoan"
               />
               <AccountLink
                 icon={faFileContract}
-                title="Mis prestamos"
+                title={t("Mis prestamos")}
                 path="/myLoans"
               />
               <AccountLink
                 icon={faFunnelDollar}
-                title="Agregar fondos"
+                title={t("Agregar fondos")}
                 path="/addFunds"
               />
               <AccountLink
                 icon={faHandHoldingUsd}
-                title="Retirar fondos"
+                title={t("Retirar fondos")}
                 path="/retireFunds"
               />
               <AccountLink icon={faUserAlt} title="Settings" path="/settings" />
@@ -400,7 +425,7 @@ export const Routes: FC<Props> = (props) => {
               />
               <AccountLink
                 icon={faFileContract}
-                title="Aprobar prestamo"
+                title={t("Aprobar prestamo")}
                 path="/approveLoan"
               />
               <AccountLink icon={faUserAlt} title="Settings" path="/settings" />
@@ -413,50 +438,56 @@ export const Routes: FC<Props> = (props) => {
                 isSupport={isSupport}
               />
               <AccountInfo
-                value={(accountTotal / 100).toFixed(2)}
-                title={"Valor de la cuenta"}
+                value={generateCurrency(accountTotal)}
+                title={t("Valor de la cuenta")}
                 colorValue="rgb(1,120,221)"
               />
               <AccountInfo
                 value={user.accountAvailable}
-                title={"Saldo disponible"}
+                title={t("Saldo disponible")}
                 colorValue="rgb(58,179,152)"
               />
-              <AccountLink icon={faFileAlt} title="Mi cuenta" path="/account" />
+              <AccountLink
+                icon={faFileAlt}
+                title={t("Mi cuenta")}
+                path="/account"
+              />
               <AccountLink
                 icon={faCartPlus}
-                title="Comprar"
+                title={t("Comprar")}
                 path="/addInvestments"
               />
               <AccountLink
                 icon={faFunnelDollar}
-                title="Agregar fondos"
+                title={t("Agregar fondos")}
                 path="/addFunds"
               />
               <AccountLink
                 icon={faHandHoldingUsd}
-                title="Retirar fondos"
+                title={t("Retirar fondos")}
                 path="/retireFunds"
               />
               <AccountLink
                 icon={faFolderOpen}
-                title="Mis Inversiones"
+                title={t("Mis Inversiones")}
                 path="/myInvestments"
               />
               <AccountLink
                 icon={faExchangeAlt}
-                title="Mis movimientos"
+                title={t("Mis movimientos")}
                 path="/myTransactions"
               />
-              <AccountLink icon={faUserAlt} title="Settings" path="/settings" />
+              <AccountLink
+                icon={faUserAlt}
+                title={t("Settings")}
+                path="/settings"
+              />
             </>
           )}
-        </div>
-        <div
+        </Rows>
+        <Rows
           style={{
             flex: 1,
-            display: "flex",
-            flexDirection: "column",
           }}
         >
           {isLogged ? (
@@ -503,7 +534,7 @@ export const Routes: FC<Props> = (props) => {
                 icon={faSignOutAlt}
                 size={"2x"}
                 color={"rgba(62,62,62)"}
-                style={{ margin: "0px 10px" }}
+                style={{ margin: "0px 10px", cursor: "pointer" }}
               />
             </div>
           ) : (
@@ -521,12 +552,12 @@ export const Routes: FC<Props> = (props) => {
                 style={{ margin: "12px 0px 12px 0px" }}
               />
               <AuthButton
-                text="Iniciar sesión"
+                text={t("Iniciar sesión")}
                 style={{ backgroundColor: "#1bbc9b" }}
                 path="/login"
               />
               <AuthButton
-                text="Crear cuenta"
+                text={t("Crear cuenta")}
                 style={{ backgroundColor: "#2c92db" }}
                 path="/register"
               />
@@ -542,7 +573,7 @@ export const Routes: FC<Props> = (props) => {
                   <SignUp refetch={props.refetch} />
                 </Route>
                 <Route path="/account">
-                  <Account />
+                  <Account user={user} />
                 </Route>
                 <Route path="/addLoan">
                   <AddLoan user={user} />
@@ -584,7 +615,7 @@ export const Routes: FC<Props> = (props) => {
                   <SignUp refetch={props.refetch} />
                 </Route>
                 <Route path="/account">
-                  <Account />
+                  <Account user={user} />
                 </Route>
                 <Route path="/addInvestments">
                   <AddInvestments
@@ -616,7 +647,7 @@ export const Routes: FC<Props> = (props) => {
               </Switch>
             )}
           </div>
-        </div>
+        </Rows>
       </div>
     </Router>
   );

@@ -4,11 +4,7 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type Routes_user = {
-  readonly id: string;
-  readonly name: string;
-  readonly apellidoPaterno: string;
-  readonly apellidoMaterno: string;
+export type Account_user = {
   readonly investments: ReadonlyArray<{
     readonly _id_loan: string;
     readonly quantity: number;
@@ -17,55 +13,20 @@ export type Routes_user = {
     readonly payments: number;
   }>;
   readonly accountAvailable: string;
-  readonly " $fragmentRefs": FragmentRefs<
-    | "Settings_user"
-    | "AddFunds_user"
-    | "RetireFunds_user"
-    | "AddLoan_user"
-    | "Account_user"
-  >;
-  readonly " $refType": "Routes_user";
+  readonly " $refType": "Account_user";
 };
-export type Routes_user$data = Routes_user;
-export type Routes_user$key = {
-  readonly " $data"?: Routes_user$data;
-  readonly " $fragmentRefs": FragmentRefs<"Routes_user">;
+export type Account_user$data = Account_user;
+export type Account_user$key = {
+  readonly " $data"?: Account_user$data;
+  readonly " $fragmentRefs": FragmentRefs<"Account_user">;
 };
 
 const node: ReaderFragment = {
   argumentDefinitions: [],
   kind: "Fragment",
   metadata: null,
-  name: "Routes_user",
+  name: "Account_user",
   selections: [
-    {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "id",
-      storageKey: null,
-    },
-    {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "name",
-      storageKey: null,
-    },
-    {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "apellidoPaterno",
-      storageKey: null,
-    },
-    {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "apellidoMaterno",
-      storageKey: null,
-    },
     {
       alias: null,
       args: null,
@@ -119,34 +80,9 @@ const node: ReaderFragment = {
       name: "accountAvailable",
       storageKey: null,
     },
-    {
-      args: null,
-      kind: "FragmentSpread",
-      name: "Settings_user",
-    },
-    {
-      args: null,
-      kind: "FragmentSpread",
-      name: "AddFunds_user",
-    },
-    {
-      args: null,
-      kind: "FragmentSpread",
-      name: "RetireFunds_user",
-    },
-    {
-      args: null,
-      kind: "FragmentSpread",
-      name: "AddLoan_user",
-    },
-    {
-      args: null,
-      kind: "FragmentSpread",
-      name: "Account_user",
-    },
   ],
   type: "User",
   abstractKey: null,
 } as any;
-(node as any).hash = "8b007ef20a6966af4f72ddaf4ad8b0a0";
+(node as any).hash = "1884c9fb8ba3ee24887c8a3fef615176";
 export default node;

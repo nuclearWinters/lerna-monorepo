@@ -9,6 +9,16 @@ import { getDataFromToken, tokensAndData } from "App";
 import { LoanRow } from "components/LoanRow";
 import { Spinner } from "components/Spinner";
 import { CustomButton } from "components/CustomButton";
+import { Main } from "components/Main";
+import { Title } from "components/Title";
+import { WrapperBig } from "components/WrapperBig";
+import { Rows } from "components/Rows";
+import { Space } from "components/Space";
+import { Columns } from "components/Colums";
+import { TableColumnName } from "components/TableColumnName";
+import { Table } from "components/Table";
+import { generateCurrency } from "utils";
+import { useTranslation } from "react-i18next";
 
 const debtInSaleFragment = graphql`
   fragment AddInvestments_query on Query
@@ -50,6 +60,7 @@ interface ILends {
 }
 
 export const AddInvestments: FC<Props> = (props) => {
+  const { t } = useTranslation();
   const user_gid = props?.user?.id || "";
   const { isLender } = tokensAndData.data;
   const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
@@ -67,16 +78,19 @@ export const AddInvestments: FC<Props> = (props) => {
   >(debtInSaleFragment, props.data);
 
   const columns = [
-    { key: "id", title: "ID" },
-    { key: "_id_user", title: "Solicitante" },
-    { key: "score", title: "Calif." },
-    { key: "ROI", title: "Retorno anual" },
-    { key: "goal", title: "Monto" },
-    { key: "term", title: "Periodo" },
-    { key: "raised", title: "Faltan" },
-    { key: "expiry", title: "Termina" },
-    { key: "lend", title: "Prestar" },
-    { key: "refetech", title: "Actualizar" },
+    { key: "id", title: t("ID") },
+    { key: "_id_user", title: t("Solicitante") },
+    { key: "score", title: t("Calif.") },
+    { key: "ROI", title: t("Retorno anual") },
+    { key: "goal", title: t("Monto") },
+    { key: "term", title: t("Periodo") },
+    { key: "raised", title: t("Faltan") },
+    { key: "expiry", title: t("Termina") },
+    {
+      key: "lend",
+      title: tokensAndData.data.isLender ? t("Prestar") : t("Estatus"),
+    },
+    { key: "refetech", title: t("Refrescar") },
   ];
 
   const [lends, setLends] = useState<ILends[]>([]);
@@ -93,83 +107,44 @@ export const AddInvestments: FC<Props> = (props) => {
   };
 
   return (
-    <div style={styles.main}>
-      <div style={styles.wrapper}>
-        <div style={styles.title}>Solicitudes</div>
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "row",
-            margin: "10px 10px",
-            backgroundColor: "rgba(255,90,96,0.1)",
-            borderRadius: 8,
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                padding: "4px 0px",
-                color: "rgb(62,62,62)",
-              }}
-            >
+    <Main>
+      <WrapperBig>
+        <Title text={t("Solicitudes")} />
+        <Table color="primary">
+          <Rows style={{ flex: 1 }}>
+            <Columns>
               {columns.map((column) => (
-                <div key={column.key} style={{ flex: 1, textAlign: "center" }}>
+                <TableColumnName key={column.key}>
                   {column.title}
-                </div>
+                </TableColumnName>
               ))}
-            </div>
-            <div>
-              {data.loans &&
-                data.loans.edges &&
-                data.loans.edges.map((edge) => {
-                  if (edge && edge.node) {
-                    const value = getValue(edge.node.id);
-                    return (
-                      <LoanRow
-                        key={edge.node.id}
-                        setLends={setLends}
-                        loan={edge.node}
-                        value={value}
-                      />
-                    );
-                  }
-                  return null;
-                })}
-            </div>
-          </div>
+            </Columns>
+            {data.loans &&
+              data.loans.edges &&
+              data.loans.edges.map((edge) => {
+                if (edge && edge.node) {
+                  const value = getValue(edge.node.id);
+                  return (
+                    <LoanRow
+                      key={edge.node.id}
+                      setLends={setLends}
+                      loan={edge.node}
+                      value={value}
+                    />
+                  );
+                }
+                return null;
+              })}
+          </Rows>
           {isLender && (
-            <div
-              style={{
-                width: 300,
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+            <Rows style={{ width: 300 }}>
               {isInFlight ? (
                 <Spinner />
               ) : (
-                <div
-                  style={{
-                    backgroundColor: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "16px",
-                  }}
-                >
+                <div style={styles.prestarWrapper}>
+                  <Space h={30} />
                   <CustomButton
-                    style={{ backgroundColor: "#1bbc9b", margin: "30px 0px" }}
-                    text="Prestar"
+                    text={t("Prestar")}
                     onClick={() => {
                       if (
                         user_gid === "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA="
@@ -201,42 +176,43 @@ export const AddInvestments: FC<Props> = (props) => {
                       setLends([]);
                     }}
                   />
+                  <div style={{ marginTop: 14, fontWeight: "bold" }}>
+                    {t("Total")}:{" "}
+                    {generateCurrency(
+                      lends.reduce((acc, item) => {
+                        return acc + Number(item.quantity) * 100;
+                      }, 0)
+                    )}
+                  </div>
+                  <div style={{ marginTop: 14, fontWeight: "bold" }}>
+                    {t("Inversiones")}: {lends.length}
+                  </div>
+                  <Space h={30} />
                 </div>
               )}
-            </div>
+            </Rows>
           )}
-        </div>
+        </Table>
+        <Space h={20} />
         <CustomButton
-          text="Cargar más"
-          style={{ margin: "20px 0px" }}
+          color="secondary"
+          text={t("Cargar más")}
           onClick={() => loadNext(5)}
         />
-      </div>
-    </div>
+        <Space h={20} />
+      </WrapperBig>
+    </Main>
   );
 };
 
-const styles: Record<"wrapper" | "main" | "title", CSSProperties> = {
-  wrapper: {
-    backgroundColor: "rgb(255,255,255)",
-    margin: "30px 20px",
-    borderRadius: 8,
-    border: "1px solid rgb(203,203,203)",
+const styles: Record<"prestarWrapper", CSSProperties> = {
+  prestarWrapper: {
+    backgroundColor: "white",
     display: "flex",
     flexDirection: "column",
-    flex: 1,
-  },
-  main: {
-    backgroundColor: "rgb(248,248,248)",
-    flex: 1,
-    display: "flex",
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  title: {
-    borderBottom: "1px solid rgb(203,203,203)",
-    textAlign: "center",
-    fontSize: 26,
-    padding: "14px 0px",
+    margin: "16px",
+    padding: "30px 0px",
   },
 };

@@ -1,11 +1,27 @@
 import React, { FC } from "react";
 import { graphql, usePaginationFragment } from "react-relay";
-import { MyTransactions_query$key } from "./__generated__/MyTransactions_query.graphql";
+import {
+  MyTransactions_query$key,
+  TransactionType,
+} from "./__generated__/MyTransactions_query.graphql";
 import { MyTransactionsPaginationQuery } from "./__generated__/MyTransactionsPaginationQuery.graphql";
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { tokensAndData } from "App";
+import { CustomButton } from "components/CustomButton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFileContract,
+  faUserCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { Main } from "components/Main";
+import { WrapperSmall } from "components/WrapperSmall";
+import { Title } from "components/Title";
+import { Rows } from "components/Rows";
+import { Space } from "components/Space";
+import { Columns } from "components/Colums";
+import { useTranslation } from "react-i18next";
 
 const transactionsFragment = graphql`
   fragment MyTransactions_query on Query
@@ -39,91 +55,158 @@ type Props = {
 };
 
 export const MyTransactions: FC<Props> = (props) => {
+  const { t } = useTranslation();
   const { data, loadNext, refetch } = usePaginationFragment<
     MyTransactionsPaginationQuery,
     MyTransactions_query$key
   >(transactionsFragment, props.data);
 
+  const getStatus = (type: TransactionType) => {
+    switch (type) {
+      case "COLLECT":
+        return t("Pago mensual");
+      case "CREDIT":
+        return t("Ingreso");
+      case "INVEST":
+        return t("Inversión");
+      case "WITHDRAWAL":
+        return t("Retiro");
+      default:
+        return "";
+    }
+  };
+
   return (
-    <div>
-      <div>Mis movimientos</div>
-      <div style={{ display: "flex", flexDirection: "column", maxWidth: 400 }}>
-        {data.transactions &&
-          data.transactions.edges &&
-          data.transactions.edges.map((edge) => {
-            const history =
-              edge &&
-              edge.node &&
-              edge.node.history &&
-              [...edge.node.history].reverse().map((transaction) => {
-                return (
-                  <div
-                    style={{
-                      display: "flex",
-                      flex: 1,
-                      flexDirection: "row",
-                      height: 70,
-                      border: "1px solid black",
-                    }}
-                    key={transaction.id}
-                  >
+    <Main>
+      <WrapperSmall>
+        <Title text={t("Mis movimientos")} />
+        <Rows
+          style={{
+            flex: 1,
+            margin: "0px 12px",
+          }}
+        >
+          {data.transactions &&
+            data.transactions.edges &&
+            data.transactions.edges.map((edge) => {
+              const history =
+                edge &&
+                edge.node &&
+                edge.node.history &&
+                [...edge.node.history].reverse().map((transaction) => {
+                  const color = transaction.quantity.includes("-")
+                    ? "#CD5C5C"
+                    : "#50C878";
+                  return (
                     <div
                       style={{
+                        display: "flex",
                         flex: 1,
-                        display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "column",
+                        flexDirection: "row",
+                        borderBottom: "1px solid rgb(203,203,203)",
                       }}
+                      key={transaction.id}
                     >
-                      <div>
-                        {transaction.type === "CREDIT"
-                          ? "Ingreso"
-                          : transaction.type === "WITHDRAWAL"
-                          ? "Retiro"
-                          : "Inversión"}
-                      </div>
-                      {transaction._id_borrower && (
-                        <div>
-                          Prestado a {transaction._id_borrower} con folio:{" "}
-                          {transaction._id_loan}
+                      <div
+                        style={{
+                          flex: 1,
+                          display: "flex",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          margin: "12px 0px",
+                        }}
+                      >
+                        <div style={{ fontSize: 18, color }}>
+                          {getStatus(transaction.type)}
                         </div>
-                      )}
-                      <div>
-                        {format(
-                          transaction.created,
-                          "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
-                          { locale: es }
+                        {transaction._id_borrower && (
+                          <div
+                            style={{
+                              fontSize: 16,
+                              padding: "4px 0px",
+                            }}
+                          >
+                            {t("Prestado a")}{" "}
+                            <FontAwesomeIcon
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  transaction._id_borrower || ""
+                                );
+                              }}
+                              icon={faUserCircle}
+                              size={"1x"}
+                              color={"rgba(255,90,96,0.5)"}
+                              style={{ margin: "0px 4px", cursor: "pointer" }}
+                            />{" "}
+                            {t("al fondo")}:{" "}
+                            <FontAwesomeIcon
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  transaction._id_loan || ""
+                                );
+                              }}
+                              icon={faFileContract}
+                              size={"1x"}
+                              color={"rgba(255,90,96,0.5)"}
+                              style={{ margin: "0px 4px", cursor: "pointer" }}
+                            />
+                          </div>
                         )}
+                        <div style={{ letterSpacing: 1 }}>
+                          {format(
+                            transaction.created,
+                            "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
+                            { locale: es }
+                          )}
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 20,
+                          fontWeight: "bold",
+                          color,
+                        }}
+                      >
+                        {transaction.quantity}
                       </div>
                     </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {transaction.quantity}
-                    </div>
-                  </div>
-                );
-              });
-            return <div key={edge?.node?.id}>{history}</div>;
-          })}
-      </div>
-      <button onClick={() => loadNext(1)}>loadNext</button>
-      <button
-        onClick={() =>
-          refetch(
-            {
-              id: tokensAndData.data._id,
-            },
-            { fetchPolicy: "network-only" }
-          )
-        }
-      >
-        refetch
-      </button>
-    </div>
+                  );
+                });
+              return <div key={edge?.node?.id}>{history}</div>;
+            })}
+        </Rows>
+        <Space h={20} />
+        <Columns
+          style={{
+            justifyContent: "center",
+          }}
+        >
+          <CustomButton
+            text={t("Cargar más")}
+            color="secondary"
+            onClick={() => loadNext(1)}
+          />
+          <Space w={20} />
+          <CustomButton
+            text={t("Reiniciar lista")}
+            color="secondary"
+            onClick={() =>
+              refetch(
+                {
+                  id: tokensAndData.data._id,
+                  count: 2,
+                  cursor: "",
+                },
+                { fetchPolicy: "network-only" }
+              )
+            }
+          />
+        </Columns>
+        <Space h={20} />
+      </WrapperSmall>
+    </Main>
   );
 };

@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useState } from "react";
+import React, { FC, useState } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { RetireFunds_user$key } from "./__generated__/RetireFunds_user.graphql";
 import { RetireFundsMutation } from "./__generated__/RetireFundsMutation.graphql";
@@ -6,6 +6,13 @@ import { getDataFromToken, tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
+import { Main } from "components/Main";
+import { WrapperSmall } from "components/WrapperSmall";
+import { FormSmall } from "components/FormSmall";
+import { Title } from "components/Title";
+import { Input } from "components/Input";
+import { Space } from "components/Space";
+import { useTranslation } from "react-i18next";
 
 const retireFundsFragment = graphql`
   fragment RetireFunds_user on User {
@@ -18,6 +25,7 @@ type Props = {
 };
 
 export const RetireFunds: FC<Props> = (props) => {
+  const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<RetireFundsMutation>(graphql`
     mutation RetireFundsMutation($input: AddFundsInput!) {
       addFunds(input: $input) {
@@ -44,25 +52,24 @@ export const RetireFunds: FC<Props> = (props) => {
     });
   };
   return (
-    <div style={styles.main}>
-      <div style={styles.wrapper}>
-        <div style={styles.title}>Retirar fondos</div>
-        <div style={styles.form}>
-          <Label label="Cantidad" />
-          <input
-            placeholder="Cantidad"
+    <Main>
+      <WrapperSmall>
+        <Title text={t("Retirar fondos")} />
+        <FormSmall>
+          <Label label={t("Cantidad")} />
+          <Input
+            placeholder={t("Cantidad")}
             value={quantity}
             name="quantity"
             onChange={handleQuantityOnChange}
             onBlur={handleQuantityOnBlur}
-            style={styles.input}
           />
+          <Space h={30} />
           {isInFlight ? (
             <Spinner />
           ) : (
             <CustomButton
-              text="Retirar"
-              style={{ margin: "30px 0px" }}
+              text={t("Retirar")}
               onClick={() => {
                 commit({
                   variables: {
@@ -86,51 +93,9 @@ export const RetireFunds: FC<Props> = (props) => {
               }}
             />
           )}
-        </div>
-      </div>
-    </div>
+          <Space h={30} />
+        </FormSmall>
+      </WrapperSmall>
+    </Main>
   );
-};
-
-const styles: Record<
-  "wrapper" | "main" | "title" | "input" | "form",
-  CSSProperties
-> = {
-  wrapper: {
-    backgroundColor: "rgb(255,255,255)",
-    margin: "30px 0px",
-    borderRadius: 8,
-    border: "1px solid rgb(203,203,203)",
-    display: "flex",
-    flexDirection: "column",
-    width: 600,
-  },
-  main: {
-    backgroundColor: "rgb(248,248,248)",
-    flex: 1,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  title: {
-    borderBottom: "1px solid rgb(203,203,203)",
-    textAlign: "center",
-    fontSize: 26,
-    padding: "14px 0px",
-  },
-  form: {
-    flex: 1,
-    display: "flex",
-    alignSelf: "center",
-    width: 500,
-    flexDirection: "column",
-  },
-  input: {
-    borderColor: "rgba(118,118,118,0.3)",
-    borderWidth: 1,
-    borderRadius: 8,
-    fontSize: 20,
-    color: "rgb(62,62,62)",
-    padding: "6px 6px",
-  },
 };

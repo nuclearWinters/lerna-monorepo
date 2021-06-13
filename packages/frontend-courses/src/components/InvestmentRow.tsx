@@ -5,6 +5,8 @@ import { InvestmentRow_investment$key } from "./__generated__/InvestmentRow_inve
 import { format } from "date-fns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt, faClipboard } from "@fortawesome/free-solid-svg-icons";
+import { generateCurrency } from "utils";
+import { useTranslation } from "react-i18next";
 
 const investmentRowRefetchableFragment = graphql`
   fragment InvestmentRow_investment on Investment
@@ -28,6 +30,7 @@ type Props = {
 };
 
 export const InvestmentRow: FC<Props> = ({ investment }) => {
+  const { t } = useTranslation();
   const [data, refetch] = useRefetchableFragment<
     InvestmentRowRefetchQuery,
     InvestmentRow_investment$key
@@ -37,21 +40,21 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
   const amortize = Math.floor(
     quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
   );
-  const paid = ((amortize * payments) / 100).toFixed(2);
-  const owes = ((amortize * (term - payments)) / 100).toFixed(2);
-  const interests = ((amortize * term - quantity) / 100).toFixed(2);
+  const paid = generateCurrency(amortize * payments);
+  const owes = generateCurrency(amortize * (term - payments));
+  const interests = generateCurrency(amortize * term - quantity);
   const status = () => {
     switch (data.status) {
       case "DELAY_PAYMENT":
-        return "Atrasado";
+        return t("Atrasado");
       case "FINANCING":
-        return "Financiandose";
+        return t("Financiandose");
       case "PAID":
-        return "Pagado";
+        return t("Pagado");
       case "PAST_DUE":
-        return "Vencido";
+        return t("Vencido");
       case "UP_TO_DATE":
-        return "Al día";
+        return t("Al día");
       default:
         return "";
     }
@@ -59,15 +62,15 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
   const statusColor = () => {
     switch (data.status) {
       case "DELAY_PAYMENT":
-        return "rgba(255,0,0,0.4)";
+        return "#FF9FF00";
       case "FINANCING":
-        return "rgba(0,255,0,0.4)";
+        return "#4F7942";
       case "PAID":
-        return "rgba(255,255,0,0.4)";
+        return "#046307";
       case "PAST_DUE":
-        return "rgba(0,255,255,0.4)";
+        return "#CA3435";
       case "UP_TO_DATE":
-        return "rgba(255,0,255,0.4)";
+        return "#44d43b";
       default:
         return "white";
     }
@@ -104,7 +107,7 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
           color={"rgba(90,96,255)"}
         />
       </div>
-      <div style={style.cell}>${(data.quantity / 100).toFixed(2)}</div>
+      <div style={style.cell}>{generateCurrency(data.quantity)}</div>
       <div style={style.status}>
         <div
           style={{
@@ -114,15 +117,16 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
             textAlign: "center",
             flex: 1,
             padding: "3px 0px",
+            color: "white",
           }}
         >
           {status()}
         </div>
       </div>
-      <div style={style.cell}>${paid}</div>
-      <div style={style.cell}>${owes}</div>
-      <div style={style.cell}>${interests}</div>
-      <div style={style.cell}>${data.moratory}</div>
+      <div style={style.cell}>{paid}</div>
+      <div style={style.cell}>{owes}</div>
+      <div style={style.cell}>{interests}</div>
+      <div style={style.cell}>{data.moratory}</div>
       <div style={style.cell}>{format(data.updated, "dd/mm/yyyy")}</div>
       <div style={style.cell}>{format(data.created, "dd/MM/yyyy")}</div>
       <div

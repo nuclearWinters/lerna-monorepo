@@ -40,7 +40,7 @@ const node: ReaderFragment = (function () {
         name: "id",
       },
       {
-        defaultValue: ["DELAY_PAYMENT", "UP_TO_DATE"],
+        defaultValue: ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"],
         kind: "LocalArgument",
         name: "status",
       },
@@ -170,5 +170,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "d5d035c6f594f401bce142fa5b3e0dfa";
+(node as any).hash = "dab67f00de24c62a09d1523cecba9d7a";
 export default node;

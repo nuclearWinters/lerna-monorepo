@@ -47,19 +47,50 @@ export const DateScalarType = new GraphQLScalarType({
   },
 });
 
+const generateCurrency = (value: number) => {
+  if (typeof value !== "number") {
+    throw new TypeError(
+      `Currency cannot represent non integer type ${JSON.stringify(value)}`
+    );
+  }
+
+  const currencyInCents = parseInt(value.toString(), 10);
+
+  return (currencyInCents / 100).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+};
+
+const generateCents = (value: string) => {
+  const digits = value.replace("$", "").replace(",", "");
+  const number = parseFloat(digits);
+  return number * 100;
+};
+
 export const MXNScalarType = new GraphQLScalarType({
   name: "MXN",
-  serialize: (value) => {
-    return (value / 100).toFixed(2);
-  },
+  serialize: generateCurrency,
   parseValue: (value) => {
-    return Number(value) * 100;
+    if (typeof value !== "string") {
+      throw new TypeError(
+        `Currency cannot represent non string type ${JSON.stringify(value)}`
+      );
+    }
+
+    return generateCents(value);
   },
   parseLiteral(ast) {
     if (ast.kind === Kind.STRING) {
-      return Number(ast.value) * 100;
+      if (typeof ast.value === "string") {
+        return generateCents(ast.value);
+      }
     }
-    return null;
+    throw new TypeError(
+      `Currency cannot represent an invalid currency-string ${JSON.stringify(
+        ast
+      )}.`
+    );
   },
 });
 
@@ -334,7 +365,7 @@ export const GraphQLInvestmentsUser =
         resolve: ({ _id_loan }): string => _id_loan.toHexString(),
       },
       quantity: {
-        type: new GraphQLNonNull(MXNScalarType),
+        type: new GraphQLNonNull(GraphQLInt),
         resolve: ({ quantity }): number => quantity,
       },
       term: {

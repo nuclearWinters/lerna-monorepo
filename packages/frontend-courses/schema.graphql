@@ -15,6 +15,7 @@ input SignUpInput {
   password: String!
   email: String!
   clientMutationId: String
+  isLender: Boolean!
 }
 
 type SignUpPayload {

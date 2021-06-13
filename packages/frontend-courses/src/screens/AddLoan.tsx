@@ -4,6 +4,16 @@ import { AddLoan_user$key } from "./__generated__/AddLoan_user.graphql";
 import { AddLoanMutation } from "./__generated__/AddLoanMutation.graphql";
 import { getDataFromToken, tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
+import { Label } from "components/Label";
+import { CustomButton } from "components/CustomButton";
+import { Main } from "components/Main";
+import { WrapperSmall } from "components/WrapperSmall";
+import { FormSmall } from "components/FormSmall";
+import { Title } from "components/Title";
+import { Input } from "components/Input";
+import { Select } from "components/Select";
+import { Space } from "components/Space";
+import { useTranslation } from "react-i18next";
 
 const addLoanFragment = graphql`
   fragment AddLoan_user on User {
@@ -16,6 +26,7 @@ type Props = {
 };
 
 export const AddLoan: FC<Props> = (props) => {
+  const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<AddLoanMutation>(graphql`
     mutation AddLoanMutation($input: AddLoanInput!) {
       addLoan(input: $input) {
@@ -45,7 +56,7 @@ export const AddLoan: FC<Props> = (props) => {
       }
       return {
         ...state,
-        goal: Number(state.goal).toFixed(2),
+        goal: Number(state.goal).toFixed(),
       };
     });
   };
@@ -59,55 +70,75 @@ export const AddLoan: FC<Props> = (props) => {
     });
   };
   return (
-    <div>
-      <div>Pedir prestamo</div>
-      <input
-        placeholder="Cantidad"
-        value={form.goal}
-        name="goal"
-        onChange={handleGoalOnChange}
-        onBlur={handleGoalOnBlur}
-      />
-      <label>
-        Periodo de la deuda:
-        <select name="term" value={form.term} onChange={handleTermOnChange}>
-          <option value="3">3</option>
-          <option value="6">6</option>
-          <option value="9">9</option>
-          <option value="12">12</option>
-        </select>
-        Meses
-      </label>
-      {isInFlight ? (
-        <Spinner />
-      ) : (
-        <button
-          onClick={() => {
-            commit({
-              variables: {
-                input: {
-                  goal: form.goal,
-                  term: Number(form.term),
-                  user_gid: user.id,
-                },
+    <Main>
+      <WrapperSmall>
+        <Title text={t("Pedir prestamo")} />
+        <FormSmall>
+          <Label label={t("Cantidad")} />
+          <Input
+            placeholder={t("Cantidad")}
+            value={form.goal}
+            name="goal"
+            onChange={handleGoalOnChange}
+            onBlur={handleGoalOnBlur}
+          />
+          <Label label={t("Periodo de la deuda (meses)")} />
+          <Select
+            name="term"
+            value={form.term}
+            onChange={handleTermOnChange}
+            options={[
+              {
+                value: "3",
+                label: "3",
               },
-              onCompleted: (response) => {
-                if (response.addLoan.error) {
-                  return window.alert(response.addLoan.error);
-                }
-                tokensAndData.tokens.accessToken =
-                  response.addLoan.validAccessToken;
-                const user = getDataFromToken(
-                  response.addLoan.validAccessToken
-                );
-                tokensAndData.data = user;
+              {
+                value: "6",
+                label: "6",
               },
-            });
-          }}
-        >
-          Enviar solicitud
-        </button>
-      )}
-    </div>
+              {
+                value: "9",
+                label: "9",
+              },
+              {
+                value: "12",
+                label: "12",
+              },
+            ]}
+          />
+          <Space h={30} />
+          {isInFlight ? (
+            <Spinner />
+          ) : (
+            <CustomButton
+              text={t("Enviar solicitud")}
+              onClick={() => {
+                commit({
+                  variables: {
+                    input: {
+                      goal: form.goal,
+                      term: Number(form.term),
+                      user_gid: user.id,
+                    },
+                  },
+                  onCompleted: (response) => {
+                    if (response.addLoan.error) {
+                      return window.alert(response.addLoan.error);
+                    }
+                    tokensAndData.tokens.accessToken =
+                      response.addLoan.validAccessToken;
+                    const user = getDataFromToken(
+                      response.addLoan.validAccessToken
+                    );
+                    tokensAndData.data = user;
+                  },
+                });
+              }}
+            />
+          )}
+          <Space h={30} />
+        </FormSmall>
+      </WrapperSmall>
+    </Main>
   );
 };

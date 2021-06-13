@@ -30,7 +30,7 @@ query MyInvestmentsPaginationQuery(
   $count: Int = 2
   $cursor: String = ""
   $id: String!
-  $status: [InvestmentStatus!]! = [DELAY_PAYMENT, UP_TO_DATE]
+  $status: [InvestmentStatus!]! = [DELAY_PAYMENT, UP_TO_DATE, FINANCING]
 ) {
   ...MyInvestments_query_4qXjrI
 }
@@ -85,7 +85,7 @@ const node: ConcreteRequest = (function () {
         name: "id",
       } as any,
       {
-        defaultValue: ["DELAY_PAYMENT", "UP_TO_DATE"],
+        defaultValue: ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"],
         kind: "LocalArgument",
         name: "status",
       } as any,
@@ -308,14 +308,14 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "261dbf834866439ac67390c11098f911",
+      cacheID: "60f46fa9538a0be119f3d89cb18b8c98",
       id: null,
       metadata: {},
       name: "MyInvestmentsPaginationQuery",
       operationKind: "query",
-      text: 'query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n  $status: [InvestmentStatus!]! = [DELAY_PAYMENT, UP_TO_DATE]\n) {\n  ...MyInvestments_query_4qXjrI\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment MyInvestments_query_4qXjrI on Query {\n  investments(first: $count, after: $cursor, user_id: $id, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
+      text: 'query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = ""\n  $id: String!\n  $status: [InvestmentStatus!]! = [DELAY_PAYMENT, UP_TO_DATE, FINANCING]\n) {\n  ...MyInvestments_query_4qXjrI\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment MyInvestments_query_4qXjrI on Query {\n  investments(first: $count, after: $cursor, user_id: $id, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "d5d035c6f594f401bce142fa5b3e0dfa";
+(node as any).hash = "dab67f00de24c62a09d1523cecba9d7a";
 export default node;

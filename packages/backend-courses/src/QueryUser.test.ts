@@ -84,7 +84,7 @@ describe("QueryUser tests", () => {
     expect(response.body.data.user.CURP).toBe("CURP");
     expect(response.body.data.user.clabe).toBe("clabe");
     expect(response.body.data.user.mobile).toBe("mobile");
-    expect(response.body.data.user.accountAvailable).toBe("500.00");
+    expect(response.body.data.user.accountAvailable).toBe("$500.00");
     expect(response.body.data.user.investments.length).toBe(0);
   });
 });

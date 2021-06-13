@@ -11,6 +11,8 @@ import {
   faClipboard,
   faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
+import { generateCents, generateCurrency } from "utils";
+import { useTranslation } from "react-i18next";
 
 const loanRowRefetchableFragment = graphql`
   fragment LoanRow_loan on Loan @refetchable(queryName: "LoanRowRefetchQuery") {
@@ -44,6 +46,7 @@ type Props = {
 };
 
 export const LoanRow: FC<Props> = ({ setLends, loan, value }) => {
+  const { t } = useTranslation();
   const { isLender, isSupport } = tokensAndData.data;
   const [data, refetch] = useRefetchableFragment<
     LoanRowRefetchQuery,
@@ -57,6 +60,23 @@ export const LoanRow: FC<Props> = ({ setLends, loan, value }) => {
       }
     }
   `);
+
+  const getStatus = () => {
+    switch (data.status) {
+      case "FINANCING":
+        return t("Financiando");
+      case "PAID":
+        return t("Pagado");
+      case "PAST_DUE":
+        return t("Vencido");
+      case "TO_BE_PAID":
+        return t("Por pagar");
+      case "WAITING_FOR_APPROVAL":
+        return t("Por aprobar");
+      default:
+        return "";
+    }
+  };
 
   return (
     <div style={style.container}>
@@ -84,15 +104,19 @@ export const LoanRow: FC<Props> = ({ setLends, loan, value }) => {
         <div style={style.scoreCircle}>{data.score}</div>
       </div>
       <div style={style.cell}>{data.ROI}%</div>
-      <div style={style.cell}>${data.goal}</div>
-      <div style={style.cell}>{data.term} meses</div>
+      <div style={style.cell}>{data.goal}</div>
       <div style={style.cell}>
-        ${(Number(data.goal) - Number(data.raised)).toFixed(2)}
+        {data.term} {t("meses")}
+      </div>
+      <div style={style.cell}>
+        {generateCurrency(
+          generateCents(data.goal) - generateCents(data.raised)
+        )}
       </div>
       <div style={style.cell}>
         {differenceInMonths(data.expiry, new Date()) ??
           differenceInDays(data.expiry, new Date())}{" "}
-        meses
+        {t("meses")}
       </div>
       {isLender ? (
         <div style={style.inputBox}>
@@ -128,7 +152,14 @@ export const LoanRow: FC<Props> = ({ setLends, loan, value }) => {
                     },
                   ];
                 }
-                state[idx].quantity = val;
+                const raised = generateCents(data.raised) / 100;
+                const goal = generateCents(data.goal) / 100;
+                const quantity = Number(val);
+                if (Number(quantity) + raised > goal) {
+                  state[idx].quantity = String(goal - raised);
+                } else {
+                  state[idx].quantity = val;
+                }
                 return [...state];
               });
             }}
@@ -177,7 +208,17 @@ export const LoanRow: FC<Props> = ({ setLends, loan, value }) => {
           />
         </div>
       ) : (
-        <div style={style.cell}>{data.status}</div>
+        <div style={style.status}>
+          <div
+            style={{
+              ...style.statusBox,
+              backgroundColor:
+                data.status === "FINANCING" ? "#4F7942" : "#FF9F00",
+            }}
+          >
+            {getStatus()}
+          </div>
+        </div>
       )}
       <div
         style={style.clipboard}
@@ -202,7 +243,9 @@ const style: Record<
   | "clipboard"
   | "score"
   | "scoreCircle"
-  | "container",
+  | "container"
+  | "status"
+  | "statusBox",
   CSSProperties
 > = {
   cell: {
@@ -269,5 +312,21 @@ const style: Record<
     display: "flex",
     flexDirection: "row",
     marginBottom: 8,
+  },
+  status: {
+    flex: 1,
+    backgroundColor: "white",
+    color: "#333",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  statusBox: {
+    margin: "4px",
+    borderRadius: 4,
+    textAlign: "center",
+    flex: 1,
+    padding: "3px 0px",
+    color: "white",
   },
 };

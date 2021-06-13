@@ -159,7 +159,7 @@ describe("QueryTransactions tests", () => {
     );
     expect(
       response.body.data.transactions.edges[0].node.history[0].quantity
-    ).toBe("2.00");
+    ).toBe("$2.00");
     expect(
       response.body.data.transactions.edges[0].node.history[0].created
     ).toBeTruthy();

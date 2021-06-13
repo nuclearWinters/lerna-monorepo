@@ -1,16 +1,26 @@
 import { getDataFromToken, tokensAndData } from "App";
+import { Checkbox } from "components/Checkbox";
+import { Columns } from "components/Colums";
 import { CustomButton } from "components/CustomButton";
+import { FormSmall } from "components/FormSmall";
+import { Input } from "components/Input";
 import { Label } from "components/Label";
+import { Main } from "components/Main";
+import { Space } from "components/Space";
 import { Spinner } from "components/Spinner";
-import React, { CSSProperties, FC, useState } from "react";
+import { Title } from "components/Title";
+import { WrapperSmall } from "components/WrapperSmall";
+import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   refetch: () => void;
 }
 
 export const SignUp: FC<Props> = ({ refetch }) => {
+  const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<SignUpMutation>(graphql`
     mutation SignUpMutation($input: SignUpInput!) {
       signUp(input: $input) {
@@ -22,108 +32,89 @@ export const SignUp: FC<Props> = ({ refetch }) => {
   `);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLender, setIsLender] = useState(true);
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
+  const handleIsLender = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLender(e.target.name === "lender" ? true : false);
+  };
   return (
-    <div style={styles.main}>
-      <div style={styles.wrapper}>
-        <div style={styles.title}>Crear cuenta</div>
-        <form style={styles.form}>
-          <Label label="Email" />
-          <input
+    <Main>
+      <WrapperSmall>
+        <Title text={t("Crear cuenta")} />
+        <FormSmall>
+          <Label label={t("Email")} />
+          <Input
             name="email"
-            placeholder="Email"
+            placeholder={t("Email")}
             value={email}
             onChange={handleEmail}
-            style={styles.input}
           />
-          <Label label="Email" />
-          <input
+          <Label label={t("Password")} />
+          <Input
             name="password"
-            placeholder="Password"
+            placeholder={t("Password")}
             value={password}
             onChange={handlePassword}
-            style={styles.input}
           />
+          <Space h={10} />
+          <Columns>
+            <Checkbox
+              name="lender"
+              value={isLender}
+              onChange={handleIsLender}
+              label={t("Prestar") + ":"}
+            />
+            <Space w={30} />
+            <Checkbox
+              name="borrower"
+              value={!isLender}
+              onChange={handleIsLender}
+              label={t("Pedir prestado") + ":"}
+            />
+          </Columns>
+          <Space h={30} />
           {isInFlight ? (
             <Spinner />
           ) : (
-            <CustomButton
-              text="Crear cuenta"
-              style={{ margin: "30px 0px" }}
-              onClick={() => {
-                commit({
-                  variables: {
-                    input: {
-                      email,
-                      password,
+            <>
+              <CustomButton
+                text={t("Crear cuenta")}
+                onClick={() => {
+                  commit({
+                    variables: {
+                      input: {
+                        email,
+                        password,
+                        isLender,
+                      },
                     },
-                  },
-                  onCompleted: (response) => {
-                    if (response.signUp.error) {
-                      return window.alert(response.signUp.error);
-                    }
-                    tokensAndData.tokens.accessToken =
-                      response.signUp.accessToken;
-                    tokensAndData.tokens.refreshToken =
-                      response.signUp.refreshToken;
-                    const user = getDataFromToken(response.signUp.accessToken);
-                    tokensAndData.data = user;
-                    refetch();
-                  },
-                });
-              }}
-            />
+                    onCompleted: (response) => {
+                      if (response.signUp.error) {
+                        return window.alert(response.signUp.error);
+                      }
+                      tokensAndData.tokens.accessToken =
+                        response.signUp.accessToken;
+                      tokensAndData.tokens.refreshToken =
+                        response.signUp.refreshToken;
+                      const user = getDataFromToken(
+                        response.signUp.accessToken
+                      );
+                      tokensAndData.data = user;
+                      refetch();
+                    },
+                  });
+                }}
+              />
+              <Space h={30} />
+            </>
           )}
-        </form>
-      </div>
-    </div>
+        </FormSmall>
+      </WrapperSmall>
+    </Main>
   );
-};
-
-const styles: Record<
-  "input" | "wrapper" | "main" | "title" | "form",
-  CSSProperties
-> = {
-  input: {
-    borderColor: "rgba(118,118,118,0.3)",
-    borderWidth: 1,
-    borderRadius: 8,
-    fontSize: 20,
-    color: "rgb(62,62,62)",
-    padding: "6px 6px",
-  },
-  wrapper: {
-    backgroundColor: "rgb(255,255,255)",
-    margin: "30px 0px",
-    borderRadius: 8,
-    border: "1px solid rgb(203,203,203)",
-    display: "flex",
-    flexDirection: "column",
-    width: 600,
-  },
-  main: {
-    backgroundColor: "rgb(248,248,248)",
-    flex: 1,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  title: {
-    borderBottom: "1px solid rgb(203,203,203)",
-    textAlign: "center",
-    fontSize: 26,
-    padding: "14px 0px",
-  },
-  form: {
-    flex: 1,
-    display: "flex",
-    alignSelf: "center",
-    width: 500,
-    flexDirection: "column",
-  },
 };

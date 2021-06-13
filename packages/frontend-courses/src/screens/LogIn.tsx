@@ -1,16 +1,24 @@
 import { getDataFromToken, tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
-import React, { FC, useState, CSSProperties } from "react";
+import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
+import { Main } from "components/Main";
+import { WrapperSmall } from "components/WrapperSmall";
+import { FormSmall } from "components/FormSmall";
+import { Title } from "components/Title";
+import { Input } from "components/Input";
+import { Space } from "components/Space";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   refetch: () => void;
 }
 
 export const LogIn: FC<Props> = ({ refetch }) => {
+  const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<LogInMutation>(graphql`
     mutation LogInMutation($input: SignInInput!) {
       signIn(input: $input) {
@@ -29,32 +37,30 @@ export const LogIn: FC<Props> = ({ refetch }) => {
     setPassword(e.target.value);
   };
   return (
-    <div style={styles.main}>
-      <div style={styles.wrapper}>
-        <div style={styles.title}>Iniciar sesión</div>
-        <form style={styles.form}>
-          <Label label="Email" />
-          <input
+    <Main>
+      <WrapperSmall>
+        <Title text={t("Iniciar sesión")} />
+        <FormSmall>
+          <Label label={t("Email")} />
+          <Input
             name="email"
-            placeholder="Email"
+            placeholder={t("Email")}
             value={email}
             onChange={handleEmail}
-            style={styles.input}
           />
-          <Label label="Nombre(s)" />
-          <input
+          <Label label={t("Password")} />
+          <Input
             name="password"
-            placeholder="Password"
+            placeholder={t("Password")}
             value={password}
             onChange={handlePassword}
-            style={styles.input}
           />
+          <Space h={30} />
           {isInFlight ? (
             <Spinner />
           ) : (
             <CustomButton
-              text="Iniciar sesión"
-              style={{ margin: "30px 0px" }}
+              text={t("Iniciar sesión")}
               onClick={() => {
                 commit({
                   variables: {
@@ -79,51 +85,9 @@ export const LogIn: FC<Props> = ({ refetch }) => {
               }}
             />
           )}
-        </form>
-      </div>
-    </div>
+          <Space h={30} />
+        </FormSmall>
+      </WrapperSmall>
+    </Main>
   );
-};
-
-const styles: Record<
-  "input" | "wrapper" | "main" | "title" | "form",
-  CSSProperties
-> = {
-  input: {
-    borderColor: "rgba(118,118,118,0.3)",
-    borderWidth: 1,
-    borderRadius: 8,
-    fontSize: 20,
-    color: "rgb(62,62,62)",
-    padding: "6px 6px",
-  },
-  wrapper: {
-    backgroundColor: "rgb(255,255,255)",
-    margin: "30px 0px",
-    borderRadius: 8,
-    border: "1px solid rgb(203,203,203)",
-    display: "flex",
-    flexDirection: "column",
-    width: 600,
-  },
-  main: {
-    backgroundColor: "rgb(248,248,248)",
-    flex: 1,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  title: {
-    borderBottom: "1px solid rgb(203,203,203)",
-    textAlign: "center",
-    fontSize: 26,
-    padding: "14px 0px",
-  },
-  form: {
-    flex: 1,
-    display: "flex",
-    alignSelf: "center",
-    width: 500,
-    flexDirection: "column",
-  },
 };

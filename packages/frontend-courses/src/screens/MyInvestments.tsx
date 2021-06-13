@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useEffect } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { graphql, usePaginationFragment } from "react-relay";
 import { MyInvestments_query$key } from "./__generated__/MyInvestments_query.graphql";
 import { MyInvestmentsPaginationQuery } from "./__generated__/MyInvestmentsPaginationQuery.graphql";
@@ -6,6 +6,16 @@ import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { tokensAndData } from "App";
 import { InvestmentRow } from "../components/InvestmentRow";
 import { CustomButton } from "components/CustomButton";
+import { Title } from "components/Title";
+import { Main } from "components/Main";
+import { WrapperBig } from "components/WrapperBig";
+import { Select } from "components/Select";
+import { Space } from "components/Space";
+import { Columns } from "components/Colums";
+import { Table } from "components/Table";
+import { Rows } from "components/Rows";
+import { TableColumnName } from "components/TableColumnName";
+import { useTranslation } from "react-i18next";
 
 const myInvestmentsFragment = graphql`
   fragment MyInvestments_query on Query
@@ -14,7 +24,7 @@ const myInvestmentsFragment = graphql`
     cursor: { type: "String", defaultValue: "" }
     status: {
       type: "[InvestmentStatus!]!"
-      defaultValue: [DELAY_PAYMENT, UP_TO_DATE]
+      defaultValue: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]
     }
   )
   @refetchable(queryName: "MyInvestmentsPaginationQuery") {
@@ -39,24 +49,25 @@ type Props = {
 };
 
 export const MyInvestments: FC<Props> = (props) => {
+  const { t } = useTranslation();
   const { data, loadNext, refetch } = usePaginationFragment<
     MyInvestmentsPaginationQuery,
     MyInvestments_query$key
   >(myInvestmentsFragment, props.data);
 
   const columns = [
-    { key: "id", title: "ID" },
-    { key: "_id_borrower", title: "ID deudor" },
-    { key: "_id_loan", title: "ID deuda" },
-    { key: "quantity", title: "Cantidad" },
-    { key: "status", title: "Estatus" },
-    { key: "paid", title: "Pagado" },
-    { key: "owe", title: "Adeudo" },
-    { key: "interests", title: "Intereses" },
-    { key: "moratory", title: "Interés por mora" },
-    { key: "created", title: "Creado en:" },
-    { key: "updated", title: "Último cambio en:" },
-    { key: "refetch", title: "Actualizar" },
+    { key: "id", title: t("ID") },
+    { key: "_id_borrower", title: t("ID deudor") },
+    { key: "_id_loan", title: t("ID deuda") },
+    { key: "quantity", title: t("Cantidad") },
+    { key: "status", title: t("Estatus") },
+    { key: "paid", title: t("Pagado") },
+    { key: "owe", title: t("Adeudo") },
+    { key: "interests", title: t("Intereses") },
+    { key: "moratory", title: t("Interés por mora") },
+    { key: "created", title: t("Creado en") },
+    { key: "updated", title: t("Último cambio en") },
+    { key: "refetch", title: t("Refrescar") },
   ];
 
   const handleInvestmentStatusOnChange = () => {
@@ -65,56 +76,52 @@ export const MyInvestments: FC<Props> = (props) => {
     });
   };
 
+  const statusRef = useRef(props.investmentStatus);
+
   useEffect(() => {
-    refetch(
-      {
-        id: tokensAndData.data._id,
-        status:
-          props.investmentStatus === "on_going"
-            ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
-            : ["PAID", "PAST_DUE"],
-      },
-      { fetchPolicy: "network-only" }
-    );
+    const isDifferent = statusRef.current !== props.investmentStatus;
+    if (isDifferent) {
+      refetch(
+        {
+          id: tokensAndData.data._id,
+          status:
+            props.investmentStatus === "on_going"
+              ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
+              : ["PAID", "PAST_DUE"],
+        },
+        { fetchPolicy: "network-only" }
+      );
+      statusRef.current = props.investmentStatus;
+    }
   }, [props.investmentStatus, refetch]);
 
   return (
-    <div style={styles.main}>
-      <div style={styles.wrapper}>
-        <div style={styles.title}>Mis inversiones</div>
-        <select
+    <Main>
+      <WrapperBig>
+        <Title text={t("Mis inversiones")} />
+        <Select
           value={props.investmentStatus}
           onChange={handleInvestmentStatusOnChange}
-        >
-          <option value="on_going">En curso</option>
-          <option value="over">Terminados</option>
-        </select>
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "row",
-            margin: "10px 10px",
-            backgroundColor: "rgba(90,96,255,0.1)",
-            borderRadius: 8,
-          }}
-        >
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                padding: "4px 0px",
-                color: "rgb(62,62,62)",
-              }}
-            >
+          options={[
+            {
+              value: "on_going",
+              label: t("En curso"),
+            },
+            {
+              value: "over",
+              label: t("Terminados"),
+            },
+          ]}
+        />
+        <Table color="secondary">
+          <Rows style={{ flex: 1 }}>
+            <Columns>
               {columns.map((column) => (
-                <div key={column.key} style={{ flex: 1, textAlign: "center" }}>
+                <TableColumnName key={column.key}>
                   {column.title}
-                </div>
+                </TableColumnName>
               ))}
-            </div>
+            </Columns>
             {data.investments &&
               data.investments.edges &&
               data.investments.edges.map((edge) => {
@@ -125,23 +132,23 @@ export const MyInvestments: FC<Props> = (props) => {
                 }
                 return null;
               })}
-          </div>
-        </div>
-        <div
+          </Rows>
+        </Table>
+        <Space h={20} />
+        <Columns
           style={{
-            display: "flex",
             justifyContent: "center",
-            margin: "20px 0px",
           }}
         >
           <CustomButton
-            text="Cargar más"
-            style={{ marginRight: 10, backgroundColor: "#1bbc9b" }}
+            text={t("Cargar más")}
+            color="secondary"
             onClick={() => loadNext(5)}
           />
+          <Space w={20} />
           <CustomButton
-            text="Reiniciar lista"
-            style={{ marginLeft: 10 }}
+            text={t("Reiniciar lista")}
+            color="secondary"
             onClick={() =>
               refetch(
                 {
@@ -151,33 +158,9 @@ export const MyInvestments: FC<Props> = (props) => {
               )
             }
           />
-        </div>
-      </div>
-    </div>
+        </Columns>
+        <Space h={20} />
+      </WrapperBig>
+    </Main>
   );
-};
-
-const styles: Record<"wrapper" | "main" | "title", CSSProperties> = {
-  wrapper: {
-    backgroundColor: "rgb(255,255,255)",
-    margin: "30px 20px",
-    borderRadius: 8,
-    border: "1px solid rgb(203,203,203)",
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-  },
-  main: {
-    backgroundColor: "rgb(248,248,248)",
-    flex: 1,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  title: {
-    borderBottom: "1px solid rgb(203,203,203)",
-    textAlign: "center",
-    fontSize: 26,
-    padding: "14px 0px",
-  },
 };
