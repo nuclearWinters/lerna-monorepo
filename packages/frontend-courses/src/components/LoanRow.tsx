@@ -11,7 +11,7 @@ import {
   faClipboard,
   faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
-import { generateCents, generateCurrency } from "utils";
+import { generateCents, generateCurrency, logOut } from "utils";
 import { useTranslation } from "react-i18next";
 
 const loanRowRefetchableFragment = graphql`
@@ -196,6 +196,9 @@ export const LoanRow: FC<Props> = ({
               },
               onCompleted: (response) => {
                 if (response.approveLoan.error) {
+                  if (response.approveLoan.error === "jwt expired") {
+                    logOut();
+                  }
                   return window.alert(response.approveLoan.error);
                 }
                 tokensAndData.tokens.accessToken =

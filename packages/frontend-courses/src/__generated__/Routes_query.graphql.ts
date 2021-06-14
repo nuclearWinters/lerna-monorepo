@@ -28,7 +28,9 @@ export type Routes_query = {
     readonly language: Languages;
     readonly isBorrower: boolean;
     readonly isSupport: boolean;
-    readonly " $fragmentRefs": FragmentRefs<"Settings_auth_user">;
+    readonly " $fragmentRefs": FragmentRefs<
+      "Settings_auth_user" | "SignUp_auth_user" | "LogIn_auth_user"
+    >;
   };
   readonly " $refType": "Routes_query";
 };
@@ -205,6 +207,16 @@ const node: ReaderFragment = (function () {
             kind: "FragmentSpread",
             name: "Settings_auth_user",
           },
+          {
+            args: null,
+            kind: "FragmentSpread",
+            name: "SignUp_auth_user",
+          },
+          {
+            args: null,
+            kind: "FragmentSpread",
+            name: "LogIn_auth_user",
+          },
         ],
         storageKey: null,
       },
@@ -213,5 +225,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "f2f99fb0f48110e17f9fb3803a04db16";
+(node as any).hash = "3d98e0eb8b5b0de5845cfd685dec5729";
 export default node;

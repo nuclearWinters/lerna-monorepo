@@ -14,6 +14,7 @@ import { Input } from "components/Input";
 import { Select } from "components/Select";
 import { Space } from "components/Space";
 import { useTranslation } from "react-i18next";
+import { logOut } from "utils";
 
 const addLoanFragment = graphql`
   fragment AddLoan_user on User {
@@ -123,6 +124,9 @@ export const AddLoan: FC<Props> = (props) => {
                   },
                   onCompleted: (response) => {
                     if (response.addLoan.error) {
+                      if (response.addLoan.error === "jwt expired") {
+                        logOut();
+                      }
                       return window.alert(response.addLoan.error);
                     }
                     tokensAndData.tokens.accessToken =

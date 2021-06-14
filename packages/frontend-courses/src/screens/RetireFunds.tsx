@@ -13,6 +13,7 @@ import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
 import { useTranslation } from "react-i18next";
+import { logOut } from "utils";
 
 const retireFundsFragment = graphql`
   fragment RetireFunds_user on User {
@@ -80,6 +81,9 @@ export const RetireFunds: FC<Props> = (props) => {
                   },
                   onCompleted: (response) => {
                     if (response.addFunds.error) {
+                      if (response.addFunds.error === "jwt expired") {
+                        logOut();
+                      }
                       return window.alert(response.addFunds.error);
                     }
                     tokensAndData.tokens.accessToken =

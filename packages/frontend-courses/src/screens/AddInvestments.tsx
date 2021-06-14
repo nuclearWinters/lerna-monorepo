@@ -17,7 +17,7 @@ import { Space } from "components/Space";
 import { Columns } from "components/Colums";
 import { TableColumnName } from "components/TableColumnName";
 import { Table } from "components/Table";
-import { generateCurrency } from "utils";
+import { generateCurrency, logOut } from "utils";
 import { useTranslation } from "react-i18next";
 
 const debtInSaleFragment = graphql`
@@ -170,6 +170,9 @@ export const AddInvestments: FC<Props> = (props) => {
                         },
                         onCompleted: (response) => {
                           if (response.addLends.error) {
+                            if (response.addLends.error === "jwt expired") {
+                              logOut();
+                            }
                             return window.alert(response.addLends.error);
                           }
                           tokensAndData.tokens.accessToken =

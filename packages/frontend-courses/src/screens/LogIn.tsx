@@ -1,7 +1,7 @@
 import { getDataFromToken, tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import React, { FC, useState } from "react";
-import { useMutation, graphql } from "react-relay";
+import { useMutation, graphql, useFragment } from "react-relay";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
@@ -12,18 +12,23 @@ import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
 import { useTranslation } from "react-i18next";
-import { LoanStatus } from "__generated__/AppQuery.graphql";
+import { LogIn_auth_user$key } from "./__generated__/LogIn_auth_user.graphql";
+import { logOut } from "utils";
+
+const logInFragment = graphql`
+  fragment LogIn_auth_user on AuthUser {
+    isBorrower
+    isSupport
+  }
+`;
 
 interface Props {
-  refetchUser: (
-    status: LoanStatus[],
-    id: string,
-    borrower_id?: string | null
-  ) => void;
+  user: LogIn_auth_user$key;
 }
 
-export const LogIn: FC<Props> = ({ refetchUser }) => {
+export const LogIn: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const { isBorrower, isSupport } = useFragment(logInFragment, props.user);
   const [commit, isInFlight] = useMutation<LogInMutation>(graphql`
     mutation LogInMutation($input: SignInInput!) {
       signIn(input: $input) {
@@ -76,6 +81,9 @@ export const LogIn: FC<Props> = ({ refetchUser }) => {
                   },
                   onCompleted: (response) => {
                     if (response.signIn.error) {
+                      if (response.signIn.error === "jwt expired") {
+                        logOut();
+                      }
                       return window.alert(response.signIn.error);
                     }
                     tokensAndData.tokens.accessToken =
@@ -84,14 +92,14 @@ export const LogIn: FC<Props> = ({ refetchUser }) => {
                       response.signIn.refreshToken;
                     const user = getDataFromToken(response.signIn.accessToken);
                     tokensAndData.data = user;
-                    refetchUser(
-                      user.isBorrower
+                    tokensAndData.refetchUser(
+                      isBorrower
                         ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
-                        : user.isSupport
+                        : isSupport
                         ? ["WAITING_FOR_APPROVAL"]
                         : ["FINANCING"],
                       user._id,
-                      user.isBorrower ? user._id : null
+                      isBorrower ? user._id : null
                     );
                   },
                 });

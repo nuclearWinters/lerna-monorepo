@@ -19,7 +19,7 @@ import {
   MyInvestments,
   Settings,
 } from "./screens";
-import { AppQueryResponse, LoanStatus } from "__generated__/AppQuery.graphql";
+import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { tokensAndData } from "App";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
@@ -48,7 +48,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthButton } from "components/AuthButton";
 import { Rows } from "components/Rows";
-import { generateCents, generateCurrency } from "utils";
+import { generateCents, generateCurrency, logOut } from "utils";
 import { useTranslation } from "react-i18next";
 
 const routesFragment = graphql`
@@ -77,6 +77,8 @@ const routesFragment = graphql`
       isBorrower
       isSupport
       ...Settings_auth_user
+      ...SignUp_auth_user
+      ...LogIn_auth_user
     }
   }
 `;
@@ -84,11 +86,6 @@ const routesFragment = graphql`
 type Props = {
   user: Routes_query$key;
   data: AppQueryResponse;
-  refetchUser: (
-    status: LoanStatus[],
-    id: string,
-    borrower_id?: string | null
-  ) => void;
 };
 
 export interface IUserInvestments {
@@ -541,15 +538,7 @@ export const Routes: FC<Props> = (props) => {
                 } ${user.authUser.apellidoMaterno || ""}`.toUpperCase()}
               </Link>
               <FontAwesomeIcon
-                onClick={() => {
-                  tokensAndData.tokens = { accessToken: "", refreshToken: "" };
-                  tokensAndData.data = {
-                    _id: "",
-                    iat: 0,
-                    exp: 0,
-                  };
-                  props.refetchUser(["FINANCING"], "", null);
-                }}
+                onClick={logOut}
                 icon={faSignOutAlt}
                 size={"2x"}
                 color={"rgba(62,62,62)"}
@@ -586,10 +575,10 @@ export const Routes: FC<Props> = (props) => {
             {isBorrower ? (
               <Switch>
                 <Route path="/login">
-                  <LogIn refetchUser={props.refetchUser} />
+                  <LogIn user={user.authUser} />
                 </Route>
                 <Route path="/register">
-                  <SignUp refetchUser={props.refetchUser} />
+                  <SignUp user={user.authUser} />
                 </Route>
                 <Route path="/account">
                   <Account user={user.user} />
@@ -607,37 +596,31 @@ export const Routes: FC<Props> = (props) => {
                   <RetireFunds user={user.user} />
                 </Route>
                 <Route path="/settings">
-                  <Settings
-                    user={user.authUser}
-                    refetchUser={props.refetchUser}
-                  />
+                  <Settings user={user.authUser} />
                 </Route>
               </Switch>
             ) : isSupport ? (
               <Switch>
                 <Route path="/login">
-                  <LogIn refetchUser={props.refetchUser} />
+                  <LogIn user={user.authUser} />
                 </Route>
                 <Route path="/register">
-                  <SignUp refetchUser={props.refetchUser} />
+                  <SignUp user={user.authUser} />
                 </Route>
                 <Route path="/approveLoan">
                   <AddInvestments data={props.data} />
                 </Route>
                 <Route path="/settings">
-                  <Settings
-                    user={user.authUser}
-                    refetchUser={props.refetchUser}
-                  />
+                  <Settings user={user.authUser} />
                 </Route>
               </Switch>
             ) : (
               <Switch>
                 <Route path="/login">
-                  <LogIn refetchUser={props.refetchUser} />
+                  <LogIn user={user.authUser} />
                 </Route>
                 <Route path="/register">
-                  <SignUp refetchUser={props.refetchUser} />
+                  <SignUp user={user.authUser} />
                 </Route>
                 <Route path="/account">
                   <Account user={user.user} />
@@ -662,10 +645,7 @@ export const Routes: FC<Props> = (props) => {
                   />
                 </Route>
                 <Route path="/settings">
-                  <Settings
-                    user={user.authUser}
-                    refetchUser={props.refetchUser}
-                  />
+                  <Settings user={user.authUser} />
                 </Route>
               </Switch>
             )}

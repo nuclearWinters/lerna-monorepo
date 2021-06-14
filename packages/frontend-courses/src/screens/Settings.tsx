@@ -16,7 +16,7 @@ import { Rows } from "components/Rows";
 import { Columns } from "components/Colums";
 import { useTranslation } from "react-i18next";
 import { Select } from "components/Select";
-import { LoanStatus } from "__generated__/AppQuery.graphql";
+import { logOut } from "utils";
 
 const settingsFragment = graphql`
   fragment Settings_auth_user on AuthUser {
@@ -35,11 +35,6 @@ const settingsFragment = graphql`
 
 type Props = {
   user: Settings_auth_user$key;
-  refetchUser: (
-    status: LoanStatus[],
-    id: string,
-    borrower_id?: string | null
-  ) => void;
 };
 
 export const Settings: FC<Props> = (props) => {
@@ -211,6 +206,9 @@ export const Settings: FC<Props> = (props) => {
                     },
                     onCompleted: (response) => {
                       if (response.updateUser.error) {
+                        if (response.updateUser.error === "jwt expired") {
+                          logOut();
+                        }
                         return window.alert(response.updateUser.error);
                       }
                       tokensAndData.tokens.accessToken =
@@ -264,14 +262,16 @@ export const Settings: FC<Props> = (props) => {
                       },
                       onCompleted: (response) => {
                         if (response.blacklistUser.error) {
+                          if (response.blacklistUser.error === "jwt expired") {
+                            logOut();
+                          }
                           return window.alert(response.blacklistUser.error);
                         }
                         tokensAndData.tokens.accessToken =
                           response.blacklistUser.validAccessToken;
                         tokensAndData.tokens.refreshToken =
                           response.blacklistUser.validAccessToken;
-
-                        props.refetchUser(["FINANCING"], "", null);
+                        tokensAndData.refetchUser(["FINANCING"], "", null);
                       },
                     });
                   }}

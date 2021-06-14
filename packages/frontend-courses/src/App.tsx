@@ -24,6 +24,11 @@ export interface IJWT {
 }
 
 export const tokensAndData: {
+  refetchUser: (
+    status: LoanStatus[],
+    id: string,
+    borrower_id?: string | null
+  ) => void;
   tokens: {
     accessToken: string;
     refreshToken: string;
@@ -39,6 +44,7 @@ export const tokensAndData: {
     iat: 0,
     exp: 0,
   },
+  refetchUser: () => {},
 };
 
 export const getDataFromToken = (token: string): IJWT => {
@@ -86,7 +92,8 @@ const AppQueryRoot: FC = () => {
     },
     [loadQuery]
   );
-  return <Routes user={data} data={data} refetchUser={refetchUser} />;
+  tokensAndData.refetchUser = refetchUser;
+  return <Routes user={data} data={data} />;
 };
 
 export const App: FC = () => {
