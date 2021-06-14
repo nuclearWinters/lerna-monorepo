@@ -27,7 +27,7 @@
     "graphql": "15.5.0",
     "graphql-relay": "^0.7.0",
     "graphql-subscriptions": "^1.2.1",
-    "graphql-ws": "^4.5.0",
+    "graphql-ws": "^5.1.2",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.6",
     "ws": "^7.4.5"
