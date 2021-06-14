@@ -68,9 +68,6 @@ describe("BlacklistUserMutation tests", () => {
           accessToken: jwt.sign(
             {
               _id: "000000000000000000000070",
-              isSupport: false,
-              isBorrower: false,
-              isLender: true,
             },
             ACCESSSECRET,
             { expiresIn: "15m" }
@@ -106,9 +103,6 @@ describe("BlacklistUserMutation tests", () => {
           accessToken: jwt.sign(
             {
               _id: "000000000000000000000060",
-              isSupport: false,
-              isBorrower: false,
-              isLender: true,
             },
             ACCESSSECRET,
             { expiresIn: "15m" }

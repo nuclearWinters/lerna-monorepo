@@ -29,6 +29,8 @@ const loanRowRefetchableFragment = graphql`
 `;
 
 type Props = {
+  isLender: boolean;
+  isSupport: boolean;
   value: string;
   setLends: React.Dispatch<
     React.SetStateAction<
@@ -45,9 +47,14 @@ type Props = {
   loan: LoanRow_loan$key;
 };
 
-export const LoanRow: FC<Props> = ({ setLends, loan, value }) => {
+export const LoanRow: FC<Props> = ({
+  setLends,
+  loan,
+  value,
+  isLender,
+  isSupport,
+}) => {
   const { t } = useTranslation();
-  const { isLender, isSupport } = tokensAndData.data;
   const [data, refetch] = useRefetchableFragment<
     LoanRowRefetchQuery,
     LoanRow_loan$key

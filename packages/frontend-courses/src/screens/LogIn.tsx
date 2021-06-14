@@ -12,12 +12,17 @@ import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
 import { useTranslation } from "react-i18next";
+import { LoanStatus } from "__generated__/AppQuery.graphql";
 
 interface Props {
-  refetch: () => void;
+  refetchUser: (
+    status: LoanStatus[],
+    id: string,
+    borrower_id?: string | null
+  ) => void;
 }
 
-export const LogIn: FC<Props> = ({ refetch }) => {
+export const LogIn: FC<Props> = ({ refetchUser }) => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<LogInMutation>(graphql`
     mutation LogInMutation($input: SignInInput!) {
@@ -79,7 +84,15 @@ export const LogIn: FC<Props> = ({ refetch }) => {
                       response.signIn.refreshToken;
                     const user = getDataFromToken(response.signIn.accessToken);
                     tokensAndData.data = user;
-                    refetch();
+                    refetchUser(
+                      user.isBorrower
+                        ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
+                        : user.isSupport
+                        ? ["WAITING_FOR_APPROVAL"]
+                        : ["FINANCING"],
+                      user._id,
+                      user.isBorrower ? user._id : null
+                    );
                   },
                 });
               }}

@@ -40,13 +40,17 @@ const debtInSaleFragment = graphql`
         }
       }
     }
+    user(id: $id) {
+      id
+    }
+    authUser(id: $id) {
+      isLender
+      isSupport
+    }
   }
 `;
 
 type Props = {
-  user?: {
-    id?: string;
-  };
   data: AppQueryResponse;
 };
 
@@ -61,8 +65,6 @@ interface ILends {
 
 export const AddInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
-  const user_gid = props?.user?.id || "";
-  const { isLender } = tokensAndData.data;
   const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {
@@ -72,10 +74,13 @@ export const AddInvestments: FC<Props> = (props) => {
     }
   `);
   const history = useHistory();
-  const { data, loadNext } = usePaginationFragment<
+  const { data, loadNext, refetch } = usePaginationFragment<
     AddInvestmentsPaginationQuery,
     AddInvestments_query$key
   >(debtInSaleFragment, props.data);
+
+  const user_gid = data.user.id;
+  const { isLender, isSupport } = data.authUser;
 
   const columns = [
     { key: "id", title: t("ID") },
@@ -88,7 +93,7 @@ export const AddInvestments: FC<Props> = (props) => {
     { key: "expiry", title: t("Termina") },
     {
       key: "lend",
-      title: tokensAndData.data.isLender ? t("Prestar") : t("Estatus"),
+      title: isLender ? t("Prestar") : t("Estatus"),
     },
     { key: "refetech", title: t("Refrescar") },
   ];
@@ -130,6 +135,8 @@ export const AddInvestments: FC<Props> = (props) => {
                       setLends={setLends}
                       loan={edge.node}
                       value={value}
+                      isLender={isLender}
+                      isSupport={isSupport}
                     />
                   );
                 }
@@ -194,11 +201,31 @@ export const AddInvestments: FC<Props> = (props) => {
           )}
         </Table>
         <Space h={20} />
-        <CustomButton
-          color="secondary"
-          text={t("Cargar más")}
-          onClick={() => loadNext(5)}
-        />
+        <Columns
+          style={{
+            justifyContent: "center",
+          }}
+        >
+          <CustomButton
+            color="secondary"
+            text={t("Cargar más")}
+            onClick={() => loadNext(5)}
+          />
+          <Space w={20} />
+          <CustomButton
+            text={t("Refrescar lista")}
+            color="secondary"
+            onClick={() =>
+              refetch(
+                {
+                  count: 5,
+                  cursor: "",
+                },
+                { fetchPolicy: "network-only" }
+              )
+            }
+          />
+        </Columns>
         <Space h={20} />
       </WrapperBig>
     </Main>

@@ -14,12 +14,17 @@ import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
 import { useTranslation } from "react-i18next";
+import { LoanStatus } from "__generated__/AppQuery.graphql";
 
 interface Props {
-  refetch: () => void;
+  refetchUser: (
+    status: LoanStatus[],
+    id: string,
+    borrower_id?: string | null
+  ) => void;
 }
 
-export const SignUp: FC<Props> = ({ refetch }) => {
+export const SignUp: FC<Props> = ({ refetchUser }) => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<SignUpMutation>(graphql`
     mutation SignUpMutation($input: SignUpInput!) {
@@ -108,7 +113,15 @@ export const SignUp: FC<Props> = ({ refetch }) => {
                         response.signUp.accessToken
                       );
                       tokensAndData.data = user;
-                      refetch();
+                      refetchUser(
+                        user.isBorrower
+                          ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
+                          : user.isSupport
+                          ? ["WAITING_FOR_APPROVAL"]
+                          : ["FINANCING"],
+                        user._id,
+                        user.isBorrower ? user._id : null
+                      );
                     },
                   });
                 }}

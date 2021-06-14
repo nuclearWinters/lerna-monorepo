@@ -16,6 +16,7 @@ import { Rows } from "components/Rows";
 import { Columns } from "components/Colums";
 import { useTranslation } from "react-i18next";
 import { Select } from "components/Select";
+import { LoanStatus } from "__generated__/AppQuery.graphql";
 
 const settingsFragment = graphql`
   fragment Settings_auth_user on AuthUser {
@@ -34,7 +35,11 @@ const settingsFragment = graphql`
 
 type Props = {
   user: Settings_auth_user$key;
-  refetch: () => void;
+  refetchUser: (
+    status: LoanStatus[],
+    id: string,
+    borrower_id?: string | null
+  ) => void;
 };
 
 export const Settings: FC<Props> = (props) => {
@@ -265,7 +270,8 @@ export const Settings: FC<Props> = (props) => {
                           response.blacklistUser.validAccessToken;
                         tokensAndData.tokens.refreshToken =
                           response.blacklistUser.validAccessToken;
-                        props.refetch();
+
+                        props.refetchUser(["FINANCING"], "", null);
                       },
                     });
                   }}

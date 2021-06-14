@@ -13,6 +13,13 @@ export type AddInvestments_query = {
       } | null;
     } | null> | null;
   } | null;
+  readonly user: {
+    readonly id: string;
+  };
+  readonly authUser: {
+    readonly isLender: boolean;
+    readonly isSupport: boolean;
+  };
   readonly " $refType": "AddInvestments_query";
 };
 export type AddInvestments_query$data = AddInvestments_query;
@@ -22,7 +29,21 @@ export type AddInvestments_query$key = {
 };
 
 const node: ReaderFragment = (function () {
-  var v0 = ["loans"];
+  var v0 = ["loans"],
+    v1 = {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "id",
+      storageKey: null,
+    } as any,
+    v2 = [
+      {
+        kind: "Variable",
+        name: "id",
+        variableName: "id",
+      } as any,
+    ];
   return {
     argumentDefinitions: [
       {
@@ -38,6 +59,10 @@ const node: ReaderFragment = (function () {
         defaultValue: "",
         kind: "LocalArgument",
         name: "cursor",
+      },
+      {
+        kind: "RootArgument",
+        name: "id",
       },
       {
         kind: "RootArgument",
@@ -104,13 +129,7 @@ const node: ReaderFragment = (function () {
                 name: "node",
                 plural: false,
                 selections: [
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "id",
-                    storageKey: null,
-                  },
+                  v1 /*: any*/,
                   {
                     alias: null,
                     args: null,
@@ -164,10 +183,45 @@ const node: ReaderFragment = (function () {
         ],
         storageKey: null,
       },
+      {
+        alias: null,
+        args: v2 /*: any*/,
+        concreteType: "User",
+        kind: "LinkedField",
+        name: "user",
+        plural: false,
+        selections: [v1 /*: any*/],
+        storageKey: null,
+      },
+      {
+        alias: null,
+        args: v2 /*: any*/,
+        concreteType: "AuthUser",
+        kind: "LinkedField",
+        name: "authUser",
+        plural: false,
+        selections: [
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "isLender",
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "isSupport",
+            storageKey: null,
+          },
+        ],
+        storageKey: null,
+      },
     ],
     type: "Query",
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "3e716fcf57ffcbfe72f9c3de78869c5b";
+(node as any).hash = "ea4ef89190b30ac0dcd8acb3554f3258";
 export default node;

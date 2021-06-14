@@ -19,8 +19,8 @@ import {
   MyInvestments,
   Settings,
 } from "./screens";
-import { AppQueryResponse } from "__generated__/AppQuery.graphql";
-import { getStatus, tokensAndData } from "App";
+import { AppQueryResponse, LoanStatus } from "__generated__/AppQuery.graphql";
+import { tokensAndData } from "App";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
 import {
@@ -84,7 +84,11 @@ const routesFragment = graphql`
 type Props = {
   user: Routes_query$key;
   data: AppQueryResponse;
-  refetch: () => void;
+  refetchUser: (
+    status: LoanStatus[],
+    id: string,
+    borrower_id?: string | null
+  ) => void;
 };
 
 export interface IUserInvestments {
@@ -201,7 +205,13 @@ export const Routes: FC<Props> = (props) => {
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
   >(
     () => ({
-      variables: { status: user_gid ? getStatus() : getStatus() },
+      variables: {
+        status: isBorrower
+          ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
+          : isSupport
+          ? ["WAITING_FOR_APPROVAL"]
+          : ["FINANCING"],
+      },
       subscription: subscriptionLoans,
       updater: (store, data) => {
         if (data.loans_subscribe.type === "INSERT") {
@@ -209,7 +219,13 @@ export const Routes: FC<Props> = (props) => {
           const connectionRecord = ConnectionHandler.getConnection(
             root,
             "AddInvestments_query_loans",
-            { status: getStatus() }
+            {
+              status: isBorrower
+                ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
+                : isSupport
+                ? ["WAITING_FOR_APPROVAL"]
+                : ["FINANCING"],
+            }
           );
           if (!connectionRecord) {
             throw new Error("no existe el connectionRecord");
@@ -228,7 +244,7 @@ export const Routes: FC<Props> = (props) => {
         }
       },
     }),
-    [user_gid]
+    [isBorrower, isSupport]
   );
   const [investmentStatus, setInvestmentStatus] = useState<"on_going" | "over">(
     "on_going"
@@ -531,11 +547,8 @@ export const Routes: FC<Props> = (props) => {
                     _id: "",
                     iat: 0,
                     exp: 0,
-                    isBorrower: false,
-                    isLender: true,
-                    isSupport: false,
                   };
-                  props.refetch();
+                  props.refetchUser(["FINANCING"], "", null);
                 }}
                 icon={faSignOutAlt}
                 size={"2x"}
@@ -573,10 +586,10 @@ export const Routes: FC<Props> = (props) => {
             {isBorrower ? (
               <Switch>
                 <Route path="/login">
-                  <LogIn refetch={props.refetch} />
+                  <LogIn refetchUser={props.refetchUser} />
                 </Route>
                 <Route path="/register">
-                  <SignUp refetch={props.refetch} />
+                  <SignUp refetchUser={props.refetchUser} />
                 </Route>
                 <Route path="/account">
                   <Account user={user.user} />
@@ -594,42 +607,43 @@ export const Routes: FC<Props> = (props) => {
                   <RetireFunds user={user.user} />
                 </Route>
                 <Route path="/settings">
-                  <Settings user={user.authUser} refetch={props.refetch} />
+                  <Settings
+                    user={user.authUser}
+                    refetchUser={props.refetchUser}
+                  />
                 </Route>
               </Switch>
             ) : isSupport ? (
               <Switch>
                 <Route path="/login">
-                  <LogIn refetch={props.refetch} />
+                  <LogIn refetchUser={props.refetchUser} />
                 </Route>
                 <Route path="/register">
-                  <SignUp refetch={props.refetch} />
+                  <SignUp refetchUser={props.refetchUser} />
                 </Route>
                 <Route path="/approveLoan">
                   <AddInvestments data={props.data} />
                 </Route>
                 <Route path="/settings">
-                  <Settings user={user.authUser} refetch={props.refetch} />
+                  <Settings
+                    user={user.authUser}
+                    refetchUser={props.refetchUser}
+                  />
                 </Route>
               </Switch>
             ) : (
               <Switch>
                 <Route path="/login">
-                  <LogIn refetch={props.refetch} />
+                  <LogIn refetchUser={props.refetchUser} />
                 </Route>
                 <Route path="/register">
-                  <SignUp refetch={props.refetch} />
+                  <SignUp refetchUser={props.refetchUser} />
                 </Route>
                 <Route path="/account">
                   <Account user={user.user} />
                 </Route>
                 <Route path="/addInvestments">
-                  <AddInvestments
-                    user={{
-                      id: user.user.id,
-                    }}
-                    data={props.data}
-                  />
+                  <AddInvestments data={props.data} />
                 </Route>
                 <Route path="/addFunds">
                   <AddFunds user={user.user} />
@@ -648,7 +662,10 @@ export const Routes: FC<Props> = (props) => {
                   />
                 </Route>
                 <Route path="/settings">
-                  <Settings user={user.authUser} refetch={props.refetch} />
+                  <Settings
+                    user={user.authUser}
+                    refetchUser={props.refetchUser}
+                  />
                 </Route>
               </Switch>
             )}

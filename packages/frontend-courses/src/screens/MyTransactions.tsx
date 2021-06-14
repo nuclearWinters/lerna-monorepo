@@ -8,7 +8,6 @@ import { MyTransactionsPaginationQuery } from "./__generated__/MyTransactionsPag
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
-import { tokensAndData } from "App";
 import { CustomButton } from "components/CustomButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -191,12 +190,11 @@ export const MyTransactions: FC<Props> = (props) => {
           />
           <Space w={20} />
           <CustomButton
-            text={t("Reiniciar lista")}
+            text={t("Refrescar lista")}
             color="secondary"
             onClick={() =>
               refetch(
                 {
-                  id: tokensAndData.data._id,
                   count: 2,
                   cursor: "",
                 },

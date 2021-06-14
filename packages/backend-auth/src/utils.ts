@@ -17,9 +17,6 @@ export const jwt = {
   sign: (
     data: {
       _id: string;
-      isLender: boolean;
-      isBorrower: boolean;
-      isSupport: boolean;
     },
     secret: string,
     options: SignOptions

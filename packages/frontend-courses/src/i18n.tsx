@@ -47,7 +47,7 @@ const resources: Record<"en", Record<"translation", Record<any, string>>> = {
       "Mis inversiones": "My investments",
       "En curso": "On going",
       Terminados: "Ended",
-      "Reiniciar lista": "Restart list",
+      "Refrescar lista": "Refresh list",
       Atrasado: "Delayed",
       Financiandose: "Financing",
       "Al día": "Up to date",

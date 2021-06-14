@@ -3,7 +3,6 @@ import { graphql, usePaginationFragment } from "react-relay";
 import { MyInvestments_query$key } from "./__generated__/MyInvestments_query.graphql";
 import { MyInvestmentsPaginationQuery } from "./__generated__/MyInvestmentsPaginationQuery.graphql";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
-import { tokensAndData } from "App";
 import { InvestmentRow } from "../components/InvestmentRow";
 import { CustomButton } from "components/CustomButton";
 import { Title } from "components/Title";
@@ -83,7 +82,6 @@ export const MyInvestments: FC<Props> = (props) => {
     if (isDifferent) {
       refetch(
         {
-          id: tokensAndData.data._id,
           status:
             props.investmentStatus === "on_going"
               ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
@@ -147,16 +145,9 @@ export const MyInvestments: FC<Props> = (props) => {
           />
           <Space w={20} />
           <CustomButton
-            text={t("Reiniciar lista")}
+            text={t("Refrescar lista")}
             color="secondary"
-            onClick={() =>
-              refetch(
-                {
-                  id: tokensAndData.data._id,
-                },
-                { fetchPolicy: "network-only" }
-              )
-            }
+            onClick={() => refetch({}, { fetchPolicy: "network-only" })}
           />
         </Columns>
         <Space h={20} />
