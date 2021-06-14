@@ -205,6 +205,11 @@ export const AddLendsMutation = mutationWithClientMutationId({
             },
           }
         );
+        //Si raised es igual a goal: añadir fondos al dueño de la deuda
+        await users.updateOne(
+          { _id: result.value._id_user },
+          { $inc: { accountAvailable: result.value.goal } }
+        );
       }
       //Si no se realizó nungun cambio en loans arrojar error
       if (docsFiltered.length === 0) {

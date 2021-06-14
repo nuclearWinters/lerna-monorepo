@@ -314,6 +314,10 @@ describe("AddLends tests", () => {
         term: 2,
       },
     ]);
+    const user3 = await users.findOne({
+      _id: new ObjectId("000000000000000000000005"),
+    });
+    expect(user3?.accountAvailable).toBe(200000);
     const allTransactions2 = await transactions
       .find({ _id_user: new ObjectId("000000000000000000000004") })
       .toArray();
