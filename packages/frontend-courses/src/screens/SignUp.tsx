@@ -118,8 +118,10 @@ export const SignUp: FC<Props> = (props) => {
                       tokensAndData.tokens.refreshToken =
                         response.signUp.refreshToken;
                       const user = getDataFromToken(
-                        response.signUp.accessToken
+                        response.signUp.refreshToken
                       );
+                      tokensAndData.credentials.email = email;
+                      tokensAndData.credentials.password = password;
                       tokensAndData.data = user;
                       tokensAndData.refetchUser(
                         isBorrower

@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { AddLoan_user$key } from "./__generated__/AddLoan_user.graphql";
 import { AddLoanMutation } from "./__generated__/AddLoanMutation.graphql";
-import { getDataFromToken, tokensAndData } from "App";
+import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
@@ -131,10 +131,6 @@ export const AddLoan: FC<Props> = (props) => {
                     }
                     tokensAndData.tokens.accessToken =
                       response.addLoan.validAccessToken;
-                    const user = getDataFromToken(
-                      response.addLoan.validAccessToken
-                    );
-                    tokensAndData.data = user;
                   },
                 });
               }}

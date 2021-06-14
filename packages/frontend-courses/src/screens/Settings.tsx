@@ -1,4 +1,4 @@
-import { getDataFromToken, tokensAndData } from "App";
+import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import React, { CSSProperties, FC, useRef, useState } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
@@ -213,10 +213,6 @@ export const Settings: FC<Props> = (props) => {
                       }
                       tokensAndData.tokens.accessToken =
                         response.updateUser.validAccessToken;
-                      const user = getDataFromToken(
-                        response.updateUser.validAccessToken
-                      );
-                      tokensAndData.data = user;
                     },
                   });
                 }}

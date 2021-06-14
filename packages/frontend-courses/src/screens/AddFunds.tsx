@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { AddFunds_user$key } from "./__generated__/AddFunds_user.graphql";
 import { AddFundsMutation } from "./__generated__/AddFundsMutation.graphql";
-import { getDataFromToken, tokensAndData } from "App";
+import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
@@ -89,10 +89,6 @@ export const AddFunds: FC<Props> = (props) => {
                       }
                       tokensAndData.tokens.accessToken =
                         response.addFunds.validAccessToken;
-                      const user = getDataFromToken(
-                        response.addFunds.validAccessToken
-                      );
-                      tokensAndData.data = user;
                     },
                   });
                 }}

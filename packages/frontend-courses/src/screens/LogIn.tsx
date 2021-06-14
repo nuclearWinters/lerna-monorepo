@@ -90,8 +90,10 @@ export const LogIn: FC<Props> = (props) => {
                       response.signIn.accessToken;
                     tokensAndData.tokens.refreshToken =
                       response.signIn.refreshToken;
-                    const user = getDataFromToken(response.signIn.accessToken);
+                    const user = getDataFromToken(response.signIn.refreshToken);
                     tokensAndData.data = user;
+                    tokensAndData.credentials.email = email;
+                    tokensAndData.credentials.password = password;
                     tokensAndData.refetchUser(
                       isBorrower
                         ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]

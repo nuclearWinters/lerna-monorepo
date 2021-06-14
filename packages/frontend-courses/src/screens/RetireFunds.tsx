@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { RetireFunds_user$key } from "./__generated__/RetireFunds_user.graphql";
 import { RetireFundsMutation } from "./__generated__/RetireFundsMutation.graphql";
-import { getDataFromToken, tokensAndData } from "App";
+import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
@@ -88,10 +88,6 @@ export const RetireFunds: FC<Props> = (props) => {
                     }
                     tokensAndData.tokens.accessToken =
                       response.addFunds.validAccessToken;
-                    const user = getDataFromToken(
-                      response.addFunds.validAccessToken
-                    );
-                    tokensAndData.data = user;
                   },
                 });
               }}

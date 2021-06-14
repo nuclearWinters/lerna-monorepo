@@ -33,11 +33,19 @@ export const tokensAndData: {
     accessToken: string;
     refreshToken: string;
   };
+  credentials: {
+    email: string;
+    password: string;
+  };
   data: IJWT;
 } = {
   tokens: {
     accessToken: "",
     refreshToken: "",
+  },
+  credentials: {
+    email: "",
+    password: "",
   },
   data: {
     _id: "",

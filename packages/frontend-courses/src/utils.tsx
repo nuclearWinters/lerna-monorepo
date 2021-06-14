@@ -21,5 +21,9 @@ export const logOut = () => {
     iat: 0,
     exp: 0,
   };
+  tokensAndData.credentials = {
+    email: "",
+    password: "",
+  };
   tokensAndData.refetchUser(["FINANCING"], "", null);
 };

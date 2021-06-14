@@ -50,6 +50,7 @@ import { AuthButton } from "components/AuthButton";
 import { Rows } from "components/Rows";
 import { generateCents, generateCurrency, logOut } from "utils";
 import { useTranslation } from "react-i18next";
+import { CheckExpiration } from "components/CheckExpiration";
 
 const routesFragment = graphql`
   fragment Routes_query on Query {
@@ -79,6 +80,7 @@ const routesFragment = graphql`
       ...Settings_auth_user
       ...SignUp_auth_user
       ...LogIn_auth_user
+      ...CheckExpiration_auth_user
     }
   }
 `;
@@ -383,6 +385,7 @@ export const Routes: FC<Props> = (props) => {
     }, 0) + generateCents(user.user.accountAvailable);
   return (
     <Router>
+      <CheckExpiration user={user.authUser} />
       <div
         style={{
           display: "flex",

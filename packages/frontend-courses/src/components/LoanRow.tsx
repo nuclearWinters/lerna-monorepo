@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC } from "react";
 import { graphql, useMutation, useRefetchableFragment } from "react-relay";
 import { differenceInMonths, differenceInDays } from "date-fns";
-import { getDataFromToken, tokensAndData } from "App";
+import { tokensAndData } from "App";
 import { LoanRowMutation } from "./__generated__/LoanRowMutation.graphql";
 import { LoanRowRefetchQuery } from "./__generated__/LoanRowRefetchQuery.graphql";
 import { LoanRow_loan$key } from "./__generated__/LoanRow_loan.graphql";
@@ -203,10 +203,6 @@ export const LoanRow: FC<Props> = ({
                 }
                 tokensAndData.tokens.accessToken =
                   response.approveLoan.validAccessToken;
-                const user = getDataFromToken(
-                  response.approveLoan.validAccessToken
-                );
-                tokensAndData.data = user;
               },
             });
           }}

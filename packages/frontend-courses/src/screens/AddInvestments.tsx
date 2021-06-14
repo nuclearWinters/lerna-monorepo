@@ -5,7 +5,7 @@ import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPag
 import { useHistory } from "react-router";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
-import { getDataFromToken, tokensAndData } from "App";
+import { tokensAndData } from "App";
 import { LoanRow } from "components/LoanRow";
 import { Spinner } from "components/Spinner";
 import { CustomButton } from "components/CustomButton";
@@ -177,10 +177,6 @@ export const AddInvestments: FC<Props> = (props) => {
                           }
                           tokensAndData.tokens.accessToken =
                             response.addLends.validAccessToken;
-                          const user = getDataFromToken(
-                            response.addLends.validAccessToken
-                          );
-                          tokensAndData.data = user;
                         },
                       });
                       setLends([]);
