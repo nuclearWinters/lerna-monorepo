@@ -468,6 +468,7 @@ export const Routes: FC<Props> = (props) => {
                 colorValue="rgb(58,179,152)"
               />
               <AccountLink
+                isLogged={isLogged}
                 icon={faFileAlt}
                 title={t("Mi cuenta")}
                 path="/account"
@@ -478,26 +479,31 @@ export const Routes: FC<Props> = (props) => {
                 path="/addInvestments"
               />
               <AccountLink
+                isLogged={isLogged}
                 icon={faFunnelDollar}
                 title={t("Agregar fondos")}
                 path="/addFunds"
               />
               <AccountLink
+                isLogged={isLogged}
                 icon={faHandHoldingUsd}
                 title={t("Retirar fondos")}
                 path="/retireFunds"
               />
               <AccountLink
+                isLogged={isLogged}
                 icon={faFolderOpen}
                 title={t("Mis Inversiones")}
                 path="/myInvestments"
               />
               <AccountLink
+                isLogged={isLogged}
                 icon={faExchangeAlt}
                 title={t("Mis movimientos")}
                 path="/myTransactions"
               />
               <AccountLink
+                isLogged={isLogged}
                 icon={faUserAlt}
                 title={t("Settings")}
                 path="/settings"

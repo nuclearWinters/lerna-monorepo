@@ -7,15 +7,16 @@ interface Props {
   title: string;
   icon: IconDefinition;
   path: string;
+  isLogged?: boolean;
 }
 
-export const AccountLink: FC<Props> = ({ title, icon, path }) => {
+export const AccountLink: FC<Props> = ({ title, icon, path, isLogged }) => {
   const location = useLocation();
   const history = useHistory();
 
   const navigate = useCallback(() => {
-    history.push(path);
-  }, [history, path]);
+    history.push(isLogged === undefined || isLogged ? path : "/login");
+  }, [history, path, isLogged]);
 
   const selected = location.pathname === path;
 
