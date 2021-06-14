@@ -387,34 +387,6 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
   name: "User",
   fields: {
     id: globalIdField("User", ({ _id }): string => _id.toHexString()),
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ name }): string => name,
-    },
-    apellidoPaterno: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ apellidoPaterno }): string => apellidoPaterno,
-    },
-    apellidoMaterno: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ apellidoMaterno }): string => apellidoMaterno,
-    },
-    RFC: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ RFC }): string => RFC,
-    },
-    CURP: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ CURP }): string => CURP,
-    },
-    clabe: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ clabe }): string => clabe,
-    },
-    mobile: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ mobile }): string => mobile,
-    },
     accountAvailable: {
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountAvailable }): number => accountAvailable,

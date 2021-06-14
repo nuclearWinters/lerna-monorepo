@@ -1,5 +1,10 @@
 import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull, GraphQLBoolean } from "graphql";
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLBoolean,
+  GraphQLEnumType,
+} from "graphql";
 import { ACCESSSECRET, REFRESHSECRET } from "../config";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
@@ -10,6 +15,7 @@ interface Input {
   email: string;
   password: string;
   isLender: boolean;
+  language: "en" | "es";
 }
 
 type Payload = {
@@ -17,6 +23,15 @@ type Payload = {
   accessToken: string;
   error: string;
 };
+
+export const Languages = new GraphQLEnumType({
+  name: "Languages",
+  values: {
+    EN: { value: "en" },
+    ES: { value: "es" },
+    DEFAULT: { value: "default" },
+  },
+});
 
 export const SignUpMutation = mutationWithClientMutationId({
   name: "SignUp",
@@ -26,6 +41,7 @@ export const SignUpMutation = mutationWithClientMutationId({
     password: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
     isLender: { type: new GraphQLNonNull(GraphQLBoolean) },
+    language: { type: new GraphQLNonNull(Languages) },
   },
   outputFields: {
     error: {
@@ -42,7 +58,7 @@ export const SignUpMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { email, password, isLender }: Input,
+    { email, password, isLender, language }: Input,
     { users, ch }: Context
   ): Promise<Payload> => {
     try {
@@ -57,13 +73,20 @@ export const SignUpMutation = mutationWithClientMutationId({
         isLender: isLender,
         isBorrower: !isLender,
         isSupport: false,
+        language,
+        name: "",
+        apellidoMaterno: "",
+        apellidoPaterno: "",
+        RFC: "",
+        CURP: "",
+        clabe: "",
+        mobile: "",
       });
       const refreshToken = jwt.sign(
         {
           _id: _id.toHexString(),
-          email,
-          isLender: true,
-          isBorrower: false,
+          isLender: isLender,
+          isBorrower: !isLender,
           isSupport: false,
         },
         REFRESHSECRET,
@@ -72,9 +95,8 @@ export const SignUpMutation = mutationWithClientMutationId({
       const accessToken = jwt.sign(
         {
           _id: _id.toHexString(),
-          email,
-          isLender: true,
-          isBorrower: false,
+          isLender: isLender,
+          isBorrower: !isLender,
           isSupport: false,
         },
         ACCESSSECRET,

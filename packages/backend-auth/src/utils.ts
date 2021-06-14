@@ -17,7 +17,6 @@ export const jwt = {
   sign: (
     data: {
       _id: string;
-      email: string;
       isLender: boolean;
       isBorrower: boolean;
       isSupport: boolean;
@@ -33,7 +32,7 @@ export const jwt = {
 export const refreshTokenMiddleware = async (
   accessToken: string | undefined,
   refreshToken: string | undefined
-): Promise<{ validAccessToken: string; _id: string; email: string }> => {
+): Promise<{ validAccessToken: string; _id: string }> => {
   if (accessToken === undefined) {
     throw new Error("Sin access token.");
   }
@@ -46,7 +45,6 @@ export const refreshTokenMiddleware = async (
     return {
       validAccessToken: accessToken,
       _id: user._id,
-      email: user.email,
     };
   } catch (e) {
     if (e.message === "jwt expired") {
@@ -58,7 +56,6 @@ export const refreshTokenMiddleware = async (
       return {
         validAccessToken,
         _id: user._id,
-        email: user.email,
       };
     }
     throw e;

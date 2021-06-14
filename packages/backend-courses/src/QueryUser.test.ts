@@ -29,13 +29,6 @@ describe("QueryUser tests", () => {
     await users.insertMany([
       {
         _id: new ObjectId("000000000000000000000060"),
-        name: "Armando Narcizo",
-        apellidoPaterno: "Rueda",
-        apellidoMaterno: "Peréz",
-        RFC: "RFC",
-        CURP: "CURP",
-        clabe: "clabe",
-        mobile: "mobile",
         accountAvailable: 50000,
         investments: [],
       },
@@ -46,13 +39,6 @@ describe("QueryUser tests", () => {
         query: `query GetUser($id: String!) {
           user(id: $id) {
             id
-            name
-            apellidoPaterno
-            apellidoMaterno
-            RFC
-            CURP
-            clabe
-            mobile
             accountAvailable
             investments {
               _id_loan
@@ -77,13 +63,6 @@ describe("QueryUser tests", () => {
         })
       );
     expect(response.body.data.user.id).toBeTruthy();
-    expect(response.body.data.user.name).toBe("Armando Narcizo");
-    expect(response.body.data.user.apellidoPaterno).toBe("Rueda");
-    expect(response.body.data.user.apellidoMaterno).toBe("Peréz");
-    expect(response.body.data.user.RFC).toBe("RFC");
-    expect(response.body.data.user.CURP).toBe("CURP");
-    expect(response.body.data.user.clabe).toBe("clabe");
-    expect(response.body.data.user.mobile).toBe("mobile");
     expect(response.body.data.user.accountAvailable).toBe("$500.00");
     expect(response.body.data.user.investments.length).toBe(0);
   });

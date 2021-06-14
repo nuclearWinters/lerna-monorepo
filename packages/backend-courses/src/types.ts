@@ -21,13 +21,6 @@ export interface InvestmentsUserMongo {
 
 export interface UserMongo {
   _id: ObjectId;
-  name: string;
-  apellidoPaterno: string;
-  apellidoMaterno: string;
-  RFC: string;
-  CURP: string;
-  clabe: string;
-  mobile: string;
   accountAvailable: number;
   investments: InvestmentsUserMongo[];
 }

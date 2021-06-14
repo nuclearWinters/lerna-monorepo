@@ -41,6 +41,7 @@ describe("SignUpMutation tests", () => {
             password: "correct",
             email: "anrp1@gmail.com",
             isLender: true,
+            language: "EN",
           },
         },
         operationName: "signUpMutation",
@@ -57,6 +58,14 @@ describe("SignUpMutation tests", () => {
       isLender: true,
       isSupport: false,
       password: "",
+      language: "en",
+      mobile: "",
+      name: "",
+      CURP: "",
+      RFC: "",
+      apellidoMaterno: "",
+      apellidoPaterno: "",
+      clabe: "",
     });
   });
 
@@ -77,6 +86,7 @@ describe("SignUpMutation tests", () => {
             password: "correct",
             email: "anrp1@gmail.com",
             isLender: true,
+            language: "EN",
           },
         },
         operationName: "signUpMutation",
@@ -95,6 +105,14 @@ describe("SignUpMutation tests", () => {
       isLender: true,
       isSupport: false,
       password: "",
+      language: "en",
+      mobile: "",
+      name: "",
+      CURP: "",
+      RFC: "",
+      apellidoMaterno: "",
+      apellidoPaterno: "",
+      clabe: "",
     });
   });
 
@@ -115,6 +133,7 @@ describe("SignUpMutation tests", () => {
             password: "correct",
             email: "anrp2@gmail.com",
             isLender: false,
+            language: "EN",
           },
         },
         operationName: "signUpMutation",
@@ -131,6 +150,14 @@ describe("SignUpMutation tests", () => {
       isLender: false,
       isSupport: false,
       password: "",
+      language: "en",
+      mobile: "",
+      name: "",
+      CURP: "",
+      RFC: "",
+      apellidoMaterno: "",
+      apellidoPaterno: "",
+      clabe: "",
     });
   });
 });

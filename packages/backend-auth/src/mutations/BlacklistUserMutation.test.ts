@@ -36,6 +36,14 @@ describe("BlacklistUserMutation tests", () => {
       isLender: true,
       isBorrower: false,
       isSupport: false,
+      language: "en",
+      mobile: "",
+      name: "",
+      CURP: "",
+      RFC: "",
+      apellidoMaterno: "",
+      apellidoPaterno: "",
+      clabe: "",
     });
     const response = await request
       .post("/auth/graphql")
@@ -60,7 +68,6 @@ describe("BlacklistUserMutation tests", () => {
           accessToken: jwt.sign(
             {
               _id: "000000000000000000000070",
-              email: "",
               isSupport: false,
               isBorrower: false,
               isLender: true,
@@ -99,7 +106,6 @@ describe("BlacklistUserMutation tests", () => {
           accessToken: jwt.sign(
             {
               _id: "000000000000000000000060",
-              email: "",
               isSupport: false,
               isBorrower: false,
               isLender: true,

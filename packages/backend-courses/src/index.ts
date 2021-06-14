@@ -104,13 +104,6 @@ MongoClient.connect(MONGO_DB, {
     if (msg !== null) {
       db.collection<UserMongo>("users").insertOne({
         _id: new ObjectId(msg.content.toString()),
-        name: "",
-        apellidoPaterno: "",
-        apellidoMaterno: "",
-        RFC: "",
-        CURP: "",
-        clabe: "",
-        mobile: "",
         investments: [],
         accountAvailable: 0,
       });

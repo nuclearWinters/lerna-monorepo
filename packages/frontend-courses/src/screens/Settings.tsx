@@ -3,7 +3,7 @@ import { Spinner } from "components/Spinner";
 import React, { CSSProperties, FC, useRef, useState } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { SettingsMutation } from "./__generated__/SettingsMutation.graphql";
-import { Settings_user$key } from "./__generated__/Settings_user.graphql";
+import { Settings_auth_user$key } from "./__generated__/Settings_auth_user.graphql";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
 import { SettingsBlacklistUserMutation } from "./__generated__/SettingsBlacklistUserMutation.graphql";
@@ -15,9 +15,10 @@ import { Space } from "components/Space";
 import { Rows } from "components/Rows";
 import { Columns } from "components/Colums";
 import { useTranslation } from "react-i18next";
+import { Select } from "components/Select";
 
 const settingsFragment = graphql`
-  fragment Settings_user on User {
+  fragment Settings_auth_user on AuthUser {
     id
     name
     apellidoPaterno
@@ -26,24 +27,18 @@ const settingsFragment = graphql`
     CURP
     clabe
     mobile
-    investments {
-      _id_loan
-      quantity
-      term
-      ROI
-      payments
-    }
-    accountAvailable
+    email
+    language
   }
 `;
 
 type Props = {
-  user: Settings_user$key;
+  user: Settings_auth_user$key;
   refetch: () => void;
 };
 
 export const Settings: FC<Props> = (props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [commitBlacklist, isInFlightBlacklist] =
     useMutation<SettingsBlacklistUserMutation>(graphql`
       mutation SettingsBlacklistUserMutation($input: BlacklistUserInput!) {
@@ -62,6 +57,12 @@ export const Settings: FC<Props> = (props) => {
     }
   `);
   const user = useFragment(settingsFragment, props.user);
+  const originLang =
+    user.language === "DEFAULT"
+      ? navigator.language.includes("es")
+        ? "es"
+        : "en"
+      : user.language;
   const [formUser, setFormUser] = useState({
     user_gid: user.id,
     name: user.name,
@@ -71,6 +72,8 @@ export const Settings: FC<Props> = (props) => {
     RFC: user.RFC,
     mobile: user.mobile,
     clabe: user.clabe,
+    email: user.email,
+    language: originLang,
   });
   const handleFormUser = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -83,6 +86,17 @@ export const Settings: FC<Props> = (props) => {
     });
   };
   const isChanged = useRef(false);
+  const handleSelectUser = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    const name = e.target.name;
+    if (!isChanged.current) {
+      isChanged.current = true;
+    }
+    i18n.changeLanguage(value);
+    setFormUser((state) => {
+      return { ...state, [name]: value };
+    });
+  };
   return (
     <Main>
       <WrapperBig style={{ margin: "30px 60px" }}>
@@ -159,12 +173,22 @@ export const Settings: FC<Props> = (props) => {
               <Label label={t("Email")} />
               <Input
                 placeholder={t("Email")}
-                value={tokensAndData.data.email}
+                value={formUser.email}
                 name="email"
-                disabled={true}
+                onChange={handleFormUser}
               />
             </Rows>
           </Columns>
+          <Space h={30} />
+          <Select
+            value={formUser.language}
+            name="language"
+            options={[
+              { value: "en", label: "English" },
+              { value: "es", label: "Español" },
+            ]}
+            onChange={handleSelectUser}
+          />
           <Space h={30} />
           <Columns style={{ justifyContent: "center" }}>
             {isInFlight ? (
@@ -177,6 +201,7 @@ export const Settings: FC<Props> = (props) => {
                     variables: {
                       input: {
                         ...formUser,
+                        language: formUser.language === "es" ? "ES" : "EN",
                       },
                     },
                     onCompleted: (response) => {
@@ -200,6 +225,7 @@ export const Settings: FC<Props> = (props) => {
                 text={t("Restaurar")}
                 color="secondary"
                 onClick={() => {
+                  i18n.changeLanguage(originLang);
                   isChanged.current = false;
                   setFormUser({
                     user_gid: user.id,
@@ -210,6 +236,8 @@ export const Settings: FC<Props> = (props) => {
                     RFC: user.RFC,
                     mobile: user.mobile,
                     clabe: user.clabe,
+                    email: user.email,
+                    language: originLang,
                   });
                 }}
               />

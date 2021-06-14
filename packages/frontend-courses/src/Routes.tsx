@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {
   graphql,
@@ -6,7 +6,7 @@ import {
   useSubscription,
   ConnectionHandler,
 } from "react-relay";
-import { Routes_user$key } from "./__generated__/Routes_user.graphql";
+import { Routes_query$key } from "./__generated__/Routes_query.graphql";
 import {
   Account,
   AddInvestments,
@@ -52,30 +52,37 @@ import { generateCents, generateCurrency } from "utils";
 import { useTranslation } from "react-i18next";
 
 const routesFragment = graphql`
-  fragment Routes_user on User {
-    id
-    name
-    apellidoPaterno
-    apellidoMaterno
-    investments {
-      _id_loan
-      quantity
-      term
-      ROI
-      payments
+  fragment Routes_query on Query {
+    user(id: $id) {
+      id
+      investments {
+        _id_loan
+        quantity
+        term
+        ROI
+        payments
+      }
+      accountAvailable
+      ...AddFunds_user
+      ...RetireFunds_user
+      ...AddLoan_user
+      ...Account_user
     }
-    accountAvailable
-    ...Settings_user
-    ...AddFunds_user
-    ...RetireFunds_user
-    ...AddLoan_user
-    ...Settings_user
-    ...Account_user
+    authUser(id: $id) {
+      id
+      name
+      apellidoPaterno
+      apellidoMaterno
+      language
+      isBorrower
+      isSupport
+      ...Settings_auth_user
+    }
   }
 `;
 
 type Props = {
-  user: Routes_user$key;
+  user: Routes_query$key;
   data: AppQueryResponse;
   refetch: () => void;
 };
@@ -163,13 +170,6 @@ const subscriptionUser = graphql`
     user_subscribe(user_gid: $user_gid) {
       user {
         id
-        name
-        apellidoPaterno
-        apellidoMaterno
-        RFC
-        CURP
-        clabe
-        mobile
         accountAvailable
         investments {
           _id_loan
@@ -184,10 +184,19 @@ const subscriptionUser = graphql`
 `;
 
 export const Routes: FC<Props> = (props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const user = useFragment(routesFragment, props.user);
-  const user_gid = user.id;
+  const { isBorrower, isSupport } = user.authUser;
+  const user_gid = user.user.id;
   const userRef = useRef(user_gid);
+  const isLogged = user.user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=";
+  useEffect(() => {
+    if (isLogged) {
+      i18n.changeLanguage(user.authUser.language);
+    } else {
+      i18n.changeLanguage(navigator.language.includes("es") ? "es" : "en");
+    }
+  }, [i18n, isLogged, user]);
   const configLoans = useMemo<
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
   >(
@@ -339,9 +348,7 @@ export const Routes: FC<Props> = (props) => {
   useSubscription<RoutesInvestmentsSubscription>(configInvestments);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   useSubscription<RoutesUserSubscription>(configUser);
-  const { isBorrower, isSupport } = tokensAndData.data;
-  const isLogged = user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=";
-  const reducedInvestments = user.investments.reduce<IUserInvestments[]>(
+  const reducedInvestments = user.user.investments.reduce<IUserInvestments[]>(
     (acc, item) => {
       const index = acc.findIndex((acc) => acc._id_loan === item._id_loan);
       if (index === -1) {
@@ -360,7 +367,7 @@ export const Routes: FC<Props> = (props) => {
         Math.floor(quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)) *
         (term - payments);
       return acc + owes;
-    }, 0) + generateCents(user.accountAvailable);
+    }, 0) + generateCents(user.user.accountAvailable);
   return (
     <Router>
       <div
@@ -385,7 +392,7 @@ export const Routes: FC<Props> = (props) => {
                 colorValue="rgb(1,120,221)"
               />
               <AccountInfo
-                value={user.accountAvailable}
+                value={user.user.accountAvailable}
                 title={t("Saldo disponible")}
                 colorValue="rgb(58,179,152)"
               />
@@ -443,7 +450,7 @@ export const Routes: FC<Props> = (props) => {
                 colorValue="rgb(1,120,221)"
               />
               <AccountInfo
-                value={user.accountAvailable}
+                value={user.user.accountAvailable}
                 title={t("Saldo disponible")}
                 colorValue="rgb(58,179,152)"
               />
@@ -513,21 +520,20 @@ export const Routes: FC<Props> = (props) => {
                   marginLeft: 10,
                 }}
               >
-                {`${user.name || ""} ${user.apellidoPaterno || ""} ${
-                  user.apellidoMaterno || ""
-                }`.toUpperCase()}
+                {`${user.authUser.name || ""} ${
+                  user.authUser.apellidoPaterno || ""
+                } ${user.authUser.apellidoMaterno || ""}`.toUpperCase()}
               </Link>
               <FontAwesomeIcon
                 onClick={() => {
                   tokensAndData.tokens = { accessToken: "", refreshToken: "" };
                   tokensAndData.data = {
                     _id: "",
-                    email: "",
                     iat: 0,
                     exp: 0,
-                    isSupport: false,
-                    isLender: true,
                     isBorrower: false,
+                    isLender: true,
+                    isSupport: false,
                   };
                   props.refetch();
                 }}
@@ -573,22 +579,22 @@ export const Routes: FC<Props> = (props) => {
                   <SignUp refetch={props.refetch} />
                 </Route>
                 <Route path="/account">
-                  <Account user={user} />
+                  <Account user={user.user} />
                 </Route>
                 <Route path="/addLoan">
-                  <AddLoan user={user} />
+                  <AddLoan user={user.user} />
                 </Route>
                 <Route path="/myLoans">
                   <AddInvestments data={props.data} />
                 </Route>
                 <Route path="/addFunds">
-                  <AddFunds user={user} />
+                  <AddFunds user={user.user} />
                 </Route>
                 <Route path="/retireFunds">
-                  <RetireFunds user={user} />
+                  <RetireFunds user={user.user} />
                 </Route>
                 <Route path="/settings">
-                  <Settings user={user} refetch={props.refetch} />
+                  <Settings user={user.authUser} refetch={props.refetch} />
                 </Route>
               </Switch>
             ) : isSupport ? (
@@ -603,7 +609,7 @@ export const Routes: FC<Props> = (props) => {
                   <AddInvestments data={props.data} />
                 </Route>
                 <Route path="/settings">
-                  <Settings user={user} refetch={props.refetch} />
+                  <Settings user={user.authUser} refetch={props.refetch} />
                 </Route>
               </Switch>
             ) : (
@@ -615,21 +621,21 @@ export const Routes: FC<Props> = (props) => {
                   <SignUp refetch={props.refetch} />
                 </Route>
                 <Route path="/account">
-                  <Account user={user} />
+                  <Account user={user.user} />
                 </Route>
                 <Route path="/addInvestments">
                   <AddInvestments
                     user={{
-                      id: user.id,
+                      id: user.user.id,
                     }}
                     data={props.data}
                   />
                 </Route>
                 <Route path="/addFunds">
-                  <AddFunds user={user} />
+                  <AddFunds user={user.user} />
                 </Route>
                 <Route path="/retireFunds">
-                  <RetireFunds user={user} />
+                  <RetireFunds user={user.user} />
                 </Route>
                 <Route path="/myTransactions">
                   <MyTransactions data={props.data} />
@@ -642,7 +648,7 @@ export const Routes: FC<Props> = (props) => {
                   />
                 </Route>
                 <Route path="/settings">
-                  <Settings user={user} refetch={props.refetch} />
+                  <Settings user={user.authUser} refetch={props.refetch} />
                 </Route>
               </Switch>
             )}

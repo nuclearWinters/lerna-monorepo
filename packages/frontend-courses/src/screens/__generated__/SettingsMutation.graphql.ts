@@ -3,6 +3,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 export type UpdateUserInput = {
   clientMutationId?: string | null;
   user_gid: string;
@@ -13,6 +14,8 @@ export type UpdateUserInput = {
   CURP: string;
   clabe: string;
   mobile: string;
+  email: string;
+  language: Languages;
 };
 export type SettingsMutationVariables = {
   input: UpdateUserInput;

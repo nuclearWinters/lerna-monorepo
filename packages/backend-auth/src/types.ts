@@ -26,6 +26,14 @@ export interface UserMongo {
   isLender: boolean;
   isBorrower: boolean;
   isSupport: boolean;
+  language: "es" | "en" | "default";
+  name: string;
+  apellidoPaterno: string;
+  apellidoMaterno: string;
+  RFC: string;
+  CURP: string;
+  clabe: string;
+  mobile: string;
 }
 
 export interface DecodeJWT {
@@ -34,6 +42,7 @@ export interface DecodeJWT {
   isLender: boolean;
   isBorrower: boolean;
   isSupport: boolean;
+  language: "es" | "en" | "default";
 }
 
 export const SIGN_UP = "SIGN_UP";

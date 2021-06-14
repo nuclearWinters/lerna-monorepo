@@ -3,11 +3,13 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 export type SignUpInput = {
   password: string;
   email: string;
   clientMutationId?: string | null;
   isLender: boolean;
+  language: Languages;
 };
 export type SignUpMutationVariables = {
   input: SignUpInput;

@@ -51,12 +51,22 @@ export const SignInMutation = mutationWithClientMutationId({
       const hash = await bcrypt.compare(password, user.password);
       if (!hash) throw new Error("La contraseña no coincide.");
       const refreshToken = jwt.sign(
-        { ...user, _id: user._id.toHexString() },
+        {
+          _id: user._id.toHexString(),
+          isLender: user.isLender,
+          isBorrower: user.isBorrower,
+          isSupport: user.isSupport,
+        },
         REFRESHSECRET,
         { expiresIn: "1h" }
       );
       const accessToken = jwt.sign(
-        { ...user, _id: user._id.toHexString() },
+        {
+          _id: user._id.toHexString(),
+          isLender: user.isLender,
+          isBorrower: user.isBorrower,
+          isSupport: user.isSupport,
+        },
         ACCESSSECRET,
         { expiresIn: "15m" }
       );

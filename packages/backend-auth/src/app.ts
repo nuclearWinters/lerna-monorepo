@@ -1,11 +1,13 @@
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
-import { GraphQLSchema, GraphQLObjectType, GraphQLString } from "graphql";
+import { GraphQLSchema, GraphQLObjectType } from "graphql";
 import cors from "cors";
 import { SignUpMutation } from "./mutations/SignUpMutation";
 import { SignInMutation } from "./mutations/SignInMutation";
 import { BlacklistUserMutation } from "./mutations/BlacklistUserMutation";
 import { getContext } from "./utils";
+import { QueryUser } from "./AuthUserQuery";
+import { UpdateUserMutation } from "./mutations/UpdateUser";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -13,18 +15,14 @@ const Mutation = new GraphQLObjectType({
     signUp: SignUpMutation,
     signIn: SignInMutation,
     blacklistUser: BlacklistUserMutation,
+    updateUser: UpdateUserMutation,
   },
 });
 
 const Query = new GraphQLObjectType({
   name: "Query",
   fields: {
-    test: {
-      type: GraphQLString,
-      resolve: (): string => {
-        return "test";
-      },
-    },
+    authUser: QueryUser,
   },
 });
 

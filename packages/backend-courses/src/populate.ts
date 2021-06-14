@@ -24,13 +24,6 @@ MongoClient.connect("mongodb://localhost:27017", {
   await users.insertMany([
     {
       _id: new ObjectId("607bd608ef9719001cf38fd5"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Pérez",
-      RFC: "RFC",
-      CURP: "CURP",
-      clabe: "clabe",
-      mobile: "9831228788",
       accountAvailable: 0,
       investments: [
         {
@@ -86,25 +79,11 @@ MongoClient.connect("mongodb://localhost:27017", {
     },
     {
       _id: new ObjectId("6095f055f92be2001a15885b"),
-      name: "Luis Fernando",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Pérez",
-      RFC: "RFC",
-      CURP: "CURP",
-      clabe: "clabe",
-      mobile: "9831228788",
       accountAvailable: 0,
       investments: [],
     },
     {
       _id: new ObjectId("6095f172f92be2001a15885c"),
-      name: "Mariano Alejandro",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Pérez",
-      RFC: "RFC",
-      CURP: "CURP",
-      clabe: "clabe",
-      mobile: "9831228788",
       accountAvailable: 0,
       investments: [],
     },

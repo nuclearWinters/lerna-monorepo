@@ -10,13 +10,6 @@ export type RoutesUserSubscriptionResponse = {
   readonly user_subscribe: {
     readonly user: {
       readonly id: string;
-      readonly name: string;
-      readonly apellidoPaterno: string;
-      readonly apellidoMaterno: string;
-      readonly RFC: string;
-      readonly CURP: string;
-      readonly clabe: string;
-      readonly mobile: string;
       readonly accountAvailable: string;
       readonly investments: ReadonlyArray<{
         readonly _id_loan: string;
@@ -40,13 +33,6 @@ subscription RoutesUserSubscription(
   user_subscribe(user_gid: $user_gid) {
     user {
       id
-      name
-      apellidoPaterno
-      apellidoMaterno
-      RFC
-      CURP
-      clabe
-      mobile
       accountAvailable
       investments {
         _id_loan
@@ -96,55 +82,6 @@ const node: ConcreteRequest = (function () {
                 args: null,
                 kind: "ScalarField",
                 name: "id",
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "name",
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "apellidoPaterno",
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "apellidoMaterno",
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "RFC",
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "CURP",
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "clabe",
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "mobile",
                 storageKey: null,
               },
               {
@@ -225,14 +162,14 @@ const node: ConcreteRequest = (function () {
       selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "85187ee5bed8f1a3deff320849e087c9",
+      cacheID: "62928fd56560f651cf35596136772c1c",
       id: null,
       metadata: {},
       name: "RoutesUserSubscription",
       operationKind: "subscription",
-      text: "subscription RoutesUserSubscription(\n  $user_gid: ID!\n) {\n  user_subscribe(user_gid: $user_gid) {\n    user {\n      id\n      name\n      apellidoPaterno\n      apellidoMaterno\n      RFC\n      CURP\n      clabe\n      mobile\n      accountAvailable\n      investments {\n        _id_loan\n        quantity\n        term\n        ROI\n        payments\n      }\n    }\n  }\n}\n",
+      text: "subscription RoutesUserSubscription(\n  $user_gid: ID!\n) {\n  user_subscribe(user_gid: $user_gid) {\n    user {\n      id\n      accountAvailable\n      investments {\n        _id_loan\n        quantity\n        term\n        ROI\n        payments\n      }\n    }\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "0b57b6bcbc0a7cfbb040f115f04b1837";
+(node as any).hash = "ea855217b1778d9a81d8eab8caca6cac";
 export default node;

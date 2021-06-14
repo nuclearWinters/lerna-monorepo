@@ -19,27 +19,31 @@ const { Suspense } = React;
 
 export interface IJWT {
   _id: string;
-  email: string;
-  isLender: boolean;
-  isBorrower: boolean;
-  isSupport: boolean;
   iat: number;
   exp: number;
+  isLender: boolean;
+  isSupport: boolean;
+  isBorrower: boolean;
 }
 
-export const tokensAndData = {
+export const tokensAndData: {
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
+  data: IJWT;
+} = {
   tokens: {
     accessToken: "",
     refreshToken: "",
   },
   data: {
-    isLender: true,
-    isBorrower: false,
-    isSupport: false,
-    email: "",
     _id: "",
     iat: 0,
     exp: 0,
+    isLender: true,
+    isBorrower: false,
+    isSupport: false,
   },
 };
 
@@ -61,9 +65,7 @@ const RepositoryNameQuery = graphql`
     ...AddInvestments_query
     ...MyTransactions_query
     ...MyInvestments_query
-    user(id: $id) {
-      ...Routes_user
-    }
+    ...Routes_query
   }
 `;
 
@@ -100,7 +102,7 @@ const AppQueryRoot: FC = () => {
       { fetchPolicy: "network-only" }
     );
   }, [loadQuery]);
-  return <Routes user={data.user} data={data} refetch={refetch} />;
+  return <Routes user={data} data={data} refetch={refetch} />;
 };
 
 export const App: FC = () => {

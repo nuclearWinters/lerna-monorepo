@@ -91,6 +91,9 @@ export const SignUp: FC<Props> = ({ refetch }) => {
                         email,
                         password,
                         isLender,
+                        language: navigator.language.includes("es")
+                          ? "ES"
+                          : "EN",
                       },
                     },
                     onCompleted: (response) => {

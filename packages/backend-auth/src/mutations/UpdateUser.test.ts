@@ -16,7 +16,7 @@ describe("UpdateUser tests", () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    dbInstance = client.db("fintech");
+    dbInstance = client.db("auth");
     app.locals.db = dbInstance;
   });
 
@@ -35,11 +35,15 @@ describe("UpdateUser tests", () => {
       CURP: "",
       clabe: "",
       mobile: "",
-      accountAvailable: 0,
-      investments: [],
+      isLender: true,
+      isBorrower: false,
+      isSupport: false,
+      email: "armando10@gmail.com",
+      password: "",
+      language: "default",
     });
     const response = await request
-      .post("/api/graphql")
+      .post("/auth/graphql")
       .send({
         query: `mutation UpdateUserMutation($input: UpdateUserInput!) {
           updateUser(input: $input) {
@@ -57,6 +61,8 @@ describe("UpdateUser tests", () => {
             CURP: "CURP",
             clabe: "clabe",
             mobile: "9831228788",
+            language: "ES",
+            email: "armando10@gmail.com",
           },
         },
         operationName: "UpdateUserMutation",
@@ -66,7 +72,12 @@ describe("UpdateUser tests", () => {
         "Authorization",
         JSON.stringify({
           accessToken: jwt.sign(
-            { _id: "000000000000000000000007", email: "" },
+            {
+              _id: "000000000000000000000007",
+              isLender: true,
+              isBorrower: false,
+              isSupport: false,
+            },
             ACCESSSECRET,
             { expiresIn: "15m" }
           ),
@@ -75,5 +86,24 @@ describe("UpdateUser tests", () => {
       );
     expect(response.body.data.updateUser.error).toBeFalsy();
     expect(response.body.data.updateUser.validAccessToken).toBeTruthy();
+    const user = await users.findOne({
+      _id: new ObjectId("000000000000000000000007"),
+    });
+    expect(user).toEqual({
+      _id: new ObjectId("000000000000000000000007"),
+      email: "armando10@gmail.com",
+      isBorrower: false,
+      isLender: true,
+      isSupport: false,
+      password: "",
+      language: "es",
+      mobile: "9831228788",
+      name: "Armando Narcizo",
+      CURP: "CURP",
+      RFC: "RFC",
+      apellidoMaterno: "Peréz",
+      apellidoPaterno: "Rueda",
+      clabe: "clabe",
+    });
   });
 });

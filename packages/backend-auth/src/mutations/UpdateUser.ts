@@ -1,8 +1,10 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
-import { Context } from "../types";
+import { Context, UserMongo } from "../types";
 import { ObjectId } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
+import { Languages } from "./SignUpMutation";
+import { GraphQLAuthUser } from "../AuthUserQuery";
 
 interface Input {
   user_gid: string;
@@ -13,17 +15,20 @@ interface Input {
   CURP: string;
   clabe: string;
   mobile: string;
+  email: string;
+  language: "es" | "en" | "default";
 }
 
 type Payload = {
   validAccessToken: string;
   error: string;
+  authUser: UserMongo | null;
 };
 
 export const UpdateUserMutation = mutationWithClientMutationId({
   name: "UpdateUser",
   description:
-    "Actualiza los datos personales: recibe el usuario actualizado y obtén un AccessToken valido. Datos disponibles: name, apellidoPaterno, apellidoMaterno, id, RFC, CURP, clabe, mobile",
+    "Actualiza los datos personales: recibe el usuario actualizado y obtén un AccessToken valido. Datos disponibles: name, apellidoPaterno, apellidoMaterno, id, RFC, CURP, clabe, mobile, email y language",
   inputFields: {
     user_gid: { type: new GraphQLNonNull(GraphQLID) },
     name: { type: new GraphQLNonNull(GraphQLString) },
@@ -33,6 +38,8 @@ export const UpdateUserMutation = mutationWithClientMutationId({
     CURP: { type: new GraphQLNonNull(GraphQLString) },
     clabe: { type: new GraphQLNonNull(GraphQLString) },
     mobile: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    language: { type: new GraphQLNonNull(Languages) },
   },
   outputFields: {
     error: {
@@ -41,6 +48,10 @@ export const UpdateUserMutation = mutationWithClientMutationId({
     },
     validAccessToken: {
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ validAccessToken }: Payload): string => validAccessToken,
+    },
+    authUser: {
+      type: new GraphQLNonNull(GraphQLAuthUser),
       resolve: ({ validAccessToken }: Payload): string => validAccessToken,
     },
   },
@@ -58,13 +69,24 @@ export const UpdateUserMutation = mutationWithClientMutationId({
         throw new Error("No es el mismo usuario.");
       }
       const _id_user = new ObjectId(user_id);
-      await users.updateOne({ _id: _id_user }, { $set: user });
+      const result = await users.updateOne({ _id: _id_user }, { $set: user });
+      if (!result.modifiedCount) {
+        throw new Error("No user found.");
+      }
       return {
         validAccessToken,
         error: "",
+        authUser: {
+          ...user,
+          _id: _id_user,
+          isSupport: false,
+          isLender: false,
+          isBorrower: false,
+          password: "",
+        },
       };
     } catch (e) {
-      return { validAccessToken: "", error: e.message };
+      return { validAccessToken: "", error: e.message, authUser: null };
     }
   },
 });

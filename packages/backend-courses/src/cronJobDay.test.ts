@@ -33,25 +33,11 @@ describe("cronJobs tests", () => {
     await users.insertMany([
       {
         _id: new ObjectId("300000000000000000000011"),
-        name: "Armando Narcizo",
-        apellidoPaterno: "Rueda",
-        apellidoMaterno: "Peréz",
-        RFC: "",
-        CURP: "",
-        clabe: "",
-        mobile: "",
         accountAvailable: 1000000,
         investments: [],
       },
       {
         _id: new ObjectId("300000000000000000000100"),
-        name: "Luis Fernando",
-        apellidoPaterno: "Rueda",
-        apellidoMaterno: "Peréz",
-        RFC: "",
-        CURP: "",
-        clabe: "",
-        mobile: "",
         accountAvailable: 100000,
         investments: [
           {
@@ -79,13 +65,6 @@ describe("cronJobs tests", () => {
       },
       {
         _id: new ObjectId("300000000000000000000017"),
-        name: "Mariano Alejandro",
-        apellidoPaterno: "Rueda",
-        apellidoMaterno: "Peréz",
-        RFC: "",
-        CURP: "",
-        clabe: "",
-        mobile: "",
         accountAvailable: 0,
         investments: [],
       },
@@ -243,13 +222,6 @@ describe("cronJobs tests", () => {
     });
     expect(user).toEqual({
       _id: new ObjectId("300000000000000000000011"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 896576,
       investments: [],
     });
@@ -258,13 +230,6 @@ describe("cronJobs tests", () => {
     });
     expect(user2).toEqual({
       _id: new ObjectId("300000000000000000000100"),
-      name: "Luis Fernando",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 110340,
       investments: [
         {

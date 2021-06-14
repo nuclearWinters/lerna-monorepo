@@ -17,11 +17,11 @@ export type AppQueryVariables = {
   borrower_id?: string | null;
 };
 export type AppQueryResponse = {
-  readonly user: {
-    readonly " $fragmentRefs": FragmentRefs<"Routes_user">;
-  };
   readonly " $fragmentRefs": FragmentRefs<
-    "AddInvestments_query" | "MyTransactions_query" | "MyInvestments_query"
+    | "AddInvestments_query"
+    | "MyTransactions_query"
+    | "MyInvestments_query"
+    | "Routes_query"
   >;
 };
 export type AppQuery = {
@@ -38,10 +38,7 @@ query AppQuery(
   ...AddInvestments_query
   ...MyTransactions_query
   ...MyInvestments_query
-  user(id: $id) {
-    ...Routes_user
-    id
-  }
+  ...Routes_query
 }
 
 fragment Account_user on User {
@@ -152,27 +149,35 @@ fragment RetireFunds_user on User {
   id
 }
 
-fragment Routes_user on User {
-  id
-  name
-  apellidoPaterno
-  apellidoMaterno
-  investments {
-    _id_loan
-    quantity
-    term
-    ROI
-    payments
+fragment Routes_query on Query {
+  user(id: $id) {
+    id
+    investments {
+      _id_loan
+      quantity
+      term
+      ROI
+      payments
+    }
+    accountAvailable
+    ...AddFunds_user
+    ...RetireFunds_user
+    ...AddLoan_user
+    ...Account_user
   }
-  accountAvailable
-  ...Settings_user
-  ...AddFunds_user
-  ...RetireFunds_user
-  ...AddLoan_user
-  ...Account_user
+  authUser(id: $id) {
+    id
+    name
+    apellidoPaterno
+    apellidoMaterno
+    language
+    isBorrower
+    isSupport
+    ...Settings_auth_user
+  }
 }
 
-fragment Settings_user on User {
+fragment Settings_auth_user on AuthUser {
   id
   name
   apellidoPaterno
@@ -181,14 +186,8 @@ fragment Settings_user on User {
   CURP
   clabe
   mobile
-  investments {
-    _id_loan
-    quantity
-    term
-    ROI
-    payments
-  }
-  accountAvailable
+  email
+  language
 }
 */
 
@@ -208,20 +207,13 @@ const node: ConcreteRequest = (function () {
       kind: "LocalArgument",
       name: "status",
     } as any,
-    v3 = [
-      {
-        kind: "Variable",
-        name: "id",
-        variableName: "id",
-      } as any,
-    ],
-    v4 = {
+    v3 = {
       kind: "Literal",
       name: "after",
       value: "",
     } as any,
-    v5 = [
-      v4 /*: any*/,
+    v4 = [
+      v3 /*: any*/,
       {
         kind: "Variable",
         name: "borrower_id",
@@ -238,49 +230,49 @@ const node: ConcreteRequest = (function () {
         variableName: "status",
       } as any,
     ],
-    v6 = {
+    v5 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "id",
       storageKey: null,
     } as any,
-    v7 = {
+    v6 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "ROI",
       storageKey: null,
     } as any,
-    v8 = {
+    v7 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "term",
       storageKey: null,
     } as any,
-    v9 = {
+    v8 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "status",
       storageKey: null,
     } as any,
-    v10 = {
+    v9 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "__typename",
       storageKey: null,
     } as any,
-    v11 = {
+    v10 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "cursor",
       storageKey: null,
     } as any,
-    v12 = {
+    v11 = {
       alias: null,
       args: null,
       concreteType: "PageInfo",
@@ -305,62 +297,69 @@ const node: ConcreteRequest = (function () {
       ],
       storageKey: null,
     } as any,
-    v13 = {
+    v12 = {
       kind: "Literal",
       name: "first",
       value: 2,
     } as any,
-    v14 = {
+    v13 = {
       kind: "Variable",
       name: "user_id",
       variableName: "id",
     } as any,
-    v15 = [v4 /*: any*/, v13 /*: any*/, v14 /*: any*/],
-    v16 = {
+    v14 = [v3 /*: any*/, v12 /*: any*/, v13 /*: any*/],
+    v15 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "_id_borrower",
       storageKey: null,
     } as any,
-    v17 = {
+    v16 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "_id_loan",
       storageKey: null,
     } as any,
-    v18 = {
+    v17 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "quantity",
       storageKey: null,
     } as any,
-    v19 = {
+    v18 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "created",
       storageKey: null,
     } as any,
-    v20 = [
-      v4 /*: any*/,
-      v13 /*: any*/,
+    v19 = [
+      v3 /*: any*/,
+      v12 /*: any*/,
       {
         kind: "Literal",
         name: "status",
         value: ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"],
       } as any,
-      v14 /*: any*/,
+      v13 /*: any*/,
     ],
-    v21 = {
+    v20 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "payments",
       storageKey: null,
-    } as any;
+    } as any,
+    v21 = [
+      {
+        kind: "Variable",
+        name: "id",
+        variableName: "id",
+      } as any,
+    ];
   return {
     fragment: {
       argumentDefinitions: [v0 /*: any*/, v1 /*: any*/, v2 /*: any*/],
@@ -368,22 +367,6 @@ const node: ConcreteRequest = (function () {
       metadata: null,
       name: "AppQuery",
       selections: [
-        {
-          alias: null,
-          args: v3 /*: any*/,
-          concreteType: "User",
-          kind: "LinkedField",
-          name: "user",
-          plural: false,
-          selections: [
-            {
-              args: null,
-              kind: "FragmentSpread",
-              name: "Routes_user",
-            },
-          ],
-          storageKey: null,
-        },
         {
           args: null,
           kind: "FragmentSpread",
@@ -399,6 +382,11 @@ const node: ConcreteRequest = (function () {
           kind: "FragmentSpread",
           name: "MyInvestments_query",
         },
+        {
+          args: null,
+          kind: "FragmentSpread",
+          name: "Routes_query",
+        },
       ],
       type: "Query",
       abstractKey: null,
@@ -411,7 +399,7 @@ const node: ConcreteRequest = (function () {
       selections: [
         {
           alias: null,
-          args: v5 /*: any*/,
+          args: v4 /*: any*/,
           concreteType: "LoanConnection",
           kind: "LinkedField",
           name: "loans",
@@ -433,7 +421,7 @@ const node: ConcreteRequest = (function () {
                   name: "node",
                   plural: false,
                   selections: [
-                    v6 /*: any*/,
+                    v5 /*: any*/,
                     {
                       alias: null,
                       args: null,
@@ -448,7 +436,7 @@ const node: ConcreteRequest = (function () {
                       name: "score",
                       storageKey: null,
                     },
-                    v7 /*: any*/,
+                    v6 /*: any*/,
                     {
                       alias: null,
                       args: null,
@@ -456,7 +444,7 @@ const node: ConcreteRequest = (function () {
                       name: "goal",
                       storageKey: null,
                     },
-                    v8 /*: any*/,
+                    v7 /*: any*/,
                     {
                       alias: null,
                       args: null,
@@ -471,22 +459,22 @@ const node: ConcreteRequest = (function () {
                       name: "expiry",
                       storageKey: null,
                     },
+                    v8 /*: any*/,
                     v9 /*: any*/,
-                    v10 /*: any*/,
                   ],
                   storageKey: null,
                 },
-                v11 /*: any*/,
+                v10 /*: any*/,
               ],
               storageKey: null,
             },
-            v12 /*: any*/,
+            v11 /*: any*/,
           ],
           storageKey: null,
         },
         {
           alias: null,
-          args: v5 /*: any*/,
+          args: v4 /*: any*/,
           filters: ["borrower_id", "status"],
           handle: "connection",
           key: "AddInvestments_query_loans",
@@ -495,7 +483,7 @@ const node: ConcreteRequest = (function () {
         },
         {
           alias: null,
-          args: v15 /*: any*/,
+          args: v14 /*: any*/,
           concreteType: "BucketTransactionConnection",
           kind: "LinkedField",
           name: "transactions",
@@ -517,7 +505,7 @@ const node: ConcreteRequest = (function () {
                   name: "node",
                   plural: false,
                   selections: [
-                    v6 /*: any*/,
+                    v5 /*: any*/,
                     {
                       alias: null,
                       args: null,
@@ -533,9 +521,9 @@ const node: ConcreteRequest = (function () {
                       name: "history",
                       plural: true,
                       selections: [
-                        v6 /*: any*/,
+                        v5 /*: any*/,
+                        v15 /*: any*/,
                         v16 /*: any*/,
-                        v17 /*: any*/,
                         {
                           alias: null,
                           args: null,
@@ -543,26 +531,26 @@ const node: ConcreteRequest = (function () {
                           name: "type",
                           storageKey: null,
                         },
+                        v17 /*: any*/,
                         v18 /*: any*/,
-                        v19 /*: any*/,
                       ],
                       storageKey: null,
                     },
-                    v10 /*: any*/,
+                    v9 /*: any*/,
                   ],
                   storageKey: null,
                 },
-                v11 /*: any*/,
+                v10 /*: any*/,
               ],
               storageKey: null,
             },
-            v12 /*: any*/,
+            v11 /*: any*/,
           ],
           storageKey: null,
         },
         {
           alias: null,
-          args: v15 /*: any*/,
+          args: v14 /*: any*/,
           filters: ["user_id"],
           handle: "connection",
           key: "MyTransactions_query_transactions",
@@ -571,7 +559,7 @@ const node: ConcreteRequest = (function () {
         },
         {
           alias: null,
-          args: v20 /*: any*/,
+          args: v19 /*: any*/,
           concreteType: "InvestmentsConnection",
           kind: "LinkedField",
           name: "investments",
@@ -593,11 +581,11 @@ const node: ConcreteRequest = (function () {
                   name: "node",
                   plural: false,
                   selections: [
-                    v6 /*: any*/,
+                    v5 /*: any*/,
+                    v15 /*: any*/,
                     v16 /*: any*/,
                     v17 /*: any*/,
                     v18 /*: any*/,
-                    v19 /*: any*/,
                     {
                       alias: null,
                       args: null,
@@ -605,10 +593,10 @@ const node: ConcreteRequest = (function () {
                       name: "updated",
                       storageKey: null,
                     },
-                    v9 /*: any*/,
-                    v21 /*: any*/,
-                    v7 /*: any*/,
                     v8 /*: any*/,
+                    v20 /*: any*/,
+                    v6 /*: any*/,
+                    v7 /*: any*/,
                     {
                       alias: null,
                       args: null,
@@ -616,21 +604,21 @@ const node: ConcreteRequest = (function () {
                       name: "moratory",
                       storageKey: null,
                     },
-                    v10 /*: any*/,
+                    v9 /*: any*/,
                   ],
                   storageKey: null,
                 },
-                v11 /*: any*/,
+                v10 /*: any*/,
               ],
               storageKey: null,
             },
-            v12 /*: any*/,
+            v11 /*: any*/,
           ],
           storageKey: null,
         },
         {
           alias: null,
-          args: v20 /*: any*/,
+          args: v19 /*: any*/,
           filters: ["user_id", "status"],
           handle: "connection",
           key: "MyInvestments_query_investments",
@@ -639,13 +627,48 @@ const node: ConcreteRequest = (function () {
         },
         {
           alias: null,
-          args: v3 /*: any*/,
+          args: v21 /*: any*/,
           concreteType: "User",
           kind: "LinkedField",
           name: "user",
           plural: false,
           selections: [
-            v6 /*: any*/,
+            v5 /*: any*/,
+            {
+              alias: null,
+              args: null,
+              concreteType: "InvestmentsUser",
+              kind: "LinkedField",
+              name: "investments",
+              plural: true,
+              selections: [
+                v16 /*: any*/,
+                v17 /*: any*/,
+                v7 /*: any*/,
+                v6 /*: any*/,
+                v20 /*: any*/,
+              ],
+              storageKey: null,
+            },
+            {
+              alias: null,
+              args: null,
+              kind: "ScalarField",
+              name: "accountAvailable",
+              storageKey: null,
+            },
+          ],
+          storageKey: null,
+        },
+        {
+          alias: null,
+          args: v21 /*: any*/,
+          concreteType: "AuthUser",
+          kind: "LinkedField",
+          name: "authUser",
+          plural: false,
+          selections: [
+            v5 /*: any*/,
             {
               alias: null,
               args: null,
@@ -670,24 +693,22 @@ const node: ConcreteRequest = (function () {
             {
               alias: null,
               args: null,
-              concreteType: "InvestmentsUser",
-              kind: "LinkedField",
-              name: "investments",
-              plural: true,
-              selections: [
-                v17 /*: any*/,
-                v18 /*: any*/,
-                v8 /*: any*/,
-                v7 /*: any*/,
-                v21 /*: any*/,
-              ],
+              kind: "ScalarField",
+              name: "language",
               storageKey: null,
             },
             {
               alias: null,
               args: null,
               kind: "ScalarField",
-              name: "accountAvailable",
+              name: "isBorrower",
+              storageKey: null,
+            },
+            {
+              alias: null,
+              args: null,
+              kind: "ScalarField",
+              name: "isSupport",
               storageKey: null,
             },
             {
@@ -718,20 +739,27 @@ const node: ConcreteRequest = (function () {
               name: "mobile",
               storageKey: null,
             },
+            {
+              alias: null,
+              args: null,
+              kind: "ScalarField",
+              name: "email",
+              storageKey: null,
+            },
           ],
           storageKey: null,
         },
       ],
     },
     params: {
-      cacheID: "7d5039151279061b5010702c19bf0cd6",
+      cacheID: "d894698408e6b20a0906992fe28ff217",
       id: null,
       metadata: {},
       name: "AppQuery",
       operationKind: "query",
-      text: 'query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]!\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  user(id: $id) {\n    ...Routes_user\n    id\n  }\n}\n\nfragment Account_user on User {\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: "", borrower_id: $borrower_id, status: $status) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: "", user_id: $id, status: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: "", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n  ...Settings_user\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n  ...Account_user\n}\n\nfragment Settings_user on User {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n}\n',
+      text: 'query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]!\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  ...Routes_query\n}\n\nfragment Account_user on User {\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: "", borrower_id: $borrower_id, status: $status) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: "", user_id: $id, status: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: "", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_query on Query {\n  user(id: $id) {\n    id\n    investments {\n      _id_loan\n      quantity\n      term\n      ROI\n      payments\n    }\n    accountAvailable\n    ...AddFunds_user\n    ...RetireFunds_user\n    ...AddLoan_user\n    ...Account_user\n  }\n  authUser(id: $id) {\n    id\n    name\n    apellidoPaterno\n    apellidoMaterno\n    language\n    isBorrower\n    isSupport\n    ...Settings_auth_user\n  }\n}\n\nfragment Settings_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  language\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "05449b956ceb55baa2cbac819453fb94";
+(node as any).hash = "bd362e37fc24d5857009888ee7e3824c";
 export default node;

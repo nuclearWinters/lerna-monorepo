@@ -34,6 +34,14 @@ describe("SignInMutation tests", () => {
       isLender: true,
       isBorrower: false,
       isSupport: false,
+      language: "en",
+      mobile: "",
+      name: "",
+      CURP: "",
+      RFC: "",
+      apellidoMaterno: "",
+      apellidoPaterno: "",
+      clabe: "",
     });
     const response = await request
       .post("/auth/graphql")

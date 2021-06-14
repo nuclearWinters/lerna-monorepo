@@ -4,7 +4,6 @@ import { GraphQLSchema, GraphQLObjectType } from "graphql";
 import cors from "cors";
 import { QueryUser } from "./QueryUser";
 import { nodeField } from "./Nodes";
-import { UpdateUserMutation } from "./mutations/UpdateUser";
 import { AddLendsMutation } from "./mutations/AddLends";
 import { AddFundsMutation } from "./mutations/AddFunds";
 import { QueryLoans } from "./QueryLoans";
@@ -34,7 +33,6 @@ const Query = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
   fields: {
-    updateUser: UpdateUserMutation,
     addLends: AddLendsMutation,
     addFunds: AddFundsMutation,
     addLoan: AddLoanMutation,

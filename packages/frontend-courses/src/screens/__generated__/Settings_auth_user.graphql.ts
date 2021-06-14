@@ -4,7 +4,8 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type Settings_user = {
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
+export type Settings_auth_user = {
   readonly id: string;
   readonly name: string;
   readonly apellidoPaterno: string;
@@ -13,27 +14,21 @@ export type Settings_user = {
   readonly CURP: string;
   readonly clabe: string;
   readonly mobile: string;
-  readonly investments: ReadonlyArray<{
-    readonly _id_loan: string;
-    readonly quantity: number;
-    readonly term: number;
-    readonly ROI: number;
-    readonly payments: number;
-  }>;
-  readonly accountAvailable: string;
-  readonly " $refType": "Settings_user";
+  readonly email: string;
+  readonly language: Languages;
+  readonly " $refType": "Settings_auth_user";
 };
-export type Settings_user$data = Settings_user;
-export type Settings_user$key = {
-  readonly " $data"?: Settings_user$data;
-  readonly " $fragmentRefs": FragmentRefs<"Settings_user">;
+export type Settings_auth_user$data = Settings_auth_user;
+export type Settings_auth_user$key = {
+  readonly " $data"?: Settings_auth_user$data;
+  readonly " $fragmentRefs": FragmentRefs<"Settings_auth_user">;
 };
 
 const node: ReaderFragment = {
   argumentDefinitions: [],
   kind: "Fragment",
   metadata: null,
-  name: "Settings_user",
+  name: "Settings_auth_user",
   selections: [
     {
       alias: null,
@@ -94,59 +89,20 @@ const node: ReaderFragment = {
     {
       alias: null,
       args: null,
-      concreteType: "InvestmentsUser",
-      kind: "LinkedField",
-      name: "investments",
-      plural: true,
-      selections: [
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "_id_loan",
-          storageKey: null,
-        },
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "quantity",
-          storageKey: null,
-        },
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "term",
-          storageKey: null,
-        },
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "ROI",
-          storageKey: null,
-        },
-        {
-          alias: null,
-          args: null,
-          kind: "ScalarField",
-          name: "payments",
-          storageKey: null,
-        },
-      ],
+      kind: "ScalarField",
+      name: "email",
       storageKey: null,
     },
     {
       alias: null,
       args: null,
       kind: "ScalarField",
-      name: "accountAvailable",
+      name: "language",
       storageKey: null,
     },
   ],
-  type: "User",
+  type: "AuthUser",
   abstractKey: null,
 } as any;
-(node as any).hash = "f54a3f6e6666900120ce5e10fa1e222e";
+(node as any).hash = "a0e578bdd0ff074ffce60619025a42a5";
 export default node;

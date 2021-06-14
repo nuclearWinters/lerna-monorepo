@@ -16,6 +16,7 @@ input SignUpInput {
   email: String!
   clientMutationId: String
   isLender: Boolean!
+  language: Languages!
 }
 
 type SignUpPayload {
@@ -46,12 +47,15 @@ input UpdateUserInput {
   CURP: String!
   clabe: String!
   mobile: String!
+  email: String!
+  language: Languages!
 }
 
 type UpdateUserPayload {
   validAccessToken: String!
   error: String!
   clientMutationId: String
+  authUser: AuthUser!
 }
 
 input LendList {
@@ -124,6 +128,7 @@ type Mutation {
 
 type Query {
   user(id: String!): User!
+  authUser(id: String!): AuthUser!
   node(id: ID!): Node
   loans(
     after: String
@@ -271,6 +276,12 @@ enum SubscribeType {
   INSERT
 }
 
+enum Languages {
+  EN
+  ES
+  DEFAULT
+}
+
 type Transaction {
   id: ID!
   _id_borrower: String
@@ -307,6 +318,12 @@ type InvestmentsUser {
 
 type User implements Node {
   id: ID!
+  accountAvailable: MXN!
+  investments: [InvestmentsUser!]!
+}
+
+type AuthUser {
+  id: ID!
   name: String!
   apellidoPaterno: String!
   apellidoMaterno: String!
@@ -314,8 +331,11 @@ type User implements Node {
   CURP: String!
   clabe: String!
   mobile: String!
-  accountAvailable: MXN!
-  investments: [InvestmentsUser!]!
+  isLender: Boolean!
+  isBorrower: Boolean!
+  isSupport: Boolean!
+  language: Languages!
+  email: String!
 }
 
 scalar Date

@@ -30,13 +30,6 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000000"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });
@@ -76,13 +69,6 @@ describe("AddFunds tests", () => {
     });
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000000"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 150000,
       investments: [],
     });
@@ -110,13 +96,6 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000003"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });
@@ -156,13 +135,6 @@ describe("AddFunds tests", () => {
     });
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000003"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 50000,
       investments: [],
     });
@@ -190,13 +162,6 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000001"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });
@@ -251,13 +216,6 @@ describe("AddFunds tests", () => {
     });
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000001"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 150000,
       investments: [],
     });
@@ -285,13 +243,6 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000002"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });
@@ -346,13 +297,6 @@ describe("AddFunds tests", () => {
     });
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000002"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });
@@ -368,13 +312,6 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("100000000000000000000002"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });
@@ -416,13 +353,6 @@ describe("AddFunds tests", () => {
     });
     expect(user).toEqual({
       _id: new ObjectId("100000000000000000000002"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });
@@ -439,13 +369,6 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("100000000000000000000003"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });
@@ -487,13 +410,6 @@ describe("AddFunds tests", () => {
     });
     expect(user).toEqual({
       _id: new ObjectId("100000000000000000000003"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });

@@ -28,13 +28,6 @@ describe("AddLoan tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000006"),
-      name: "Armando Narcizo",
-      apellidoPaterno: "Rueda",
-      apellidoMaterno: "Peréz",
-      RFC: "",
-      CURP: "",
-      clabe: "",
-      mobile: "",
       accountAvailable: 100000,
       investments: [],
     });
