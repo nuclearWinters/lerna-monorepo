@@ -1,6 +1,7 @@
 import { getDataFromToken, tokensAndData } from "App";
 import { differenceInSeconds } from "date-fns";
 import React, { FC, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { logOut } from "utils";
 import { Columns } from "./Colums";
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export const CheckExpiration: FC<Props> = (props) => {
+  const { t } = useTranslation();
   const { isBorrower, isSupport } = useFragment(
     checkExpirationFragment,
     props.user
@@ -79,9 +81,9 @@ export const CheckExpiration: FC<Props> = (props) => {
       }}
     >
       <Space h={20} />
-      <div style={{ fontSize: 24 }}>La sesión expirara en:</div>
+      <div style={{ fontSize: 24 }}>{t("La sesión expirara en")}:</div>
       <div style={{ fontSize: 20, fontWeight: "bold" }}>
-        {Math.abs(difference) > 60 ? "" : difference} segundos
+        {Math.abs(difference) > 60 ? "" : difference} {t("segundos")}
       </div>
       <Space h={20} />
       <Columns>
@@ -90,7 +92,7 @@ export const CheckExpiration: FC<Props> = (props) => {
           <Spinner />
         ) : (
           <CustomButton
-            text="Extender sesión 1 hora"
+            text={t("Extender sesión 1 hora")}
             onClick={() => {
               commit({
                 variables: {

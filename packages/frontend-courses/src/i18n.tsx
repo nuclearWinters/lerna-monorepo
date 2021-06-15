@@ -79,6 +79,9 @@ const resources: Record<"en", Record<"translation", Record<any, string>>> = {
       "Mi cuenta": "My account",
       Comprar: "Buy",
       Periodo: "Term",
+      "La sesión expirara en": "Session will expire in",
+      segundos: "seconds",
+      "Extender sesión 1 hora": "Extend session 1 hour",
     },
   },
 };
