@@ -8,6 +8,7 @@ import { RedisPromises, SIGN_UP } from "./types";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
 import { AuthServer } from "./grpc";
 import { AuthService } from "./proto/auth_grpc_pb";
+import { REDIS } from "./config";
 
 export const ctx: {
   rdb?: RedisPromises;
@@ -23,7 +24,7 @@ MongoClient.connect(MONGO_DB, {
 }).then(async (client) => {
   const redisClient = redis.createClient({
     port: 6379,
-    host: "redis-auth",
+    host: REDIS,
   });
   const rdb = {
     get: promisify(redisClient.get).bind(redisClient),

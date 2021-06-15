@@ -11,6 +11,8 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "noImplicitAny": true
-  }
+    "noImplicitAny": true,
+    "skipLibCheck": true
+  },
+  "include": ["./src"]
 }
