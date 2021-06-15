@@ -1,4 +1,4 @@
-# Lerna GraphQL Relay Typescript Monorepo
+# Lerna GraphQL Relay API Gateway Typescript Monorepo
 
 This project explore GraphQL Javascript microservices with a monorepo approach.
 
