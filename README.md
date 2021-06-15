@@ -8,16 +8,18 @@ All queries, mutations and subscriptions can be requested to the GraphQL Gateway
 
 The React app is build from scratch (no create-react-app) and uses Relay to manage state and GraphQL requests.
 
-Languages:
+A basic fintech app that allows lenders invest in loans and return interests once borrowers pay.
+
+**Languages:**
 
 - Javascript
 - Typescript
 
-Specifications:
+**Specifications:**
 
 - Relay
 
-Tools:
+**Tools:**
 
 - Husky
 - Prettier
@@ -27,13 +29,13 @@ Tools:
 - Jest
 - Babel
 
-Communication Protocols:
+**Communication Protocols:**
 
 - RabbitMQ
 - GRPC
 - GraphQL
 
-Dependencies:
+**Dependencies:**
 
 - lerna
 - express
@@ -54,12 +56,12 @@ Dependencies:
 - ts-node-dev
 - @shelf/jest-mongodb
 
-Databases:
+**Databases:**
 
 - MongoDB
 - Redis
 
-Environment:
+**Environment:**
 
 - Docker
 - Nginx
@@ -73,3 +75,5 @@ To set up the project in dev mode:
 3. Run `make bootstrap`
 
 4. Run `make up`
+
+5. Run `npm run populate` on backend-auth and backend-courses root folder projects
