@@ -226,6 +226,18 @@ type InvestmentsEdge {
   cursor: String!
 }
 
+enum LoanScheduledPaymentStatus {
+  TO_BE_PAID
+  DELAYED
+  PAID
+}
+
+type ScheduledPayments {
+  amortize: MXN!
+  status: LoanScheduledPaymentStatus!
+  scheduledDate: Date!
+}
+
 type Loan implements Node {
   id: ID!
   _id_user: String!
@@ -236,6 +248,7 @@ type Loan implements Node {
   raised: MXN!
   expiry: Date!
   status: LoanStatus!
+  scheduledPayments: [ScheduledPayments!]
 }
 
 type LoanConnection {

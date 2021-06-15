@@ -299,7 +299,7 @@ export const GraphQLScheduledPayments =
         resolve: ({ status }): IScheduledPaymentsStatus => status,
       },
       scheduledDate: {
-        type: GraphQLString,
+        type: new GraphQLNonNull(DateScalarType),
         resolve: ({ scheduledDate }): Date => scheduledDate,
       },
     },
@@ -342,7 +342,7 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
       resolve: ({ status }): ILoanStatus => status,
     },
     scheduledPayments: {
-      type: new GraphQLList(new GraphQLNonNull(LoanStatus)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLScheduledPayments)),
       resolve: ({ scheduledPayments }): IScheduledPayments[] | null =>
         scheduledPayments,
     },

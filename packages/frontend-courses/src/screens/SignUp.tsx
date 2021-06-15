@@ -11,26 +11,13 @@ import { Spinner } from "components/Spinner";
 import { Title } from "components/Title";
 import { WrapperSmall } from "components/WrapperSmall";
 import React, { FC, useState } from "react";
-import { useMutation, graphql, useFragment } from "react-relay";
+import { useMutation, graphql } from "react-relay";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
 import { useTranslation } from "react-i18next";
-import { SignUp_auth_user$key } from "./__generated__/SignUp_auth_user.graphql";
 import { logOut } from "utils";
 
-const signUpFragment = graphql`
-  fragment SignUp_auth_user on AuthUser {
-    isBorrower
-    isSupport
-  }
-`;
-
-interface Props {
-  user: SignUp_auth_user$key;
-}
-
-export const SignUp: FC<Props> = (props) => {
+export const SignUp: FC = () => {
   const { t } = useTranslation();
-  const { isBorrower, isSupport } = useFragment(signUpFragment, props.user);
   const [commit, isInFlight] = useMutation<SignUpMutation>(graphql`
     mutation SignUpMutation($input: SignUpInput!) {
       signUp(input: $input) {
@@ -124,13 +111,13 @@ export const SignUp: FC<Props> = (props) => {
                       tokensAndData.credentials.password = password;
                       tokensAndData.data = user;
                       tokensAndData.refetchUser(
-                        isBorrower
+                        user.isBorrower
                           ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
-                          : isSupport
+                          : user.isSupport
                           ? ["WAITING_FOR_APPROVAL"]
                           : ["FINANCING"],
                         user._id,
-                        isBorrower ? user._id : null
+                        user.isBorrower ? user._id : null
                       );
                     },
                   });

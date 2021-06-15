@@ -38,17 +38,9 @@ export interface UserMongo {
 
 export interface DecodeJWT {
   _id: string;
-  email: string;
   isLender: boolean;
   isBorrower: boolean;
   isSupport: boolean;
-  language: "es" | "en" | "default";
 }
 
 export const SIGN_UP = "SIGN_UP";
-interface ISignUp {
-  queue: typeof SIGN_UP;
-  payload: string;
-}
-
-export type IMQ = ISignUp;

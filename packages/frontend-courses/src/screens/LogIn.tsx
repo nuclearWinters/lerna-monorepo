@@ -1,7 +1,7 @@
 import { getDataFromToken, tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import React, { FC, useState } from "react";
-import { useMutation, graphql, useFragment } from "react-relay";
+import { useMutation, graphql } from "react-relay";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
@@ -12,23 +12,10 @@ import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
 import { useTranslation } from "react-i18next";
-import { LogIn_auth_user$key } from "./__generated__/LogIn_auth_user.graphql";
 import { logOut } from "utils";
 
-const logInFragment = graphql`
-  fragment LogIn_auth_user on AuthUser {
-    isBorrower
-    isSupport
-  }
-`;
-
-interface Props {
-  user: LogIn_auth_user$key;
-}
-
-export const LogIn: FC<Props> = (props) => {
+export const LogIn: FC = () => {
   const { t } = useTranslation();
-  const { isBorrower, isSupport } = useFragment(logInFragment, props.user);
   const [commit, isInFlight] = useMutation<LogInMutation>(graphql`
     mutation LogInMutation($input: SignInInput!) {
       signIn(input: $input) {
@@ -95,13 +82,13 @@ export const LogIn: FC<Props> = (props) => {
                     tokensAndData.credentials.email = email;
                     tokensAndData.credentials.password = password;
                     tokensAndData.refetchUser(
-                      isBorrower
+                      user.isBorrower
                         ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
-                        : isSupport
+                        : user.isSupport
                         ? ["WAITING_FOR_APPROVAL"]
                         : ["FINANCING"],
                       user._id,
-                      isBorrower ? user._id : null
+                      user.isBorrower ? user._id : null
                     );
                   },
                 });

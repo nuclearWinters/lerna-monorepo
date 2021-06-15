@@ -74,6 +74,9 @@ describe("UpdateUser tests", () => {
           accessToken: jwt.sign(
             {
               _id: "000000000000000000000007",
+              isBorrower: false,
+              isLender: true,
+              isSupport: false,
             },
             ACCESSSECRET,
             { expiresIn: "15m" }

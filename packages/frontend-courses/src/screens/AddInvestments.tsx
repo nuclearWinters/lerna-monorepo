@@ -46,6 +46,8 @@ const debtInSaleFragment = graphql`
     authUser(id: $id) {
       isLender
       isSupport
+      isBorrower
+      language
     }
   }
 `;
@@ -80,7 +82,7 @@ export const AddInvestments: FC<Props> = (props) => {
   >(debtInSaleFragment, props.data);
 
   const user_gid = data.user.id;
-  const { isLender, isSupport } = data.authUser;
+  const { isLender, isSupport, isBorrower, language } = data.authUser;
 
   const columns = [
     { key: "id", title: t("ID") },
@@ -118,6 +120,7 @@ export const AddInvestments: FC<Props> = (props) => {
         <Table color="primary">
           <Rows style={{ flex: 1 }}>
             <Columns>
+              {isBorrower && <div style={{ width: 30 }} />}
               {columns.map((column) => (
                 <TableColumnName key={column.key}>
                   {column.title}
@@ -137,6 +140,8 @@ export const AddInvestments: FC<Props> = (props) => {
                       value={value}
                       isLender={isLender}
                       isSupport={isSupport}
+                      isBorrower={isBorrower}
+                      language={language}
                     />
                   );
                 }

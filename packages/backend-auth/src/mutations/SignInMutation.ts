@@ -53,6 +53,9 @@ export const SignInMutation = mutationWithClientMutationId({
       const refreshToken = jwt.sign(
         {
           _id: user._id.toHexString(),
+          isLender: user.isLender,
+          isBorrower: user.isBorrower,
+          isSupport: user.isSupport,
         },
         REFRESHSECRET,
         { expiresIn: "1h" }
@@ -60,6 +63,9 @@ export const SignInMutation = mutationWithClientMutationId({
       const accessToken = jwt.sign(
         {
           _id: user._id.toHexString(),
+          isLender: user.isLender,
+          isBorrower: user.isBorrower,
+          isSupport: user.isSupport,
         },
         ACCESSSECRET,
         { expiresIn: "15m" }

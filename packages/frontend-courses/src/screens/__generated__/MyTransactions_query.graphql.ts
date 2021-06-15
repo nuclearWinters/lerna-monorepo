@@ -4,6 +4,7 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 export type TransactionType =
   | "COLLECT"
   | "CREDIT"
@@ -27,6 +28,9 @@ export type MyTransactions_query = {
       } | null;
     } | null> | null;
   } | null;
+  readonly authUser: {
+    readonly language: Languages;
+  };
   readonly " $refType": "MyTransactions_query";
 };
 export type MyTransactions_query$data = MyTransactions_query;
@@ -219,10 +223,34 @@ const node: ReaderFragment = (function () {
         ],
         storageKey: null,
       },
+      {
+        alias: null,
+        args: [
+          {
+            kind: "Variable",
+            name: "id",
+            variableName: "id",
+          },
+        ],
+        concreteType: "AuthUser",
+        kind: "LinkedField",
+        name: "authUser",
+        plural: false,
+        selections: [
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "language",
+            storageKey: null,
+          },
+        ],
+        storageKey: null,
+      },
     ],
     type: "Query",
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "4176bb7778e068c8b609ce5a5b58fabb";
+(node as any).hash = "b9b6c88634eee7f5d7c24ed0d70b3e72";
 export default node;

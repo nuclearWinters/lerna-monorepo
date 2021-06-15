@@ -111,10 +111,3 @@ export interface DecodeJWT {
 }
 
 export const SIGN_UP = "SIGN_UP";
-
-interface ISignUp {
-  queue: typeof SIGN_UP;
-  payload: string;
-}
-
-export type IMQ = ISignUp;

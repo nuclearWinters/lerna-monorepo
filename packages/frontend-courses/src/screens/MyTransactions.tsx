@@ -7,6 +7,7 @@ import {
 import { MyTransactionsPaginationQuery } from "./__generated__/MyTransactionsPaginationQuery.graphql";
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
+import en from "date-fns/locale/en-US";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { CustomButton } from "components/CustomButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,6 +46,9 @@ const transactionsFragment = graphql`
           }
         }
       }
+    }
+    authUser(id: $id) {
+      language
     }
   }
 `;
@@ -155,7 +159,16 @@ export const MyTransactions: FC<Props> = (props) => {
                           {format(
                             transaction.created,
                             "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
-                            { locale: es }
+                            {
+                              locale:
+                                data.authUser.language === "DEFAULT"
+                                  ? navigator.language.includes("es")
+                                    ? es
+                                    : en
+                                  : data.authUser.language === "ES"
+                                  ? es
+                                  : en,
+                            }
                           )}
                         </div>
                       </div>

@@ -72,7 +72,7 @@
   "author": "Armando Rueda",
   "license": "ISC",
   "lint-staged": {
-    "**/!(*.graphql).{js,jsx,ts,tsx}": [
+    "**/!(*graphql).{js,jsx,ts,tsx}": [
       "eslint --cache --fix",
       "prettier --write",
       "jest --findRelatedTests --bail"

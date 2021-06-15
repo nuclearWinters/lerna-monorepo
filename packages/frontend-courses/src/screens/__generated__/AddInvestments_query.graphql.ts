@@ -4,6 +4,7 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 export type AddInvestments_query = {
   readonly loans: {
     readonly edges: ReadonlyArray<{
@@ -19,6 +20,8 @@ export type AddInvestments_query = {
   readonly authUser: {
     readonly isLender: boolean;
     readonly isSupport: boolean;
+    readonly isBorrower: boolean;
+    readonly language: Languages;
   };
   readonly " $refType": "AddInvestments_query";
 };
@@ -215,6 +218,20 @@ const node: ReaderFragment = (function () {
             name: "isSupport",
             storageKey: null,
           },
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "isBorrower",
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "language",
+            storageKey: null,
+          },
         ],
         storageKey: null,
       },
@@ -223,5 +240,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   } as any;
 })();
-(node as any).hash = "ea4ef89190b30ac0dcd8acb3554f3258";
+(node as any).hash = "6c1eddd0856edeecd172f43b25ba812c";
 export default node;

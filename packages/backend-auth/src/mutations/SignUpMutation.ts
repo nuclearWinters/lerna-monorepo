@@ -15,7 +15,7 @@ interface Input {
   email: string;
   password: string;
   isLender: boolean;
-  language: "en" | "es";
+  language: "en" | "es" | "default";
 }
 
 type Payload = {
@@ -85,6 +85,9 @@ export const SignUpMutation = mutationWithClientMutationId({
       const refreshToken = jwt.sign(
         {
           _id: _id.toHexString(),
+          isBorrower: !isLender,
+          isLender: isLender,
+          isSupport: false,
         },
         REFRESHSECRET,
         { expiresIn: "1h" }
@@ -92,6 +95,9 @@ export const SignUpMutation = mutationWithClientMutationId({
       const accessToken = jwt.sign(
         {
           _id: _id.toHexString(),
+          isBorrower: !isLender,
+          isLender: isLender,
+          isSupport: false,
         },
         ACCESSSECRET,
         { expiresIn: "15m" }

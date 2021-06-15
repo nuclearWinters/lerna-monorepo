@@ -60,8 +60,8 @@ export const Settings: FC<Props> = (props) => {
   const originLang =
     user.language === "DEFAULT"
       ? navigator.language.includes("es")
-        ? "es"
-        : "en"
+        ? "ES"
+        : "EN"
       : user.language;
   const [formUser, setFormUser] = useState({
     user_gid: user.id,
@@ -184,8 +184,8 @@ export const Settings: FC<Props> = (props) => {
             value={formUser.language}
             name="language"
             options={[
-              { value: "en", label: "English" },
-              { value: "es", label: "Español" },
+              { value: "EN", label: "English" },
+              { value: "ES", label: "Español" },
             ]}
             onChange={handleSelectUser}
           />
@@ -195,13 +195,13 @@ export const Settings: FC<Props> = (props) => {
               <Spinner />
             ) : (
               <CustomButton
-                text={t("Refrescar")}
+                text={t("Actualizar")}
                 onClick={() => {
                   commit({
                     variables: {
                       input: {
                         ...formUser,
-                        language: formUser.language === "es" ? "ES" : "EN",
+                        language: formUser.language,
                       },
                     },
                     onCompleted: (response) => {

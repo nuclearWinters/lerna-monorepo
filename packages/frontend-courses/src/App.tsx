@@ -21,6 +21,9 @@ export interface IJWT {
   _id: string;
   iat: number;
   exp: number;
+  isSupport: boolean;
+  isLender: boolean;
+  isBorrower: boolean;
 }
 
 export const tokensAndData: {
@@ -51,6 +54,9 @@ export const tokensAndData: {
     _id: "",
     iat: 0,
     exp: 0,
+    isSupport: false,
+    isLender: true,
+    isBorrower: false,
   },
   refetchUser: () => {},
 };

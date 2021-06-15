@@ -78,8 +78,6 @@ const routesFragment = graphql`
       isBorrower
       isSupport
       ...Settings_auth_user
-      ...SignUp_auth_user
-      ...LogIn_auth_user
       ...CheckExpiration_auth_user
     }
   }
@@ -584,10 +582,10 @@ export const Routes: FC<Props> = (props) => {
             {isBorrower ? (
               <Switch>
                 <Route path="/login">
-                  <LogIn user={user.authUser} />
+                  <LogIn />
                 </Route>
                 <Route path="/register">
-                  <SignUp user={user.authUser} />
+                  <SignUp />
                 </Route>
                 <Route path="/account">
                   <Account user={user.user} />
@@ -611,10 +609,10 @@ export const Routes: FC<Props> = (props) => {
             ) : isSupport ? (
               <Switch>
                 <Route path="/login">
-                  <LogIn user={user.authUser} />
+                  <LogIn />
                 </Route>
                 <Route path="/register">
-                  <SignUp user={user.authUser} />
+                  <SignUp />
                 </Route>
                 <Route path="/approveLoan">
                   <AddInvestments data={props.data} />
@@ -626,10 +624,10 @@ export const Routes: FC<Props> = (props) => {
             ) : (
               <Switch>
                 <Route path="/login">
-                  <LogIn user={user.authUser} />
+                  <LogIn />
                 </Route>
                 <Route path="/register">
-                  <SignUp user={user.authUser} />
+                  <SignUp />
                 </Route>
                 <Route path="/account">
                   <Account user={user.user} />

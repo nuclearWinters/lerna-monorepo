@@ -77,6 +77,8 @@ fragment AddInvestments_query on Query {
   authUser(id: $id) {
     isLender
     isSupport
+    isBorrower
+    language
     id
   }
 }
@@ -114,11 +116,11 @@ fragment LoanRow_loan on Loan {
   raised
   expiry
   status
-}
-
-fragment LogIn_auth_user on AuthUser {
-  isBorrower
-  isSupport
+  scheduledPayments {
+    amortize
+    status
+    scheduledDate
+  }
 }
 
 fragment MyInvestments_query on Query {
@@ -161,6 +163,10 @@ fragment MyTransactions_query on Query {
       hasNextPage
     }
   }
+  authUser(id: $id) {
+    language
+    id
+  }
 }
 
 fragment RetireFunds_user on User {
@@ -192,8 +198,6 @@ fragment Routes_query on Query {
     isBorrower
     isSupport
     ...Settings_auth_user
-    ...SignUp_auth_user
-    ...LogIn_auth_user
     ...CheckExpiration_auth_user
   }
 }
@@ -209,11 +213,6 @@ fragment Settings_auth_user on AuthUser {
   mobile
   email
   language
-}
-
-fragment SignUp_auth_user on AuthUser {
-  isBorrower
-  isSupport
 }
 */
 
@@ -486,6 +485,32 @@ const node: ConcreteRequest = (function () {
                       storageKey: null,
                     },
                     v8 /*: any*/,
+                    {
+                      alias: null,
+                      args: null,
+                      concreteType: "ScheduledPayments",
+                      kind: "LinkedField",
+                      name: "scheduledPayments",
+                      plural: true,
+                      selections: [
+                        {
+                          alias: null,
+                          args: null,
+                          kind: "ScalarField",
+                          name: "amortize",
+                          storageKey: null,
+                        },
+                        v8 /*: any*/,
+                        {
+                          alias: null,
+                          args: null,
+                          kind: "ScalarField",
+                          name: "scheduledDate",
+                          storageKey: null,
+                        },
+                      ],
+                      storageKey: null,
+                    },
                     v9 /*: any*/,
                   ],
                   storageKey: null,
@@ -564,6 +589,20 @@ const node: ConcreteRequest = (function () {
               name: "isSupport",
               storageKey: null,
             },
+            {
+              alias: null,
+              args: null,
+              kind: "ScalarField",
+              name: "isBorrower",
+              storageKey: null,
+            },
+            {
+              alias: null,
+              args: null,
+              kind: "ScalarField",
+              name: "language",
+              storageKey: null,
+            },
             v5 /*: any*/,
             {
               alias: null,
@@ -584,20 +623,6 @@ const node: ConcreteRequest = (function () {
               args: null,
               kind: "ScalarField",
               name: "apellidoMaterno",
-              storageKey: null,
-            },
-            {
-              alias: null,
-              args: null,
-              kind: "ScalarField",
-              name: "language",
-              storageKey: null,
-            },
-            {
-              alias: null,
-              args: null,
-              kind: "ScalarField",
-              name: "isBorrower",
               storageKey: null,
             },
             {
@@ -785,12 +810,12 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "a33758a81c49dc0faf7a7cebba717b61",
+      cacheID: "eeff07cea483b7d324e998f635d7b4e6",
       id: null,
       metadata: {},
       name: "AppQuery",
       operationKind: "query",
-      text: 'query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]!\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  ...Routes_query\n}\n\nfragment Account_user on User {\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: "", borrower_id: $borrower_id, status: $status) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  user(id: $id) {\n    id\n  }\n  authUser(id: $id) {\n    isLender\n    isSupport\n    id\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment CheckExpiration_auth_user on AuthUser {\n  isBorrower\n  isSupport\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n}\n\nfragment LogIn_auth_user on AuthUser {\n  isBorrower\n  isSupport\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: "", user_id: $id, status: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: "", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_query on Query {\n  user(id: $id) {\n    id\n    investments {\n      _id_loan\n      quantity\n      term\n      ROI\n      payments\n    }\n    accountAvailable\n    ...AddFunds_user\n    ...RetireFunds_user\n    ...AddLoan_user\n    ...Account_user\n  }\n  authUser(id: $id) {\n    id\n    name\n    apellidoPaterno\n    apellidoMaterno\n    language\n    isBorrower\n    isSupport\n    ...Settings_auth_user\n    ...SignUp_auth_user\n    ...LogIn_auth_user\n    ...CheckExpiration_auth_user\n  }\n}\n\nfragment Settings_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  language\n}\n\nfragment SignUp_auth_user on AuthUser {\n  isBorrower\n  isSupport\n}\n',
+      text: 'query AppQuery(\n  $id: String!\n  $status: [LoanStatus!]!\n  $borrower_id: String\n) {\n  ...AddInvestments_query\n  ...MyTransactions_query\n  ...MyInvestments_query\n  ...Routes_query\n}\n\nfragment Account_user on User {\n  investments {\n    _id_loan\n    quantity\n    term\n    ROI\n    payments\n  }\n  accountAvailable\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_query on Query {\n  loans(first: 5, after: "", borrower_id: $borrower_id, status: $status) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  user(id: $id) {\n    id\n  }\n  authUser(id: $id) {\n    isLender\n    isSupport\n    isBorrower\n    language\n    id\n  }\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment CheckExpiration_auth_user on AuthUser {\n  isBorrower\n  isSupport\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n}\n\nfragment MyInvestments_query on Query {\n  investments(first: 2, after: "", user_id: $id, status: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_query on Query {\n  transactions(first: 2, after: "", user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  authUser(id: $id) {\n    language\n    id\n  }\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_query on Query {\n  user(id: $id) {\n    id\n    investments {\n      _id_loan\n      quantity\n      term\n      ROI\n      payments\n    }\n    accountAvailable\n    ...AddFunds_user\n    ...RetireFunds_user\n    ...AddLoan_user\n    ...Account_user\n  }\n  authUser(id: $id) {\n    id\n    name\n    apellidoPaterno\n    apellidoMaterno\n    language\n    isBorrower\n    isSupport\n    ...Settings_auth_user\n    ...CheckExpiration_auth_user\n  }\n}\n\nfragment Settings_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  language\n}\n',
     },
   } as any;
 })();

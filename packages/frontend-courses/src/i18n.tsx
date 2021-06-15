@@ -1,8 +1,8 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-const resources: Record<"en", Record<"translation", Record<any, string>>> = {
-  en: {
+const resources: Record<"EN", Record<"translation", Record<any, string>>> = {
+  EN: {
     translation: {
       "Valor de la cuenta": "Account value",
       Prestado: "Lent",
@@ -25,6 +25,7 @@ const resources: Record<"en", Record<"translation", Record<any, string>>> = {
       Termina: "Ends",
       Estatus: "Status",
       Refrescar: "Refresh",
+      Actualizar: "Update",
       Financiando: "Financing",
       Pagado: "Paid",
       Vencido: "Past due",
@@ -88,7 +89,7 @@ const resources: Record<"en", Record<"translation", Record<any, string>>> = {
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: navigator.language.includes("es") ? "es" : "en",
+  lng: navigator.language.includes("es") ? "ES" : "EN",
 
   interpolation: {
     escapeValue: false,
