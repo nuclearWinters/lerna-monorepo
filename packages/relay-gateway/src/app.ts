@@ -5,7 +5,12 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://0.0.0.0:8000", "http://localhost"],
+    origin: [
+      "http://0.0.0.0:8000",
+      "http://localhost",
+      "https://amigoprogramador.com",
+      "https://www.amigoprogramador.com",
+    ],
   })
 );
 
