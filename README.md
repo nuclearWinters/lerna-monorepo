@@ -10,6 +10,8 @@ The React app is build from scratch (no create-react-app) and uses Relay to mana
 
 A basic fintech app that allows lenders invest in loans and return interests once borrowers pay.
 
+App running in AWS: https://www.amigoprogramador.com https://www.amigoprogramador.com/relay/graphql
+
 **Languages:**
 
 - Javascript
