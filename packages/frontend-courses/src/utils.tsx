@@ -32,3 +32,4 @@ export const logOut = () => {
 };
 
 export const API_GATEWAY = process.env.API_GATEWAY;
+export const WS_GATEWAY = process.env.WS_GATEWAY;

@@ -11,10 +11,10 @@ import {
 import { GraphQLError } from "graphql";
 import { createClient } from "graphql-ws";
 import { tokensAndData } from "App";
-import { API_GATEWAY } from "utils";
+import { API_GATEWAY, WS_GATEWAY } from "utils";
 
 const subscriptionsClient = createClient({
-  url: "ws://localhost/relay/graphql",
+  url: WS_GATEWAY || "ws://localhost/relay/graphql",
   connectionParams: () => {
     return {
       Authorization: JSON.stringify({
