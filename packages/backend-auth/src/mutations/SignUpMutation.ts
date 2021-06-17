@@ -89,7 +89,7 @@ export const SignUpMutation = mutationWithClientMutationId({
           isLender: isLender,
           isSupport: false,
         },
-        REFRESHSECRET,
+        REFRESHSECRET || "REFRESHSECRET",
         { expiresIn: "1h" }
       );
       const accessToken = jwt.sign(
@@ -99,7 +99,7 @@ export const SignUpMutation = mutationWithClientMutationId({
           isLender: isLender,
           isSupport: false,
         },
-        ACCESSSECRET,
+        ACCESSSECRET || "ACCESSSECRET",
         { expiresIn: "15m" }
       );
       channelSendToQueue(ch, _id.toHexString());

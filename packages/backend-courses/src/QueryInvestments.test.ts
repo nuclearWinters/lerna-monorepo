@@ -3,7 +3,6 @@ import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { InvestmentMongo } from "./types";
 import { jwt } from "./utils";
-import { ACCESSSECRET } from "./config";
 
 const request = supertest(app);
 
@@ -104,7 +103,7 @@ describe("QueryInvestments tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "000000000000000000000030", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",

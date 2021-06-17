@@ -57,7 +57,7 @@ export const SignInMutation = mutationWithClientMutationId({
           isBorrower: user.isBorrower,
           isSupport: user.isSupport,
         },
-        REFRESHSECRET,
+        REFRESHSECRET || "REFRESHSECRET",
         { expiresIn: "1h" }
       );
       const accessToken = jwt.sign(
@@ -67,7 +67,7 @@ export const SignInMutation = mutationWithClientMutationId({
           isBorrower: user.isBorrower,
           isSupport: user.isSupport,
         },
-        ACCESSSECRET,
+        ACCESSSECRET || "ACCESSSECRET",
         { expiresIn: "15m" }
       );
       return {

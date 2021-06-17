@@ -4,7 +4,6 @@ import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
-import { ACCESSSECRET } from "../config";
 
 const request = supertest(app);
 
@@ -72,7 +71,7 @@ describe("BlacklistUserMutation tests", () => {
               isLender: true,
               isSupport: false,
             },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",
@@ -110,7 +109,7 @@ describe("BlacklistUserMutation tests", () => {
               isLender: true,
               isSupport: false,
             },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",

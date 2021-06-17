@@ -40,7 +40,7 @@ export const refreshTokenMiddleware = async (
     throw new Error("Sin refresh token.");
   }
   try {
-    const user = jwt.verify(accessToken, ACCESSSECRET);
+    const user = jwt.verify(accessToken, ACCESSSECRET || "ACCESSSECRET");
     if (!user) throw new Error("El token esta corrompido.");
     return {
       validAccessToken: accessToken,
@@ -48,9 +48,9 @@ export const refreshTokenMiddleware = async (
     };
   } catch (e) {
     if (e.message === "jwt expired") {
-      const user = jwt.verify(refreshToken, REFRESHSECRET);
+      const user = jwt.verify(refreshToken, REFRESHSECRET || "REFRESHSECRET");
       if (!user) throw new Error("El token esta corrompido.");
-      const validAccessToken = jwt.sign(user, ACCESSSECRET, {
+      const validAccessToken = jwt.sign(user, ACCESSSECRET || "ACCESSSECRET", {
         expiresIn: "15m",
       });
       return {

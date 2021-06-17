@@ -3,7 +3,6 @@ import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
-import { ACCESSSECRET } from "../config";
 
 const request = supertest(app);
 
@@ -55,7 +54,7 @@ describe("AddLoan tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "000000000000000000000006", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",

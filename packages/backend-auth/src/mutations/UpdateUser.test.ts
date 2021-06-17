@@ -3,7 +3,6 @@ import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
-import { ACCESSSECRET } from "../config";
 
 const request = supertest(app);
 
@@ -78,7 +77,7 @@ describe("UpdateUser tests", () => {
               isLender: true,
               isSupport: false,
             },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",

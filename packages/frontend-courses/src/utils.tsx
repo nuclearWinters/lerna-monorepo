@@ -20,6 +20,9 @@ export const logOut = () => {
     _id: "",
     iat: 0,
     exp: 0,
+    isLender: true,
+    isSupport: false,
+    isBorrower: false,
   };
   tokensAndData.credentials = {
     email: "",
@@ -27,3 +30,5 @@ export const logOut = () => {
   };
   tokensAndData.refetchUser(["FINANCING"], "", null);
 };
+
+export const API_GATEWAY = process.env.API_GATEWAY;

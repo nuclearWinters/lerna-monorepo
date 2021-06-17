@@ -8,7 +8,6 @@ import {
   UserMongo,
 } from "../types";
 import { base64Name, jwt } from "../utils";
-import { ACCESSSECRET } from "../config";
 
 const request = supertest(app);
 
@@ -114,7 +113,7 @@ describe("AddLends tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "000000000000000000000004", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",
@@ -272,7 +271,7 @@ describe("AddLends tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "000000000000000000000004", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",
@@ -518,7 +517,7 @@ describe("AddLends tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "400000000000000000000004", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",
@@ -628,7 +627,7 @@ describe("AddLends tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "500000000000000000000004", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",
@@ -759,7 +758,7 @@ describe("AddLends tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "600000000000000000000004", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",

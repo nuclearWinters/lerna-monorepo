@@ -3,7 +3,6 @@ import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { BucketTransactionMongo, UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
-import { ACCESSSECRET } from "../config";
 import { client as grpcClient } from "../utils";
 import { Metadata } from "@grpc/grpc-js";
 
@@ -56,7 +55,7 @@ describe("AddFunds tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "000000000000000000000000", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",
@@ -122,7 +121,7 @@ describe("AddFunds tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "000000000000000000000003", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",
@@ -172,7 +171,7 @@ describe("AddFunds tests", () => {
           getValidaccesstoken: () =>
             jwt.sign(
               { _id: "000000000000000000000001", email: "" },
-              ACCESSSECRET,
+              "ACCESSSECRET",
               {
                 expiresIn: "15m",
               }
@@ -203,7 +202,7 @@ describe("AddFunds tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "000000000000000000000001", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "0s" }
           ),
           refreshToken: "validRefreshToken",
@@ -284,7 +283,7 @@ describe("AddFunds tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "000000000000000000000002", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "0s" }
           ),
           refreshToken: "invalidRefreshToken",
@@ -338,7 +337,7 @@ describe("AddFunds tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "100000000000000000000002", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15s" }
           ),
           refreshToken: "validRefreshToken",
@@ -395,7 +394,7 @@ describe("AddFunds tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "100000000000000000000003", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15s" }
           ),
           refreshToken: "validRefreshToken",

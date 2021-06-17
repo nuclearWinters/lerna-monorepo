@@ -11,6 +11,7 @@ import {
 import { GraphQLError } from "graphql";
 import { createClient } from "graphql-ws";
 import { tokensAndData } from "App";
+import { API_GATEWAY } from "utils";
 
 const subscriptionsClient = createClient({
   url: "ws://localhost/relay/graphql",
@@ -25,20 +26,23 @@ const subscriptionsClient = createClient({
 });
 
 const fetchGraphQL = async (text: string, variables: Record<any, any>) => {
-  const response = await fetch("http://0.0.0.0:4001/relay/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: JSON.stringify({
-        accessToken: tokensAndData.tokens.accessToken,
-        refreshToken: tokensAndData.tokens.refreshToken,
+  const response = await fetch(
+    API_GATEWAY || "http://0.0.0.0:4001/relay/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: JSON.stringify({
+          accessToken: tokensAndData.tokens.accessToken,
+          refreshToken: tokensAndData.tokens.refreshToken,
+        }),
+      },
+      body: JSON.stringify({
+        query: text,
+        variables,
       }),
-    },
-    body: JSON.stringify({
-      query: text,
-      variables,
-    }),
-  });
+    }
+  );
   return await response.json();
 };
 

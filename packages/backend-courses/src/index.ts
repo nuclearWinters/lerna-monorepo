@@ -20,7 +20,7 @@ import { useServer } from "graphql-ws/lib/use/ws";
 import ws from "ws";
 import { base64 } from "./utils";
 
-MongoClient.connect(MONGO_DB, {
+MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(async (client) => {

@@ -18,13 +18,13 @@ export const ctx: {
   db: undefined,
 };
 
-MongoClient.connect(MONGO_DB, {
+MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(async (client) => {
   const redisClient = redis.createClient({
     port: 6379,
-    host: REDIS,
+    host: REDIS || "redis-auth",
   });
   const rdb = {
     get: promisify(redisClient.get).bind(redisClient),

@@ -3,7 +3,6 @@ import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "./types";
 import { jwt } from "./utils";
-import { ACCESSSECRET } from "./config";
 
 const request = supertest(app);
 
@@ -56,7 +55,7 @@ describe("QueryUser tests", () => {
         JSON.stringify({
           accessToken: jwt.sign(
             { _id: "000000000000000000000060", email: "" },
-            ACCESSSECRET,
+            "ACCESSSECRET",
             { expiresIn: "15m" }
           ),
           refreshToken: "validRefreshToken",
