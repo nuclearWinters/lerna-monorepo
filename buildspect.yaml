@@ -18,6 +18,7 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      - npm run test
       - make up-prod
 artifacts:
   files:
