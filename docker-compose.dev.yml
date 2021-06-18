@@ -18,8 +18,6 @@ services:
     image: node:14
     volumes:
       - .:/usr/src/service
-    env_file:
-      - ./packages/backend-courses/.env
     working_dir: /usr/src/service/packages/backend-courses
     command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "npm", "run", "start"]
     ports:
@@ -33,8 +31,6 @@ services:
     image: node:14
     volumes:
       - .:/usr/src/service
-    env_file:
-      - ./packages/backend-auth/.env
     working_dir: /usr/src/service/packages/backend-auth
     command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "npm", "run", "start"]
     ports:

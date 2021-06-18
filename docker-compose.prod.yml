@@ -4,7 +4,6 @@ services:
     container_name: relay-gateway
     image: node:14
     volumes:
-      - nodemodules:/usr/src/service/node_modules
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/relay-gateway
     command:
@@ -18,10 +17,7 @@ services:
     container_name: backend-courses
     image: node:14
     volumes:
-      - nodemodules:/usr/src/service/node_modules
       - .:/usr/src/service
-    env_file:
-      - ./packages/backend-courses/.env
     working_dir: /usr/src/service/packages/backend-courses
     command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "npm", "run", "serve"]
     ports:
@@ -33,10 +29,7 @@ services:
     container_name: backend-auth
     image: node:14
     volumes:
-      - nodemodules:/usr/src/service/node_modules
       - .:/usr/src/service
-    env_file:
-      - ./packages/backend-auth/.env
     working_dir: /usr/src/service/packages/backend-auth
     command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "npm", "run", "serve"]
     ports:
@@ -65,7 +58,3 @@ services:
       - "25672:25672"
     logging:
       driver: none
-
-volumes:
-  nodemodules:
-    external: true
