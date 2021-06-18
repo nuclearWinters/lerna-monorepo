@@ -25,6 +25,9 @@ services:
     depends_on:
       - backend-auth
       - rabbitmq
+    environment:
+      - MONGO_DB
+      - ACCESSSECRET
   backend-auth:
     container_name: backend-auth
     image: node:14
@@ -37,6 +40,11 @@ services:
       - "1983:1983"
     depends_on:
       - rabbitmq
+    environment:
+      - MONGO_DB
+      - ACCESSSECRET
+      - REFRESHSECRET
+      - REDIS
   reverse-proxy:
     container_name: reverse_proxy
     image: nginx
