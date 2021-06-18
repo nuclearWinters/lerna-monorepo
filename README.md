@@ -79,3 +79,19 @@ To set up the project in dev mode:
 4. Run `make up`
 
 5. Run `npm run populate` on backend-auth and backend-courses root folder projects
+
+To make websockets work you need to create a replica set in mongo:
+
+Run in a mongodb command line:
+
+```
+rs.initiate(
+   {
+      _id: "rs0",
+      version: 1,
+      members: [
+         { _id: 0, host : "mongo-courses:27017" },
+      ]
+   }
+)
+```
