@@ -10,14 +10,21 @@ phases:
       - echo Installing source NPM dependencies.
       - npm install
       - npm run bootstrap
+      - cd packages/backend-courses
+      - ls
+      - cd ..
+      - cd ..
+      - ls
+      - npm run test
   build:
     commands:
       - echo Build started on `date`
       - echo Compiling the Node.js code
-      - cd packages/backend-auth
-      - npm run test
+      - cd packages/backend-courses
+      - ls
       - cd ..
       - cd ..
+      - ls
       - npm run build
   post_build:
     commands:
