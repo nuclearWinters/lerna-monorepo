@@ -14,7 +14,10 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Compiling the Node.js code
+      - cd packages/backend-auth
       - npm run test
+      - cd ..
+      - cd ..
       - npm run build
   post_build:
     commands:
