@@ -82,7 +82,7 @@ To set up the project in dev mode:
 
 To make websockets work you need to create a replica set in mongo:
 
-Run in a mongodb command line:
+Connect to mongodb and run in a mongodb command line:
 
 ```
 rs.initiate(
