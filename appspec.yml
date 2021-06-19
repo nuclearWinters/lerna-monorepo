@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/projects/lerna-monorepo
+    destination: /home/ec2-user/project/lerna-monorepo
 hooks:
   AfterInstall:
     - location: scripts/npm-install.sh
