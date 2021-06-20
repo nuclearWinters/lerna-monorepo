@@ -85,6 +85,10 @@ export const LoanRow: FC<Props> = ({
       approveLoan(input: $input) {
         error
         validAccessToken
+        loan {
+          id
+          status
+        }
       }
     }
   `);

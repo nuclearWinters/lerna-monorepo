@@ -213,6 +213,12 @@ export const Routes: FC<Props> = (props) => {
       updater: (store, data) => {
         if (data.loans_subscribe.type === "INSERT") {
           const root = store.getRoot();
+          const record = store.get(
+            data.loans_subscribe.loan_edge.node?.id || ""
+          );
+          if (record) {
+            return;
+          }
           const connectionRecord = ConnectionHandler.getConnection(
             root,
             "AddInvestments_query_loans",
@@ -222,10 +228,11 @@ export const Routes: FC<Props> = (props) => {
                 : isSupport
                 ? ["WAITING_FOR_APPROVAL"]
                 : ["FINANCING"],
+              ...(isBorrower ? { borrower_id: tokensAndData.data._id } : {}),
             }
           );
           if (!connectionRecord) {
-            throw new Error("no existe el connectionRecord");
+            throw new Error("no existe el connectionRecord loans");
           }
           const payload = store.getRootField("loans_subscribe");
           const serverEdge = payload?.getLinkedRecord("loan_edge");
@@ -293,7 +300,7 @@ export const Routes: FC<Props> = (props) => {
             }
           );
           if (!connectionRecord) {
-            throw new Error("no existe el connectionRecord");
+            throw new Error("no existe el connectionRecord investments");
           }
           const payload = store.getRootField("investments_subscribe");
           const serverEdge = payload?.getLinkedRecord("investment_edge");
@@ -339,7 +346,7 @@ export const Routes: FC<Props> = (props) => {
             }
           );
           if (!connectionRecord) {
-            throw new Error("no existe el connectionRecord");
+            throw new Error("no existe el connectionRecord transactions");
           }
           const payload = store.getRootField("transactions_subscribe");
           const serverEdge = payload?.getLinkedRecord("transaction_edge");

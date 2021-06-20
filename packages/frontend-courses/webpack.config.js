@@ -29,7 +29,10 @@ module.exports = {
     extensions: [".tsx", ".ts", ".jsx", ".js"],
   },
   plugins: [
-    new webpack.EnvironmentPlugin(["WS_GATEWAY", "API_GATEWAY"]),
+    new webpack.EnvironmentPlugin({
+      API_GATEWAY: null,
+      WS_GATEWAY: null,
+    }),
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: path.resolve(__dirname, "public", "index.html"),

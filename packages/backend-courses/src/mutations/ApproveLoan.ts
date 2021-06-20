@@ -1,8 +1,10 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
-import { Context } from "../types";
+import { Context, LoanMongo } from "../types";
 import { ObjectId } from "mongodb";
-import { refreshTokenMiddleware } from "../utils";
+import { base64, refreshTokenMiddleware } from "../utils";
+import { GraphQLLoan } from "../Nodes";
+import { LOAN, pubsub } from "../subscriptions/subscriptions";
 
 interface Input {
   loan_gid: string;
@@ -11,6 +13,7 @@ interface Input {
 type Payload = {
   validAccessToken: string;
   error: string;
+  loan: LoanMongo | null;
 };
 
 export const ApproveLoanMutation = mutationWithClientMutationId({
@@ -28,6 +31,10 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ validAccessToken }: Payload): string => validAccessToken,
     },
+    loan: {
+      type: GraphQLLoan,
+      resolve: ({ loan }: Payload): LoanMongo | null => loan,
+    },
   },
   mutateAndGetPayload: async (
     { loan_gid }: Input,
@@ -39,13 +46,26 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
         accessToken,
         refreshToken
       );
-      await loans.updateOne(
+      const { value: loan } = await loans.findOneAndUpdate(
         { _id: new ObjectId(loan_id) },
-        { $set: { status: "financing" } }
+        { $set: { status: "financing" } },
+        { returnDocument: "after" }
       );
-      return { validAccessToken, error: "" };
+      if (!loan) {
+        throw new Error("No se encontró la deuda.");
+      }
+      pubsub.publish(LOAN, {
+        loans_subscribe: {
+          loan_edge: {
+            node: loan,
+            cursor: base64(loan._id.toHexString()),
+          },
+          type: "insert",
+        },
+      });
+      return { validAccessToken, error: "", loan };
     } catch (e) {
-      return { validAccessToken: "", error: e.message };
+      return { validAccessToken: "", error: e.message, loan: null };
     }
   },
 });

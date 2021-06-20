@@ -58,6 +58,9 @@ describe("ApproveLoan tests", () => {
           approveLoan(input: $input) {
             error
             validAccessToken
+            loan {
+              id
+            }
           }
         }`,
         variables: {
@@ -81,6 +84,7 @@ describe("ApproveLoan tests", () => {
       );
     expect(response.body.data.approveLoan.error).toBeFalsy();
     expect(response.body.data.approveLoan.validAccessToken).toBeTruthy();
+    expect(response.body.data.approveLoan.loan).toBeTruthy();
     const allLoans = await loans
       .find({ _id: new ObjectId("000000000000000000000008") })
       .toArray();

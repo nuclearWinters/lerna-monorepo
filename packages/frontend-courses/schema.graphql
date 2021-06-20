@@ -113,6 +113,7 @@ type ApproveLoanPayload {
   validAccessToken: String!
   error: String!
   clientMutationId: String
+  loan: Loan
 }
 
 type Mutation {
