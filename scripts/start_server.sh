@@ -1,3 +1,3 @@
 #!/bin/bash
-cd ~/lerna-monorepo
+cd /home/ec2-user/lerna-monorepo
 make up-prod
