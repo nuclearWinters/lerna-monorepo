@@ -3,6 +3,11 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
+export type LoanScheduledPaymentStatus =
+  | "DELAYED"
+  | "PAID"
+  | "TO_BE_PAID"
+  | "%future added value";
 export type LoanStatus =
   | "FINANCING"
   | "PAID"
@@ -27,6 +32,11 @@ export type RoutesLoansSubscriptionResponse = {
         readonly raised: string;
         readonly expiry: number;
         readonly status: LoanStatus;
+        readonly scheduledPayments: ReadonlyArray<{
+          readonly amortize: string;
+          readonly status: LoanScheduledPaymentStatus;
+          readonly scheduledDate: number;
+        }> | null;
       } | null;
       readonly cursor: string;
     };
@@ -54,6 +64,11 @@ subscription RoutesLoansSubscription(
         raised
         expiry
         status
+        scheduledPayments {
+          amortize
+          status
+          scheduledDate
+        }
       }
       cursor
     }
@@ -70,7 +85,14 @@ const node: ConcreteRequest = (function () {
         name: "status",
       } as any,
     ],
-    v1 = [
+    v1 = {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "status",
+      storageKey: null,
+    } as any,
+    v2 = [
       {
         alias: null,
         args: [
@@ -157,11 +179,31 @@ const node: ConcreteRequest = (function () {
                     name: "expiry",
                     storageKey: null,
                   },
+                  v1 /*: any*/,
                   {
                     alias: null,
                     args: null,
-                    kind: "ScalarField",
-                    name: "status",
+                    concreteType: "ScheduledPayments",
+                    kind: "LinkedField",
+                    name: "scheduledPayments",
+                    plural: true,
+                    selections: [
+                      {
+                        alias: null,
+                        args: null,
+                        kind: "ScalarField",
+                        name: "amortize",
+                        storageKey: null,
+                      },
+                      v1 /*: any*/,
+                      {
+                        alias: null,
+                        args: null,
+                        kind: "ScalarField",
+                        name: "scheduledDate",
+                        storageKey: null,
+                      },
+                    ],
                     storageKey: null,
                   },
                 ],
@@ -194,7 +236,7 @@ const node: ConcreteRequest = (function () {
       kind: "Fragment",
       metadata: null,
       name: "RoutesLoansSubscription",
-      selections: v1 /*: any*/,
+      selections: v2 /*: any*/,
       type: "Subscription",
       abstractKey: null,
     },
@@ -203,17 +245,17 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
       name: "RoutesLoansSubscription",
-      selections: v1 /*: any*/,
+      selections: v2 /*: any*/,
     },
     params: {
-      cacheID: "0ee611909d74aaf4704042a13d27daf3",
+      cacheID: "ad92025489beddea4f351e38eb1f6260",
       id: null,
       metadata: {},
       name: "RoutesLoansSubscription",
       operationKind: "subscription",
-      text: "subscription RoutesLoansSubscription(\n  $status: [LoanStatus!]!\n) {\n  loans_subscribe(status: $status) {\n    loan_edge {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n      }\n      cursor\n    }\n    type\n  }\n}\n",
+      text: "subscription RoutesLoansSubscription(\n  $status: [LoanStatus!]!\n) {\n  loans_subscribe(status: $status) {\n    loan_edge {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n        scheduledPayments {\n          amortize\n          status\n          scheduledDate\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "974365ce3245a395ef851162647d1fe0";
+(node as any).hash = "49f15ce5518f2311b8575c229580744d";
 export default node;

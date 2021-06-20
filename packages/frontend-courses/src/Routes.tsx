@@ -110,6 +110,11 @@ const subscriptionLoans = graphql`
           raised
           expiry
           status
+          scheduledPayments {
+            amortize
+            status
+            scheduledDate
+          }
         }
         cursor
       }
