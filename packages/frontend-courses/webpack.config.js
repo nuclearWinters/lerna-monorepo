@@ -1,6 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const Dotenv = require("dotenv-webpack");
+const webpack = require("webpack");
 
 module.exports = {
   entry: "./src/index.tsx",
@@ -29,11 +29,11 @@ module.exports = {
     extensions: [".tsx", ".ts", ".jsx", ".js"],
   },
   plugins: [
+    new webpack.EnvironmentPlugin(["WS_GATEWAY", "API_GATEWAY"]),
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: path.resolve(__dirname, "public", "index.html"),
     }),
-    new Dotenv(),
   ],
   devServer: {
     contentBase: path.resolve(__dirname, "./build"),
