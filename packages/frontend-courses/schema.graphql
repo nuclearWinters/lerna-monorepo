@@ -157,11 +157,31 @@ type Query {
 }
 
 type User_Subscribe {
-  user: User!
+  user_gid: ID!
+  accountAvailable: MXN
+  investments: [InvestmentsUser!]
+}
+
+type LoanNodeSubscription {
+  loan_gid: ID!
+  _id_user: String
+  score: String
+  ROI: Float
+  goal: MXN
+  term: Int
+  raised: MXN
+  expiry: Date
+  status: LoanStatus
+  scheduledPayments: [ScheduledPayments!]
+}
+
+type LoanEdgeSubscription {
+  node: LoanNodeSubscription!
+  cursor: String!
 }
 
 type Loan_Subscribe {
-  loan_edge: LoanEdge!
+  loan_edge: LoanEdgeSubscription!
   type: SubscribeType!
 }
 
@@ -243,7 +263,7 @@ type Loan implements Node {
   id: ID!
   _id_user: String!
   score: String!
-  ROI: Int!
+  ROI: Float!
   goal: MXN!
   term: Int!
   raised: MXN!
