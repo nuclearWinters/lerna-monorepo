@@ -3,6 +3,7 @@ os: linux
 files:
   - source: /
     destination: /home/ec2-user/lerna-monorepo
+    overwrite: true
 hooks:
   ApplicationStart:
     - location: scripts/start_server.sh
