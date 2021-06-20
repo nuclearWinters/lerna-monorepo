@@ -3,11 +3,6 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
-export type LoanScheduledPaymentStatus =
-  | "DELAYED"
-  | "PAID"
-  | "TO_BE_PAID"
-  | "%future added value";
 export type LoanStatus =
   | "FINANCING"
   | "PAID"
@@ -23,21 +18,16 @@ export type RoutesLoansSubscriptionResponse = {
   readonly loans_subscribe: {
     readonly loan_edge: {
       readonly node: {
-        readonly loan_gid: string;
-        readonly _id_user: string | null;
-        readonly score: string | null;
-        readonly ROI: number | null;
-        readonly goal: string | null;
-        readonly term: number | null;
-        readonly raised: string | null;
-        readonly expiry: number | null;
-        readonly status: LoanStatus | null;
-        readonly scheduledPayments: ReadonlyArray<{
-          readonly amortize: string;
-          readonly status: LoanScheduledPaymentStatus;
-          readonly scheduledDate: number;
-        }> | null;
-      };
+        readonly id: string;
+        readonly _id_user: string;
+        readonly score: string;
+        readonly ROI: number;
+        readonly goal: string;
+        readonly term: number;
+        readonly raised: string;
+        readonly expiry: number;
+        readonly status: LoanStatus;
+      } | null;
       readonly cursor: string;
     };
     readonly type: SubscribeType;
@@ -55,7 +45,7 @@ subscription RoutesLoansSubscription(
   loans_subscribe(status: $status) {
     loan_edge {
       node {
-        loan_gid
+        id
         _id_user
         score
         ROI
@@ -64,11 +54,6 @@ subscription RoutesLoansSubscription(
         raised
         expiry
         status
-        scheduledPayments {
-          amortize
-          status
-          scheduledDate
-        }
       }
       cursor
     }
@@ -85,14 +70,7 @@ const node: ConcreteRequest = (function () {
         name: "status",
       } as any,
     ],
-    v1 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "status",
-      storageKey: null,
-    } as any,
-    v2 = [
+    v1 = [
       {
         alias: null,
         args: [
@@ -110,7 +88,7 @@ const node: ConcreteRequest = (function () {
           {
             alias: null,
             args: null,
-            concreteType: "LoanEdgeSubscription",
+            concreteType: "LoanEdge",
             kind: "LinkedField",
             name: "loan_edge",
             plural: false,
@@ -118,7 +96,7 @@ const node: ConcreteRequest = (function () {
               {
                 alias: null,
                 args: null,
-                concreteType: "LoanNodeSubscription",
+                concreteType: "Loan",
                 kind: "LinkedField",
                 name: "node",
                 plural: false,
@@ -127,7 +105,7 @@ const node: ConcreteRequest = (function () {
                     alias: null,
                     args: null,
                     kind: "ScalarField",
-                    name: "loan_gid",
+                    name: "id",
                     storageKey: null,
                   },
                   {
@@ -179,31 +157,11 @@ const node: ConcreteRequest = (function () {
                     name: "expiry",
                     storageKey: null,
                   },
-                  v1 /*: any*/,
                   {
                     alias: null,
                     args: null,
-                    concreteType: "ScheduledPayments",
-                    kind: "LinkedField",
-                    name: "scheduledPayments",
-                    plural: true,
-                    selections: [
-                      {
-                        alias: null,
-                        args: null,
-                        kind: "ScalarField",
-                        name: "amortize",
-                        storageKey: null,
-                      },
-                      v1 /*: any*/,
-                      {
-                        alias: null,
-                        args: null,
-                        kind: "ScalarField",
-                        name: "scheduledDate",
-                        storageKey: null,
-                      },
-                    ],
+                    kind: "ScalarField",
+                    name: "status",
                     storageKey: null,
                   },
                 ],
@@ -236,7 +194,7 @@ const node: ConcreteRequest = (function () {
       kind: "Fragment",
       metadata: null,
       name: "RoutesLoansSubscription",
-      selections: v2 /*: any*/,
+      selections: v1 /*: any*/,
       type: "Subscription",
       abstractKey: null,
     },
@@ -245,17 +203,17 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
       name: "RoutesLoansSubscription",
-      selections: v2 /*: any*/,
+      selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "70d36bbd50dbca8ca2c139570f90f179",
+      cacheID: "0ee611909d74aaf4704042a13d27daf3",
       id: null,
       metadata: {},
       name: "RoutesLoansSubscription",
       operationKind: "subscription",
-      text: "subscription RoutesLoansSubscription(\n  $status: [LoanStatus!]!\n) {\n  loans_subscribe(status: $status) {\n    loan_edge {\n      node {\n        loan_gid\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n        scheduledPayments {\n          amortize\n          status\n          scheduledDate\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n",
+      text: "subscription RoutesLoansSubscription(\n  $status: [LoanStatus!]!\n) {\n  loans_subscribe(status: $status) {\n    loan_edge {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n      }\n      cursor\n    }\n    type\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "1c1842b59d3ac67103628d6b217ad855";
+(node as any).hash = "974365ce3245a395ef851162647d1fe0";
 export default node;

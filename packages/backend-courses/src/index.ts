@@ -6,12 +6,7 @@ import {
   pubsub,
   USER,
 } from "./subscriptions/subscriptions";
-import {
-  MongoClient,
-  ObjectId,
-  ChangeEventCR,
-  ChangeEventUpdate,
-} from "mongodb";
+import { MongoClient, ObjectId, ChangeEventCR } from "mongodb";
 import { MONGO_DB } from "./config";
 import amqp from "amqplib";
 import {
@@ -35,48 +30,34 @@ MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
   const ch = await conn.createChannel();
   await ch.assertQueue(SIGN_UP);
   const options = { fullDocument: "updateLookup" as const };
-  const usersStream = db.collection<UserMongo>("users").watch([]);
+  const usersStream = db.collection<UserMongo>("users").watch([], options);
   usersStream.on("change", (event) => {
-    const eventTyped = event as ChangeEventUpdate<UserMongo>;
-    if (eventTyped.updateDescription) {
-      pubsub.publish(USER, {
-        user_subscribe: {
-          _id: eventTyped.documentKey._id,
-          investments:
-            eventTyped.updateDescription.updatedFields.investments || null,
-          accountAvailable:
-            eventTyped.updateDescription.updatedFields.accountAvailable || null,
-        },
-      });
+    if (["update"].includes(event.operationType)) {
+      const fullDocument = (event as ChangeEventCR<UserMongo>).fullDocument;
+      if (fullDocument) {
+        pubsub.publish(USER, {
+          user_subscribe: {
+            user: fullDocument,
+          },
+        });
+      }
     }
   });
-  const loansStream = db.collection<LoanMongo>("loans").watch([]);
+  const loansStream = db.collection<LoanMongo>("loans").watch([], options);
   loansStream.on("change", (event) => {
-    if (event.operationType === "insert") {
-      const eventInsert = event as ChangeEventCR<LoanMongo>;
-      pubsub.publish(LOAN, {
-        loans_subscribe: {
-          loan_edge: {
-            node: eventInsert.fullDocument,
-            cursor: base64(eventInsert.documentKey._id.toHexString()),
-          },
-          type: event.operationType,
-        },
-      });
-    } else if (event.operationType === "update") {
-      const eventUpdate = event as ChangeEventUpdate<LoanMongo>;
-      pubsub.publish(LOAN, {
-        loans_subscribe: {
-          loan_edge: {
-            node: {
-              _id: eventUpdate.documentKey._id,
-              ...eventUpdate.updateDescription.updatedFields,
+    if (["insert", "update"].includes(event.operationType)) {
+      const fullDocument = (event as ChangeEventCR<LoanMongo>).fullDocument;
+      if (fullDocument) {
+        pubsub.publish(LOAN, {
+          loans_subscribe: {
+            loan_edge: {
+              node: fullDocument,
+              cursor: base64(fullDocument._id.toHexString()),
             },
-            cursor: base64(eventUpdate.documentKey._id.toHexString()),
+            type: event.operationType,
           },
-          type: event.operationType,
-        },
-      });
+        });
+      }
     }
   });
   const investmentsStream = db

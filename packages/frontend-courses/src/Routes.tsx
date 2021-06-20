@@ -101,7 +101,7 @@ const subscriptionLoans = graphql`
     loans_subscribe(status: $status) {
       loan_edge {
         node {
-          loan_gid
+          id
           _id_user
           score
           ROI
@@ -110,11 +110,6 @@ const subscriptionLoans = graphql`
           raised
           expiry
           status
-          scheduledPayments {
-            amortize
-            status
-            scheduledDate
-          }
         }
         cursor
       }
@@ -174,14 +169,16 @@ const subscriptionInvestments = graphql`
 const subscriptionUser = graphql`
   subscription RoutesUserSubscription($user_gid: ID!) {
     user_subscribe(user_gid: $user_gid) {
-      user_gid
-      accountAvailable
-      investments {
-        _id_loan
-        quantity
-        term
-        ROI
-        payments
+      user {
+        id
+        accountAvailable
+        investments {
+          _id_loan
+          quantity
+          term
+          ROI
+          payments
+        }
       }
     }
   }
@@ -214,51 +211,14 @@ export const Routes: FC<Props> = (props) => {
       },
       subscription: subscriptionLoans,
       updater: (store, data) => {
-        const payload = store.getRootField("loans_subscribe");
-        const id = data.loans_subscribe.loan_edge.node.loan_gid;
-        const loan = store.get(id);
-        const node = payload
-          .getLinkedRecord("loan_edge")
-          .getLinkedRecord("node");
-        if (loan && node) {
-          const _id_user = node.getValue("_id_user");
-          const ROI = node.getValue("ROI");
-          const expiry = node.getValue("expiry");
-          const goal = node.getValue("goal");
-          const raised = node.getValue("raised");
-          const score = node.getValue("score");
-          const status = node.getValue("status");
-          const term = node.getValue("term");
-          const scheduledPayments = node.getLinkedRecords("scheduledPayments");
-          if (_id_user) {
-            loan.setValue(_id_user, "_id_user");
-          }
-          if (ROI) {
-            loan.setValue(ROI, "ROI");
-          }
-          if (expiry) {
-            loan.setValue(expiry, "expiry");
-          }
-          if (goal) {
-            loan.setValue(goal, "goal");
-          }
-          if (raised) {
-            loan.setValue(raised, "raised");
-          }
-          if (score) {
-            loan.setValue(score, "score");
-          }
-          if (status) {
-            loan.setValue(status, "status");
-          }
-          if (term) {
-            loan.setValue(term, "term");
-          }
-          if (scheduledPayments) {
-            loan.setLinkedRecords(scheduledPayments, "scheduledPayments");
-          }
-        } else if (data.loans_subscribe.type === "INSERT") {
+        if (data.loans_subscribe.type === "INSERT") {
           const root = store.getRoot();
+          const record = store.get(
+            data.loans_subscribe.loan_edge.node?.id || ""
+          );
+          if (record) {
+            return;
+          }
           const connectionRecord = ConnectionHandler.getConnection(
             root,
             "AddInvestments_query_loans",
@@ -274,9 +234,8 @@ export const Routes: FC<Props> = (props) => {
           if (!connectionRecord) {
             throw new Error("no existe el connectionRecord loans");
           }
+          const payload = store.getRootField("loans_subscribe");
           const serverEdge = payload?.getLinkedRecord("loan_edge");
-          const node = serverEdge.getLinkedRecord("node");
-          node.setValue(node.getValue("loan_gid"), "id");
           const newEdge = ConnectionHandler.buildConnectionEdge(
             store,
             connectionRecord,
@@ -365,26 +324,6 @@ export const Routes: FC<Props> = (props) => {
         user_gid,
       },
       subscription: subscriptionUser,
-      cacheConfig: {
-        force: true,
-      },
-      updater: (store) => {
-        const payload = store.getRootField("user_subscribe");
-        const accountAvailable = payload.getValue("accountAvailable");
-        const id = payload.getValue("user_gid");
-        const investments = payload.getLinkedRecords("investments");
-        const user = store.get(id);
-        if (!user) {
-          return;
-        }
-        if (accountAvailable) {
-          user.setValue(accountAvailable, "accountAvailable");
-        }
-        if (investments) {
-          user.setLinkedRecords(investments, "investments");
-        }
-        return;
-      },
     }),
     [user_gid]
   );

@@ -1,36 +1,27 @@
 import {
   GraphQLEnumType,
-  GraphQLFloat,
   GraphQLID,
-  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
 } from "graphql";
-import { globalIdField } from "graphql-relay";
 import { PubSub, withFilter } from "graphql-subscriptions";
-import { ObjectId } from "mongodb";
 import {
-  DateScalarType,
   GraphQLBucketTransactionEdge,
   GraphQLInvestmentEdge,
-  GraphQLInvestmentsUser,
-  GraphQLScheduledPayments,
+  GraphQLLoanEdge,
+  GraphQLUser,
   InvestmentStatus,
   LoanStatus,
-  MXNScalarType,
 } from "../Nodes";
 import {
   Context,
   InvestmentMongo,
+  LoanMongo,
   BucketTransactionMongo,
-  InvestmentsUserMongo,
-  ILoanStatus,
-  IScheduledPayments,
-  ILoanInvestors,
+  UserMongo,
 } from "../types";
-import { base64, unbase64 } from "../utils";
+import { unbase64 } from "../utils";
 
 export const pubsub = new PubSub();
 
@@ -42,33 +33,12 @@ export const USER = "USER";
 type typeSubscribe = "update" | "insert";
 
 interface IUserSubscribe {
-  _id: ObjectId;
-  investments: InvestmentsUserMongo[] | null;
-  accountAvailable: number | null;
-}
-
-interface ILoanNode {
-  _id: ObjectId;
-  _id_user: ObjectId | null;
-  score: string | null;
-  ROI: number | null;
-  goal: number | null;
-  term: number | null;
-  raised: number | null;
-  expiry: Date | null;
-  status: ILoanStatus | null;
-  scheduledPayments: IScheduledPayments[] | null;
-  investors: ILoanInvestors[] | null;
-}
-
-interface ILoanEdge {
-  node: ILoanNode;
+  user: UserMongo;
+  type: typeSubscribe;
 }
 
 interface ILoanSubscribe {
-  loan_edge: {
-    node: ILoanEdge;
-  };
+  loan_edge: { node: LoanMongo; cursor: string };
   type: typeSubscribe;
 }
 
@@ -93,14 +63,9 @@ export const SubscribeType = new GraphQLEnumType({
 export const User_Subscribe = new GraphQLObjectType<IUserSubscribe, Context>({
   name: "User_Subscribe",
   fields: () => ({
-    user_gid: globalIdField("User", ({ _id }): string => _id.toHexString()),
-    investments: {
-      type: GraphQLInvestmentsUser,
-      resolve: ({ investments }): InvestmentsUserMongo[] | null => investments,
-    },
-    accountAvailable: {
-      type: MXNScalarType,
-      resolve: ({ accountAvailable }): number | null => accountAvailable,
+    user: {
+      type: new GraphQLNonNull(GraphQLUser),
+      resolve: ({ user }) => user,
     },
   }),
 });
@@ -109,72 +74,7 @@ export const Loan_Subscribe = new GraphQLObjectType<ILoanSubscribe, Context>({
   name: "Loan_Subscribe",
   fields: () => ({
     loan_edge: {
-      type: new GraphQLNonNull(
-        new GraphQLObjectType<ILoanEdge>({
-          name: "LoanEdgeSubscription",
-          fields: () => ({
-            node: {
-              type: new GraphQLNonNull(
-                new GraphQLObjectType<ILoanNode>({
-                  name: "LoanNodeSubscription",
-                  fields: () => ({
-                    loan_gid: globalIdField("Loan", ({ _id }): string =>
-                      _id.toHexString()
-                    ),
-                    _id_user: {
-                      type: GraphQLString,
-                      resolve: ({ _id_user }): string | null =>
-                        _id_user?.toHexString() || null,
-                    },
-                    score: {
-                      type: GraphQLString,
-                      resolve: ({ score }): string | null => score,
-                    },
-                    ROI: {
-                      type: GraphQLFloat,
-                      resolve: ({ ROI }): number | null => ROI,
-                    },
-                    goal: {
-                      type: MXNScalarType,
-                      resolve: ({ goal }): number | null => goal,
-                    },
-                    term: {
-                      type: GraphQLInt,
-                      resolve: ({ term }): number | null => term,
-                    },
-                    raised: {
-                      type: MXNScalarType,
-                      resolve: ({ raised }): number | null => raised,
-                    },
-                    expiry: {
-                      type: DateScalarType,
-                      resolve: ({ expiry }): Date | null => expiry,
-                    },
-                    status: {
-                      type: LoanStatus,
-                      resolve: ({ status }): ILoanStatus | null => status,
-                    },
-                    scheduledPayments: {
-                      type: new GraphQLList(
-                        new GraphQLNonNull(GraphQLScheduledPayments)
-                      ),
-                      resolve: ({
-                        scheduledPayments,
-                      }): IScheduledPayments[] | null => scheduledPayments,
-                    },
-                  }),
-                })
-              ),
-              resolve: ({ node }): ILoanNode => node,
-            },
-            cursor: {
-              type: GraphQLString,
-              resolve: ({ node }): string | null =>
-                node._id ? base64(node._id.toHexString()) : null,
-            },
-          }),
-        })
-      ),
+      type: new GraphQLNonNull(GraphQLLoanEdge),
       resolve: ({ loan_edge }) => loan_edge,
     },
     type: {
@@ -229,11 +129,9 @@ export const loans_subscribe = {
   subscribe: withFilter(
     () => pubsub.asyncIterator<ILoanSubscribe>(LOAN),
     (payload, variables) => {
-      return payload.loans_subscribe.type === "update"
-        ? true
-        : variables.status.includes(
-            payload.loans_subscribe.loan_edge.node.status
-          );
+      return variables.status.includes(
+        payload.loans_subscribe.loan_edge.node.status
+      );
     }
   ),
 };
@@ -288,7 +186,7 @@ export const user_subscribe = {
     () => pubsub.asyncIterator(USER),
     (payload, variables) => {
       return (
-        payload.user_subscribe._id.toHexString() ===
+        payload.user_subscribe.user._id.toHexString() ===
         unbase64(variables.user_gid)
       );
     }
