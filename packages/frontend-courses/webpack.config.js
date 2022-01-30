@@ -39,7 +39,6 @@ module.exports = {
     }),
   ],
   devServer: {
-    contentBase: path.resolve(__dirname, "./build"),
     port: 8000,
     host: "0.0.0.0",
     historyApiFallback: true,

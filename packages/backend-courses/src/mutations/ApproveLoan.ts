@@ -65,7 +65,11 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
       });
       return { validAccessToken, error: "", loan };
     } catch (e) {
-      return { validAccessToken: "", error: e.message, loan: null };
+      return {
+        validAccessToken: "",
+        error: e instanceof Error ? e.message : "",
+        loan: null,
+      };
     }
   },
 });

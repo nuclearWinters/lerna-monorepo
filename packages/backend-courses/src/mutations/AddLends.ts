@@ -9,7 +9,7 @@ import {
   GraphQLFloat,
 } from "graphql";
 import { BucketTransactionMongo, Context, InvestmentMongo } from "../types";
-import { ObjectId, BulkWriteUpdateOneOperation } from "mongodb";
+import { ObjectId, AnyBulkWriteOperation } from "mongodb";
 import { refreshTokenMiddleware } from "../utils";
 import { MXNScalarType } from "../Nodes";
 import { addMonths, startOfMonth } from "date-fns";
@@ -219,7 +219,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
       }
       //Crear lista de operaciones para el bulkWrite en transacciones
       const transactionsOperations = docsFiltered.map<
-        BulkWriteUpdateOneOperation<BucketTransactionMongo>
+        AnyBulkWriteOperation<BucketTransactionMongo>
       >(({ quantity, _id_loan, _id_borrower }) => ({
         updateOne: {
           filter: { _id: new RegExp(`^${lender_id}`), count: { $lt: 5 } },
@@ -247,7 +247,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
       transactions.bulkWrite(transactionsOperations);
       //Crear lista de operaciones para el bulkWrite en inversiones
       const investmentsOperations = docsFiltered.map<
-        BulkWriteUpdateOneOperation<InvestmentMongo>
+        AnyBulkWriteOperation<InvestmentMongo>
       >(
         ({
           quantity,
@@ -288,7 +288,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
     } catch (e) {
       return {
         validAccessToken: "",
-        error: e.message,
+        error: e instanceof Error ? e.message : "",
       };
     }
   },

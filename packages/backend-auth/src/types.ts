@@ -1,19 +1,12 @@
 import { Channel } from "amqplib";
 import { ObjectId, Collection } from "mongodb";
+import { createClient } from "redis";
 
-export interface RedisPromises {
-  get: (arg1: string) => Promise<string | null>;
-  set: (
-    arg1: string,
-    arg2: string,
-    arg3?: "EX",
-    arg4?: number
-  ) => Promise<unknown>;
-  keys: (arg1: string) => Promise<string[]>;
-}
+export type RedisClientType = ReturnType<typeof createClient>;
+
 export interface Context {
   users: Collection<UserMongo>;
-  rdb: RedisPromises;
+  rdb: RedisClientType;
   accessToken?: string;
   ch: Channel;
   refreshToken?: string;

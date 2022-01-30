@@ -1,6 +1,6 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import logo from "assets/logo.png";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 
 interface Props {
   isLogged: boolean;
@@ -9,18 +9,19 @@ interface Props {
 }
 
 export const Icon: FC<Props> = ({ isLogged, isBorrower, isSupport }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
+  const navigateRef = useRef(navigate);
   useEffect(() => {
     if (isLogged && isBorrower) {
-      history.push("/myLoans");
+      navigateRef.current("/myLoans");
     } else if (isLogged && isSupport) {
-      history.push("/approveLoan");
+      navigateRef.current("/approveLoan");
     } else if (isLogged) {
-      history.push("/addInvestments");
+      navigateRef.current("/addInvestments");
     } else {
-      history.push("/login");
+      navigateRef.current("/login");
     }
-  }, [isLogged, isBorrower, isSupport, history]);
+  }, [isLogged, isBorrower, isSupport, navigateRef]);
   return (
     <div
       style={{

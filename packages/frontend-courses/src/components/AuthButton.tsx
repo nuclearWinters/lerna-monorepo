@@ -1,6 +1,6 @@
 import { Button } from "./Button";
 import React, { CSSProperties, FC } from "react";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 
 interface IProps {
   text: string;
@@ -9,14 +9,14 @@ interface IProps {
 }
 
 export const AuthButton: FC<IProps> = ({ style, text, path }) => {
-  const history = useHistory();
-  const navigate = (path: string) => {
-    history.push(path);
+  const navigate = useNavigate();
+  const navigateTo = (path: string) => {
+    navigate(path);
   };
   return (
     <Button
       onClick={() => {
-        navigate(path);
+        navigateTo(path);
       }}
       style={{ ...container, ...style }}
       text={text}

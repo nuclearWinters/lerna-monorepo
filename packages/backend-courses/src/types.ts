@@ -20,7 +20,7 @@ export interface InvestmentsUserMongo {
 }
 
 export interface UserMongo {
-  _id: ObjectId;
+  _id?: ObjectId;
   accountAvailable: number;
   investments: InvestmentsUserMongo[];
 }
@@ -33,7 +33,7 @@ export type TransactionMongoType =
   | "collect";
 
 export interface TransactionMongo {
-  _id: ObjectId;
+  _id?: ObjectId;
   type: TransactionMongoType;
   quantity: number;
   _id_borrower?: ObjectId;
@@ -42,7 +42,7 @@ export interface TransactionMongo {
 }
 
 export interface BucketTransactionMongo {
-  _id: string;
+  _id?: string;
   _id_user: ObjectId;
   count: number;
   history: TransactionMongo[];
@@ -69,7 +69,7 @@ export interface ILoanInvestors {
 }
 
 export interface LoanMongo {
-  _id: ObjectId;
+  _id?: ObjectId;
   _id_user: ObjectId;
   score: string;
   ROI: number;
@@ -90,7 +90,7 @@ export type IInvestmentStatus =
   | "paid";
 
 export interface InvestmentMongo {
-  _id: ObjectId;
+  _id?: ObjectId;
   _id_borrower: ObjectId;
   _id_lender: ObjectId;
   _id_loan: ObjectId;

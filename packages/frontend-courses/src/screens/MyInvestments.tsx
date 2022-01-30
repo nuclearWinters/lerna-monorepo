@@ -22,7 +22,7 @@ const myInvestmentsFragment = graphql`
     count: { type: "Int", defaultValue: 2 }
     cursor: { type: "String", defaultValue: "" }
     status: {
-      type: "[InvestmentStatus!]!"
+      type: "[InvestmentStatus!]"
       defaultValue: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]
     }
   )

@@ -49,8 +49,6 @@ services:
     command: ["npm", "run", "start"]
     ports:
       - "8000:8000"
-    logging:
-      driver: none
   reverse-proxy:
     container_name: reverse_proxy
     image: nginx

@@ -8,7 +8,6 @@ import {
   GraphQLResponse,
   Observable,
 } from "relay-runtime";
-import { GraphQLError } from "graphql";
 import { createClient } from "graphql-ws";
 import { tokensAndData } from "App";
 import { API_GATEWAY, WS_GATEWAY } from "utils";
@@ -61,28 +60,7 @@ const subscribeRelay = (operation: RequestParameters, variables: Variables) => {
         query: operation.text,
         variables,
       },
-      {
-        ...sink,
-        error: (err) => {
-          if (err instanceof Error) {
-            return sink.error(err);
-          }
-
-          if (err instanceof CloseEvent) {
-            return sink.error(
-              new Error(
-                `Socket closed with event ${err.code} ${err.reason || ""}`
-              )
-            );
-          }
-
-          return sink.error(
-            new Error(
-              (err as GraphQLError[]).map(({ message }) => message).join(", ")
-            )
-          );
-        },
-      }
+      sink as any
     );
   });
 };

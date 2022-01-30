@@ -4,7 +4,7 @@ import { Db, MongoClient, ObjectId } from "mongodb";
 import { BucketTransactionMongo, UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
 import { client as grpcClient } from "../utils";
-import { Metadata } from "@grpc/grpc-js";
+import { ClientUnaryCall, Metadata } from "@grpc/grpc-js";
 
 const request = supertest(app);
 
@@ -13,10 +13,7 @@ describe("AddFunds tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
   });
@@ -247,7 +244,7 @@ describe("AddFunds tests", () => {
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
-      .mockImplementationOnce((request, callback: any) => {
+      .mockImplementationOnce((_request, callback: any) => {
         callback(
           {
             name: "Error Auth Service",
@@ -258,7 +255,7 @@ describe("AddFunds tests", () => {
           },
           null
         );
-        return {} as any;
+        return {} as ClientUnaryCall;
       });
     const response = await request
       .post("/api/graphql")

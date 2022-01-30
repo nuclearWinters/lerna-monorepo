@@ -47,7 +47,7 @@ export const refreshTokenMiddleware = async (
       _id: user._id,
     };
   } catch (e) {
-    if (e.message === "jwt expired") {
+    if (e instanceof Error && e.message === "jwt expired") {
       const user = jwt.verify(refreshToken, REFRESHSECRET || "REFRESHSECRET");
       if (!user) throw new Error("El token esta corrompido.");
       const validAccessToken = jwt.sign(user, ACCESSSECRET || "ACCESSSECRET", {

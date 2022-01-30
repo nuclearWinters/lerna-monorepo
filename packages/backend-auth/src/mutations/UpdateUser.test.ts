@@ -11,10 +11,7 @@ describe("UpdateUser tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
     dbInstance = client.db("auth");
     app.locals.db = dbInstance;
   });

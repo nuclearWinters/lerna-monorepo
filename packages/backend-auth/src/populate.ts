@@ -1,10 +1,7 @@
 import { MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "./types";
 
-MongoClient.connect("mongodb://localhost:27017", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(async (client) => {
+MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
   const db = client.db("auth");
   const users = db.collection<UserMongo>("users");
   await users.deleteMany({});

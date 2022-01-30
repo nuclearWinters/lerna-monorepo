@@ -1,4 +1,4 @@
-import { BulkWriteUpdateOneOperation, Db, ObjectId } from "mongodb";
+import { AnyBulkWriteOperation, Db, ObjectId } from "mongodb";
 import {
   BucketTransactionMongo,
   ILoanInvestors,
@@ -93,7 +93,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
         .toArray();
       //Crear lista de operaciones con intereses moratorios
       const investmentWrites = allInvestments.map<
-        BulkWriteUpdateOneOperation<InvestmentMongo>
+        AnyBulkWriteOperation<InvestmentMongo>
       >(({ _id, quantity, ROI, term }) => {
         const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
         const amortize = Math.floor(
@@ -145,8 +145,8 @@ export const dayFunction = async (db: Db): Promise<void> => {
       const { ROI, term } = loan;
       //Crear lista de operaciones bulkwrite para transacciones y usuarios
       const operations = investors.map<{
-        transactionsOperations: BulkWriteUpdateOneOperation<BucketTransactionMongo>;
-        usersOperations: BulkWriteUpdateOneOperation<UserMongo>;
+        transactionsOperations: AnyBulkWriteOperation<BucketTransactionMongo>;
+        usersOperations: AnyBulkWriteOperation<UserMongo>;
       }>((investor) => {
         const investor_id = investor._id_lender.toHexString();
         const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
@@ -209,7 +209,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
       );
       const user_id = loan._id_user.toHexString();
       //transacción para informar al deudor de su pago
-      const transactionUpdateOne: BulkWriteUpdateOneOperation<BucketTransactionMongo> =
+      const transactionUpdateOne: AnyBulkWriteOperation<BucketTransactionMongo> =
         {
           updateOne: {
             filter: { _id: new RegExp(`^${user_id}`), count: { $lt: 5 } },

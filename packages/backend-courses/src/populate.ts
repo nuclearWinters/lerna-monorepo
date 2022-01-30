@@ -7,10 +7,7 @@ import {
 } from "./types";
 import { startOfMonth, addMonths, addSeconds } from "date-fns";
 
-MongoClient.connect("mongodb://localhost:27017", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(async (client) => {
+MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
   const expiry = addMonths(new Date(), 3);
   const db = client.db("fintech");
   const loans = db.collection<LoanMongo>("loans");

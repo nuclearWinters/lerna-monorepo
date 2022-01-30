@@ -69,7 +69,10 @@ export const AddLoanMutation = mutationWithClientMutationId({
         error: "",
       };
     } catch (e) {
-      return { validAccessToken: "", error: e.message };
+      return {
+        validAccessToken: "",
+        error: e instanceof Error ? e.message : "",
+      };
     }
   },
 });

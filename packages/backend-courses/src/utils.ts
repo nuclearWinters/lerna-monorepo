@@ -25,9 +25,9 @@ export const jwt = {
     return decoded as DecodeJWT | undefined;
   },
   sign: (
-    data: { _id: string; email: string },
+    data: { _id: string; email: string; exp?: number },
     secret: string,
-    options: SignOptions
+    options?: SignOptions
   ): string => {
     const token = jsonwebtoken.sign(data, secret, options);
     return token;
@@ -85,7 +85,7 @@ export const refreshTokenMiddleware = async (
     throw new Error("Sin refresh token.");
   }
   try {
-    const user = jwt.verify(accessToken, ACCESSSECRET || "ACCESSSECRET");
+    const user = jwt.verify(accessToken, ACCESSSECRET);
     if (!user) throw new Error("El token esta corrompido.");
     return {
       validAccessToken: accessToken,
@@ -93,10 +93,10 @@ export const refreshTokenMiddleware = async (
       email: user.email,
     };
   } catch (e) {
-    if (e.message === "jwt expired") {
+    if (e instanceof Error && e.message === "jwt expired") {
       const response = await renewAccessToken(refreshToken);
       const validAccessToken = response.getValidaccesstoken();
-      const user = jwt.verify(validAccessToken, ACCESSSECRET || "ACCESSSECRET");
+      const user = jwt.verify(validAccessToken, ACCESSSECRET);
       if (!user) throw new Error("El token esta corrompido.");
       return { validAccessToken, _id: user._id, email: user.email };
     } else {

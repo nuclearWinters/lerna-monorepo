@@ -107,7 +107,7 @@ const AppQueryRoot: FC = () => {
     [loadQuery]
   );
   tokensAndData.refetchUser = refetchUser;
-  return <Routes user={data} data={data} />;
+  return <Routes data={data} />;
 };
 
 export const App: FC = () => {

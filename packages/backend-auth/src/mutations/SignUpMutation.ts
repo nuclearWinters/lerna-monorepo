@@ -113,7 +113,11 @@ export const SignUpMutation = mutationWithClientMutationId({
       //sgMail.send(msg);
       return { refreshToken, accessToken, error: "" };
     } catch (e) {
-      return { refreshToken: "", accessToken: "", error: e.message };
+      return {
+        refreshToken: "",
+        accessToken: "",
+        error: e instanceof Error ? e.message : "",
+      };
     }
   },
 });

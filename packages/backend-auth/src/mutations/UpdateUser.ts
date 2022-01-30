@@ -86,7 +86,11 @@ export const UpdateUserMutation = mutationWithClientMutationId({
         },
       };
     } catch (e) {
-      return { validAccessToken: "", error: e.message, authUser: null };
+      return {
+        validAccessToken: "",
+        error: e instanceof Error ? e.message : "",
+        authUser: null,
+      };
     }
   },
 });

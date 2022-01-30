@@ -1,5 +1,10 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes as BrowserRoutes,
+  Route,
+  Link,
+} from "react-router-dom";
 import {
   graphql,
   useFragment,
@@ -84,7 +89,6 @@ const routesFragment = graphql`
 `;
 
 type Props = {
-  user: Routes_query$key;
   data: AppQueryResponse;
 };
 
@@ -191,7 +195,7 @@ const subscriptionUser = graphql`
 
 export const Routes: FC<Props> = (props) => {
   const { t, i18n } = useTranslation();
-  const user = useFragment(routesFragment, props.user);
+  const user = useFragment<Routes_query$key>(routesFragment, props.data);
   const { isBorrower, isSupport } = user.authUser;
   const user_gid = user.user.id;
   const userRef = useRef(user_gid);
@@ -592,81 +596,77 @@ export const Routes: FC<Props> = (props) => {
           )}
           <div style={{ flex: 1, display: "flex" }}>
             {isBorrower ? (
-              <Switch>
-                <Route path="/login">
-                  <LogIn />
-                </Route>
-                <Route path="/register">
-                  <SignUp />
-                </Route>
-                <Route path="/account">
-                  <Account user={user.user} />
-                </Route>
-                <Route path="/addLoan">
-                  <AddLoan user={user.user} />
-                </Route>
-                <Route path="/myLoans">
-                  <AddInvestments data={props.data} />
-                </Route>
-                <Route path="/addFunds">
-                  <AddFunds user={user.user} />
-                </Route>
-                <Route path="/retireFunds">
-                  <RetireFunds user={user.user} />
-                </Route>
-                <Route path="/settings">
-                  <Settings user={user.authUser} />
-                </Route>
-              </Switch>
+              <BrowserRoutes>
+                <Route path="/login" element={<LogIn />} />
+                <Route path="/register" element={<SignUp />} />
+                <Route path="/account" element={<Account user={user.user} />} />
+                <Route path="/addLoan" element={<AddLoan user={user.user} />} />
+                <Route
+                  path="/myLoans"
+                  element={<AddInvestments data={props.data} />}
+                />
+                <Route
+                  path="/addFunds"
+                  element={<AddFunds user={user.user} />}
+                />
+                <Route
+                  path="/retireFunds"
+                  element={<RetireFunds user={user.user} />}
+                />
+                <Route
+                  path="/settings"
+                  element={<Settings user={user.authUser} />}
+                />
+              </BrowserRoutes>
             ) : isSupport ? (
-              <Switch>
-                <Route path="/login">
-                  <LogIn />
-                </Route>
-                <Route path="/register">
-                  <SignUp />
-                </Route>
-                <Route path="/approveLoan">
-                  <AddInvestments data={props.data} />
-                </Route>
-                <Route path="/settings">
-                  <Settings user={user.authUser} />
-                </Route>
-              </Switch>
+              <BrowserRoutes>
+                <Route path="/login" element={<LogIn />} />
+                <Route path="/register" element={<SignUp />} />
+                <Route
+                  path="/approveLoan"
+                  element={<AddInvestments data={props.data} />}
+                />
+                <Route
+                  path="/settings"
+                  element={<Settings user={user.authUser} />}
+                />
+              </BrowserRoutes>
             ) : (
-              <Switch>
-                <Route path="/login">
-                  <LogIn />
-                </Route>
-                <Route path="/register">
-                  <SignUp />
-                </Route>
-                <Route path="/account">
-                  <Account user={user.user} />
-                </Route>
-                <Route path="/addInvestments">
-                  <AddInvestments data={props.data} />
-                </Route>
-                <Route path="/addFunds">
-                  <AddFunds user={user.user} />
-                </Route>
-                <Route path="/retireFunds">
-                  <RetireFunds user={user.user} />
-                </Route>
-                <Route path="/myTransactions">
-                  <MyTransactions data={props.data} />
-                </Route>
-                <Route path="/myInvestments">
-                  <MyInvestments
-                    data={props.data}
-                    setInvestmentStatus={setInvestmentStatus}
-                    investmentStatus={investmentStatus}
-                  />
-                </Route>
-                <Route path="/settings">
-                  <Settings user={user.authUser} />
-                </Route>
-              </Switch>
+              <BrowserRoutes>
+                <Route path="/login" element={<LogIn />} />
+                <Route path="/register" element={<SignUp />} />
+                <Route path="/account" element={<Account user={user.user} />} />
+                <Route
+                  path="/addInvestments"
+                  element={<AddInvestments data={props.data} />}
+                />
+                <Route
+                  path="/addFunds"
+                  element={<AddFunds user={user.user} />}
+                />
+                <Route
+                  path="/retireFunds"
+                  element={<RetireFunds user={user.user} />}
+                />
+                <Route
+                  path="/myTransactions"
+                  element={<MyTransactions data={props.data} />}
+                />
+                <Route
+                  path="/myInvestments"
+                  element={
+                    <MyInvestments
+                      data={props.data}
+                      setInvestmentStatus={setInvestmentStatus}
+                      investmentStatus={investmentStatus}
+                    />
+                  }
+                />
+                <Route
+                  path="/settings"
+                  element={<Settings user={user.authUser} />}
+                />
+              </BrowserRoutes>
             )}
           </div>
         </Rows>

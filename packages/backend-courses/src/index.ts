@@ -6,7 +6,7 @@ import {
   pubsub,
   USER,
 } from "./subscriptions/subscriptions";
-import { MongoClient, ObjectId, ChangeEventCR } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { MONGO_DB } from "./config";
 import amqp from "amqplib";
 import {
@@ -17,13 +17,10 @@ import {
   UserMongo,
 } from "./types";
 import { useServer } from "graphql-ws/lib/use/ws";
-import ws from "ws";
+import { WebSocketServer } from "ws";
 import { base64 } from "./utils";
 
-MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(async (client) => {
+MongoClient.connect(MONGO_DB, {}).then(async (client) => {
   const db = client.db("fintech");
   app.locals.db = db;
   const conn = await amqp.connect("amqp://rabbitmq:5672");
@@ -33,7 +30,7 @@ MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
   const usersStream = db.collection<UserMongo>("users").watch([], options);
   usersStream.on("change", (event) => {
     if (["update"].includes(event.operationType)) {
-      const fullDocument = (event as ChangeEventCR<UserMongo>).fullDocument;
+      const fullDocument = event.fullDocument;
       if (fullDocument) {
         pubsub.publish(USER, {
           user_subscribe: {
@@ -46,13 +43,13 @@ MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
   const loansStream = db.collection<LoanMongo>("loans").watch([], options);
   loansStream.on("change", (event) => {
     if (["insert", "update"].includes(event.operationType)) {
-      const fullDocument = (event as ChangeEventCR<LoanMongo>).fullDocument;
+      const fullDocument = event.fullDocument;
       if (fullDocument) {
         pubsub.publish(LOAN, {
           loans_subscribe: {
             loan_edge: {
               node: fullDocument,
-              cursor: base64(fullDocument._id.toHexString()),
+              cursor: base64(fullDocument._id?.toHexString() || ""),
             },
             type: event.operationType,
           },
@@ -65,14 +62,13 @@ MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
     .watch([], options);
   investmentsStream.on("change", (event) => {
     if (["insert", "update"].includes(event.operationType)) {
-      const fullDocument = (event as ChangeEventCR<InvestmentMongo>)
-        .fullDocument;
+      const fullDocument = event.fullDocument;
       if (fullDocument) {
         pubsub.publish(INVESTMENT, {
           investments_subscribe: {
             investment_edge: {
               node: fullDocument,
-              cursor: base64(fullDocument._id.toHexString()),
+              cursor: base64(fullDocument._id?.toHexString() || ""),
             },
             type: event.operationType,
           },
@@ -85,14 +81,13 @@ MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
     .watch([], options);
   transactionsStream.on("change", (event) => {
     if (["insert", "update"].includes(event.operationType)) {
-      const fullDocument = (event as ChangeEventCR<BucketTransactionMongo>)
-        .fullDocument;
+      const fullDocument = event.fullDocument;
       if (fullDocument) {
         pubsub.publish(TRANSACTION, {
           transactions_subscribe: {
             transaction_edge: {
               node: fullDocument,
-              cursor: base64(fullDocument._id),
+              cursor: base64(fullDocument._id || ""),
             },
             type: event.operationType,
           },
@@ -112,7 +107,7 @@ MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
   });
   app.locals.ch = ch;
   const server = app.listen(4000, () => {
-    const wsServer = new ws.Server({
+    const wsServer = new WebSocketServer({
       server,
       path: "/api/graphql",
     });

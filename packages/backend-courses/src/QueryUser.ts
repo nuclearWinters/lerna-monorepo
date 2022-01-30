@@ -1,29 +1,19 @@
 import { ObjectId } from "bson";
-import { GraphQLString, GraphQLNonNull, GraphQLNullableType } from "graphql";
+import { GraphQLString, GraphQLNonNull } from "graphql";
 import { GraphQLUser } from "./Nodes";
-import { Context, UserMongo } from "./types";
+import { Context } from "./types";
 import { refreshTokenMiddleware } from "./utils";
 
-interface IQueryUser {
-  type: GraphQLNonNull<GraphQLNullableType>;
-  args: {
-    id: {
-      type: GraphQLNonNull<GraphQLNullableType>;
-    };
-  };
-  resolve: (
-    root: { [argName: string]: string },
-    args: { [argName: string]: string },
-    ctx: Context
-  ) => Promise<UserMongo>;
-}
-
-const QueryUser: IQueryUser = {
+const QueryUser = {
   type: new GraphQLNonNull(GraphQLUser),
   args: {
     id: { type: new GraphQLNonNull(GraphQLString) },
   },
-  resolve: async (_, { id }, { users, accessToken, refreshToken }) => {
+  resolve: async (
+    _root: unknown,
+    { id }: any,
+    { users, accessToken, refreshToken }: Context
+  ) => {
     try {
       const { _id: user_id } = await refreshTokenMiddleware(
         accessToken,

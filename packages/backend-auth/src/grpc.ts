@@ -23,7 +23,7 @@ export const AuthServer: IAuthServer = {
       if (!refreshToken) {
         throw new Error("No refresh token");
       }
-      const user = jwt.verify(refreshToken, REFRESHSECRET || "REFRESHSECRET");
+      const user = jwt.verify(refreshToken, REFRESHSECRET);
       if (!user) {
         throw new Error("El token esta corrompido.");
       }
@@ -31,7 +31,7 @@ export const AuthServer: IAuthServer = {
       if (blacklistedUser) {
         throw new Error("El usuario estará bloqueado por una hora.");
       }
-      const validAccessToken = jwt.sign(user, ACCESSSECRET || "ACCESSSECRET", {
+      const validAccessToken = jwt.sign(user, ACCESSSECRET, {
         expiresIn: "15m",
       });
       const payload = new RenewAccessTokenPayload();
@@ -40,7 +40,7 @@ export const AuthServer: IAuthServer = {
     } catch (e) {
       const error: ServiceError = {
         name: "Error Auth Service",
-        message: e.message,
+        message: e instanceof Error ? e.message : "",
         code: 1,
         details: "",
         metadata: new Metadata(),

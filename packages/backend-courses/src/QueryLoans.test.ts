@@ -11,10 +11,7 @@ describe("QueryLoans tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
   });

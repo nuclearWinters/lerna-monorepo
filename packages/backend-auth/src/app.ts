@@ -33,11 +33,7 @@ const schema = new GraphQLSchema({
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "http://relay-gateway:4001",
-  })
-);
+app.use(cors());
 
 app.use(
   "/auth/graphql",

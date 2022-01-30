@@ -1,19 +1,21 @@
+/**
+ * @generated SignedSource<<fa493f490d369f97911f0eb10e0728a3>>
+ * @lightSyntaxTransform
+ * @nogrep
+ */
+
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
 
-import { ConcreteRequest } from "relay-runtime";
-export type SubscribeType = "INSERT" | "UPDATE" | "%future added value";
-export type TransactionType =
-  | "COLLECT"
-  | "CREDIT"
-  | "INVEST"
-  | "WITHDRAWAL"
-  | "%future added value";
-export type RoutesTransactionsSubscriptionVariables = {
+import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
+export type SubscribeType = "UPDATE" | "INSERT" | "%future added value";
+export type TransactionType = "CREDIT" | "WITHDRAWAL" | "INVEST" | "COLLECT" | "%future added value";
+export type RoutesTransactionsSubscription$variables = {
   user_gid: string;
 };
-export type RoutesTransactionsSubscriptionResponse = {
+export type RoutesTransactionsSubscriptionVariables = RoutesTransactionsSubscription$variables;
+export type RoutesTransactionsSubscription$data = {
   readonly transactions_subscribe: {
     readonly transaction_edge: {
       readonly node: {
@@ -26,7 +28,7 @@ export type RoutesTransactionsSubscriptionResponse = {
           readonly _id_loan: string | null;
           readonly type: TransactionType;
           readonly quantity: string;
-          readonly created: number;
+          readonly created: Int;
         }>;
       } | null;
       readonly cursor: string;
@@ -34,190 +36,167 @@ export type RoutesTransactionsSubscriptionResponse = {
     readonly type: SubscribeType;
   };
 };
+export type RoutesTransactionsSubscriptionResponse = RoutesTransactionsSubscription$data;
 export type RoutesTransactionsSubscription = {
-  readonly response: RoutesTransactionsSubscriptionResponse;
-  readonly variables: RoutesTransactionsSubscriptionVariables;
+  variables: RoutesTransactionsSubscriptionVariables;
+  response: RoutesTransactionsSubscription$data;
 };
 
-/*
-subscription RoutesTransactionsSubscription(
-  $user_gid: ID!
-) {
-  transactions_subscribe(user_gid: $user_gid) {
-    transaction_edge {
-      node {
-        id
-        _id_user
-        count
-        history {
-          id
-          _id_borrower
-          _id_loan
-          type
-          quantity
-          created
-        }
-      }
-      cursor
-    }
-    type
+const node: ConcreteRequest = (function(){
+var v0 = [
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "user_gid"
   }
-}
-*/
-
-const node: ConcreteRequest = (function () {
-  var v0 = [
+],
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
+},
+v3 = [
+  {
+    "alias": null,
+    "args": [
       {
-        defaultValue: null,
-        kind: "LocalArgument",
-        name: "user_gid",
-      } as any,
+        "kind": "Variable",
+        "name": "user_gid",
+        "variableName": "user_gid"
+      }
     ],
-    v1 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "id",
-      storageKey: null,
-    } as any,
-    v2 = {
-      alias: null,
-      args: null,
-      kind: "ScalarField",
-      name: "type",
-      storageKey: null,
-    } as any,
-    v3 = [
+    "concreteType": "Transaction_Subscribe",
+    "kind": "LinkedField",
+    "name": "transactions_subscribe",
+    "plural": false,
+    "selections": [
       {
-        alias: null,
-        args: [
+        "alias": null,
+        "args": null,
+        "concreteType": "BucketTransactionEdge",
+        "kind": "LinkedField",
+        "name": "transaction_edge",
+        "plural": false,
+        "selections": [
           {
-            kind: "Variable",
-            name: "user_gid",
-            variableName: "user_gid",
-          },
-        ],
-        concreteType: "Transaction_Subscribe",
-        kind: "LinkedField",
-        name: "transactions_subscribe",
-        plural: false,
-        selections: [
-          {
-            alias: null,
-            args: null,
-            concreteType: "BucketTransactionEdge",
-            kind: "LinkedField",
-            name: "transaction_edge",
-            plural: false,
-            selections: [
+            "alias": null,
+            "args": null,
+            "concreteType": "BucketTransaction",
+            "kind": "LinkedField",
+            "name": "node",
+            "plural": false,
+            "selections": [
+              (v1/*: any*/),
               {
-                alias: null,
-                args: null,
-                concreteType: "BucketTransaction",
-                kind: "LinkedField",
-                name: "node",
-                plural: false,
-                selections: [
-                  v1 /*: any*/,
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "_id_user",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "count",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "Transaction",
+                "kind": "LinkedField",
+                "name": "history",
+                "plural": true,
+                "selections": [
+                  (v1/*: any*/),
                   {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "_id_user",
-                    storageKey: null,
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "_id_borrower",
+                    "storageKey": null
                   },
                   {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "count",
-                    storageKey: null,
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "_id_loan",
+                    "storageKey": null
+                  },
+                  (v2/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "quantity",
+                    "storageKey": null
                   },
                   {
-                    alias: null,
-                    args: null,
-                    concreteType: "Transaction",
-                    kind: "LinkedField",
-                    name: "history",
-                    plural: true,
-                    selections: [
-                      v1 /*: any*/,
-                      {
-                        alias: null,
-                        args: null,
-                        kind: "ScalarField",
-                        name: "_id_borrower",
-                        storageKey: null,
-                      },
-                      {
-                        alias: null,
-                        args: null,
-                        kind: "ScalarField",
-                        name: "_id_loan",
-                        storageKey: null,
-                      },
-                      v2 /*: any*/,
-                      {
-                        alias: null,
-                        args: null,
-                        kind: "ScalarField",
-                        name: "quantity",
-                        storageKey: null,
-                      },
-                      {
-                        alias: null,
-                        args: null,
-                        kind: "ScalarField",
-                        name: "created",
-                        storageKey: null,
-                      },
-                    ],
-                    storageKey: null,
-                  },
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "created",
+                    "storageKey": null
+                  }
                 ],
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "cursor",
-                storageKey: null,
-              },
+                "storageKey": null
+              }
             ],
-            storageKey: null,
+            "storageKey": null
           },
-          v2 /*: any*/,
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "cursor",
+            "storageKey": null
+          }
         ],
-        storageKey: null,
-      } as any,
-    ];
-  return {
-    fragment: {
-      argumentDefinitions: v0 /*: any*/,
-      kind: "Fragment",
-      metadata: null,
-      name: "RoutesTransactionsSubscription",
-      selections: v3 /*: any*/,
-      type: "Subscription",
-      abstractKey: null,
-    },
-    kind: "Request",
-    operation: {
-      argumentDefinitions: v0 /*: any*/,
-      kind: "Operation",
-      name: "RoutesTransactionsSubscription",
-      selections: v3 /*: any*/,
-    },
-    params: {
-      cacheID: "0febc3f254d092d2491e90718b447b37",
-      id: null,
-      metadata: {},
-      name: "RoutesTransactionsSubscription",
-      operationKind: "subscription",
-      text: "subscription RoutesTransactionsSubscription(\n  $user_gid: ID!\n) {\n  transactions_subscribe(user_gid: $user_gid) {\n    transaction_edge {\n      node {\n        id\n        _id_user\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n",
-    },
-  } as any;
+        "storageKey": null
+      },
+      (v2/*: any*/)
+    ],
+    "storageKey": null
+  }
+];
+return {
+  "fragment": {
+    "argumentDefinitions": (v0/*: any*/),
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "RoutesTransactionsSubscription",
+    "selections": (v3/*: any*/),
+    "type": "Subscription",
+    "abstractKey": null
+  },
+  "kind": "Request",
+  "operation": {
+    "argumentDefinitions": (v0/*: any*/),
+    "kind": "Operation",
+    "name": "RoutesTransactionsSubscription",
+    "selections": (v3/*: any*/)
+  },
+  "params": {
+    "cacheID": "0febc3f254d092d2491e90718b447b37",
+    "id": null,
+    "metadata": {},
+    "name": "RoutesTransactionsSubscription",
+    "operationKind": "subscription",
+    "text": "subscription RoutesTransactionsSubscription(\n  $user_gid: ID!\n) {\n  transactions_subscribe(user_gid: $user_gid) {\n    transaction_edge {\n      node {\n        id\n        _id_user\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n"
+  }
+};
 })();
+
 (node as any).hash = "13cd67a52739535eb1c5dc76a657846f";
+
 export default node;

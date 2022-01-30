@@ -1,40 +1,31 @@
 import { app } from "./app";
 import { MongoClient, Db } from "mongodb";
 import { MONGO_DB } from "./config";
-import redis from "redis";
-import { promisify } from "util";
+import { createClient } from "redis";
 import amqp from "amqplib";
-import { RedisPromises, SIGN_UP } from "./types";
+import { RedisClientType, SIGN_UP } from "./types";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
 import { AuthServer } from "./grpc";
 import { AuthService } from "./proto/auth_grpc_pb";
 import { REDIS } from "./config";
 
 export const ctx: {
-  rdb?: RedisPromises;
+  rdb?: RedisClientType;
   db?: Db;
 } = {
   rdb: undefined,
   db: undefined,
 };
 
-MongoClient.connect(MONGO_DB || "mongodb://mongo-courses:27017", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(async (client) => {
-  const redisClient = redis.createClient({
-    port: 6379,
-    host: REDIS || "redis-auth",
+MongoClient.connect(MONGO_DB, {}).then(async (client) => {
+  const redisClient = createClient({
+    url: REDIS,
   });
-  const rdb = {
-    get: promisify(redisClient.get).bind(redisClient),
-    set: promisify(redisClient.set).bind(redisClient),
-    keys: promisify(redisClient.keys).bind(redisClient),
-  };
+  await redisClient.connect();
   const db = client.db("auth");
   app.locals.db = db;
-  app.locals.rdb = rdb;
-  ctx.rdb = rdb;
+  app.locals.rdb = redisClient;
+  ctx.rdb = redisClient;
   ctx.db = db;
   const conn = await amqp.connect("amqp://rabbitmq:5672");
   const ch = await conn.createChannel();

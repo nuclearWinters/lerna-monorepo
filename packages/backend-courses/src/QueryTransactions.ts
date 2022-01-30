@@ -1,36 +1,21 @@
 import { ObjectId } from "bson";
-import {
-  GraphQLFieldConfigArgumentMap,
-  GraphQLNonNull,
-  GraphQLNullableType,
-  GraphQLString,
-} from "graphql";
+import { GraphQLNonNull, GraphQLString } from "graphql";
 import {
   Connection,
   connectionArgs,
   ConnectionArguments,
   connectionFromArray,
 } from "graphql-relay";
-import { FilterQuery } from "mongodb";
+import { Filter } from "mongodb";
 import { BucketTransactionConnection } from "./Nodes";
 import { Context, BucketTransactionMongo } from "./types";
 import { base64, refreshTokenMiddleware, unbase64 } from "./utils";
-
-interface IQuery {
-  type: GraphQLNonNull<GraphQLNullableType>;
-  args: GraphQLFieldConfigArgumentMap;
-  resolve: (
-    root: { [argName: string]: string },
-    args: { [argName: string]: string },
-    ctx: Context
-  ) => Promise<Connection<BucketTransactionMongo>>;
-}
 
 interface Args extends ConnectionArguments {
   user_id?: string | null;
 }
 
-export const QueryTransactions: IQuery = {
+export const QueryTransactions = {
   type: new GraphQLNonNull(BucketTransactionConnection),
   args: {
     user_id: {
@@ -39,10 +24,11 @@ export const QueryTransactions: IQuery = {
     ...connectionArgs,
   },
   resolve: async (
-    _,
-    args: Args,
-    { transactions, accessToken, refreshToken }
+    _: unknown,
+    argss: unknown,
+    { transactions, accessToken, refreshToken }: Context
   ): Promise<Connection<BucketTransactionMongo>> => {
+    const args = argss as Args;
     try {
       const { _id } = await refreshTokenMiddleware(accessToken, refreshToken);
       if (args.user_id !== _id) {
@@ -53,7 +39,7 @@ export const QueryTransactions: IQuery = {
       if (limit <= 0) {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const query: FilterQuery<BucketTransactionMongo> = {
+      const query: Filter<BucketTransactionMongo> = {
         _id_user: new ObjectId(_id),
       };
       if (transaction_id) {

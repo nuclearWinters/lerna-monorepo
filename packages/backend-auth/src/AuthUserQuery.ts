@@ -2,7 +2,6 @@ import { ObjectId } from "bson";
 import {
   GraphQLString,
   GraphQLNonNull,
-  GraphQLNullableType,
   GraphQLObjectType,
   GraphQLBoolean,
 } from "graphql";
@@ -66,26 +65,16 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
   },
 });
 
-interface IQueryUser {
-  type: GraphQLNonNull<GraphQLNullableType>;
-  args: {
-    id: {
-      type: GraphQLNonNull<GraphQLNullableType>;
-    };
-  };
-  resolve: (
-    root: { [argName: string]: string },
-    args: { [argName: string]: string },
-    ctx: Context
-  ) => Promise<UserMongo>;
-}
-
-const QueryUser: IQueryUser = {
+const QueryUser = {
   type: new GraphQLNonNull(GraphQLAuthUser),
   args: {
     id: { type: new GraphQLNonNull(GraphQLString) },
   },
-  resolve: async (_, { id }, { users, accessToken, refreshToken }) => {
+  resolve: async (
+    _: unknown,
+    { id }: any,
+    { users, accessToken, refreshToken }: Context
+  ): Promise<UserMongo> => {
     try {
       const { _id: user_id } = await refreshTokenMiddleware(
         accessToken,

@@ -1,11 +1,5 @@
-import { FilterQuery, ObjectId } from "mongodb";
-import {
-  GraphQLFieldConfigArgumentMap,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLNullableType,
-  GraphQLString,
-} from "graphql";
+import { Filter, ObjectId } from "mongodb";
+import { GraphQLList, GraphQLNonNull, GraphQLString } from "graphql";
 import {
   Connection,
   connectionArgs,
@@ -16,22 +10,12 @@ import { InvestmentConnection, InvestmentStatus } from "./Nodes";
 import { Context, IInvestmentStatus, InvestmentMongo } from "./types";
 import { base64, refreshTokenMiddleware, unbase64 } from "./utils";
 
-interface IQuery {
-  type: GraphQLNonNull<GraphQLNullableType>;
-  args: GraphQLFieldConfigArgumentMap;
-  resolve: (
-    root: { [argName: string]: string },
-    args: { [argName: string]: string },
-    ctx: Context
-  ) => Promise<Connection<InvestmentMongo>>;
-}
-
 interface Args extends ConnectionArguments {
   user_id?: string | null;
   status?: IInvestmentStatus[];
 }
 
-export const QueryInvestments: IQuery = {
+export const QueryInvestments = {
   type: new GraphQLNonNull(InvestmentConnection),
   args: {
     user_id: {
@@ -45,10 +29,11 @@ export const QueryInvestments: IQuery = {
     ...connectionArgs,
   },
   resolve: async (
-    _,
-    { status, user_id, first, after }: Args,
-    { investments, accessToken, refreshToken }
+    _: unknown,
+    args: unknown,
+    { investments, accessToken, refreshToken }: Context
   ): Promise<Connection<InvestmentMongo>> => {
+    const { status, user_id, first, after } = args as Args;
     try {
       const { _id } = await refreshTokenMiddleware(accessToken, refreshToken);
       if (user_id !== _id) {
@@ -59,7 +44,7 @@ export const QueryInvestments: IQuery = {
       if (limit <= 0) {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const query: FilterQuery<InvestmentMongo> = {
+      const query: Filter<InvestmentMongo> = {
         _id_lender: new ObjectId(_id),
         status: { $in: ["delay payment", "up to date"] },
       };

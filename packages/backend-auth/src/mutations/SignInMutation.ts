@@ -77,7 +77,7 @@ export const SignInMutation = mutationWithClientMutationId({
       };
     } catch (e) {
       return {
-        error: e.message,
+        error: e instanceof Error ? e.message : "",
         accessToken: "",
         refreshToken: "",
       };

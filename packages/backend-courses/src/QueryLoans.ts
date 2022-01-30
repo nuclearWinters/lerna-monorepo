@@ -1,11 +1,5 @@
-import { FilterQuery, ObjectId } from "mongodb";
-import {
-  GraphQLFieldConfigArgumentMap,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLNullableType,
-  GraphQLString,
-} from "graphql";
+import { Filter, ObjectId } from "mongodb";
+import { GraphQLList, GraphQLNonNull, GraphQLString } from "graphql";
 import {
   Connection,
   connectionArgs,
@@ -16,44 +10,35 @@ import { LoanConnection, LoanStatus } from "./Nodes";
 import { Context, ILoanStatus, LoanMongo } from "./types";
 import { base64, unbase64 } from "./utils";
 
-interface IQuery {
-  type: GraphQLNonNull<GraphQLNullableType>;
-  args: GraphQLFieldConfigArgumentMap;
-  resolve: (
-    root: { [argName: string]: string },
-    args: { [argName: string]: string },
-    ctx: Context
-  ) => Promise<Connection<LoanMongo>>;
-}
-
 interface Args extends ConnectionArguments {
   status?: ILoanStatus[];
   borrower_id?: string;
 }
 
-export const QueryLoans: IQuery = {
+export const QueryLoans = {
   type: new GraphQLNonNull(LoanConnection),
   args: {
     borrower_id: {
       type: GraphQLString,
     },
     status: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LoanStatus))),
+      type: new GraphQLList(new GraphQLNonNull(LoanStatus)),
     },
     ...connectionArgs,
   },
   resolve: async (
-    _,
-    { status, after, first, borrower_id }: Args,
-    { loans }
+    _root: unknown,
+    args: unknown,
+    { loans }: Context
   ): Promise<Connection<LoanMongo>> => {
+    const { status, after, first, borrower_id } = args as Args;
     try {
       const loan_id = unbase64(after || "");
       const limit = first ? first + 1 : 0;
       if (limit <= 0) {
         throw new Error("Se requiere que 'first' sea un entero positivo");
       }
-      const query: FilterQuery<LoanMongo> = { status: "financing" };
+      const query: Filter<LoanMongo> = { status: "financing" };
       if (loan_id) {
         query._id = { $lt: new ObjectId(loan_id) };
       }

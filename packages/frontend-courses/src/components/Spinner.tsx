@@ -1,13 +1,7 @@
-import React, { CSSProperties, FC, useState } from "react";
+import React, { CSSProperties, FC } from "react";
 import { useSpring, animated } from "react-spring";
 
-const useForceUpdate = () => {
-  const [, setValue] = useState(0);
-  return () => setValue((value) => value + 1);
-};
-
 export const Spinner: FC = () => {
-  const forceUpdate = useForceUpdate();
   const style = useSpring({
     to: {
       height: 40,
@@ -15,23 +9,26 @@ export const Spinner: FC = () => {
       width: 40,
     },
     from: {
-      border: "10px solid forestgreen",
-      borderRadius: "100%",
       height: 0,
-      left: "50%",
       opacity: 1,
-      position: "absolute",
-      top: "50%",
-      transform: "translateX(-50%) translateY(-50%)",
       width: 0,
-      zIndex: 1,
     },
-    reset: true,
-    onRest: forceUpdate,
+    loop: true,
   });
   return (
     <div style={container}>
-      <animated.div style={style} />
+      <animated.div
+        style={{
+          position: "absolute",
+          border: "10px solid forestgreen",
+          borderRadius: "100%",
+          left: "50%",
+          top: "50%",
+          transform: "translateX(-50%) translateY(-50%)",
+          zIndex: 1,
+          ...style,
+        }}
+      />
     </div>
   );
 };

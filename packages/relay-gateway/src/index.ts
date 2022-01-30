@@ -1,74 +1,58 @@
 import { app } from "./app";
-import {
-  stitchSchemas,
-  introspectSchema,
-  AsyncExecutor,
-  Subscriber,
-} from "graphql-tools";
+import { introspectSchema } from "@graphql-tools/wrap";
+import { stitchSchemas } from "@graphql-tools/stitch";
+import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
 import { graphqlHTTP } from "express-graphql";
 import fetch from "cross-fetch";
-import { print } from "graphql";
-import { getContext } from "./utils";
-import ws from "ws";
+import { getOperationAST, OperationTypeNode, print } from "graphql";
+import ws, { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { createClient } from "graphql-ws";
+import { getContext } from "./utils";
 
-const makeRemoteSubscriber = (url: string): Subscriber => {
-  const client = createClient({ url, webSocketImpl: ws });
-  return async ({ document, variables }) => {
-    const pending: any[] = [];
-    let deferred: any = null;
-    let error: Error | null = null;
-    let done = false;
-
-    const query = print(document);
-    const dispose = client.subscribe<any>(
-      {
-        query,
-        variables: variables as any,
-      },
-      {
-        next: (data: any) => {
-          pending.push(data);
-          deferred && deferred.resolve(false);
-        },
-        error: (err: Error) => {
-          error = err;
-          deferred && deferred.reject(error);
-        },
-        complete: () => {
-          done = true;
-          deferred && deferred.resolve(true);
-        },
-      }
-    );
-
-    return {
-      [Symbol.asyncIterator]() {
-        return this;
-      },
-      async next() {
-        if (done) return { done: true, value: undefined };
-        if (error) throw error;
-        if (pending.length) return { value: pending.shift() };
-        return (await new Promise(
-          (resolve, reject) => (deferred = { resolve, reject })
-        ))
-          ? { done: true, value: undefined }
-          : { value: pending.shift() };
-      },
-      async return() {
-        dispose();
-        return { done: true, value: undefined };
-      },
-    };
-  };
+const wsExecutor = (url: string): AsyncExecutor => {
+  const subscriptionClient = createClient({
+    url,
+    webSocketImpl: ws,
+  });
+  return async ({ document, variables, operationName, extensions }) =>
+    observableToAsyncIterable({
+      subscribe: (observer) => ({
+        unsubscribe: subscriptionClient.subscribe(
+          {
+            query: print(document),
+            variables: variables as Record<string, any>,
+            operationName,
+            extensions,
+          },
+          {
+            next: (data) => observer.next && observer.next(data as any),
+            error: (err) => {
+              if (!observer.error) return;
+              if (err instanceof Error) {
+                observer.error(err);
+              } else if ((err as any).code) {
+                observer.error(
+                  new Error(`Socket closed with event ${(err as any).code}`)
+                );
+              } else if (Array.isArray(err)) {
+                // GraphQLError[]
+                observer.error(
+                  new Error(err.map(({ message }) => message).join(", "))
+                );
+              }
+            },
+            complete: () => observer.complete && observer.complete(),
+          }
+        ),
+      }),
+    });
 };
 
-const makeRemoteExecutor = (url: string): AsyncExecutor => {
+const httpExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
     const { authorization } = getContext(context);
-    const query = typeof document === "string" ? document : print(document);
+    const query = print(document);
     const fetchResult = await fetch(url, {
       method: "POST",
       headers: {
@@ -83,17 +67,30 @@ const makeRemoteExecutor = (url: string): AsyncExecutor => {
   };
 };
 
+const executorBoth =
+  (url: string, ws: string): AsyncExecutor =>
+  async (args) => {
+    // get the operation node of from the document that should be executed
+    const operation = getOperationAST(args.document, args.operationName);
+    // subscription operations should be handled by the wsExecutor
+    if (operation?.operation === OperationTypeNode.SUBSCRIPTION && ws) {
+      return wsExecutor(ws)(args);
+    }
+    // all other operations should be handles by the httpExecutor
+    return httpExecutor(url)(args);
+  };
+
 const makeGatewaySchema = async () => {
-  const courses = makeRemoteExecutor("http://backend-courses:4000/api/graphql");
-  const auth = makeRemoteExecutor("http://backend-auth:4002/auth/graphql");
+  const courses = executorBoth(
+    "http://backend-courses:4000/api/graphql",
+    "ws://backend-courses:4000/api/graphql"
+  );
+  const auth = httpExecutor("http://backend-auth:4002/auth/graphql");
   const gatewaySchema = stitchSchemas({
     subschemas: [
       {
         schema: await introspectSchema(courses),
         executor: courses,
-        subscriber: makeRemoteSubscriber(
-          "ws://backend-courses:4000/api/graphql"
-        ),
       },
       {
         schema: await introspectSchema(auth),
@@ -118,7 +115,7 @@ makeGatewaySchema().then((schema) => {
     })
   );
   const server = app.listen(4001, () => {
-    const wsServer = new ws.Server({
+    const wsServer = new WebSocketServer({
       server,
       path: "/relay/graphql",
     });

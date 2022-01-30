@@ -2,7 +2,7 @@ import React, { CSSProperties, FC, useState } from "react";
 import { graphql, useMutation, usePaginationFragment } from "react-relay";
 import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
 import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
 import { tokensAndData } from "App";
@@ -75,7 +75,7 @@ export const AddInvestments: FC<Props> = (props) => {
       }
     }
   `);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { data, loadNext, refetch } = usePaginationFragment<
     AddInvestmentsPaginationQuery,
     AddInvestments_query$key
@@ -161,7 +161,7 @@ export const AddInvestments: FC<Props> = (props) => {
                       if (
                         user_gid === "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA="
                       ) {
-                        return history.push("/login");
+                        return navigate("/login");
                       }
                       commit({
                         variables: {

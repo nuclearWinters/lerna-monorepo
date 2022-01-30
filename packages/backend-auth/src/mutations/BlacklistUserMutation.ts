@@ -38,10 +38,13 @@ export const BlacklistUserMutation = mutationWithClientMutationId({
       if (user_id !== _id) {
         throw new Error("Solo el usuario puede bloquear su cuenta.");
       }
-      await rdb.set(_id, _id, "EX", 60 * 60);
+      await rdb.set(_id, _id, { EX: 60 * 60 });
       return { validAccessToken: "", error: "" };
     } catch (e) {
-      return { validAccessToken: "", error: e.message };
+      return {
+        validAccessToken: "",
+        error: e instanceof Error ? e.message : "",
+      };
     }
   },
 });

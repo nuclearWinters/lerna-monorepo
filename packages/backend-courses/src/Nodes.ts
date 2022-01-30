@@ -34,10 +34,14 @@ import {
 export const DateScalarType = new GraphQLScalarType({
   name: "Date",
   serialize: (value) => {
-    return value.getTime();
+    if (value instanceof Date) {
+      return value.getTime();
+    }
   },
   parseValue: (value) => {
-    return new Date(value);
+    if (typeof value === "number") {
+      return new Date(value);
+    }
   },
   parseLiteral(ast) {
     if (ast.kind === Kind.INT) {
@@ -47,7 +51,7 @@ export const DateScalarType = new GraphQLScalarType({
   },
 });
 
-const generateCurrency = (value: number) => {
+const generateCurrency = (value: unknown) => {
   if (typeof value !== "number") {
     throw new TypeError(
       `Currency cannot represent non integer type ${JSON.stringify(value)}`
@@ -153,18 +157,7 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
         return { type: "" };
     }
   },
-  (obj: { type: string }): GraphQLObjectType | null => {
-    switch (obj.type) {
-      case "Loan":
-        return GraphQLLoan;
-      case "Investment":
-        return GraphQLInvestment;
-      case "User":
-        return GraphQLUser;
-      default:
-        return null;
-    }
-  }
+  (obj: { type: string }) => obj.type
 );
 
 export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({

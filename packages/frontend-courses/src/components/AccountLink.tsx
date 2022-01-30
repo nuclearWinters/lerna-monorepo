@@ -1,5 +1,5 @@
-import React, { FC, useCallback } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React, { FC, useCallback, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
@@ -12,17 +12,18 @@ interface Props {
 
 export const AccountLink: FC<Props> = ({ title, icon, path, isLogged }) => {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const navigateRef = useRef(navigate);
 
-  const navigate = useCallback(() => {
-    history.push(isLogged === undefined || isLogged ? path : "/login");
-  }, [history, path, isLogged]);
+  const navigateTo = useCallback(() => {
+    navigateRef.current(isLogged === undefined || isLogged ? path : "/login");
+  }, [navigateRef, path, isLogged]);
 
   const selected = location.pathname === path;
 
   return (
     <div
-      onClick={navigate}
+      onClick={navigateTo}
       style={{
         height: 80,
         display: "flex",
