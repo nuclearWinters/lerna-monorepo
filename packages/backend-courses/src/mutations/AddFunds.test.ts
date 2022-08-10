@@ -108,7 +108,7 @@ describe("AddFunds tests", () => {
   it("test AddFunds decrease valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
-      _id: new ObjectId("000000000000000000000003"),
+      _id: new ObjectId("020000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO26",
       accountAvailable: 100000,
       investments: [],
@@ -164,7 +164,7 @@ describe("AddFunds tests", () => {
       id: "wHHR1SUBT0dspoF4YUO26",
     });
     expect(user).toEqual({
-      _id: new ObjectId("000000000000000000000003"),
+      _id: new ObjectId("020000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO26",
       accountAvailable: 50000,
       investments: [],
