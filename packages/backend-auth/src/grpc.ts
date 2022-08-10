@@ -5,12 +5,14 @@ import {
   Metadata,
 } from "@grpc/grpc-js";
 import {
+  CreateUserInput,
+  CreateUserPayload,
   RenewAccessTokenInput,
   RenewAccessTokenPayload,
 } from "./proto/auth_pb";
 import { IAuthServer } from "./proto/auth_grpc_pb";
 import { ctx } from "./index";
-import { jwt } from "./utils";
+import { ACCESS_TOKEN_EXP_STRING, jwt } from "./utils";
 import { REFRESHSECRET, ACCESSSECRET } from "./config";
 
 export const AuthServer: IAuthServer = {
@@ -27,15 +29,34 @@ export const AuthServer: IAuthServer = {
       if (!user) {
         throw new Error("El token esta corrompido.");
       }
-      const blacklistedUser = await ctx.rdb?.get(user._id);
+      const blacklistedUser = await ctx.rdb?.get(user.id);
       if (blacklistedUser) {
         throw new Error("El usuario estará bloqueado por una hora.");
       }
       const validAccessToken = jwt.sign(user, ACCESSSECRET, {
-        expiresIn: "15m",
+        expiresIn: ACCESS_TOKEN_EXP_STRING,
       });
       const payload = new RenewAccessTokenPayload();
       payload.setValidaccesstoken(validAccessToken);
+      callback(null, payload);
+    } catch (e) {
+      const error: ServiceError = {
+        name: "Error Auth Service",
+        message: e instanceof Error ? e.message : "",
+        code: 1,
+        details: "",
+        metadata: new Metadata(),
+      };
+      callback(error, null);
+    }
+  },
+  async createUser(
+    call: ServerUnaryCall<CreateUserInput, CreateUserPayload>,
+    callback: sendUnaryData<CreateUserPayload>
+  ): Promise<void> {
+    try {
+      const payload = new CreateUserPayload();
+      payload.setDone("");
       callback(null, payload);
     } catch (e) {
       const error: ServiceError = {

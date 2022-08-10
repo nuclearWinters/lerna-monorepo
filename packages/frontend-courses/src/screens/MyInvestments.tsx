@@ -1,8 +1,5 @@
 import React, { FC, useEffect, useRef } from "react";
 import { graphql, usePaginationFragment } from "react-relay";
-import { MyInvestments_query$key } from "./__generated__/MyInvestments_query.graphql";
-import { MyInvestmentsPaginationQuery } from "./__generated__/MyInvestmentsPaginationQuery.graphql";
-import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { InvestmentRow } from "../components/InvestmentRow";
 import { CustomButton } from "components/CustomButton";
 import { Title } from "components/Title";
@@ -15,9 +12,11 @@ import { Table } from "components/Table";
 import { Rows } from "components/Rows";
 import { TableColumnName } from "components/TableColumnName";
 import { useTranslation } from "react-i18next";
+import { MyInvestmentsPaginationUser } from "./__generated__/MyInvestmentsPaginationUser.graphql";
+import { MyInvestments_user$key } from "./__generated__/MyInvestments_user.graphql";
 
 const myInvestmentsFragment = graphql`
-  fragment MyInvestments_query on Query
+  fragment MyInvestments_user on User
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 2 }
     cursor: { type: "String", defaultValue: "" }
@@ -26,9 +25,9 @@ const myInvestmentsFragment = graphql`
       defaultValue: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]
     }
   )
-  @refetchable(queryName: "MyInvestmentsPaginationQuery") {
-    investments(first: $count, after: $cursor, user_id: $id, status: $status)
-      @connection(key: "MyInvestments_query_investments") {
+  @refetchable(queryName: "MyInvestmentsPaginationUser") {
+    investments(first: $count, after: $cursor, status: $status)
+      @connection(key: "MyInvestments_user_investments") {
       edges {
         node {
           id
@@ -40,7 +39,7 @@ const myInvestmentsFragment = graphql`
 `;
 
 type Props = {
-  data: AppQueryResponse;
+  user: MyInvestments_user$key;
   setInvestmentStatus: React.Dispatch<
     React.SetStateAction<"on_going" | "over">
   >;
@@ -50,13 +49,13 @@ type Props = {
 export const MyInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
   const { data, loadNext, refetch } = usePaginationFragment<
-    MyInvestmentsPaginationQuery,
-    MyInvestments_query$key
-  >(myInvestmentsFragment, props.data);
+    MyInvestmentsPaginationUser,
+    MyInvestments_user$key
+  >(myInvestmentsFragment, props.user);
 
   const columns = [
     { key: "id", title: t("ID") },
-    { key: "_id_borrower", title: t("ID deudor") },
+    { key: "id_borrower", title: t("ID deudor") },
     { key: "_id_loan", title: t("ID deuda") },
     { key: "quantity", title: t("Cantidad") },
     { key: "status", title: t("Estatus") },

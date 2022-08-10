@@ -29,7 +29,7 @@ import { Languages } from "__generated__/Routes_query.graphql";
 const loanRowRefetchableFragment = graphql`
   fragment LoanRow_loan on Loan @refetchable(queryName: "LoanRowRefetchQuery") {
     id
-    _id_user
+    id_user
     score
     ROI
     goal
@@ -185,7 +185,7 @@ export const LoanRow: FC<Props> = ({
         <div style={style.clipboard}>
           <FontAwesomeIcon
             onClick={() => {
-              navigator.clipboard.writeText(data._id_user);
+              navigator.clipboard.writeText(data.id_user);
             }}
             icon={faClipboard}
             size={"1x"}
@@ -237,7 +237,7 @@ export const LoanRow: FC<Props> = ({
                       {
                         loan_gid: data.id,
                         quantity: val,
-                        borrower_id: data._id_user,
+                        borrower_id: data.id_user,
                         goal: data.goal,
                         term: data.term,
                         ROI: data.ROI,
@@ -286,7 +286,7 @@ export const LoanRow: FC<Props> = ({
                     }
                     return window.alert(response.approveLoan.error);
                   }
-                  tokensAndData.tokens.accessToken =
+                  tokensAndData.accessToken =
                     response.approveLoan.validAccessToken;
                 },
               });

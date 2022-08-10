@@ -1,12 +1,10 @@
-import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
+import { mutationWithClientMutationId } from "graphql-relay";
+import { GraphQLString, GraphQLNonNull } from "graphql";
 import { Context } from "../types";
 import { ObjectId } from "mongodb";
-import { refreshTokenMiddleware } from "../utils";
 import { MXNScalarType } from "../Nodes";
 
 interface Input {
-  user_gid: string;
   quantity: number;
 }
 
@@ -20,7 +18,6 @@ export const AddFundsMutation = mutationWithClientMutationId({
   description:
     "Añade fondos a tu cuenta: recibe el usuario actualziao y obtén un AccessToken valido.",
   inputFields: {
-    user_gid: { type: new GraphQLNonNull(GraphQLID) },
     quantity: { type: new GraphQLNonNull(MXNScalarType) },
   },
   outputFields: {
@@ -34,30 +31,25 @@ export const AddFundsMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { user_gid, quantity }: Input,
-    { users, accessToken, transactions, refreshToken }: Context
+    { quantity }: Input,
+    { users, transactions, id, validAccessToken }: Context
   ): Promise<Payload> => {
     try {
+      if (!validAccessToken) {
+        throw new Error("No valid access token.");
+      }
       if (quantity === 0) {
         throw new Error("La cantidad no puede ser cero.");
       }
-      const { id: user_id } = fromGlobalId(user_gid);
-      const { _id, validAccessToken } = await refreshTokenMiddleware(
-        accessToken,
-        refreshToken
-      );
-      if (user_id !== _id) {
-        throw new Error("No es el mismo usuario.");
-      }
       const result = await users.updateOne(
-        { _id: new ObjectId(user_id), accountAvailable: { $gte: -quantity } },
+        { id, accountAvailable: { $gte: -quantity } },
         { $inc: { accountAvailable: quantity } }
       );
       if (!result.modifiedCount) {
         throw new Error("No cuentas con fondos suficientes.");
       }
       transactions.updateOne(
-        { _id: new RegExp(`^${user_id}`), count: { $lt: 5 } },
+        { _id: new RegExp(`^${id}`), count: { $lt: 5 } },
         {
           $push: {
             history: {
@@ -69,8 +61,8 @@ export const AddFundsMutation = mutationWithClientMutationId({
           },
           $inc: { count: 1 },
           $setOnInsert: {
-            _id: `${user_id}_${new Date().getTime()}`,
-            _id_user: new ObjectId(user_id),
+            _id: `${id}_${new Date().getTime()}`,
+            id_user: id,
           },
         },
         { upsert: true }

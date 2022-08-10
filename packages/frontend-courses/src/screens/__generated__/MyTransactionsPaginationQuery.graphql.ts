@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<843336080d4f5a47b5590670be025445>>
+ * @generated SignedSource<<06d601abc6a8a39d7ce254c367322a35>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,16 +13,13 @@ import { FragmentRefs } from "relay-runtime";
 export type MyTransactionsPaginationQuery$variables = {
   count?: number | null;
   cursor?: string | null;
-  id: string;
 };
-export type MyTransactionsPaginationQueryVariables = MyTransactionsPaginationQuery$variables;
 export type MyTransactionsPaginationQuery$data = {
   readonly " $fragmentSpreads": FragmentRefs<"MyTransactions_query">;
 };
-export type MyTransactionsPaginationQueryResponse = MyTransactionsPaginationQuery$data;
 export type MyTransactionsPaginationQuery = {
-  variables: MyTransactionsPaginationQueryVariables;
   response: MyTransactionsPaginationQuery$data;
+  variables: MyTransactionsPaginationQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -36,11 +33,6 @@ var v0 = [
     "defaultValue": "",
     "kind": "LocalArgument",
     "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
   }
 ],
 v1 = [
@@ -53,11 +45,6 @@ v1 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
-  },
-  {
-    "kind": "Variable",
-    "name": "user_id",
-    "variableName": "id"
   }
 ],
 v2 = {
@@ -230,9 +217,7 @@ return {
       {
         "alias": null,
         "args": (v1/*: any*/),
-        "filters": [
-          "user_id"
-        ],
+        "filters": null,
         "handle": "connection",
         "key": "MyTransactions_query_transactions",
         "kind": "LinkedHandle",
@@ -240,13 +225,7 @@ return {
       },
       {
         "alias": null,
-        "args": [
-          {
-            "kind": "Variable",
-            "name": "id",
-            "variableName": "id"
-          }
-        ],
+        "args": null,
         "concreteType": "AuthUser",
         "kind": "LinkedField",
         "name": "authUser",
@@ -266,16 +245,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "483171f9119bba802f4126dc024dd451",
+    "cacheID": "95c86186e1d98137be338a4fd289d281",
     "id": null,
     "metadata": {},
     "name": "MyTransactionsPaginationQuery",
     "operationKind": "query",
-    "text": "query MyTransactionsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $id: String!\n) {\n  ...MyTransactions_query_1G22uz\n}\n\nfragment MyTransactions_query_1G22uz on Query {\n  transactions(first: $count, after: $cursor, user_id: $id) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  authUser(id: $id) {\n    language\n    id\n  }\n}\n"
+    "text": "query MyTransactionsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = \"\"\n) {\n  ...MyTransactions_query_1G22uz\n}\n\nfragment MyTransactions_query_1G22uz on Query {\n  transactions(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  authUser {\n    language\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b9b6c88634eee7f5d7c24ed0d70b3e72";
+(node as any).hash = "cf7d33f7ae3552eff29ed6a89836e21f";
 
 export default node;

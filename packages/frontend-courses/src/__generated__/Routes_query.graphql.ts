@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b059303c4f733cd62ab9a56c86ac1701>>
+ * @generated SignedSource<<cd335de506d7dc50c8a2b2055ab8e77d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,48 +9,40 @@
 // @ts-nocheck
 
 import { Fragment, ReaderFragment } from 'relay-runtime';
-export type Languages = "EN" | "ES" | "DEFAULT" | "%future added value";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type Routes_query$data = {
-  readonly user: {
-    readonly id: string;
-    readonly investments: ReadonlyArray<{
-      readonly _id_loan: string;
-      readonly quantity: number;
-      readonly term: number;
-      readonly ROI: number;
-      readonly payments: number;
-    }>;
-    readonly accountAvailable: string;
-    readonly " $fragmentSpreads": FragmentRefs<"AddFunds_user" | "RetireFunds_user" | "AddLoan_user" | "Account_user">;
-  };
   readonly authUser: {
-    readonly id: string;
-    readonly name: string;
-    readonly apellidoPaterno: string;
     readonly apellidoMaterno: string;
-    readonly language: Languages;
+    readonly apellidoPaterno: string;
+    readonly id: string;
     readonly isBorrower: boolean;
     readonly isSupport: boolean;
-    readonly " $fragmentSpreads": FragmentRefs<"Settings_auth_user" | "CheckExpiration_auth_user">;
+    readonly language: Languages;
+    readonly name: string;
+    readonly " $fragmentSpreads": FragmentRefs<"CheckExpiration_auth_user" | "Settings_auth_user">;
+  };
+  readonly user: {
+    readonly accountAvailable: string;
+    readonly id: string;
+    readonly investments: ReadonlyArray<{
+      readonly ROI: number;
+      readonly _id_loan: string;
+      readonly payments: number;
+      readonly quantity: number;
+      readonly term: number;
+    }>;
+    readonly " $fragmentSpreads": FragmentRefs<"Account_user" | "AddFunds_user" | "AddLoan_user" | "RetireFunds_user">;
   };
   readonly " $fragmentType": "Routes_query";
 };
-export type Routes_query = Routes_query$data;
 export type Routes_query$key = {
   readonly " $data"?: Routes_query$data;
   readonly " $fragmentSpreads": FragmentRefs<"Routes_query">;
 };
 
 const node: ReaderFragment = (function(){
-var v0 = [
-  {
-    "kind": "Variable",
-    "name": "id",
-    "variableName": "id"
-  }
-],
-v1 = {
+var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -58,25 +50,20 @@ v1 = {
   "storageKey": null
 };
 return {
-  "argumentDefinitions": [
-    {
-      "kind": "RootArgument",
-      "name": "id"
-    }
-  ],
+  "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "Routes_query",
   "selections": [
     {
       "alias": null,
-      "args": (v0/*: any*/),
+      "args": null,
       "concreteType": "User",
       "kind": "LinkedField",
       "name": "user",
       "plural": false,
       "selections": [
-        (v1/*: any*/),
+        (v0/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -155,13 +142,13 @@ return {
     },
     {
       "alias": null,
-      "args": (v0/*: any*/),
+      "args": null,
       "concreteType": "AuthUser",
       "kind": "LinkedField",
       "name": "authUser",
       "plural": false,
       "selections": [
-        (v1/*: any*/),
+        (v0/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -223,6 +210,6 @@ return {
 };
 })();
 
-(node as any).hash = "318a3d24ff1bcacea14bcbb03f5fa835";
+(node as any).hash = "beb0149f38285d3b2dc9247e1e5f94af";
 
 export default node;

@@ -1,4 +1,4 @@
-import { getDataFromToken, tokensAndData } from "App";
+import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay";
@@ -12,7 +12,8 @@ import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
 import { useTranslation } from "react-i18next";
-import { logOut } from "utils";
+import { expireSessionTime, logOut } from "utils";
+import { addMinutes } from "date-fns";
 
 export const LogIn: FC = () => {
   const { t } = useTranslation();
@@ -21,7 +22,6 @@ export const LogIn: FC = () => {
       signIn(input: $input) {
         error
         accessToken
-        refreshToken
       }
     }
   `);
@@ -73,23 +73,12 @@ export const LogIn: FC = () => {
                       }
                       return window.alert(response.signIn.error);
                     }
-                    tokensAndData.tokens.accessToken =
-                      response.signIn.accessToken;
-                    tokensAndData.tokens.refreshToken =
-                      response.signIn.refreshToken;
-                    const user = getDataFromToken(response.signIn.refreshToken);
-                    tokensAndData.data = user;
-                    tokensAndData.credentials.email = email;
-                    tokensAndData.credentials.password = password;
-                    tokensAndData.refetchUser(
-                      user.isBorrower
-                        ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
-                        : user.isSupport
-                        ? ["WAITING_FOR_APPROVAL"]
-                        : ["FINANCING"],
-                      user._id,
-                      user.isBorrower ? user._id : null
+                    tokensAndData.accessToken = response.signIn.accessToken;
+                    tokensAndData.exp = addMinutes(
+                      new Date(),
+                      expireSessionTime
                     );
+                    tokensAndData.refetchUser();
                   },
                 });
               }}

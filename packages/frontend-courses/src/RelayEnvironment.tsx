@@ -5,48 +5,38 @@ import {
   Store,
   RequestParameters,
   Variables,
-  GraphQLResponse,
   Observable,
+  GraphQLResponse,
 } from "relay-runtime";
-import { createClient } from "graphql-ws";
 import { tokensAndData } from "App";
-import { API_GATEWAY, WS_GATEWAY } from "utils";
+import { API_GATEWAY } from "utils";
+import { createClient, Sink } from "graphql-sse";
 
 const subscriptionsClient = createClient({
-  url: WS_GATEWAY || "ws://localhost/relay/graphql",
-  connectionParams: () => {
+  url: API_GATEWAY
+    ? API_GATEWAY + "/stream"
+    : "http://localhost:4001/graphql/stream",
+  headers: () => {
     return {
-      Authorization: JSON.stringify({
-        accessToken: tokensAndData.tokens.accessToken,
-        refreshToken: tokensAndData.tokens.refreshToken,
-      }),
+      Authorization: tokensAndData.accessToken,
     };
   },
 });
 
-const fetchGraphQL = async (text: string, variables: Record<any, any>) => {
-  const response = await fetch(
-    API_GATEWAY || "http://0.0.0.0:4001/relay/graphql",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: JSON.stringify({
-          accessToken: tokensAndData.tokens.accessToken,
-          refreshToken: tokensAndData.tokens.refreshToken,
-        }),
-      },
-      body: JSON.stringify({
-        query: text,
-        variables,
-      }),
-    }
-  );
+const fetchRelay = async (params: RequestParameters, variables: Variables) => {
+  const response = await fetch(API_GATEWAY || "http://localhost:4001/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: tokensAndData.accessToken,
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      query: params?.text || "",
+      variables,
+    }),
+  });
   return await response.json();
-};
-
-const fetchRelay = async (params: Record<any, any>, variables: Variables) => {
-  return fetchGraphQL(params.text, variables);
 };
 
 const subscribeRelay = (operation: RequestParameters, variables: Variables) => {
@@ -60,7 +50,7 @@ const subscribeRelay = (operation: RequestParameters, variables: Variables) => {
         query: operation.text,
         variables,
       },
-      sink as any
+      sink as Sink
     );
   });
 };

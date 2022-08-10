@@ -1,6 +1,6 @@
-import React, { CSSProperties, FC } from "react";
+import React, { CSSProperties, FC, ReactNode } from "react";
 
-export const Main: FC = ({ children }) => {
+export const Main: FC<{ children: ReactNode }> = ({ children }) => {
   return <div style={container}>{children}</div>;
 };
 

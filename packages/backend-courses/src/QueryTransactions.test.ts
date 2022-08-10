@@ -26,7 +26,7 @@ describe("QueryTransactions tests", () => {
     await transactions.insertMany([
       {
         _id: "000000000000000000000050_0",
-        _id_user: new ObjectId("000000000000000000000050"),
+        id_user: "wHHR1SUBT0dspoF4YUO15",
         count: 5,
         history: [
           {
@@ -63,7 +63,7 @@ describe("QueryTransactions tests", () => {
       },
       {
         _id: "000000000000000000000050_1",
-        _id_user: new ObjectId("000000000000000000000050"),
+        id_user: "wHHR1SUBT0dspoF4YUO15",
         count: 5,
         history: [
           {
@@ -100,64 +100,86 @@ describe("QueryTransactions tests", () => {
       },
     ]);
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
-        query: `query GetTransactionsConnection($first: Int, $after: String, $user_id: String!) {
-          transactions(first: $first, after: $after, user_id: $user_id) {
-            edges {
-              cursor
-              node {
-                id
-                _id_user
-                count
-                history {
+        query: `query GetTransactionsConnection($first: Int, $after: String) {
+          user {
+            transactions(first: $first, after: $after) {
+              edges {
+                cursor
+                node {
                   id
-                  type
-                  quantity
-                  created
+                  id_user
+                  count
+                  history {
+                    id
+                    type
+                    quantity
+                    created
+                  }
                 }
               }
-            }
-          }  
+            } 
+          } 
         }`,
         variables: {
           first: 1,
           after: "",
-          user_id: "000000000000000000000050",
         },
         operationName: "GetTransactionsConnection",
       })
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000050", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO15",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          {
+            expiresIn: "15m",
+          }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO15",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
-    expect(response.body.data.transactions.edges.length).toBe(1);
-    expect(response.body.data.transactions.edges[0].cursor).toBeTruthy();
-    expect(response.body.data.transactions.edges[0].node.id).toBeTruthy();
-    expect(response.body.data.transactions.edges[0].node._id_user).toBeTruthy();
-    expect(response.body.data.transactions.edges[0].node.count).toBeTruthy();
-    expect(response.body.data.transactions.edges[0].node.history.length).toBe(
-      5
-    );
+    expect(response.body.data.user.transactions.edges.length).toBe(1);
+    expect(response.body.data.user.transactions.edges[0].cursor).toBeTruthy();
+    expect(response.body.data.user.transactions.edges[0].node.id).toBeTruthy();
     expect(
-      response.body.data.transactions.edges[0].node.history[0].id
+      response.body.data.user.transactions.edges[0].node.id_user
     ).toBeTruthy();
-    expect(response.body.data.transactions.edges[0].node.history[0].type).toBe(
-      "CREDIT"
-    );
     expect(
-      response.body.data.transactions.edges[0].node.history[0].quantity
+      response.body.data.user.transactions.edges[0].node.count
+    ).toBeTruthy();
+    expect(
+      response.body.data.user.transactions.edges[0].node.history.length
+    ).toBe(5);
+    expect(
+      response.body.data.user.transactions.edges[0].node.history[0].id
+    ).toBeTruthy();
+    expect(
+      response.body.data.user.transactions.edges[0].node.history[0].type
+    ).toBe("CREDIT");
+    expect(
+      response.body.data.user.transactions.edges[0].node.history[0].quantity
     ).toBe("$2.00");
     expect(
-      response.body.data.transactions.edges[0].node.history[0].created
+      response.body.data.user.transactions.edges[0].node.history[0].created
     ).toBeTruthy();
   });
 });

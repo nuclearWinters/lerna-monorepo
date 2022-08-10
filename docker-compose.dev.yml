@@ -2,7 +2,7 @@ version: "3"
 services:
   relay-gateway:
     container_name: relay-gateway
-    image: node:14
+    image: node:16
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/relay-gateway
@@ -15,7 +15,7 @@ services:
       - backend-auth
   backend-courses:
     container_name: backend-courses
-    image: node:14
+    image: node:16
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/backend-courses
@@ -28,7 +28,7 @@ services:
       - rabbitmq
   backend-auth:
     container_name: backend-auth
-    image: node:14
+    image: node:16
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/backend-auth
@@ -42,25 +42,13 @@ services:
       - rabbitmq
   frontend-courses:
     container_name: frontend-courses
-    image: node:14
+    image: node:16
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/frontend-courses
     command: ["npm", "run", "start"]
     ports:
       - "8000:8000"
-  reverse-proxy:
-    container_name: reverse_proxy
-    image: nginx
-    depends_on:
-      - backend-courses
-      - backend-auth
-      - relay-gateway
-    volumes:
-      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
-      - .:/usr/src/service
-    ports:
-      - "80:80"
   mongo-courses:
     container_name: mongo-courses
     image: mongo

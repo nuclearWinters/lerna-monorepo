@@ -129,7 +129,7 @@ export const AddLoan: FC<Props> = (props) => {
                       }
                       return window.alert(response.addLoan.error);
                     }
-                    tokensAndData.tokens.accessToken =
+                    tokensAndData.accessToken =
                       response.addLoan.validAccessToken;
                   },
                 });

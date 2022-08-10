@@ -1,9 +1,11 @@
 import React, { CSSProperties, FC, useState } from "react";
-import { graphql, useMutation, usePaginationFragment } from "react-relay";
-import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
-import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
+import {
+  graphql,
+  useFragment,
+  useMutation,
+  usePaginationFragment,
+} from "react-relay";
 import { useNavigate } from "react-router";
-import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
 import { tokensAndData } from "App";
 import { LoanRow } from "components/LoanRow";
@@ -19,20 +21,19 @@ import { TableColumnName } from "components/TableColumnName";
 import { Table } from "components/Table";
 import { generateCurrency, logOut } from "utils";
 import { useTranslation } from "react-i18next";
+import { AddInvestments_auth_user$key } from "./__generated__/AddInvestments_auth_user.graphql";
+import { AddInvestments_user$key } from "./__generated__/AddInvestments_user.graphql";
+import { AddInvestmentsPaginationUser } from "./__generated__/AddInvestmentsPaginationUser.graphql";
 
 const debtInSaleFragment = graphql`
-  fragment AddInvestments_query on Query
+  fragment AddInvestments_user on User
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
   )
-  @refetchable(queryName: "AddInvestmentsPaginationQuery") {
-    loans(
-      first: $count
-      after: $cursor
-      borrower_id: $borrower_id
-      status: $status
-    ) @connection(key: "AddInvestments_query_loans") {
+  @refetchable(queryName: "AddInvestmentsPaginationUser") {
+    loans(first: $count, after: $cursor)
+      @connection(key: "AddInvestments_user_loans") {
       edges {
         node {
           id
@@ -40,20 +41,22 @@ const debtInSaleFragment = graphql`
         }
       }
     }
-    user(id: $id) {
-      id
-    }
-    authUser(id: $id) {
-      isLender
-      isSupport
-      isBorrower
-      language
-    }
+    id
+  }
+`;
+
+const debtInSaleFragmentAuthUser = graphql`
+  fragment AddInvestments_auth_user on AuthUser {
+    isLender
+    isSupport
+    isBorrower
+    language
   }
 `;
 
 type Props = {
-  data: AppQueryResponse;
+  user: AddInvestments_user$key;
+  authUser: AddInvestments_auth_user$key;
 };
 
 interface ILends {
@@ -77,16 +80,21 @@ export const AddInvestments: FC<Props> = (props) => {
   `);
   const navigate = useNavigate();
   const { data, loadNext, refetch } = usePaginationFragment<
-    AddInvestmentsPaginationQuery,
-    AddInvestments_query$key
-  >(debtInSaleFragment, props.data);
+    AddInvestmentsPaginationUser,
+    AddInvestments_user$key
+  >(debtInSaleFragment, props.user);
 
-  const user_gid = data.user.id;
-  const { isLender, isSupport, isBorrower, language } = data.authUser;
+  const authUser = useFragment<AddInvestments_auth_user$key>(
+    debtInSaleFragmentAuthUser,
+    props.authUser
+  );
+
+  const user_gid = data.id;
+  const { isLender, isSupport, isBorrower, language } = authUser;
 
   const columns = [
     { key: "id", title: t("ID") },
-    { key: "_id_user", title: t("Solicitante") },
+    { key: "id_user", title: t("Solicitante") },
     { key: "score", title: t("Calif.") },
     { key: "ROI", title: t("Retorno anual") },
     { key: "goal", title: t("Monto") },
@@ -120,7 +128,7 @@ export const AddInvestments: FC<Props> = (props) => {
         <Table color="primary">
           <Rows style={{ flex: 1 }}>
             <Columns>
-              {isBorrower && <div style={{ width: 30 }} />}
+              {isBorrower ? <div style={{ width: 30 }} /> : null}
               {columns.map((column) => (
                 <TableColumnName key={column.key}>
                   {column.title}
@@ -180,7 +188,7 @@ export const AddInvestments: FC<Props> = (props) => {
                             }
                             return window.alert(response.addLends.error);
                           }
-                          tokensAndData.tokens.accessToken =
+                          tokensAndData.accessToken =
                             response.addLends.validAccessToken;
                         },
                       });

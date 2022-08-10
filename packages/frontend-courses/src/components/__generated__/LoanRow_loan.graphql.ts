@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e22e644075f50884c496511e3059d34f>>
+ * @generated SignedSource<<00d1e7c2c15e56d6e4ce99cdffc09b6f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,27 +9,26 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
-export type LoanScheduledPaymentStatus = "TO_BE_PAID" | "DELAYED" | "PAID" | "%future added value";
-export type LoanStatus = "PAID" | "TO_BE_PAID" | "FINANCING" | "WAITING_FOR_APPROVAL" | "PAST_DUE" | "%future added value";
+export type LoanScheduledPaymentStatus = "DELAYED" | "PAID" | "TO_BE_PAID" | "%future added value";
+export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type LoanRow_loan$data = {
-  readonly id: string;
-  readonly _id_user: string;
-  readonly score: string;
   readonly ROI: number;
-  readonly goal: string;
-  readonly term: number;
-  readonly raised: string;
+  readonly _id_user: string;
   readonly expiry: Int;
-  readonly status: LoanStatus;
+  readonly goal: string;
+  readonly id: string;
+  readonly raised: string;
   readonly scheduledPayments: ReadonlyArray<{
     readonly amortize: string;
-    readonly status: LoanScheduledPaymentStatus;
     readonly scheduledDate: Int;
+    readonly status: LoanScheduledPaymentStatus;
   }> | null;
+  readonly score: string;
+  readonly status: LoanStatus;
+  readonly term: number;
   readonly " $fragmentType": "LoanRow_loan";
 };
-export type LoanRow_loan = LoanRow_loan$data;
 export type LoanRow_loan$key = {
   readonly " $data"?: LoanRow_loan$data;
   readonly " $fragmentSpreads": FragmentRefs<"LoanRow_loan">;

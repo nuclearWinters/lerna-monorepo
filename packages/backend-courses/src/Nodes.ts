@@ -15,7 +15,12 @@ import {
   globalIdField,
   nodeDefinitions,
   connectionDefinitions,
+  connectionArgs,
+  Connection,
+  connectionFromArray,
+  ConnectionArguments,
 } from "graphql-relay";
+import { Filter } from "mongodb";
 import {
   Context,
   InvestmentMongo,
@@ -30,6 +35,12 @@ import {
   UserMongo,
   InvestmentsUserMongo,
 } from "./types";
+import { base64, unbase64 } from "./utils";
+
+interface ArgsInvestments extends ConnectionArguments {
+  user_id?: string | null;
+  status?: IInvestmentStatus[];
+}
 
 export const DateScalarType = new GraphQLScalarType({
   name: "Date",
@@ -164,13 +175,13 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
   name: "Investment",
   fields: {
     id: globalIdField("Investment", ({ _id }): string => _id.toHexString()),
-    _id_borrower: {
+    id_borrower: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ _id_borrower }): string => _id_borrower.toHexString(),
+      resolve: ({ id_borrower }): string => id_borrower,
     },
-    _id_lender: {
+    id_lender: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ _id_lender }): string => _id_lender.toHexString(),
+      resolve: ({ id_lender }): string => id_lender,
     },
     _id_loan: {
       type: new GraphQLNonNull(GraphQLString),
@@ -224,10 +235,9 @@ export const GraphQLTransaction = new GraphQLObjectType<TransactionMongo>({
   name: "Transaction",
   fields: {
     id: globalIdField("Transaction", ({ _id }): string => _id.toHexString()),
-    _id_borrower: {
+    id_borrower: {
       type: GraphQLString,
-      resolve: ({ _id_borrower }): string | null =>
-        _id_borrower?.toHexString() || null,
+      resolve: ({ id_borrower }): string | null => id_borrower || null,
     },
     _id_loan: {
       type: GraphQLString,
@@ -263,9 +273,9 @@ export const GraphQLBucketTransaction =
         type: new GraphQLNonNull(GraphQLInt),
         resolve: ({ count }): number => count,
       },
-      _id_user: {
+      id_user: {
         type: new GraphQLNonNull(GraphQLString),
-        resolve: ({ _id_user }): string => _id_user.toHexString(),
+        resolve: ({ id_user }): string => id_user,
       },
     },
     interfaces: [nodeInterface],
@@ -302,9 +312,9 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
   name: "Loan",
   fields: {
     id: globalIdField("Loan", ({ _id }): string => _id.toHexString()),
-    _id_user: {
+    id_user: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ _id_user }): string => _id_user.toHexString(),
+      resolve: ({ id_user }): string => id_user,
     },
     score: {
       type: new GraphQLNonNull(GraphQLString),
@@ -384,9 +394,170 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountAvailable }): number => accountAvailable,
     },
-    investments: {
+    investmentsUser: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLInvestmentsUser)),
       resolve: ({ investments }): InvestmentsUserMongo[] => investments,
+    },
+    loans: {
+      type: new GraphQLNonNull(LoanConnection),
+      args: connectionArgs,
+      resolve: async (
+        _root: unknown,
+        args: unknown,
+        { loans, isBorrower, isSupport, id }: Context
+      ): Promise<Connection<LoanMongo>> => {
+        const { after, first } = args as ConnectionArguments;
+        try {
+          const loan_id = unbase64(after || "");
+          const limit = first ? first + 1 : 0;
+          if (limit <= 0) {
+            throw new Error("Se requiere que 'first' sea un entero positivo");
+          }
+          const query: Filter<LoanMongo> = {
+            status: {
+              $in: isBorrower
+                ? ["financing", "to be paid", "waiting for approval"]
+                : isSupport
+                ? ["waiting for approval"]
+                : ["financing"],
+            },
+          };
+          if (loan_id) {
+            query._id = { $lt: new ObjectId(loan_id) };
+          }
+          if (isBorrower) {
+            query.id_user = id;
+          }
+          const result = await loans
+            .find(query)
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray();
+          const edgesMapped = result.map((loan) => {
+            return {
+              cursor: base64(loan._id.toHexString()),
+              node: loan,
+            };
+          });
+          const edges = edgesMapped.slice(0, first || 5);
+          return {
+            edges,
+            pageInfo: {
+              startCursor: edges[0]?.cursor || null,
+              endCursor: edges[edges.length - 1]?.cursor || null,
+              hasPreviousPage: false,
+              hasNextPage: edgesMapped.length > (first || 0),
+            },
+          };
+        } catch (e) {
+          return connectionFromArray([], { first, after });
+        }
+      },
+    },
+    investments: {
+      type: new GraphQLNonNull(InvestmentConnection),
+      args: {
+        status: {
+          type: new GraphQLNonNull(
+            new GraphQLList(new GraphQLNonNull(InvestmentStatus))
+          ),
+        },
+        ...connectionArgs,
+      },
+      resolve: async (
+        _: unknown,
+        args: unknown,
+        { investments, id }: Context
+      ): Promise<Connection<InvestmentMongo>> => {
+        const { status, first, after } = args as ArgsInvestments;
+        try {
+          const investment_id = unbase64(after || "");
+          const limit = first ? first + 1 : 0;
+          if (limit <= 0) {
+            throw new Error("Se requiere que 'first' sea un entero positivo");
+          }
+          const query: Filter<InvestmentMongo> = {
+            id_lender: id,
+            status: { $in: ["delay payment", "up to date"] },
+          };
+          if (investment_id) {
+            query._id = { $lt: new ObjectId(investment_id) };
+          }
+          if (status) {
+            query.status = { $in: status };
+          }
+          const result = await investments
+            .find(query)
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray();
+          const edgesMapped = result.map((investment) => {
+            return {
+              cursor: base64(investment._id.toHexString()),
+              node: investment,
+            };
+          });
+          const edges = edgesMapped.slice(0, first || 5);
+          return {
+            edges,
+            pageInfo: {
+              startCursor: edges[0]?.cursor || null,
+              endCursor: edges[edges.length - 1]?.cursor || null,
+              hasPreviousPage: false,
+              hasNextPage: edgesMapped.length > (first || 0),
+            },
+          };
+        } catch (e) {
+          return connectionFromArray([], { first, after });
+        }
+      },
+    },
+    transactions: {
+      type: new GraphQLNonNull(BucketTransactionConnection),
+      args: connectionArgs,
+      resolve: async (
+        _: unknown,
+        args: unknown,
+        { transactions, id }: Context
+      ): Promise<Connection<BucketTransactionMongo>> => {
+        const { first, after } = args as ConnectionArguments;
+        try {
+          const transaction_id = unbase64(after || "");
+          const limit = first ? first + 1 : 0;
+          if (limit <= 0) {
+            throw new Error("Se requiere que 'first' sea un entero positivo");
+          }
+          const query: Filter<BucketTransactionMongo> = {
+            id_user: id,
+          };
+          if (transaction_id) {
+            query._id = { $lt: transaction_id };
+          }
+          const result = await transactions
+            .find(query)
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray();
+          const edgesMapped = result.map((loan) => {
+            return {
+              cursor: base64(loan._id),
+              node: loan,
+            };
+          });
+          const edges = edgesMapped.slice(0, first || 5);
+          return {
+            edges,
+            pageInfo: {
+              startCursor: edges[0]?.cursor || null,
+              endCursor: edges[edges.length - 1]?.cursor || null,
+              hasPreviousPage: false,
+              hasNextPage: edgesMapped.length > (first || 0),
+            },
+          };
+        } catch (e) {
+          return connectionFromArray([], { first, after });
+        }
+      },
     },
   },
   interfaces: [nodeInterface],

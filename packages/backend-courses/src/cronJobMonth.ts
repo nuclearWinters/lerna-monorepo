@@ -31,7 +31,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
       //Se actualiza el usuario del deudor al mover dinero de cuenta
       const result = await users.updateOne(
         {
-          _id: loan._id_user,
+          id: loan.id_user,
           accountAvailable: { $gte: delayedTotal },
         },
         {
@@ -96,10 +96,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
       );
       //La propiedad investors cantidades añadidas en diferentes momentos, se itera para hacer calculos sobre un solo monto prestado
       const investors = loan.investors.reduce<ILoanInvestors[]>((acc, item) => {
-        const index = acc.findIndex(
-          (acc) =>
-            acc._id_lender.toHexString() === item._id_lender.toHexString()
-        );
+        const index = acc.findIndex((acc) => acc.id_lender === item.id_lender);
         if (index === -1) {
           acc.push(item);
         } else {
@@ -126,7 +123,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
         transactionsOperations: AnyBulkWriteOperation<BucketTransactionMongo>;
         usersOperations: AnyBulkWriteOperation<UserMongo>;
       }>((investor) => {
-        const investor_id = investor._id_lender.toHexString();
+        const investor_id = investor.id_lender;
         const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
         const amortize = Math.floor(
           investor.quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
@@ -145,14 +142,14 @@ export const monthFunction = async (db: Db): Promise<void> => {
                     type: "collect",
                     quantity: amortize,
                     created: now,
-                    _id_borrower: loan._id_user,
+                    id_borrower: loan.id_user,
                     _id_loan: loan._id,
                   },
                 },
                 $inc: { count: 1 },
                 $setOnInsert: {
                   _id: `${investor_id}_${now.getTime()}`,
-                  _id_user: investor._id_lender,
+                  id_user: investor.id_lender,
                 },
               },
               upsert: true,
@@ -161,7 +158,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
           usersOperations: {
             updateOne: {
               filter: {
-                _id: investor._id_lender,
+                id: investor.id_lender,
               },
               update: {
                 //Si todos los pagos se han cumplido: quitar las inversiones con el id de la deuda
@@ -181,7 +178,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
       const transactionsOperations = operations.map(
         (operation) => operation.transactionsOperations
       );
-      const user_id = loan._id_user.toHexString();
+      const user_id = loan.id_user;
       //transacción para informar al deudor de su pago
       const transactionUpdateOne: AnyBulkWriteOperation<BucketTransactionMongo> =
         {
@@ -199,7 +196,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
               $inc: { count: 1 },
               $setOnInsert: {
                 _id: `${user_id}_${now.getTime()}`,
-                _id_user: loan._id_user,
+                id_user: loan.id_user,
               },
             },
             upsert: true,

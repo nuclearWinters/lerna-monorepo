@@ -1,4 +1,4 @@
-import { app, schema } from "./app";
+import { app } from "./app";
 import {
   TRANSACTION,
   LOAN,
@@ -6,7 +6,7 @@ import {
   pubsub,
   USER,
 } from "./subscriptions/subscriptions";
-import { MongoClient, ObjectId } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 import { MONGO_DB } from "./config";
 import amqp from "amqplib";
 import {
@@ -15,18 +15,27 @@ import {
   InvestmentMongo,
   BucketTransactionMongo,
   UserMongo,
+  //INITIAL_TRANSACTION_RECEIVE_FUND,
 } from "./types";
-import { useServer } from "graphql-ws/lib/use/ws";
-import { WebSocketServer } from "ws";
 import { base64 } from "./utils";
+import { Server, ServerCredentials } from "@grpc/grpc-js";
+import { AuthService } from "./proto/auth_grpc_pb";
+import { AuthServer } from "./grpc";
+
+export const ctx: {
+  db?: Db;
+} = {
+  db: undefined,
+};
 
 MongoClient.connect(MONGO_DB, {}).then(async (client) => {
   const db = client.db("fintech");
   app.locals.db = db;
+  ctx.db = db;
   const conn = await amqp.connect("amqp://rabbitmq:5672");
   const ch = await conn.createChannel();
   await ch.assertQueue(SIGN_UP);
-  const options = { fullDocument: "updateLookup" as const };
+  const options = { fullDocument: "updateLookup" };
   const usersStream = db.collection<UserMongo>("users").watch([], options);
   usersStream.on("change", (event) => {
     if (["update"].includes(event.operationType)) {
@@ -95,22 +104,23 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
       }
     }
   });
-  ch.consume(SIGN_UP, (msg) => {
-    if (msg !== null) {
-      db.collection<UserMongo>("users").insertOne({
-        _id: new ObjectId(msg.content.toString()),
-        investments: [],
-        accountAvailable: 0,
-      });
-      ch.ack(msg);
-    }
-  });
+  //ch.sendToQueue(INITIAL_TRANSACTION_RECEIVE_FUND, Buffer.from(message));
+  //Add funds and retire funds transactions
+  //Lend/Borrow transactions
+  //
+  //Add transactions in rabbit mq?
   app.locals.ch = ch;
-  const server = app.listen(4000, () => {
-    const wsServer = new WebSocketServer({
-      server,
-      path: "/api/graphql",
-    });
-    useServer({ schema }, wsServer);
-  });
+  app.listen(4000);
+  const server = new Server();
+  server.addService(AuthService, AuthServer);
+  server.bindAsync(
+    "backend-courses:1983",
+    ServerCredentials.createInsecure(),
+    (err) => {
+      if (err) {
+        throw err;
+      }
+      server.start();
+    }
+  );
 });

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1a309a692e5a3547a69b26727d841a95>>
+ * @generated SignedSource<<d8917270dacb183980e9502a380d7931>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,25 +10,22 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type SignInInput = {
-  password: string;
-  email: string;
   clientMutationId?: string | null;
+  email: string;
+  password: string;
 };
 export type LogInMutation$variables = {
   input: SignInInput;
 };
-export type LogInMutationVariables = LogInMutation$variables;
 export type LogInMutation$data = {
   readonly signIn: {
-    readonly error: string | null;
     readonly accessToken: string;
-    readonly refreshToken: string;
+    readonly error: string | null;
   };
 };
-export type LogInMutationResponse = LogInMutation$data;
 export type LogInMutation = {
-  variables: LogInMutationVariables;
   response: LogInMutation$data;
+  variables: LogInMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -67,13 +64,6 @@ v1 = [
         "kind": "ScalarField",
         "name": "accessToken",
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "refreshToken",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -97,16 +87,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "efb8de858dc33aba92f7525617672896",
+    "cacheID": "2465153373f15db6768a5cfb9aa6a3e4",
     "id": null,
     "metadata": {},
     "name": "LogInMutation",
     "operationKind": "mutation",
-    "text": "mutation LogInMutation(\n  $input: SignInInput!\n) {\n  signIn(input: $input) {\n    error\n    accessToken\n    refreshToken\n  }\n}\n"
+    "text": "mutation LogInMutation(\n  $input: SignInInput!\n) {\n  signIn(input: $input) {\n    error\n    accessToken\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "96f070a0b897e3ae741e4264338f2bd1";
+(node as any).hash = "8a32ac0d4792b351d454a85068665e8b";
 
 export default node;

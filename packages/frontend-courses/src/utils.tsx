@@ -15,21 +15,11 @@ export const generateCents = (value: string) => {
 };
 
 export const logOut = () => {
-  tokensAndData.tokens = { accessToken: "", refreshToken: "" };
-  tokensAndData.data = {
-    _id: "",
-    iat: 0,
-    exp: 0,
-    isLender: true,
-    isSupport: false,
-    isBorrower: false,
-  };
-  tokensAndData.credentials = {
-    email: "",
-    password: "",
-  };
-  tokensAndData.refetchUser(["FINANCING"], "", null);
+  tokensAndData.accessToken = "";
+  tokensAndData.exp = undefined;
+  tokensAndData.refetchUser();
 };
 
 export const API_GATEWAY = process.env.API_GATEWAY;
-export const WS_GATEWAY = process.env.WS_GATEWAY;
+
+export const expireSessionTime = 14;

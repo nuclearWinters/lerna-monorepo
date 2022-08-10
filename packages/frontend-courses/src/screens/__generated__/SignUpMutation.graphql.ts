@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ec5e5a4299ed80ec35b4bb8249352d71>>
+ * @generated SignedSource<<31dcf496e9d72893af9ed3a3df76cdf2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,29 +9,26 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
-export type Languages = "EN" | "ES" | "DEFAULT" | "%future added value";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 export type SignUpInput = {
-  password: string;
-  email: string;
   clientMutationId?: string | null;
+  email: string;
   isLender: boolean;
   language: Languages;
+  password: string;
 };
 export type SignUpMutation$variables = {
   input: SignUpInput;
 };
-export type SignUpMutationVariables = SignUpMutation$variables;
 export type SignUpMutation$data = {
   readonly signUp: {
-    readonly error: string;
     readonly accessToken: string;
-    readonly refreshToken: string;
+    readonly error: string;
   };
 };
-export type SignUpMutationResponse = SignUpMutation$data;
 export type SignUpMutation = {
-  variables: SignUpMutationVariables;
   response: SignUpMutation$data;
+  variables: SignUpMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -70,13 +67,6 @@ v1 = [
         "kind": "ScalarField",
         "name": "accessToken",
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "refreshToken",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -100,16 +90,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "51f13e55fa79632a99765a965dd5d3ed",
+    "cacheID": "c038cae93e0906e9f30c33caca7fee1c",
     "id": null,
     "metadata": {},
     "name": "SignUpMutation",
     "operationKind": "mutation",
-    "text": "mutation SignUpMutation(\n  $input: SignUpInput!\n) {\n  signUp(input: $input) {\n    error\n    accessToken\n    refreshToken\n  }\n}\n"
+    "text": "mutation SignUpMutation(\n  $input: SignUpInput!\n) {\n  signUp(input: $input) {\n    error\n    accessToken\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b0475cad1ddee70b458fa957f2725d8b";
+(node as any).hash = "0dea7eab86f740ea1a4ae131f0b770fc";
 
 export default node;

@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 
 const accountFragment = graphql`
   fragment Account_user on User {
-    investments {
+    investmentsUser {
       _id_loan
       quantity
       term
@@ -33,7 +33,7 @@ interface Props {
 export const Account: FC<Props> = (props) => {
   const { t } = useTranslation();
   const user = useFragment(accountFragment, props.user);
-  const reducedInvestments = user.investments.reduce<IUserInvestments[]>(
+  const reducedInvestments = user.investmentsUser.reduce<IUserInvestments[]>(
     (acc, item) => {
       const index = acc.findIndex((acc) => acc._id_loan === item._id_loan);
       if (index === -1) {

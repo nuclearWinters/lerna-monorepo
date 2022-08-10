@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cf45c3bccbf5882ad9308d210f282519>>
+ * @generated SignedSource<<88c6a60370e58be2b9c480c739c5cea1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
-export type LoanStatus = "PAID" | "TO_BE_PAID" | "FINANCING" | "WAITING_FOR_APPROVAL" | "PAST_DUE" | "%future added value";
+export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 export type ApproveLoanInput = {
   clientMutationId?: string | null;
   loan_gid: string;
@@ -17,21 +17,19 @@ export type ApproveLoanInput = {
 export type LoanRowMutation$variables = {
   input: ApproveLoanInput;
 };
-export type LoanRowMutationVariables = LoanRowMutation$variables;
 export type LoanRowMutation$data = {
   readonly approveLoan: {
     readonly error: string;
-    readonly validAccessToken: string;
     readonly loan: {
       readonly id: string;
       readonly status: LoanStatus;
     } | null;
+    readonly validAccessToken: string;
   };
 };
-export type LoanRowMutationResponse = LoanRowMutation$data;
 export type LoanRowMutation = {
-  variables: LoanRowMutationVariables;
   response: LoanRowMutation$data;
+  variables: LoanRowMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){

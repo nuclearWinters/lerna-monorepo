@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d072f33a3337d48ad681b4e874531480>>
+ * @generated SignedSource<<4bf62f9fb5243c4d822a9c576d6e4149>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,32 +9,31 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
-export type Languages = "EN" | "ES" | "DEFAULT" | "%future added value";
-export type TransactionType = "CREDIT" | "WITHDRAWAL" | "INVEST" | "COLLECT" | "%future added value";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
+export type TransactionType = "COLLECT" | "CREDIT" | "INVEST" | "WITHDRAWAL" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type MyTransactions_query$data = {
-  readonly transactions: {
-    readonly edges: ReadonlyArray<{
-      readonly node: {
-        readonly id: string;
-        readonly count: number;
-        readonly history: ReadonlyArray<{
-          readonly id: string;
-          readonly _id_borrower: string | null;
-          readonly _id_loan: string | null;
-          readonly type: TransactionType;
-          readonly quantity: string;
-          readonly created: Int;
-        }>;
-      } | null;
-    } | null> | null;
-  } | null;
   readonly authUser: {
     readonly language: Languages;
   };
+  readonly transactions: {
+    readonly edges: ReadonlyArray<{
+      readonly node: {
+        readonly count: number;
+        readonly history: ReadonlyArray<{
+          readonly _id_borrower: string | null;
+          readonly _id_loan: string | null;
+          readonly created: Int;
+          readonly id: string;
+          readonly quantity: string;
+          readonly type: TransactionType;
+        }>;
+        readonly id: string;
+      } | null;
+    } | null> | null;
+  } | null;
   readonly " $fragmentType": "MyTransactions_query";
 };
-export type MyTransactions_query = MyTransactions_query$data;
 export type MyTransactions_query$key = {
   readonly " $data"?: MyTransactions_query$data;
   readonly " $fragmentSpreads": FragmentRefs<"MyTransactions_query">;
@@ -62,10 +61,6 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
-    },
-    {
-      "kind": "RootArgument",
-      "name": "id"
     }
   ],
   "kind": "Fragment",
@@ -95,13 +90,7 @@ return {
   "selections": [
     {
       "alias": "transactions",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "user_id",
-          "variableName": "id"
-        }
-      ],
+      "args": null,
       "concreteType": "BucketTransactionConnection",
       "kind": "LinkedField",
       "name": "__MyTransactions_query_transactions_connection",
@@ -228,13 +217,7 @@ return {
     },
     {
       "alias": null,
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "id",
-          "variableName": "id"
-        }
-      ],
+      "args": null,
       "concreteType": "AuthUser",
       "kind": "LinkedField",
       "name": "authUser",
@@ -256,6 +239,6 @@ return {
 };
 })();
 
-(node as any).hash = "b9b6c88634eee7f5d7c24ed0d70b3e72";
+(node as any).hash = "cf7d33f7ae3552eff29ed6a89836e21f";
 
 export default node;

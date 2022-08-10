@@ -25,41 +25,55 @@ describe("QueryUser tests", () => {
     await users.insertMany([
       {
         _id: new ObjectId("000000000000000000000060"),
+        id: "wHHR1SUBT0dspoF4YUO24",
         accountAvailable: 50000,
         investments: [],
       },
     ]);
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
-        query: `query GetUser($id: String!) {
-          user(id: $id) {
+        query: `query GetUser {
+          user {
             id
             accountAvailable
-            investments {
+            investmentsUser {
               _id_loan
             }
           }  
         }`,
-        variables: {
-          id: "000000000000000000000060",
-        },
+        variables: {},
         operationName: "GetUser",
       })
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000060", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO24",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "15m" }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO24",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.user.id).toBeTruthy();
     expect(response.body.data.user.accountAvailable).toBe("$500.00");
-    expect(response.body.data.user.investments.length).toBe(0);
+    expect(response.body.data.user.investmentsUser.length).toBe(0);
   });
 });

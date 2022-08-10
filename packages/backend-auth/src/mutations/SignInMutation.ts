@@ -3,7 +3,12 @@ import { GraphQLNonNull, GraphQLString } from "graphql";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import { REFRESHSECRET, ACCESSSECRET } from "../config";
-import { jwt } from "../utils";
+import {
+  ACCESS_TOKEN_EXP_STRING,
+  jwt,
+  REFRESH_TOKEN_EXP_NUMBER,
+} from "../utils";
+import { addMinutes } from "date-fns";
 
 interface Input {
   email: string;
@@ -12,7 +17,6 @@ interface Input {
 
 type Payload = {
   accessToken: string;
-  refreshToken: string;
   error: string;
 };
 
@@ -32,54 +36,60 @@ export const SignInMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ accessToken }: Payload): string => accessToken,
     },
-    refreshToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ refreshToken }: Payload): string => refreshToken,
-    },
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
-    { users, rdb }: Context
+    { users, rdb, res }: Context
   ): Promise<Payload> => {
     try {
       const user = await users.findOne({ email });
       if (!user) throw new Error("El usuario no existe.");
       const blacklistedUser = await rdb.get(user._id.toHexString());
       if (blacklistedUser) {
-        throw new Error("El usuario estará bloqueado por una hora.");
+        throw new Error("El usuario estará bloqueado.");
       }
       const hash = await bcrypt.compare(password, user.password);
       if (!hash) throw new Error("La contraseña no coincide.");
+      const refreshTokenExpireTime = addMinutes(
+        new Date(),
+        REFRESH_TOKEN_EXP_NUMBER
+      );
+      refreshTokenExpireTime.setMilliseconds(0);
       const refreshToken = jwt.sign(
         {
-          _id: user._id.toHexString(),
+          id: user.id,
           isLender: user.isLender,
           isBorrower: user.isBorrower,
           isSupport: user.isSupport,
         },
-        REFRESHSECRET || "REFRESHSECRET",
-        { expiresIn: "1h" }
+        REFRESHSECRET,
+        { expiresIn: refreshTokenExpireTime.getTime() / 1000 }
       );
       const accessToken = jwt.sign(
         {
-          _id: user._id.toHexString(),
+          id: user.id,
           isLender: user.isLender,
           isBorrower: user.isBorrower,
           isSupport: user.isSupport,
         },
-        ACCESSSECRET || "ACCESSSECRET",
-        { expiresIn: "15m" }
+        ACCESSSECRET,
+        { expiresIn: ACCESS_TOKEN_EXP_STRING }
       );
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        expires: refreshTokenExpireTime,
+        path: "/",
+        sameSite: "strict",
+        //secure: true,
+      });
       return {
         error: "",
         accessToken,
-        refreshToken,
       };
     } catch (e) {
       return {
         error: e instanceof Error ? e.message : "",
         accessToken: "",
-        refreshToken: "",
       };
     }
   },

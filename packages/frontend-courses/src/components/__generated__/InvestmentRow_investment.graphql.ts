@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cb884e4ff7d81557420b991b5afa377d>>
+ * @generated SignedSource<<234d67933977a612799062c56a528c6d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,23 +9,22 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
-export type InvestmentStatus = "DELAY_PAYMENT" | "UP_TO_DATE" | "FINANCING" | "PAST_DUE" | "PAID" | "%future added value";
+export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type InvestmentRow_investment$data = {
-  readonly id: string;
-  readonly _id_borrower: string;
-  readonly _id_loan: string;
-  readonly quantity: number;
-  readonly created: Int;
-  readonly updated: Int;
-  readonly status: InvestmentStatus;
-  readonly payments: number;
   readonly ROI: number;
-  readonly term: number;
+  readonly _id_loan: string;
+  readonly created: Int;
+  readonly id: string;
+  readonly id_borrower: string;
   readonly moratory: string;
+  readonly payments: number;
+  readonly quantity: number;
+  readonly status: InvestmentStatus;
+  readonly term: number;
+  readonly updated: Int;
   readonly " $fragmentType": "InvestmentRow_investment";
 };
-export type InvestmentRow_investment = InvestmentRow_investment$data;
 export type InvestmentRow_investment$key = {
   readonly " $data"?: InvestmentRow_investment$data;
   readonly " $fragmentSpreads": FragmentRefs<"InvestmentRow_investment">;
@@ -57,7 +56,7 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "_id_borrower",
+      "name": "id_borrower",
       "storageKey": null
     },
     {
@@ -128,6 +127,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "3e1cac86e549c2f4e368fcae142c5584";
+(node as any).hash = "3696d71d0110801a9c520856264c3e47";
 
 export default node;

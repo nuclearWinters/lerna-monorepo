@@ -9,6 +9,11 @@ export interface Context {
   accessToken: string | undefined;
   refreshToken: string | undefined;
   ch: Channel;
+  id?: string;
+  validAccessToken?: string;
+  isBorrower: boolean;
+  isSupport: boolean;
+  isLender: boolean;
 }
 
 export interface InvestmentsUserMongo {
@@ -23,6 +28,7 @@ export interface UserMongo {
   _id?: ObjectId;
   accountAvailable: number;
   investments: InvestmentsUserMongo[];
+  id: string;
 }
 
 export type TransactionMongoType =
@@ -36,14 +42,14 @@ export interface TransactionMongo {
   _id?: ObjectId;
   type: TransactionMongoType;
   quantity: number;
-  _id_borrower?: ObjectId;
+  id_borrower?: string;
   _id_loan?: ObjectId;
   created: Date;
 }
 
 export interface BucketTransactionMongo {
   _id?: string;
-  _id_user: ObjectId;
+  id_user: string;
   count: number;
   history: TransactionMongo[];
 }
@@ -64,13 +70,13 @@ export interface IScheduledPayments {
 }
 
 export interface ILoanInvestors {
-  _id_lender: ObjectId;
+  id_lender: string;
   quantity: number;
 }
 
 export interface LoanMongo {
   _id?: ObjectId;
-  _id_user: ObjectId;
+  id_user: string;
   score: string;
   ROI: number;
   goal: number;
@@ -91,8 +97,8 @@ export type IInvestmentStatus =
 
 export interface InvestmentMongo {
   _id?: ObjectId;
-  _id_borrower: ObjectId;
-  _id_lender: ObjectId;
+  id_borrower: string;
+  id_lender: string;
   _id_loan: ObjectId;
   quantity: number;
   created: Date;
@@ -105,9 +111,13 @@ export interface InvestmentMongo {
 }
 
 export interface DecodeJWT {
-  _id: string;
-  email: string;
-  password: string;
+  id: string;
+  isLender: boolean;
+  isBorrower: boolean;
+  isSupport: boolean;
 }
 
 export const SIGN_UP = "SIGN_UP";
+
+export const INITIAL_TRANSACTION_RECEIVE_FUND =
+  "INITIAL_TRANSACTION_RECEIVE_FUND";

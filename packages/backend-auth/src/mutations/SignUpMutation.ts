@@ -8,8 +8,19 @@ import {
 import { ACCESSSECRET, REFRESHSECRET } from "../config";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
-import { ObjectId } from "mongodb";
-import { channelSendToQueue, jwt } from "../utils";
+import {
+  ACCESS_TOKEN_EXP_STRING,
+  createUser,
+  jwt,
+  REFRESH_TOKEN_EXP_NUMBER,
+} from "../utils";
+import { addMinutes } from "date-fns";
+import { customAlphabet } from "nanoid";
+
+const nanoid = customAlphabet(
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+  21
+);
 
 interface Input {
   email: string;
@@ -19,7 +30,6 @@ interface Input {
 }
 
 type Payload = {
-  refreshToken: string;
   accessToken: string;
   error: string;
 };
@@ -52,22 +62,17 @@ export const SignUpMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ accessToken }: Payload): string => accessToken,
     },
-    refreshToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ refreshToken }: Payload): string => refreshToken,
-    },
   },
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
-    { users, ch }: Context
+    { users, res }: Context
   ): Promise<Payload> => {
     try {
       const user = await users.findOne({ email });
       if (user) throw new Error("El email ya esta siendo usado.");
       const hash_password = await bcrypt.hash(password, 12);
-      const _id = new ObjectId();
+      const id = nanoid();
       await users.insertOne({
-        _id,
         email,
         password: hash_password,
         isLender: isLender,
@@ -81,28 +86,41 @@ export const SignUpMutation = mutationWithClientMutationId({
         CURP: "",
         clabe: "",
         mobile: "",
+        id,
       });
+      const refreshTokenExpireTime = addMinutes(
+        new Date(),
+        REFRESH_TOKEN_EXP_NUMBER
+      );
+      refreshTokenExpireTime.setMilliseconds(0);
       const refreshToken = jwt.sign(
         {
-          _id: _id.toHexString(),
+          id,
           isBorrower: !isLender,
           isLender: isLender,
           isSupport: false,
         },
-        REFRESHSECRET || "REFRESHSECRET",
-        { expiresIn: "1h" }
+        REFRESHSECRET,
+        { expiresIn: refreshTokenExpireTime.getTime() / 1000 }
       );
       const accessToken = jwt.sign(
         {
-          _id: _id.toHexString(),
+          id,
           isBorrower: !isLender,
           isLender: isLender,
           isSupport: false,
         },
-        ACCESSSECRET || "ACCESSSECRET",
-        { expiresIn: "15m" }
+        ACCESSSECRET,
+        { expiresIn: ACCESS_TOKEN_EXP_STRING }
       );
-      channelSendToQueue(ch, _id.toHexString());
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        expires: refreshTokenExpireTime,
+        path: "/",
+        sameSite: "strict",
+        //secure: true,
+      });
+      await createUser(id);
       //const msg = {
       //  to: email,
       //  from: "soporte@amigoprogramador.com",
@@ -111,10 +129,9 @@ export const SignUpMutation = mutationWithClientMutationId({
       //  html: "<strong>and easy to do anywhere, even with Node.js</strong>",
       //};
       //sgMail.send(msg);
-      return { refreshToken, accessToken, error: "" };
+      return { accessToken, error: "" };
     } catch (e) {
       return {
-        refreshToken: "",
         accessToken: "",
         error: e instanceof Error ? e.message : "",
       };

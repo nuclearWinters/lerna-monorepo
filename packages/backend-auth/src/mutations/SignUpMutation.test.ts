@@ -2,6 +2,12 @@ import { app } from "../app";
 import supertest from "supertest";
 import { MongoClient, Db } from "mongodb";
 import { UserMongo } from "../types";
+import { client as grpcClient } from "../utils";
+import { SurfaceCall } from "@grpc/grpc-js/build/src/call";
+
+jest.mock("nanoid", () => ({
+  customAlphabet: () => () => "wHHR1SUBT0dspoF4YUOwm",
+}));
 
 const request = supertest(app);
 
@@ -22,15 +28,26 @@ describe("SignUpMutation tests", () => {
   });
 
   it("SignUpMutation: success", async () => {
+    jest
+      .spyOn(grpcClient, "createUser")
+      .mockImplementationOnce((_request, callback: unknown) => {
+        const callbackTyped = callback as (
+          error: null,
+          response: { getDone: () => string }
+        ) => void;
+        callbackTyped(null, {
+          getDone: () => "",
+        });
+        return {} as SurfaceCall;
+      });
     const users = dbInstance.collection<UserMongo>("users");
     const response = await request
-      .post("/auth/graphql")
+      .post("/graphql")
       .send({
         query: `mutation signUpMutation($input: SignUpInput!) {
           signUp(input: $input) {
             error
             accessToken
-            refreshToken
           }
         }`,
         variables: {
@@ -45,7 +62,6 @@ describe("SignUpMutation tests", () => {
       })
       .set("Accept", "application/json");
     expect(response.body.data.signUp.error).toBeFalsy();
-    expect(response.body.data.signUp.refreshToken).toBeTruthy();
     expect(response.body.data.signUp.accessToken).toBeTruthy();
     const user = await users.findOne({ email: "anrp1@gmail.com" });
     expect({ ...user, _id: "", password: "" }).toEqual({
@@ -63,19 +79,19 @@ describe("SignUpMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
+      id: "wHHR1SUBT0dspoF4YUOwm",
     });
   });
 
   it("SignUpMutation: user already exists", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     const response = await request
-      .post("/auth/graphql")
+      .post("/graphql")
       .send({
         query: `mutation signUpMutation($input: SignUpInput!) {
           signUp(input: $input) {
             error
             accessToken
-            refreshToken
           }
         }`,
         variables: {
@@ -110,19 +126,31 @@ describe("SignUpMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
+      id: "wHHR1SUBT0dspoF4YUOwm",
     });
   });
 
   it("SignUpMutation: success is borrower", async () => {
+    jest
+      .spyOn(grpcClient, "createUser")
+      .mockImplementationOnce((_request, callback: unknown) => {
+        const callbackTyped = callback as (
+          error: null,
+          response: { getDone: () => string }
+        ) => void;
+        callbackTyped(null, {
+          getDone: () => "",
+        });
+        return {} as SurfaceCall;
+      });
     const users = dbInstance.collection<UserMongo>("users");
     const response = await request
-      .post("/auth/graphql")
+      .post("/graphql")
       .send({
         query: `mutation signUpMutation($input: SignUpInput!) {
           signUp(input: $input) {
             error
             accessToken
-            refreshToken
           }
         }`,
         variables: {
@@ -137,7 +165,6 @@ describe("SignUpMutation tests", () => {
       })
       .set("Accept", "application/json");
     expect(response.body.data.signUp.error).toBeFalsy();
-    expect(response.body.data.signUp.refreshToken).toBeTruthy();
     expect(response.body.data.signUp.accessToken).toBeTruthy();
     const user = await users.findOne({ email: "anrp2@gmail.com" });
     expect({ ...user, _id: "", password: "" }).toEqual({
@@ -155,6 +182,7 @@ describe("SignUpMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
+      id: "wHHR1SUBT0dspoF4YUOwm",
     });
   });
 });

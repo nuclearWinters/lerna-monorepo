@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8520563a9b416e106094f84e626d08ca>>
+ * @generated SignedSource<<1242fa8f0518bc9949875e7b45ceb155>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,22 +9,21 @@
 // @ts-nocheck
 
 import { Fragment, ReaderFragment } from 'relay-runtime';
-export type Languages = "EN" | "ES" | "DEFAULT" | "%future added value";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type Settings_auth_user$data = {
-  readonly id: string;
-  readonly name: string;
-  readonly apellidoPaterno: string;
-  readonly apellidoMaterno: string;
-  readonly RFC: string;
   readonly CURP: string;
+  readonly RFC: string;
+  readonly apellidoMaterno: string;
+  readonly apellidoPaterno: string;
   readonly clabe: string;
-  readonly mobile: string;
   readonly email: string;
+  readonly id: string;
   readonly language: Languages;
+  readonly mobile: string;
+  readonly name: string;
   readonly " $fragmentType": "Settings_auth_user";
 };
-export type Settings_auth_user = Settings_auth_user$data;
 export type Settings_auth_user$key = {
   readonly " $data"?: Settings_auth_user$data;
   readonly " $fragmentSpreads": FragmentRefs<"Settings_auth_user">;

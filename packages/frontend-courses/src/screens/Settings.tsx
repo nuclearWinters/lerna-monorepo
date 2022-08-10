@@ -44,7 +44,6 @@ export const Settings: FC<Props> = (props) => {
       mutation SettingsBlacklistUserMutation($input: BlacklistUserInput!) {
         blacklistUser(input: $input) {
           error
-          validAccessToken
         }
       }
     `);
@@ -211,7 +210,7 @@ export const Settings: FC<Props> = (props) => {
                         }
                         return window.alert(response.updateUser.error);
                       }
-                      tokensAndData.tokens.accessToken =
+                      tokensAndData.accessToken =
                         response.updateUser.validAccessToken;
                     },
                   });
@@ -252,9 +251,7 @@ export const Settings: FC<Props> = (props) => {
                   onClick={() => {
                     commitBlacklist({
                       variables: {
-                        input: {
-                          user_gid: user.id,
-                        },
+                        input: {},
                       },
                       onCompleted: (response) => {
                         if (response.blacklistUser.error) {
@@ -263,11 +260,9 @@ export const Settings: FC<Props> = (props) => {
                           }
                           return window.alert(response.blacklistUser.error);
                         }
-                        tokensAndData.tokens.accessToken =
-                          response.blacklistUser.validAccessToken;
-                        tokensAndData.tokens.refreshToken =
-                          response.blacklistUser.validAccessToken;
-                        tokensAndData.refetchUser(["FINANCING"], "", null);
+                        tokensAndData.accessToken = "";
+                        tokensAndData.exp = undefined;
+                        tokensAndData.refetchUser();
                       },
                     });
                   }}

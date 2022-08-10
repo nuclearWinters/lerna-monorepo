@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d3c50b7b4acbea3c737332f914b9b7ab>>
+ * @generated SignedSource<<39cd0d321866b11a7f7e058687f69c59>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,6 @@ export type RetireFunds_user$data = {
   readonly id: string;
   readonly " $fragmentType": "RetireFunds_user";
 };
-export type RetireFunds_user = RetireFunds_user$data;
 export type RetireFunds_user$key = {
   readonly " $data"?: RetireFunds_user$data;
   readonly " $fragmentSpreads": FragmentRefs<"RetireFunds_user">;

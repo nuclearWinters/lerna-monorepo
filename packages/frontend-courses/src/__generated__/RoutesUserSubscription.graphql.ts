@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4202810f6d2ea27983db362e7d7a5d96>>
+ * @generated SignedSource<<4926881617cf61045e29bfa7a1b9d72e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,26 +12,24 @@ import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type RoutesUserSubscription$variables = {
   user_gid: string;
 };
-export type RoutesUserSubscriptionVariables = RoutesUserSubscription$variables;
 export type RoutesUserSubscription$data = {
   readonly user_subscribe: {
     readonly user: {
-      readonly id: string;
       readonly accountAvailable: string;
-      readonly investments: ReadonlyArray<{
+      readonly id: string;
+      readonly investmentsUser: ReadonlyArray<{
+        readonly ROI: number;
         readonly _id_loan: string;
+        readonly payments: number;
         readonly quantity: number;
         readonly term: number;
-        readonly ROI: number;
-        readonly payments: number;
       }>;
     };
   };
 };
-export type RoutesUserSubscriptionResponse = RoutesUserSubscription$data;
 export type RoutesUserSubscription = {
-  variables: RoutesUserSubscriptionVariables;
   response: RoutesUserSubscription$data;
+  variables: RoutesUserSubscription$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -84,7 +82,7 @@ v1 = [
             "args": null,
             "concreteType": "InvestmentsUser",
             "kind": "LinkedField",
-            "name": "investments",
+            "name": "investmentsUser",
             "plural": true,
             "selections": [
               {
@@ -150,16 +148,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "62928fd56560f651cf35596136772c1c",
+    "cacheID": "55af187334ee0a466e9a4b1f10ff51d8",
     "id": null,
     "metadata": {},
     "name": "RoutesUserSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesUserSubscription(\n  $user_gid: ID!\n) {\n  user_subscribe(user_gid: $user_gid) {\n    user {\n      id\n      accountAvailable\n      investments {\n        _id_loan\n        quantity\n        term\n        ROI\n        payments\n      }\n    }\n  }\n}\n"
+    "text": "subscription RoutesUserSubscription(\n  $user_gid: ID!\n) {\n  user_subscribe(user_gid: $user_gid) {\n    user {\n      id\n      accountAvailable\n      investmentsUser {\n        _id_loan\n        quantity\n        term\n        ROI\n        payments\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ea855217b1778d9a81d8eab8caca6cac";
+(node as any).hash = "651cad6f1b268f78153ae135c7c2e9de";
 
 export default node;

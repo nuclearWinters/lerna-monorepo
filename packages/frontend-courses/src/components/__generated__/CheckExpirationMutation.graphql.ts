@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<09e927edb998ac9187396c264de97dfe>>
+ * @generated SignedSource<<b713f943adfbf7e50f590325fec35d09>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,26 +9,20 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
-export type SignInInput = {
-  password: string;
-  email: string;
+export type ExtendSessionInput = {
   clientMutationId?: string | null;
 };
 export type CheckExpirationMutation$variables = {
-  input: SignInInput;
+  input: ExtendSessionInput;
 };
-export type CheckExpirationMutationVariables = CheckExpirationMutation$variables;
 export type CheckExpirationMutation$data = {
-  readonly signIn: {
-    readonly error: string | null;
-    readonly accessToken: string;
-    readonly refreshToken: string;
+  readonly extendSession: {
+    readonly error: string;
   };
 };
-export type CheckExpirationMutationResponse = CheckExpirationMutation$data;
 export type CheckExpirationMutation = {
-  variables: CheckExpirationMutationVariables;
   response: CheckExpirationMutation$data;
+  variables: CheckExpirationMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -49,9 +43,9 @@ v1 = [
         "variableName": "input"
       }
     ],
-    "concreteType": "SignInPayload",
+    "concreteType": "ExtendSessionPayload",
     "kind": "LinkedField",
-    "name": "signIn",
+    "name": "extendSession",
     "plural": false,
     "selections": [
       {
@@ -59,20 +53,6 @@ v1 = [
         "args": null,
         "kind": "ScalarField",
         "name": "error",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "accessToken",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "refreshToken",
         "storageKey": null
       }
     ],
@@ -97,16 +77,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "799d3bd5b8c0c9b255a2cb14eccdb9e1",
+    "cacheID": "4e65856e4f21af21cfd702bbdea624e4",
     "id": null,
     "metadata": {},
     "name": "CheckExpirationMutation",
     "operationKind": "mutation",
-    "text": "mutation CheckExpirationMutation(\n  $input: SignInInput!\n) {\n  signIn(input: $input) {\n    error\n    accessToken\n    refreshToken\n  }\n}\n"
+    "text": "mutation CheckExpirationMutation(\n  $input: ExtendSessionInput!\n) {\n  extendSession(input: $input) {\n    error\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "5c6f2c97977d6287f4a925aa67e06a68";
+(node as any).hash = "81caabdca1e75cb5b68a91ddc171546a";
 
 export default node;

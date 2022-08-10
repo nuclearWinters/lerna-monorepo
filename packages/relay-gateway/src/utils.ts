@@ -1,9 +1,24 @@
+import { Request } from "express";
+
 export interface IContextResult {
-  authorization?: string;
+  accessToken: string;
+  cookies?: string;
+  refreshToken: string;
 }
 
-export const getContext = (ctx: any): IContextResult => {
+export const getContext = (ctx: unknown): IContextResult => {
+  const ctxTyped = ctx as { req: Request };
   return {
-    authorization: ctx?.req?.headers?.authorization,
+    accessToken: ctxTyped.req.headers.authorization || "",
+    refreshToken: ctxTyped.req.cookies.refreshToken || "",
   };
+};
+
+export const setCookieContext = (
+  ctx: unknown,
+  cookies: string
+): IContextResult => {
+  const ctxTyped = ctx as IContextResult;
+  ctxTyped.cookies = cookies;
+  return ctxTyped;
 };

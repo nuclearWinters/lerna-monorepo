@@ -7,7 +7,6 @@ input SignInInput {
 type SignInPayload {
   error: String
   accessToken: String!
-  refreshToken: String!
   clientMutationId: String
 }
 
@@ -22,17 +21,23 @@ input SignUpInput {
 type SignUpPayload {
   error: String!
   accessToken: String!
-  refreshToken: String!
   clientMutationId: String
 }
 
 input BlacklistUserInput {
-  user_gid: String!
   clientMutationId: String
 }
 
 type BlacklistUserPayload {
-  validAccessToken: String!
+  error: String!
+  clientMutationId: String
+}
+
+input ExtendSessionInput {
+  clientMutationId: String
+}
+
+type ExtendSessionPayload {
   error: String!
   clientMutationId: String
 }
@@ -125,35 +130,13 @@ type Mutation {
   addLoan(input: AddLoanInput!): AddLoanPayload!
   addFunds(input: AddFundsInput!): AddFundsPayload!
   approveLoan(input: ApproveLoanInput!): ApproveLoanPayload!
+  extendSession(input: ExtendSessionInput!): ExtendSessionPayload!
 }
 
 type Query {
-  user(id: String!): User!
-  authUser(id: String!): AuthUser!
+  user: User!
+  authUser: AuthUser!
   node(id: ID!): Node
-  loans(
-    after: String
-    first: Int
-    before: String
-    last: Int
-    status: [LoanStatus!]!
-    borrower_id: String
-  ): LoanConnection
-  investments(
-    after: String
-    first: Int
-    before: String
-    last: Int
-    status: [InvestmentStatus!]!
-    user_id: String!
-  ): InvestmentsConnection
-  transactions(
-    after: String
-    first: Int
-    before: String
-    last: Int
-    user_id: String!
-  ): BucketTransactionConnection
 }
 
 type User_Subscribe {
@@ -204,8 +187,8 @@ type PageInfo {
 
 type Investment implements Node {
   id: ID!
-  _id_borrower: String!
-  _id_lender: String!
+  id_borrower: String!
+  id_lender: String!
   _id_loan: String!
   quantity: Int!
   ROI: Float!
@@ -241,7 +224,7 @@ type ScheduledPayments {
 
 type Loan implements Node {
   id: ID!
-  _id_user: String!
+  id_user: String!
   score: String!
   ROI: Int!
   goal: MXN!
@@ -298,7 +281,7 @@ enum Languages {
 
 type Transaction {
   id: ID!
-  _id_borrower: String
+  id_borrower: String
   _id_loan: String
   type: TransactionType!
   quantity: MXN!
@@ -307,7 +290,7 @@ type Transaction {
 
 type BucketTransaction {
   id: String!
-  _id_user: String!
+  id_user: String!
   count: Int!
   history: [Transaction!]!
 }
@@ -333,7 +316,21 @@ type InvestmentsUser {
 type User implements Node {
   id: ID!
   accountAvailable: MXN!
-  investments: [InvestmentsUser!]!
+  investmentsUser: [InvestmentsUser!]!
+  loans(after: String, first: Int, before: String, last: Int): LoanConnection
+  transactions(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): BucketTransactionConnection
+  investments(
+    after: String
+    first: Int
+    before: String
+    last: Int
+    status: [InvestmentStatus!]!
+  ): InvestmentsConnection
 }
 
 type AuthUser {

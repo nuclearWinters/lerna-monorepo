@@ -10,12 +10,10 @@ import {
 } from "graphql";
 import { BucketTransactionMongo, Context, InvestmentMongo } from "../types";
 import { ObjectId, AnyBulkWriteOperation } from "mongodb";
-import { refreshTokenMiddleware } from "../utils";
 import { MXNScalarType } from "../Nodes";
 import { addMonths, startOfMonth } from "date-fns";
 
 interface Input {
-  lender_gid: string;
   lends: {
     quantity: number;
     borrower_id: string;
@@ -60,7 +58,6 @@ export const AddLendsMutation = mutationWithClientMutationId({
   description:
     "Envía una lista de prestamos: recibe una lista con deudas actualizadas y un usuario actualizado.",
   inputFields: {
-    lender_gid: { type: new GraphQLNonNull(GraphQLID) },
     lends: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLLendList))
@@ -78,26 +75,13 @@ export const AddLendsMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { lender_gid, lends: newLends }: Input,
-    {
-      users,
-      accessToken,
-      investments,
-      loans,
-      transactions,
-      refreshToken,
-    }: Context
+    { lends: newLends }: Input,
+    { users, investments, loans, transactions, validAccessToken, id }: Context
   ): Promise<Payload> => {
     try {
-      const { id: lender_id } = fromGlobalId(lender_gid);
-      const { _id, validAccessToken } = await refreshTokenMiddleware(
-        accessToken,
-        refreshToken
-      );
-      if (lender_id !== _id) {
-        throw new Error("No es el mismo usuario.");
+      if (!id || !validAccessToken) {
+        throw new Error("No valid access token.");
       }
-      const _id_lender = new ObjectId(lender_id);
       const now = new Date();
       //Crear lista de elementos con datos en el input
       const docs = newLends.map(
@@ -105,8 +89,8 @@ export const AddLendsMutation = mutationWithClientMutationId({
           const _id_loan = fromGlobalId(loan_gid).id;
           return {
             _id: new ObjectId(),
-            _id_lender,
-            _id_borrower: new ObjectId(borrower_id),
+            id_lender: id,
+            id_borrower: borrower_id,
             quantity,
             _id_loan: new ObjectId(_id_loan),
             goal,
@@ -123,7 +107,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
       }, 0);
       //Actualizar el usuario
       const result = await users.updateOne(
-        { _id: _id_lender, accountAvailable: { $gte: total } },
+        { id, accountAvailable: { $gte: total } },
         {
           $inc: { accountAvailable: -total },
           $push: {
@@ -157,7 +141,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
             },
             $push: {
               investors: {
-                _id_lender,
+                id_lender: id,
                 quantity: doc.quantity,
               },
             },
@@ -167,7 +151,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
         //Si NO se realizó la operación: no realizar más acciones
         if (!result.value) {
           await users.updateOne(
-            { _id: _id_lender },
+            { id },
             {
               $inc: { accountAvailable: doc.quantity },
               $pull: { investments: { _id_loan: doc._id_loan } },
@@ -207,7 +191,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
         );
         //Si raised es igual a goal: añadir fondos al dueño de la deuda
         await users.updateOne(
-          { _id: result.value._id_user },
+          { id: result.value.id_user },
           { $inc: { accountAvailable: result.value.goal } }
         );
       }
@@ -220,9 +204,9 @@ export const AddLendsMutation = mutationWithClientMutationId({
       //Crear lista de operaciones para el bulkWrite en transacciones
       const transactionsOperations = docsFiltered.map<
         AnyBulkWriteOperation<BucketTransactionMongo>
-      >(({ quantity, _id_loan, _id_borrower }) => ({
+      >(({ quantity, _id_loan, id_borrower }) => ({
         updateOne: {
-          filter: { _id: new RegExp(`^${lender_id}`), count: { $lt: 5 } },
+          filter: { _id: new RegExp(`^${id}`), count: { $lt: 5 } },
           update: {
             $push: {
               history: {
@@ -231,13 +215,13 @@ export const AddLendsMutation = mutationWithClientMutationId({
                 quantity,
                 created: now,
                 _id_loan,
-                _id_borrower,
+                id_borrower,
               },
             },
             $inc: { count: 1 },
             $setOnInsert: {
-              _id: `${lender_id}_${now.getTime()}`,
-              _id_user: _id_lender,
+              _id: `${id}_${now.getTime()}`,
+              id_user: id,
             },
           },
           upsert: true,
@@ -252,21 +236,21 @@ export const AddLendsMutation = mutationWithClientMutationId({
         ({
           quantity,
           _id_loan,
-          _id_borrower,
-          _id_lender,
+          id_borrower,
+          id_lender: id,
           ROI,
           term,
           completed,
         }) => {
           return {
             updateOne: {
-              filter: { _id_loan, _id_borrower, _id_lender },
+              filter: { _id_loan, id_borrower, id_lender: id },
               update: {
                 $inc: { quantity },
                 $setOnInsert: {
                   _id: new ObjectId(),
-                  _id_lender,
-                  _id_borrower,
+                  id_lender: id,
+                  id_borrower,
                   _id_loan,
                   created: now,
                   updated: now,

@@ -8,7 +8,6 @@ import {
 import { globalIdField } from "graphql-relay";
 import { Languages } from "./mutations/SignUpMutation";
 import { Context, UserMongo } from "./types";
-import { refreshTokenMiddleware } from "./utils";
 
 export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
   name: "AuthUser",
@@ -67,24 +66,14 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
 
 const QueryUser = {
   type: new GraphQLNonNull(GraphQLAuthUser),
-  args: {
-    id: { type: new GraphQLNonNull(GraphQLString) },
-  },
   resolve: async (
-    _: unknown,
-    { id }: any,
-    { users, accessToken, refreshToken }: Context
+    _root: unknown,
+    _args: unknown,
+    { users, id }: Context
   ): Promise<UserMongo> => {
     try {
-      const { _id: user_id } = await refreshTokenMiddleware(
-        accessToken,
-        refreshToken
-      );
-      if (user_id !== id) {
-        throw new Error("No es el mismo usuario.");
-      }
       const user = await users.findOne({
-        _id: new ObjectId(user_id),
+        id,
       });
       if (!user) {
         throw new Error("El usuario no existe.");
@@ -106,6 +95,7 @@ const QueryUser = {
         isBorrower: false,
         isLender: true,
         isSupport: false,
+        id: "",
       };
     }
   },

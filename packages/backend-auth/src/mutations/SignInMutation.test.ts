@@ -4,6 +4,10 @@ import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { UserMongo } from "../types";
 
+jest.mock("nanoid", () => ({
+  customAlphabet: () => () => "wHHR1SUBT0dspoF4YUOw1",
+}));
+
 const request = supertest(app);
 
 describe("SignInMutation tests", () => {
@@ -39,15 +43,15 @@ describe("SignInMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
+      id: "wHHR1SUBT0dspoF4YUOw4",
     });
     const response = await request
-      .post("/auth/graphql")
+      .post("/graphql")
       .send({
         query: `mutation signInMutation($input: SignInInput!) {
           signIn(input: $input) {
             error
             accessToken
-            refreshToken
           }
         }`,
         variables: {
@@ -60,19 +64,18 @@ describe("SignInMutation tests", () => {
       })
       .set("Accept", "application/json");
     expect(response.body.data.signIn.error).toBeFalsy();
-    expect(response.body.data.signIn.refreshToken).toBeTruthy();
+    expect(response.headers["set-cookie"]).toBeTruthy();
     expect(response.body.data.signIn.accessToken).toBeTruthy();
   });
 
   it("SignInMutation: user NOT exists", async () => {
     const response = await request
-      .post("/auth/graphql")
+      .post("/graphql")
       .send({
         query: `mutation signInMutation($input: SignInInput!) {
           signIn(input: $input) {
             error
             accessToken
-            refreshToken
           }
         }`,
         variables: {
@@ -85,19 +88,18 @@ describe("SignInMutation tests", () => {
       })
       .set("Accept", "application/json");
     expect(response.body.data.signIn.error).toBe("El usuario no existe.");
-    expect(response.body.data.signIn.refreshToken).toBeFalsy();
+    expect(response.headers["set-cookie"]).toBeFalsy();
     expect(response.body.data.signIn.accessToken).toBeFalsy();
   });
 
   it("SignInMutation: password is NOT correct", async () => {
     const response = await request
-      .post("/auth/graphql")
+      .post("/graphql")
       .send({
         query: `mutation signInMutation($input: SignInInput!) {
           signIn(input: $input) {
             error
             accessToken
-            refreshToken
           }
         }`,
         variables: {
@@ -110,7 +112,6 @@ describe("SignInMutation tests", () => {
       })
       .set("Accept", "application/json");
     expect(response.body.data.signIn.error).toBe("La contraseña no coincide.");
-    expect(response.body.data.signIn.refreshToken).toBeFalsy();
-    expect(response.body.data.signIn.accessToken).toBeFalsy();
+    expect(response.headers["set-cookie"]).toBeFalsy();
   });
 });

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<143b872fc83db99ef4807ef5701db678>>
+ * @generated SignedSource<<423fe63e43d0aa0ec88df429569a92f6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,23 +11,21 @@
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type AddFundsInput = {
   clientMutationId?: string | null;
-  user_gid: string;
   quantity: string;
+  user_gid: string;
 };
 export type AddFundsMutation$variables = {
   input: AddFundsInput;
 };
-export type AddFundsMutationVariables = AddFundsMutation$variables;
 export type AddFundsMutation$data = {
   readonly addFunds: {
     readonly error: string;
     readonly validAccessToken: string;
   };
 };
-export type AddFundsMutationResponse = AddFundsMutation$data;
 export type AddFundsMutation = {
-  variables: AddFundsMutationVariables;
   response: AddFundsMutation$data;
+  variables: AddFundsMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){

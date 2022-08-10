@@ -2,7 +2,7 @@ import { app } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "../types";
-import { base64Name, jwt } from "../utils";
+import { jwt } from "../utils";
 
 const request = supertest(app);
 
@@ -24,11 +24,12 @@ describe("AddLoan tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000006"),
+      id: "wHHR1SUBT0dspoF4YUO20",
       accountAvailable: 100000,
       investments: [],
     });
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation AddLoanMutation($input: AddLoanInput!) {
           addLoan(input: $input) {
@@ -38,7 +39,6 @@ describe("AddLoan tests", () => {
         }`,
         variables: {
           input: {
-            user_gid: base64Name("000000000000000000000006", "User"),
             goal: "1000.00",
             term: 2,
           },
@@ -48,26 +48,43 @@ describe("AddLoan tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000006", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO20",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          {
+            expiresIn: "15m",
+          }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO20",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addLoan.error).toBeFalsy();
     expect(response.body.data.addLoan.validAccessToken).toBeTruthy();
     const loans = dbInstance.collection<LoanMongo>("loans");
     const allLoans = await loans
-      .find({ _id_user: new ObjectId("000000000000000000000006") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO20" })
       .toArray();
     expect(allLoans.length).toBe(1);
     expect(
       allLoans.map((loan) => ({
         ROI: loan.ROI,
-        _id_user: loan._id_user.toHexString(),
+        id_user: loan.id_user,
         goal: loan.goal,
         raised: loan.raised,
         scheduledPayments: loan.scheduledPayments,
@@ -78,7 +95,7 @@ describe("AddLoan tests", () => {
     ).toEqual([
       {
         ROI: 17,
-        _id_user: "000000000000000000000006",
+        id_user: "wHHR1SUBT0dspoF4YUO20",
         goal: 100000,
         raised: 0,
         scheduledPayments: null,

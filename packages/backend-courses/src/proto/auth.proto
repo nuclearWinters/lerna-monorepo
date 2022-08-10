@@ -4,6 +4,7 @@ package authPackage;
 
 service Auth {
     rpc renewAccessToken(RenewAccessTokenInput) returns (RenewAccessTokenPayload) {};
+    rpc createUser(CreateUserInput) returns (CreateUserPayload) {};
 }
 
 message RenewAccessTokenInput {
@@ -12,4 +13,12 @@ message RenewAccessTokenInput {
 
 message RenewAccessTokenPayload {
     string validAccessToken = 1;
+}
+
+message CreateUserInput {
+    string nanoId = 1;
+}
+
+message CreateUserPayload {
+    string done = 1;
 }

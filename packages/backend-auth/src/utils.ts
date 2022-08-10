@@ -1,9 +1,12 @@
 import { Db } from "mongodb";
-import { UserMongo, Context, SIGN_UP } from "./types";
+import { UserMongo, Context } from "./types";
 import { ACCESSSECRET, REFRESHSECRET } from "./config";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
-import { Channel } from "amqplib";
+import { AuthClient } from "./proto/auth_grpc_pb";
+import { credentials } from "@grpc/grpc-js";
+import { CreateUserInput, CreateUserPayload } from "./proto/auth_pb";
+import { Request, Response } from "express";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -16,7 +19,7 @@ export const jwt = {
   },
   sign: (
     data: {
-      _id: string;
+      id: string;
       isBorrower: boolean;
       isLender: boolean;
       isSupport: boolean;
@@ -32,54 +35,83 @@ export const jwt = {
 export const refreshTokenMiddleware = async (
   accessToken: string | undefined,
   refreshToken: string | undefined
-): Promise<{ validAccessToken: string; _id: string }> => {
+): Promise<{ validAccessToken?: string; id?: string }> => {
   if (accessToken === undefined) {
-    throw new Error("Sin access token.");
+    return { validAccessToken: undefined, id: undefined };
   }
   if (refreshToken === undefined) {
-    throw new Error("Sin refresh token.");
+    return { validAccessToken: undefined, id: undefined };
   }
   try {
-    const user = jwt.verify(accessToken, ACCESSSECRET || "ACCESSSECRET");
-    if (!user) throw new Error("El token esta corrompido.");
+    const user = jwt.verify(accessToken, ACCESSSECRET);
+    if (!user) {
+      return { validAccessToken: undefined, id: undefined };
+    }
     return {
       validAccessToken: accessToken,
-      _id: user._id,
+      id: user.id,
     };
   } catch (e) {
     if (e instanceof Error && e.message === "jwt expired") {
-      const user = jwt.verify(refreshToken, REFRESHSECRET || "REFRESHSECRET");
-      if (!user) throw new Error("El token esta corrompido.");
-      const validAccessToken = jwt.sign(user, ACCESSSECRET || "ACCESSSECRET", {
-        expiresIn: "15m",
+      const user = jwt.verify(refreshToken, REFRESHSECRET);
+      if (!user) {
+        return { validAccessToken: undefined, id: undefined };
+      }
+      const validAccessToken = jwt.sign(user, ACCESSSECRET, {
+        expiresIn: ACCESS_TOKEN_EXP_STRING,
       });
       return {
         validAccessToken,
-        _id: user._id,
+        id: user.id,
       };
     }
-    throw e;
+    return { validAccessToken: undefined, id: undefined };
   }
 };
 
-export const getContext = (req: any): Context => {
+export const getContext = async (
+  req: Request,
+  res: Response
+): Promise<Context> => {
   const db = req.app.locals.db as Db;
-  const ch = req.app.locals.ch;
   const rdb = req.app.locals.rdb;
-  const authorization = JSON.parse(req.headers.authorization || "{}");
+  const accessToken = req.headers.authorization || "";
+  const refreshToken = req.cookies.refreshToken || "";
+  const { validAccessToken, id } = await refreshTokenMiddleware(
+    accessToken,
+    refreshToken
+  );
   return {
     users: db.collection<UserMongo>("users"),
     rdb,
-    accessToken: authorization.accessToken,
-    refreshToken: authorization.refreshToken,
-    ch,
+    accessToken,
+    refreshToken,
+    res,
+    validAccessToken,
+    id,
   };
-};
-
-export const channelSendToQueue = (ch: Channel, message: string): void => {
-  ch.sendToQueue(SIGN_UP, Buffer.from(message));
 };
 
 export const base64Name = (i: string, name: string): string => {
   return Buffer.from(name + ":" + i, "utf8").toString("base64");
+};
+
+export const REFRESH_TOKEN_EXP_NUMBER = 15;
+export const ACCESS_TOKEN_EXP_STRING = "3m";
+
+export const client = new AuthClient(
+  `backend-courses:1983`,
+  credentials.createInsecure()
+);
+
+export const createUser = (nanoid: string): Promise<CreateUserPayload> => {
+  return new Promise<CreateUserPayload>((resolve, reject) => {
+    const request = new CreateUserInput();
+    request.setNanoid(nanoid);
+
+    client.createUser(request, (err, user) => {
+      if (err) reject(err);
+      else resolve(user);
+    });
+  });
 };

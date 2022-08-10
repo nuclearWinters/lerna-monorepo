@@ -1,13 +1,10 @@
-import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
+import { mutationWithClientMutationId } from "graphql-relay";
+import { GraphQLString, GraphQLNonNull } from "graphql";
 import { Context, UserMongo } from "../types";
-import { ObjectId } from "mongodb";
-import { refreshTokenMiddleware } from "../utils";
 import { Languages } from "./SignUpMutation";
 import { GraphQLAuthUser } from "../AuthUserQuery";
 
 interface Input {
-  user_gid: string;
   name: string;
   apellidoPaterno: string;
   apellidoMaterno: string;
@@ -30,7 +27,6 @@ export const UpdateUserMutation = mutationWithClientMutationId({
   description:
     "Actualiza los datos personales: recibe el usuario actualizado y obtén un AccessToken valido. Datos disponibles: name, apellidoPaterno, apellidoMaterno, id, RFC, CURP, clabe, mobile, email y language",
   inputFields: {
-    user_gid: { type: new GraphQLNonNull(GraphQLID) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     apellidoMaterno: { type: new GraphQLNonNull(GraphQLString) },
     apellidoPaterno: { type: new GraphQLNonNull(GraphQLString) },
@@ -56,20 +52,14 @@ export const UpdateUserMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { user_gid, ...user }: Input,
-    { users, accessToken, refreshToken }: Context
+    user: Input,
+    { users, validAccessToken, id }: Context
   ): Promise<Payload> => {
     try {
-      const { id: user_id } = fromGlobalId(user_gid);
-      const { _id, validAccessToken } = await refreshTokenMiddleware(
-        accessToken,
-        refreshToken
-      );
-      if (user_id !== _id) {
-        throw new Error("No es el mismo usuario.");
+      if (!validAccessToken || !id) {
+        throw new Error("No valid access token.");
       }
-      const _id_user = new ObjectId(user_id);
-      const result = await users.updateOne({ _id: _id_user }, { $set: user });
+      const result = await users.updateOne({ id }, { $set: user });
       if (!result.modifiedCount) {
         throw new Error("No user found.");
       }
@@ -78,7 +68,7 @@ export const UpdateUserMutation = mutationWithClientMutationId({
         error: "",
         authUser: {
           ...user,
-          _id: _id_user,
+          id,
           isSupport: false,
           isLender: false,
           isBorrower: false,

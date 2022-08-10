@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d30a81048f87c21f0b05ad3928e460e4>>
+ * @generated SignedSource<<7edfce222dd5654fe4cf81f98925b906>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,27 +15,25 @@ export type AddLendsInput = {
   lends: ReadonlyArray<LendList>;
 };
 export type LendList = {
+  ROI: number;
+  borrower_id: string;
+  goal: string;
   loan_gid: string;
   quantity: string;
-  borrower_id: string;
   term: number;
-  goal: string;
-  ROI: number;
 };
 export type AddInvestmentsMutation$variables = {
   input: AddLendsInput;
 };
-export type AddInvestmentsMutationVariables = AddInvestmentsMutation$variables;
 export type AddInvestmentsMutation$data = {
   readonly addLends: {
     readonly error: string;
     readonly validAccessToken: string;
   };
 };
-export type AddInvestmentsMutationResponse = AddInvestmentsMutation$data;
 export type AddInvestmentsMutation = {
-  variables: AddInvestmentsMutationVariables;
   response: AddInvestmentsMutation$data;
+  variables: AddInvestmentsMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){

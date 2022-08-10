@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a79394575059bfdb8c465abd224acf84>>
+ * @generated SignedSource<<7a5b74f7eeab154f118fbda9b596f926>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,34 +9,32 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
-export type Languages = "EN" | "ES" | "DEFAULT" | "%future added value";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 export type UpdateUserInput = {
-  clientMutationId?: string | null;
-  user_gid: string;
-  name: string;
-  apellidoPaterno: string;
-  apellidoMaterno: string;
-  RFC: string;
   CURP: string;
+  RFC: string;
+  apellidoMaterno: string;
+  apellidoPaterno: string;
   clabe: string;
-  mobile: string;
+  clientMutationId?: string | null;
   email: string;
   language: Languages;
+  mobile: string;
+  name: string;
+  user_gid: string;
 };
 export type SettingsMutation$variables = {
   input: UpdateUserInput;
 };
-export type SettingsMutationVariables = SettingsMutation$variables;
 export type SettingsMutation$data = {
   readonly updateUser: {
     readonly error: string;
     readonly validAccessToken: string;
   };
 };
-export type SettingsMutationResponse = SettingsMutation$data;
 export type SettingsMutation = {
-  variables: SettingsMutationVariables;
   response: SettingsMutation$data;
+  variables: SettingsMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){

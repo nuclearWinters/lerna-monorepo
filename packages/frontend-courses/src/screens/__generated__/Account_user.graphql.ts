@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<eb6657ec3f8e5f84f5b202f047cb21c8>>
+ * @generated SignedSource<<7203d322aeef93c7c29f8c9f1f3fabe3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,17 +11,16 @@
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type Account_user$data = {
-  readonly investments: ReadonlyArray<{
+  readonly accountAvailable: string;
+  readonly investmentsUser: ReadonlyArray<{
+    readonly ROI: number;
     readonly _id_loan: string;
+    readonly payments: number;
     readonly quantity: number;
     readonly term: number;
-    readonly ROI: number;
-    readonly payments: number;
   }>;
-  readonly accountAvailable: string;
   readonly " $fragmentType": "Account_user";
 };
-export type Account_user = Account_user$data;
 export type Account_user$key = {
   readonly " $data"?: Account_user$data;
   readonly " $fragmentSpreads": FragmentRefs<"Account_user">;
@@ -38,7 +37,7 @@ const node: ReaderFragment = {
       "args": null,
       "concreteType": "InvestmentsUser",
       "kind": "LinkedField",
-      "name": "investments",
+      "name": "investmentsUser",
       "plural": true,
       "selections": [
         {
@@ -91,6 +90,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "1884c9fb8ba3ee24887c8a3fef615176";
+(node as any).hash = "7a6ee6d5495345f6a1e89e2242cca866";
 
 export default node;

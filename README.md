@@ -44,8 +44,7 @@ App running in AWS: https://www.amigoprogramador.com https://www.amigoprogramado
 - graphql
 - graphql-tools
 - graphql-subscriptions
-- graphql-ws
-- ws
+- graphql-sse
 - jsonwebtokens
 - @grpc/grpc-js
 - amqplib
@@ -66,7 +65,6 @@ App running in AWS: https://www.amigoprogramador.com https://www.amigoprogramado
 **Environment:**
 
 - Docker
-- Nginx
 
 To set up the project in dev mode:
 

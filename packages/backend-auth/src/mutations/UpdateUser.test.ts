@@ -2,7 +2,11 @@ import { app } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "../types";
-import { base64Name, jwt } from "../utils";
+import { jwt } from "../utils";
+
+jest.mock("nanoid", () => ({
+  customAlphabet: () => () => "wHHR1SUBT0dspoF4YUOw1",
+}));
 
 const request = supertest(app);
 
@@ -37,9 +41,10 @@ describe("UpdateUser tests", () => {
       email: "armando10@gmail.com",
       password: "",
       language: "default",
+      id: "wHHR1SUBT0dspoF4YUOw6",
     });
     const response = await request
-      .post("/auth/graphql")
+      .post("/graphql")
       .send({
         query: `mutation UpdateUserMutation($input: UpdateUserInput!) {
           updateUser(input: $input) {
@@ -49,7 +54,6 @@ describe("UpdateUser tests", () => {
         }`,
         variables: {
           input: {
-            user_gid: base64Name("000000000000000000000007", "User"),
             name: "Armando Narcizo",
             apellidoPaterno: "Rueda",
             apellidoMaterno: "Peréz",
@@ -65,20 +69,30 @@ describe("UpdateUser tests", () => {
       })
       .set("Accept", "application/json")
       .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUOw6",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
+      )
+      .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            {
-              _id: "000000000000000000000007",
-              isBorrower: false,
-              isLender: true,
-              isSupport: false,
-            },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUOw6",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "3m" }
+        )
       );
     expect(response.body.data.updateUser.error).toBeFalsy();
     expect(response.body.data.updateUser.validAccessToken).toBeTruthy();
@@ -100,6 +114,7 @@ describe("UpdateUser tests", () => {
       apellidoMaterno: "Peréz",
       apellidoPaterno: "Rueda",
       clabe: "clabe",
+      id: "wHHR1SUBT0dspoF4YUOw6",
     });
   });
 });

@@ -1,7 +1,8 @@
-import React, { CSSProperties, FC } from "react";
+import React, { CSSProperties, FC, ReactNode } from "react";
 
 interface Props {
   style?: CSSProperties;
+  children: ReactNode;
 }
 
 export const Columns: FC<Props> = ({ style, children }) => {

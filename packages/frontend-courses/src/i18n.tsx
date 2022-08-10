@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-const resources: Record<"EN", Record<"translation", Record<any, string>>> = {
+const resources: Record<"EN", Record<"translation", Record<string, string>>> = {
   EN: {
     translation: {
       "Valor de la cuenta": "Account value",

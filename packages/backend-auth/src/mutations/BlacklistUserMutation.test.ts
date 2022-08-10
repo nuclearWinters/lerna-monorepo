@@ -3,7 +3,11 @@ import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { UserMongo } from "../types";
-import { base64Name, jwt } from "../utils";
+import { jwt } from "../utils";
+
+jest.mock("nanoid", () => ({
+  customAlphabet: () => () => "wHHR1SUBT0dspoF4YUOw1",
+}));
 
 const request = supertest(app);
 
@@ -40,79 +44,69 @@ describe("BlacklistUserMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
+      id: "",
     });
     const response = await request
-      .post("/auth/graphql")
+      .post("/graphql")
       .send({
         query: `mutation blacklistUserMutation($input: BlacklistUserInput!) {
           blacklistUser(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
-          input: {
-            user_gid: base64Name("000000000000000000000070", "User"),
-          },
+          input: {},
         },
         operationName: "blacklistUserMutation",
       })
       .set("Accept", "application/json")
       .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUOw2",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
+      )
+      .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            {
-              _id: "000000000000000000000070",
-              isBorrower: false,
-              isLender: true,
-              isSupport: false,
-            },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUOw2",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "3m" }
+        )
       );
     expect(response.body.data.blacklistUser.error).toBeFalsy();
-    expect(response.body.data.blacklistUser.validAccessToken).toBeFalsy();
   });
 
+  //
   it("BlacklistUserMutation: error", async () => {
     const response = await request
-      .post("/auth/graphql")
+      .post("/graphql")
       .send({
         query: `mutation blacklistUserMutation($input: BlacklistUserInput!) {
           blacklistUser(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
-          input: {
-            user_gid: base64Name("000000000000000000000080", "User"),
-          },
+          input: {},
         },
         operationName: "blacklistUserMutation",
       })
       .set("Accept", "application/json")
-      .set(
-        "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            {
-              _id: "000000000000000000000060",
-              isBorrower: false,
-              isLender: true,
-              isSupport: false,
-            },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
-      );
+      .set("Cookie", `refreshToken=invalid`)
+      .set("Authorization", "invalid");
     expect(response.body.data.blacklistUser.error).toBeTruthy();
-    expect(response.body.data.blacklistUser.validAccessToken).toBeFalsy();
   });
 });

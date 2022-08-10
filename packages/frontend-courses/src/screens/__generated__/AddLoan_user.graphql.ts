@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8c785de9ada7159d09d857f86df94f71>>
+ * @generated SignedSource<<58e914233b49aeb7bfe0ec8070b2ada8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,6 @@ export type AddLoan_user$data = {
   readonly id: string;
   readonly " $fragmentType": "AddLoan_user";
 };
-export type AddLoan_user = AddLoan_user$data;
 export type AddLoan_user$key = {
   readonly " $data"?: AddLoan_user$data;
   readonly " $fragmentSpreads": FragmentRefs<"AddLoan_user">;

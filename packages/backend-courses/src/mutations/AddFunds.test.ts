@@ -2,9 +2,10 @@ import { app } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { BucketTransactionMongo, UserMongo } from "../types";
-import { base64Name, jwt } from "../utils";
+import { jwt } from "../utils";
 import { client as grpcClient } from "../utils";
-import { ClientUnaryCall, Metadata } from "@grpc/grpc-js";
+import { Metadata } from "@grpc/grpc-js";
+import { SurfaceCall } from "@grpc/grpc-js/build/src/call";
 
 const request = supertest(app);
 
@@ -26,11 +27,12 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000000"),
+      id: "wHHR1SUBT0dspoF4YUO25",
       accountAvailable: 100000,
       investments: [],
     });
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
@@ -40,7 +42,6 @@ describe("AddFunds tests", () => {
         }`,
         variables: {
           input: {
-            user_gid: base64Name("000000000000000000000000", "User"),
             quantity: "500.00",
           },
         },
@@ -49,29 +50,45 @@ describe("AddFunds tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000000", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO25",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "15m" }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO25",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     const user = await users.findOne({
-      _id: new ObjectId("000000000000000000000000"),
+      id: "wHHR1SUBT0dspoF4YUO25",
     });
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000000"),
+      id: "wHHR1SUBT0dspoF4YUO25",
       accountAvailable: 150000,
       investments: [],
     });
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("000000000000000000000000") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO25" })
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions[0].history.length).toBe(1);
@@ -92,11 +109,12 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000003"),
+      id: "wHHR1SUBT0dspoF4YUO26",
       accountAvailable: 100000,
       investments: [],
     });
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
@@ -106,7 +124,6 @@ describe("AddFunds tests", () => {
         }`,
         variables: {
           input: {
-            user_gid: base64Name("000000000000000000000003", "User"),
             quantity: "-500.00",
           },
         },
@@ -115,29 +132,47 @@ describe("AddFunds tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000003", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO26",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          {
+            expiresIn: "15m",
+          }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO26",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     const user = await users.findOne({
-      _id: new ObjectId("000000000000000000000003"),
+      id: "wHHR1SUBT0dspoF4YUO26",
     });
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000003"),
+      id: "wHHR1SUBT0dspoF4YUO26",
       accountAvailable: 50000,
       investments: [],
     });
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("000000000000000000000003") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO26" })
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions[0].history.length).toBe(1);
@@ -158,26 +193,36 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000001"),
+      id: "wHHR1SUBT0dspoF4YUO27",
       accountAvailable: 100000,
       investments: [],
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
-      .mockImplementationOnce((request, callback: any) => {
-        callback(null, {
+      .mockImplementationOnce((_request, callback: unknown) => {
+        const callbackTyped = callback as (
+          error: null,
+          response: { getValidaccesstoken: () => string }
+        ) => void;
+        callbackTyped(null, {
           getValidaccesstoken: () =>
             jwt.sign(
-              { _id: "000000000000000000000001", email: "" },
+              {
+                id: "wHHR1SUBT0dspoF4YUO27",
+                isBorrower: false,
+                isLender: true,
+                isSupport: false,
+              },
               "ACCESSSECRET",
               {
                 expiresIn: "15m",
               }
             ),
-        } as any);
-        return {} as any;
+        });
+        return {} as SurfaceCall;
       });
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
@@ -187,7 +232,6 @@ describe("AddFunds tests", () => {
         }`,
         variables: {
           input: {
-            user_gid: base64Name("000000000000000000000001", "User"),
             quantity: "500.00",
           },
         },
@@ -196,29 +240,45 @@ describe("AddFunds tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000001", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "0s" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO27",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "0s" }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO27",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
     expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     const user = await users.findOne({
-      _id: new ObjectId("000000000000000000000001"),
+      id: "wHHR1SUBT0dspoF4YUO27",
     });
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000001"),
+      id: "wHHR1SUBT0dspoF4YUO27",
       accountAvailable: 150000,
       investments: [],
     });
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("000000000000000000000001") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO27" })
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions[0].history.length).toBe(1);
@@ -239,26 +299,31 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("000000000000000000000002"),
+      id: "wHHR1SUBT0dspoF4YUO28",
       accountAvailable: 100000,
       investments: [],
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
-      .mockImplementationOnce((_request, callback: any) => {
-        callback(
-          {
-            name: "Error Auth Service",
-            message: "Error",
-            code: 1,
-            details: "",
-            metadata: new Metadata(),
-          },
-          null
-        );
-        return {} as ClientUnaryCall;
+      .mockImplementationOnce((_request, callback: unknown) => {
+        const callbackTyped = callback as (error: {
+          name: string;
+          message: string;
+          code: number;
+          details: string;
+          metadata: Metadata;
+        }) => void;
+        callbackTyped({
+          name: "Error Auth Service",
+          message: "Error",
+          code: 1,
+          details: "",
+          metadata: new Metadata(),
+        });
+        return {} as SurfaceCall;
       });
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
@@ -268,7 +333,6 @@ describe("AddFunds tests", () => {
         }`,
         variables: {
           input: {
-            user_gid: base64Name("000000000000000000000002", "User"),
             quantity: "500.00",
           },
         },
@@ -277,22 +341,26 @@ describe("AddFunds tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000002", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "0s" }
-          ),
-          refreshToken: "invalidRefreshToken",
-        })
-      );
-    expect(response.body.data.addFunds.error).toBe("Error");
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO28",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "0s" }
+        )
+      )
+      .set("Cookie", `refreshToken=invalid`);
+    expect(response.body.data.addFunds.error).toBe("No valid access token.");
     expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
     const user = await users.findOne({
-      _id: new ObjectId("000000000000000000000002"),
+      id: "wHHR1SUBT0dspoF4YUO28",
     });
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000002"),
+      id: "wHHR1SUBT0dspoF4YUO28",
       accountAvailable: 100000,
       investments: [],
     });
@@ -308,11 +376,12 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("100000000000000000000002"),
+      id: "wHHR1SUBT0dspoF4YUO29",
       accountAvailable: 100000,
       investments: [],
     });
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
@@ -322,7 +391,6 @@ describe("AddFunds tests", () => {
         }`,
         variables: {
           input: {
-            user_gid: base64Name("100000000000000000000002", "User"),
             quantity: "-1500.00",
           },
         },
@@ -331,24 +399,40 @@ describe("AddFunds tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "100000000000000000000002", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15s" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO29",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "15s" }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO29",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addFunds.error).toBe(
       "No cuentas con fondos suficientes."
     );
     expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
     const user = await users.findOne({
-      _id: new ObjectId("100000000000000000000002"),
+      id: "wHHR1SUBT0dspoF4YUO29",
     });
     expect(user).toEqual({
       _id: new ObjectId("100000000000000000000002"),
+      id: "wHHR1SUBT0dspoF4YUO29",
       accountAvailable: 100000,
       investments: [],
     });
@@ -365,11 +449,12 @@ describe("AddFunds tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
       _id: new ObjectId("100000000000000000000003"),
+      id: "wHHR1SUBT0dspoF4YUO30",
       accountAvailable: 100000,
       investments: [],
     });
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
@@ -379,7 +464,6 @@ describe("AddFunds tests", () => {
         }`,
         variables: {
           input: {
-            user_gid: base64Name("100000000000000000000003", "User"),
             quantity: "0.00",
           },
         },
@@ -388,24 +472,40 @@ describe("AddFunds tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "100000000000000000000003", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15s" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO30",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "15s" }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO30",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addFunds.error).toBe(
       "La cantidad no puede ser cero."
     );
     expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
     const user = await users.findOne({
-      _id: new ObjectId("100000000000000000000003"),
+      id: "wHHR1SUBT0dspoF4YUO30",
     });
     expect(user).toEqual({
       _id: new ObjectId("100000000000000000000003"),
+      id: "wHHR1SUBT0dspoF4YUO30",
       accountAvailable: 100000,
       investments: [],
     });

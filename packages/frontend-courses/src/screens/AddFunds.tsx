@@ -87,7 +87,7 @@ export const AddFunds: FC<Props> = (props) => {
                         }
                         return window.alert(response.addFunds.error);
                       }
-                      tokensAndData.tokens.accessToken =
+                      tokensAndData.accessToken =
                         response.addFunds.validAccessToken;
                     },
                   });

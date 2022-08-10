@@ -21,6 +21,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
   await users.insertMany([
     {
       _id: new ObjectId("607bd608ef9719001cf38fd5"),
+      id: "wHHR1SUBT0dspoF4YUOw1",
       accountAvailable: 0,
       investments: [
         {
@@ -76,11 +77,13 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
     },
     {
       _id: new ObjectId("6095f055f92be2001a15885b"),
+      id: "wHHR1SUBT0dspoF4YUOw2",
       accountAvailable: 0,
       investments: [],
     },
     {
       _id: new ObjectId("6095f172f92be2001a15885c"),
+      id: "wHHR1SUBT0dspoF4YUOw3",
       accountAvailable: 0,
       investments: [],
     },
@@ -89,7 +92,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
   await loans.insertMany([
     {
       _id: new ObjectId("609875a48f2814002aaefe24"),
-      _id_user: new ObjectId("6095f055f92be2001a15885b"),
+      id_user: "wHHR1SUBT0dspoF4YUOw2",
       score: "AAA",
       raised: 0,
       expiry,
@@ -102,7 +105,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe25"),
-      _id_user: new ObjectId("6095f055f92be2001a15885b"),
+      id_user: "wHHR1SUBT0dspoF4YUOw2",
       score: "AAA",
       raised: 9500000,
       expiry,
@@ -113,38 +116,38 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       scheduledPayments: null,
       investors: [
         {
-          _id_lender: new ObjectId("607bd608ef9719001cf38fd5"),
+          id_lender: "wHHR1SUBT0dspoF4YUOw1",
           quantity: 5000000,
         },
         {
-          _id_lender: new ObjectId("607bd608ef9719001cf38fd5"),
+          id_lender: "wHHR1SUBT0dspoF4YUOw1",
           quantity: 1000000,
         },
         {
-          _id_lender: new ObjectId("607bd608ef9719001cf38fd5"),
+          id_lender: "wHHR1SUBT0dspoF4YUOw1",
           quantity: 1000000,
         },
         {
-          _id_lender: new ObjectId("607bd608ef9719001cf38fd5"),
+          id_lender: "wHHR1SUBT0dspoF4YUOw1",
           quantity: 1000000,
         },
         {
-          _id_lender: new ObjectId("607bd608ef9719001cf38fd5"),
+          id_lender: "wHHR1SUBT0dspoF4YUOw1",
           quantity: 500000,
         },
         {
-          _id_lender: new ObjectId("607bd608ef9719001cf38fd5"),
+          id_lender: "wHHR1SUBT0dspoF4YUOw1",
           quantity: 500000,
         },
         {
-          _id_lender: new ObjectId("607bd608ef9719001cf38fd5"),
+          id_lender: "wHHR1SUBT0dspoF4YUOw1",
           quantity: 500000,
         },
       ],
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe26"),
-      _id_user: new ObjectId("6095f055f92be2001a15885b"),
+      id_user: "wHHR1SUBT0dspoF4YUOw2",
       score: "AAA",
       raised: 0,
       expiry,
@@ -157,7 +160,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe27"),
-      _id_user: new ObjectId("6095f055f92be2001a15885b"),
+      id_user: "wHHR1SUBT0dspoF4YUOw2",
       score: "AAA",
       raised: 10000000,
       expiry,
@@ -201,7 +204,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe31"),
-      _id_user: new ObjectId("6095f055f92be2001a15885b"),
+      id_user: "wHHR1SUBT0dspoF4YUOw2",
       score: "AAA",
       raised: 0,
       expiry,
@@ -214,7 +217,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe28"),
-      _id_user: new ObjectId("6095f055f92be2001a15885b"),
+      id_user: "wHHR1SUBT0dspoF4YUOw2",
       score: "AAA",
       raised: 0,
       expiry,
@@ -227,7 +230,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe29"),
-      _id_user: new ObjectId("6095f055f92be2001a15885b"),
+      id_user: "wHHR1SUBT0dspoF4YUOw2",
       score: "AAA",
       raised: 0,
       expiry,
@@ -240,7 +243,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe30"),
-      _id_user: new ObjectId("6095f055f92be2001a15885b"),
+      id_user: "wHHR1SUBT0dspoF4YUOw2",
       score: "AAA",
       raised: 0,
       expiry,
@@ -253,7 +256,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe32"),
-      _id_user: new ObjectId("6095f055f92be2001a15885b"),
+      id_user: "wHHR1SUBT0dspoF4YUOw2",
       score: "AAA",
       raised: 5000000,
       expiry,
@@ -294,8 +297,8 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
 
   await investments.insertMany([
     {
-      _id_borrower: new ObjectId("6095f055f92be2001a15885b"),
-      _id_lender: new ObjectId("607bd608ef9719001cf38fd5"),
+      id_borrower: "wHHR1SUBT0dspoF4YUOw2",
+      id_lender: "wHHR1SUBT0dspoF4YUOw1",
       _id_loan: new ObjectId("609875a48f2814002aaefe25"),
       created: new Date(),
       quantity: 9500000,
@@ -310,8 +313,8 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
 
   await transactions.insertMany([
     {
-      _id: `607bd608ef9719001cf38fd5_${new Date().getTime()}`,
-      _id_user: new ObjectId("607bd608ef9719001cf38fd5"),
+      _id: `wHHR1SUBT0dspoF4YUOw1_${new Date().getTime()}`,
+      id_user: "wHHR1SUBT0dspoF4YUOw1",
       count: 1,
       history: [
         {
@@ -323,8 +326,8 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       ],
     },
     {
-      _id: `607bd608ef9719001cf38fd5_${addSeconds(new Date(), 1).getTime()}`,
-      _id_user: new ObjectId("607bd608ef9719001cf38fd5"),
+      _id: `wHHR1SUBT0dspoF4YUOw1_${addSeconds(new Date(), 1).getTime()}`,
+      id_user: "wHHR1SUBT0dspoF4YUOw1",
       count: 5,
       history: [
         {
@@ -360,8 +363,8 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       ],
     },
     {
-      _id: `607bd608ef9719001cf38fd5_${addSeconds(new Date(), 2).getTime()}`,
-      _id_user: new ObjectId("607bd608ef9719001cf38fd5"),
+      _id: `wHHR1SUBT0dspoF4YUOw1_${addSeconds(new Date(), 2).getTime()}`,
+      id_user: "wHHR1SUBT0dspoF4YUOw1",
       count: 1,
       history: [
         {

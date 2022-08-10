@@ -11,77 +11,35 @@ import AppQuery, {
 } from "./__generated__/AppQuery.graphql";
 import { graphql } from "react-relay";
 import { Routes } from "./Routes";
-import jwtDecode from "jwt-decode";
-import { LoanStatus } from "__generated__/RoutesLoansSubscription.graphql";
 import { Spinner } from "components/Spinner";
 
 const { Suspense } = React;
 
-export interface IJWT {
-  _id: string;
-  iat: number;
-  exp: number;
-  isSupport: boolean;
-  isLender: boolean;
-  isBorrower: boolean;
-}
-
 export const tokensAndData: {
-  refetchUser: (
-    status: LoanStatus[],
-    id: string,
-    borrower_id?: string | null
-  ) => void;
-  tokens: {
-    accessToken: string;
-    refreshToken: string;
-  };
-  credentials: {
-    email: string;
-    password: string;
-  };
-  data: IJWT;
+  refetchUser: () => void;
+  accessToken: string;
+  exp?: Date;
 } = {
-  tokens: {
-    accessToken: "",
-    refreshToken: "",
-  },
-  credentials: {
-    email: "",
-    password: "",
-  },
-  data: {
-    _id: "",
-    iat: 0,
-    exp: 0,
-    isSupport: false,
-    isLender: true,
-    isBorrower: false,
-  },
+  accessToken: "",
+  exp: undefined,
   refetchUser: () => {},
 };
 
-export const getDataFromToken = (token: string): IJWT => {
-  return jwtDecode<IJWT>(token);
-};
-
 const RepositoryNameQuery = graphql`
-  query AppQuery($id: String!, $status: [LoanStatus!]!, $borrower_id: String) {
-    ...AddInvestments_query
-    ...MyTransactions_query
-    ...MyInvestments_query
-    ...Routes_query
+  query AppQuery {
+    user {
+      ...Routes_user
+    }
+    authUser {
+      ...Routes_auth_user
+    }
   }
 `;
 
 export const preloadedQuery = loadQuery<AppQueryType>(
   RelayEnvironment,
   RepositoryNameQuery,
-  {
-    id: "",
-    status: ["FINANCING"],
-    borrower_id: null,
-  }
+  {}
 );
 
 const AppQueryRoot: FC = () => {
@@ -93,21 +51,11 @@ const AppQueryRoot: FC = () => {
     AppQuery,
     queryRef || preloadedQuery
   );
-  const refetchUser = useCallback(
-    (status: LoanStatus[], id: string, borrower_id?: string | null) => {
-      loadQuery(
-        {
-          id,
-          status,
-          borrower_id,
-        },
-        { fetchPolicy: "network-only" }
-      );
-    },
-    [loadQuery]
-  );
+  const refetchUser = useCallback(() => {
+    loadQuery({}, { fetchPolicy: "network-only" });
+  }, [loadQuery]);
   tokensAndData.refetchUser = refetchUser;
-  return <Routes data={data} />;
+  return <Routes user={data.user} authUser={data.authUser} />;
 };
 
 export const App: FC = () => {

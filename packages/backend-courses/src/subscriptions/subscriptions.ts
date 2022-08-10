@@ -128,7 +128,7 @@ export const loans_subscribe = {
   },
   subscribe: withFilter(
     () => pubsub.asyncIterator<ILoanSubscribe>(LOAN),
-    (payload, variables) => {
+    (payload: { loans_subscribe: ILoanSubscribe }, variables) => {
       return variables.status.includes(
         payload.loans_subscribe.loan_edge.node.status
       );
@@ -144,9 +144,9 @@ export const transactions_subscribe = {
   description: "New or updated transactions",
   subscribe: withFilter(
     () => pubsub.asyncIterator(TRANSACTION),
-    (payload, variables) => {
+    (payload: { transactions_subscribe: ITransactionSubscribe }, variables) => {
       return (
-        payload.transactions_subscribe.transaction_edge.node._id_user.toHexString() ===
+        payload.transactions_subscribe.transaction_edge.node.id_user ===
         unbase64(variables.user_gid)
       );
     }
@@ -166,11 +166,13 @@ export const investments_subscribe = {
   description: "New or updated investment",
   subscribe: withFilter(
     () => pubsub.asyncIterator(INVESTMENT),
-    (payload, variables) => {
+    (payload: { investments_subscribe: IInvestmentSubscribe }, variables) => {
       return (
-        payload.investments_subscribe.investment_edge.node._id_lender.toHexString() ===
+        payload.investments_subscribe.investment_edge.node.id_lender ===
           unbase64(variables.user_gid) &&
-        variables.status.includes(payload.loans_subscribe.loan_edge.node.status)
+        variables.status.includes(
+          payload.investments_subscribe.investment_edge.node.status
+        )
       );
     }
   ),
@@ -184,9 +186,9 @@ export const user_subscribe = {
   },
   subscribe: withFilter(
     () => pubsub.asyncIterator(USER),
-    (payload, variables) => {
+    (payload: { user_subscribe: IUserSubscribe }, variables) => {
       return (
-        payload.user_subscribe.user._id.toHexString() ===
+        payload.user_subscribe.user._id?.toHexString() ===
         unbase64(variables.user_gid)
       );
     }

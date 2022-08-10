@@ -30,11 +30,13 @@ describe("cronJobs tests", () => {
     await users.insertMany([
       {
         _id: new ObjectId("000000000000000000000013"),
+        id: "wHHR1SUBT0dspoF4YUOw7",
         accountAvailable: 1000000,
         investments: [],
       },
       {
         _id: new ObjectId("000000000000000000000101"),
+        id: "wHHR1SUBT0dspoF4YUOw8",
         accountAvailable: 100000,
         investments: [
           {
@@ -62,6 +64,7 @@ describe("cronJobs tests", () => {
       },
       {
         _id: new ObjectId("000000000000000000000113"),
+        id: "wHHR1SUBT0dspoF4YUOw9",
         accountAvailable: 0,
         investments: [],
       },
@@ -69,7 +72,7 @@ describe("cronJobs tests", () => {
     await loans.insertMany([
       {
         _id: new ObjectId("000000000000000000000014"),
-        _id_user: new ObjectId("000000000000000000000013"),
+        id_user: "wHHR1SUBT0dspoF4YUOw7",
         score: "AAA",
         ROI: 17,
         goal: 100000,
@@ -91,14 +94,14 @@ describe("cronJobs tests", () => {
         ],
         investors: [
           {
-            _id_lender: new ObjectId("000000000000000000000101"),
+            id_lender: "wHHR1SUBT0dspoF4YUOw8",
             quantity: 10000,
           },
         ],
       },
       {
         _id: new ObjectId("000000000000000000000015"),
-        _id_user: new ObjectId("000000000000000000000013"),
+        id_user: "wHHR1SUBT0dspoF4YUOw7",
         score: "AAA",
         ROI: 17,
         goal: 100000,
@@ -120,14 +123,14 @@ describe("cronJobs tests", () => {
         ],
         investors: [
           {
-            _id_lender: new ObjectId("000000000000000000000101"),
+            id_lender: "wHHR1SUBT0dspoF4YUOw8",
             quantity: 10000,
           },
         ],
       },
       {
         _id: new ObjectId("000000000000000000000016"),
-        _id_user: new ObjectId("000000000000000000000017"),
+        id_user: "wHHR1SUBT0dspoF4YUO10",
         score: "AAA",
         ROI: 17,
         goal: 100000,
@@ -140,7 +143,7 @@ describe("cronJobs tests", () => {
       },
       {
         _id: new ObjectId("000000000000000000000102"),
-        _id_user: new ObjectId("000000000000000000000113"),
+        id_user: "wHHR1SUBT0dspoF4YUOw9",
         score: "AAA",
         ROI: 17,
         goal: 100000,
@@ -162,7 +165,7 @@ describe("cronJobs tests", () => {
         ],
         investors: [
           {
-            _id_lender: new ObjectId("000000000000000000000101"),
+            id_lender: "wHHR1SUBT0dspoF4YUOw8",
             quantity: 10000,
           },
         ],
@@ -172,8 +175,8 @@ describe("cronJobs tests", () => {
     await investments.insertMany([
       {
         _id: new ObjectId("000000000000000000000111"),
-        _id_borrower: new ObjectId("000000000000000000000013"),
-        _id_lender: new ObjectId("000000000000000000000101"),
+        id_borrower: "wHHR1SUBT0dspoF4YUOw7",
+        id_lender: "wHHR1SUBT0dspoF4YUOw8",
         _id_loan: new ObjectId("000000000000000000000014"),
         quantity: 10000,
         status: "up to date",
@@ -186,8 +189,8 @@ describe("cronJobs tests", () => {
       },
       {
         _id: new ObjectId("000000000000000000000114"),
-        _id_borrower: new ObjectId("000000000000000000000013"),
-        _id_lender: new ObjectId("000000000000000000000101"),
+        id_borrower: "wHHR1SUBT0dspoF4YUOw7",
+        id_lender: "wHHR1SUBT0dspoF4YUOw8",
         _id_loan: new ObjectId("000000000000000000000015"),
         quantity: 10000,
         status: "up to date",
@@ -200,8 +203,8 @@ describe("cronJobs tests", () => {
       },
       {
         _id: new ObjectId("000000000000000000000112"),
-        _id_borrower: new ObjectId("000000000000000000000113"),
-        _id_lender: new ObjectId("000000000000000000000101"),
+        id_borrower: "wHHR1SUBT0dspoF4YUOw9",
+        id_lender: "wHHR1SUBT0dspoF4YUOw8",
         _id_loan: new ObjectId("000000000000000000000102"),
         quantity: 10000,
         status: "up to date",
@@ -215,18 +218,20 @@ describe("cronJobs tests", () => {
     ]);
     await monthFunction(dbInstance);
     const user = await users.findOne({
-      _id: new ObjectId("000000000000000000000013"),
+      id: "wHHR1SUBT0dspoF4YUOw7",
     });
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000013"),
+      id: "wHHR1SUBT0dspoF4YUOw7",
       accountAvailable: 898022,
       investments: [],
     });
     const user2 = await users.findOne({
-      _id: new ObjectId("000000000000000000000101"),
+      id: "wHHR1SUBT0dspoF4YUOw8",
     });
     expect(user2).toEqual({
       _id: new ObjectId("000000000000000000000101"),
+      id: "wHHR1SUBT0dspoF4YUOw8",
       accountAvailable: 110196,
       investments: [
         {
@@ -247,7 +252,7 @@ describe("cronJobs tests", () => {
     });
     const borrower_transactions = await transactions
       .find({
-        _id_user: new ObjectId("000000000000000000000013"),
+        id_user: "wHHR1SUBT0dspoF4YUOw7",
       })
       .toArray();
     expect(borrower_transactions.length).toEqual(1);
@@ -274,7 +279,7 @@ describe("cronJobs tests", () => {
     ]);
     const lender_transactions = await transactions
       .find({
-        _id_user: new ObjectId("000000000000000000000101"),
+        id_user: "wHHR1SUBT0dspoF4YUOw8",
       })
       .toArray();
     expect(lender_transactions.length).toEqual(1);
@@ -291,12 +296,12 @@ describe("cronJobs tests", () => {
         created: "",
         quantity: 5098,
         type: "collect",
-        _id_borrower: new ObjectId("000000000000000000000013"),
+        id_borrower: "wHHR1SUBT0dspoF4YUOw7",
         _id_loan: new ObjectId("000000000000000000000014"),
       },
       {
         _id: "",
-        _id_borrower: new ObjectId("000000000000000000000013"),
+        id_borrower: "wHHR1SUBT0dspoF4YUOw7",
         _id_loan: new ObjectId("000000000000000000000015"),
         created: "",
         quantity: 5098,
@@ -305,11 +310,8 @@ describe("cronJobs tests", () => {
     ]);
     const allLoans = await loans
       .find({
-        _id_user: {
-          $in: [
-            new ObjectId("000000000000000000000013"),
-            new ObjectId("000000000000000000000113"),
-          ],
+        id_user: {
+          $in: ["wHHR1SUBT0dspoF4YUOw7", "wHHR1SUBT0dspoF4YUOw9"],
         },
       })
       .toArray();
@@ -368,7 +370,7 @@ describe("cronJobs tests", () => {
     ]);
     const allInvestments = await investments
       .find({
-        _id_lender: new ObjectId("000000000000000000000101"),
+        id_lender: "wHHR1SUBT0dspoF4YUOw8",
       })
       .toArray();
     expect(allInvestments.length).toBe(3);
@@ -376,8 +378,8 @@ describe("cronJobs tests", () => {
       {
         ROI: 17,
         _id: new ObjectId("000000000000000000000111"),
-        _id_borrower: new ObjectId("000000000000000000000013"),
-        _id_lender: new ObjectId("000000000000000000000101"),
+        id_borrower: "wHHR1SUBT0dspoF4YUOw7",
+        id_lender: "wHHR1SUBT0dspoF4YUOw8",
         _id_loan: new ObjectId("000000000000000000000014"),
         moratory: 0,
         payments: 2,
@@ -390,8 +392,8 @@ describe("cronJobs tests", () => {
       {
         ROI: 17,
         _id: new ObjectId("000000000000000000000114"),
-        _id_borrower: new ObjectId("000000000000000000000013"),
-        _id_lender: new ObjectId("000000000000000000000101"),
+        id_borrower: "wHHR1SUBT0dspoF4YUOw7",
+        id_lender: "wHHR1SUBT0dspoF4YUOw8",
         _id_loan: new ObjectId("000000000000000000000015"),
         moratory: 0,
         payments: 1,
@@ -404,8 +406,8 @@ describe("cronJobs tests", () => {
       {
         ROI: 17,
         _id: new ObjectId("000000000000000000000112"),
-        _id_borrower: new ObjectId("000000000000000000000113"),
-        _id_lender: new ObjectId("000000000000000000000101"),
+        id_borrower: "wHHR1SUBT0dspoF4YUOw9",
+        id_lender: "wHHR1SUBT0dspoF4YUOw8",
         _id_loan: new ObjectId("000000000000000000000102"),
         created: now,
         moratory: 0,

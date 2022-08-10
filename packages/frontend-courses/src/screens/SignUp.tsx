@@ -1,4 +1,4 @@
-import { getDataFromToken, tokensAndData } from "App";
+import { tokensAndData } from "App";
 import { Checkbox } from "components/Checkbox";
 import { Columns } from "components/Colums";
 import { CustomButton } from "components/CustomButton";
@@ -14,7 +14,8 @@ import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
 import { useTranslation } from "react-i18next";
-import { logOut } from "utils";
+import { expireSessionTime, logOut } from "utils";
+import { addMinutes } from "date-fns";
 
 export const SignUp: FC = () => {
   const { t } = useTranslation();
@@ -23,7 +24,6 @@ export const SignUp: FC = () => {
       signUp(input: $input) {
         error
         accessToken
-        refreshToken
       }
     }
   `);
@@ -100,25 +100,12 @@ export const SignUp: FC = () => {
                         }
                         return window.alert(response.signUp.error);
                       }
-                      tokensAndData.tokens.accessToken =
-                        response.signUp.accessToken;
-                      tokensAndData.tokens.refreshToken =
-                        response.signUp.refreshToken;
-                      const user = getDataFromToken(
-                        response.signUp.refreshToken
+                      tokensAndData.accessToken = response.signUp.accessToken;
+                      tokensAndData.exp = addMinutes(
+                        new Date(),
+                        expireSessionTime
                       );
-                      tokensAndData.credentials.email = email;
-                      tokensAndData.credentials.password = password;
-                      tokensAndData.data = user;
-                      tokensAndData.refetchUser(
-                        user.isBorrower
-                          ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
-                          : user.isSupport
-                          ? ["WAITING_FOR_APPROVAL"]
-                          : ["FINANCING"],
-                        user._id,
-                        user.isBorrower ? user._id : null
-                      );
+                      tokensAndData.refetchUser();
                     },
                   });
                 }}

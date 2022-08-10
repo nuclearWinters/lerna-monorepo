@@ -25,8 +25,8 @@ describe("QueryInvestments tests", () => {
     await investments.insertMany([
       {
         _id: new ObjectId("000000000000000000000032"),
-        _id_borrower: new ObjectId("000000000000000000000031"),
-        _id_lender: new ObjectId("000000000000000000000030"),
+        id_borrower: "wHHR1SUBT0dspoF4YUO17",
+        id_lender: "wHHR1SUBT0dspoF4YUO16",
         _id_loan: new ObjectId("000000000000000000000033"),
         quantity: 50000,
         status: "up to date",
@@ -39,8 +39,8 @@ describe("QueryInvestments tests", () => {
       },
       {
         _id: new ObjectId("000000000000000000000034"),
-        _id_borrower: new ObjectId("000000000000000000000037"),
-        _id_lender: new ObjectId("000000000000000000000030"),
+        id_borrower: "wHHR1SUBT0dspoF4YUO18",
+        id_lender: "wHHR1SUBT0dspoF4YUO16",
         _id_loan: new ObjectId("000000000000000000000038"),
         quantity: 50000,
         status: "up to date",
@@ -53,8 +53,8 @@ describe("QueryInvestments tests", () => {
       },
       {
         _id: new ObjectId("000000000000000000000035"),
-        _id_borrower: new ObjectId("000000000000000000000036"),
-        _id_lender: new ObjectId("000000000000000000000030"),
+        id_borrower: "wHHR1SUBT0dspoF4YUO19",
+        id_lender: "wHHR1SUBT0dspoF4YUO16",
         _id_loan: new ObjectId("000000000000000000000039"),
         quantity: 50000,
         status: "up to date",
@@ -67,29 +67,30 @@ describe("QueryInvestments tests", () => {
       },
     ]);
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
-        query: `query GetInvestmentsConnection($first: Int, $after: String, $user_id: String!, $status: [InvestmentStatus!]!) {
-          investments(first: $first, after: $after, user_id: $user_id, status: $status) {
-            edges {
-              cursor
-              node {
-                id
-                _id_borrower
-                _id_lender
-                _id_loan
-                quantity
-                created
-                updated
-                status
+        query: `query GetInvestmentsConnection($first: Int, $after: String, $status: [InvestmentStatus!]!) {
+          user {
+            investments(first: $first, after: $after, status: $status) {
+              edges {
+                cursor
+                node {
+                  id
+                  id_borrower
+                  id_lender
+                  _id_loan
+                  quantity
+                  created
+                  updated
+                  status
+                }
               }
-            }
-          }  
+            } 
+          }
         }`,
         variables: {
           first: 2,
           after: "",
-          user_id: "000000000000000000000030",
           status: ["UP_TO_DATE"],
         },
         operationName: "GetInvestmentsConnection",
@@ -97,29 +98,54 @@ describe("QueryInvestments tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000030", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO16",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          {
+            expiresIn: "15m",
+          }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO16",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
-    expect(response.body.data.investments.edges.length).toBe(2);
-    expect(response.body.data.investments.edges[0].cursor).toBeTruthy();
-    expect(response.body.data.investments.edges[0].node.id).toBeTruthy();
+    expect(response.body.data.user.investments.edges.length).toBe(2);
+    expect(response.body.data.user.investments.edges[0].cursor).toBeTruthy();
+    expect(response.body.data.user.investments.edges[0].node.id).toBeTruthy();
     expect(
-      response.body.data.investments.edges[0].node._id_borrower
+      response.body.data.user.investments.edges[0].node.id_borrower
     ).toBeTruthy();
     expect(
-      response.body.data.investments.edges[0].node._id_lender
+      response.body.data.user.investments.edges[0].node.id_lender
     ).toBeTruthy();
-    expect(response.body.data.investments.edges[0].node._id_loan).toBeTruthy();
-    expect(response.body.data.investments.edges[0].node.quantity).toBe(50000);
-    expect(response.body.data.investments.edges[0].node.created).toBeTruthy();
-    expect(response.body.data.investments.edges[0].node.updated).toBeTruthy();
-    expect(response.body.data.investments.edges[0].node.status).toBe(
+    expect(
+      response.body.data.user.investments.edges[0].node._id_loan
+    ).toBeTruthy();
+    expect(response.body.data.user.investments.edges[0].node.quantity).toBe(
+      50000
+    );
+    expect(
+      response.body.data.user.investments.edges[0].node.created
+    ).toBeTruthy();
+    expect(
+      response.body.data.user.investments.edges[0].node.updated
+    ).toBeTruthy();
+    expect(response.body.data.user.investments.edges[0].node.status).toBe(
       "UP_TO_DATE"
     );
   });

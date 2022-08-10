@@ -21,6 +21,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       CURP: "CURP",
       clabe: "clabe",
       mobile: "9831228788",
+      id: "wHHR1SUBT0dspoF4YUOw1",
     },
     {
       _id: new ObjectId("6095f055f92be2001a15885b"),
@@ -37,6 +38,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       CURP: "CURP",
       clabe: "clabe",
       mobile: "9831228788",
+      id: "wHHR1SUBT0dspoF4YUOw2",
     },
     {
       _id: new ObjectId("6095f172f92be2001a15885c"),
@@ -53,6 +55,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       CURP: "CURP",
       clabe: "clabe",
       mobile: "9831228788",
+      id: "wHHR1SUBT0dspoF4YUOw3",
     },
   ]);
   process.exit();

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<dc52cd51eb768671ffa98109ed673489>>
+ * @generated SignedSource<<c82e2a8e7e1eaeff6845b0f2ea94350e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,23 +10,19 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type BlacklistUserInput = {
-  user_gid: string;
   clientMutationId?: string | null;
 };
 export type SettingsBlacklistUserMutation$variables = {
   input: BlacklistUserInput;
 };
-export type SettingsBlacklistUserMutationVariables = SettingsBlacklistUserMutation$variables;
 export type SettingsBlacklistUserMutation$data = {
   readonly blacklistUser: {
     readonly error: string;
-    readonly validAccessToken: string;
   };
 };
-export type SettingsBlacklistUserMutationResponse = SettingsBlacklistUserMutation$data;
 export type SettingsBlacklistUserMutation = {
-  variables: SettingsBlacklistUserMutationVariables;
   response: SettingsBlacklistUserMutation$data;
+  variables: SettingsBlacklistUserMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -58,13 +54,6 @@ v1 = [
         "kind": "ScalarField",
         "name": "error",
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "validAccessToken",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -88,16 +77,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "5e4fb7bc07a201aaa07384d376d910bb",
+    "cacheID": "785a3efd0adf9b273bdd82c1391c7b75",
     "id": null,
     "metadata": {},
     "name": "SettingsBlacklistUserMutation",
     "operationKind": "mutation",
-    "text": "mutation SettingsBlacklistUserMutation(\n  $input: BlacklistUserInput!\n) {\n  blacklistUser(input: $input) {\n    error\n    validAccessToken\n  }\n}\n"
+    "text": "mutation SettingsBlacklistUserMutation(\n  $input: BlacklistUserInput!\n) {\n  blacklistUser(input: $input) {\n    error\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1fcdfed34f4ef9d1502b391155b4ff05";
+(node as any).hash = "847542b869f6ad082842b24087285a12";
 
 export default node;

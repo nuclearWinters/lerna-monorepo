@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<29f11031fa052126b6e4403970ffe569>>
+ * @generated SignedSource<<75711e97e31713d5519a93fac3289e39>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,7 +21,6 @@ export type MyInvestments_query$data = {
   } | null;
   readonly " $fragmentType": "MyInvestments_query";
 };
-export type MyInvestments_query = MyInvestments_query$data;
 export type MyInvestments_query$key = {
   readonly " $data"?: MyInvestments_query$data;
   readonly " $fragmentSpreads": FragmentRefs<"MyInvestments_query">;
@@ -42,10 +41,6 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
-    },
-    {
-      "kind": "RootArgument",
-      "name": "id"
     },
     {
       "defaultValue": [
@@ -89,11 +84,6 @@ return {
           "kind": "Variable",
           "name": "status",
           "variableName": "status"
-        },
-        {
-          "kind": "Variable",
-          "name": "user_id",
-          "variableName": "id"
         }
       ],
       "concreteType": "InvestmentsConnection",
@@ -183,6 +173,6 @@ return {
 };
 })();
 
-(node as any).hash = "9182023af3df86826798dd2df127977f";
+(node as any).hash = "c6f873fad99dc08e3e8569a068854d5e";
 
 export default node;

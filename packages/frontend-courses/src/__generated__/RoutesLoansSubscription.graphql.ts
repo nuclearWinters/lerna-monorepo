@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<57d87187868e6fcf07e37acb939b8ff2>>
+ * @generated SignedSource<<1a1681dc9f8f5caf8d0c26981d74a242>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,41 +9,39 @@
 // @ts-nocheck
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
-export type LoanScheduledPaymentStatus = "TO_BE_PAID" | "DELAYED" | "PAID" | "%future added value";
-export type LoanStatus = "PAID" | "TO_BE_PAID" | "FINANCING" | "WAITING_FOR_APPROVAL" | "PAST_DUE" | "%future added value";
-export type SubscribeType = "UPDATE" | "INSERT" | "%future added value";
+export type LoanScheduledPaymentStatus = "DELAYED" | "PAID" | "TO_BE_PAID" | "%future added value";
+export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
+export type SubscribeType = "INSERT" | "UPDATE" | "%future added value";
 export type RoutesLoansSubscription$variables = {
   status: ReadonlyArray<LoanStatus>;
 };
-export type RoutesLoansSubscriptionVariables = RoutesLoansSubscription$variables;
 export type RoutesLoansSubscription$data = {
   readonly loans_subscribe: {
     readonly loan_edge: {
+      readonly cursor: string;
       readonly node: {
-        readonly id: string;
-        readonly _id_user: string;
-        readonly score: string;
         readonly ROI: number;
-        readonly goal: string;
-        readonly term: number;
-        readonly raised: string;
+        readonly _id_user: string;
         readonly expiry: Int;
-        readonly status: LoanStatus;
+        readonly goal: string;
+        readonly id: string;
+        readonly raised: string;
         readonly scheduledPayments: ReadonlyArray<{
           readonly amortize: string;
-          readonly status: LoanScheduledPaymentStatus;
           readonly scheduledDate: Int;
+          readonly status: LoanScheduledPaymentStatus;
         }> | null;
+        readonly score: string;
+        readonly status: LoanStatus;
+        readonly term: number;
       } | null;
-      readonly cursor: string;
     };
     readonly type: SubscribeType;
   };
 };
-export type RoutesLoansSubscriptionResponse = RoutesLoansSubscription$data;
 export type RoutesLoansSubscription = {
-  variables: RoutesLoansSubscriptionVariables;
   response: RoutesLoansSubscription$data;
+  variables: RoutesLoansSubscription$variables;
 };
 
 const node: ConcreteRequest = (function(){

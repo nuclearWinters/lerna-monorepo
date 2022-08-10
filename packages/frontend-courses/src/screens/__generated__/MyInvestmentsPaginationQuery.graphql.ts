@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<14db6cb4069c80afd1f362630a110c6a>>
+ * @generated SignedSource<<22a1c5d1517b6c1293583c79bb9b05a9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,21 +10,18 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type InvestmentStatus = "DELAY_PAYMENT" | "UP_TO_DATE" | "FINANCING" | "PAST_DUE" | "PAID" | "%future added value";
+export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 export type MyInvestmentsPaginationQuery$variables = {
   count?: number | null;
   cursor?: string | null;
-  id: string;
   status?: ReadonlyArray<InvestmentStatus> | null;
 };
-export type MyInvestmentsPaginationQueryVariables = MyInvestmentsPaginationQuery$variables;
 export type MyInvestmentsPaginationQuery$data = {
   readonly " $fragmentSpreads": FragmentRefs<"MyInvestments_query">;
 };
-export type MyInvestmentsPaginationQueryResponse = MyInvestmentsPaginationQuery$data;
 export type MyInvestmentsPaginationQuery = {
-  variables: MyInvestmentsPaginationQueryVariables;
   response: MyInvestmentsPaginationQuery$data;
+  variables: MyInvestmentsPaginationQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -38,11 +35,6 @@ var v0 = [
     "defaultValue": "",
     "kind": "LocalArgument",
     "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
   },
   {
     "defaultValue": [
@@ -70,12 +62,7 @@ v2 = [
     "name": "first",
     "variableName": "count"
   },
-  (v1/*: any*/),
-  {
-    "kind": "Variable",
-    "name": "user_id",
-    "variableName": "id"
-  }
+  (v1/*: any*/)
 ];
 return {
   "fragment": {
@@ -264,7 +251,6 @@ return {
         "alias": null,
         "args": (v2/*: any*/),
         "filters": [
-          "user_id",
           "status"
         ],
         "handle": "connection",
@@ -275,16 +261,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "f0fb4aaaee75615e1b63765712689305",
+    "cacheID": "09d26a4dae32155f9c1cbfeeb1c7c2ff",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsPaginationQuery",
     "operationKind": "query",
-    "text": "query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $id: String!\n  $status: [InvestmentStatus!] = [DELAY_PAYMENT, UP_TO_DATE, FINANCING]\n) {\n  ...MyInvestments_query_4qXjrI\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment MyInvestments_query_4qXjrI on Query {\n  investments(first: $count, after: $cursor, user_id: $id, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query MyInvestmentsPaginationQuery(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $status: [InvestmentStatus!] = [DELAY_PAYMENT, UP_TO_DATE, FINANCING]\n) {\n  ...MyInvestments_query_4qXjrI\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n\nfragment MyInvestments_query_4qXjrI on Query {\n  investments(first: $count, after: $cursor, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "9182023af3df86826798dd2df127977f";
+(node as any).hash = "c6f873fad99dc08e3e8569a068854d5e";
 
 export default node;

@@ -1,7 +1,8 @@
-import React, { CSSProperties, FC } from "react";
+import React, { CSSProperties, FC, ReactNode } from "react";
 
 interface Props {
   color: "primary" | "secondary";
+  children: ReactNode;
 }
 
 export const Table: FC<Props> = ({ children, color }) => {

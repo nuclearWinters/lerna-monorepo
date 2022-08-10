@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e6b5658d4658337a33855cbe097ddf57>>
+ * @generated SignedSource<<1c9931dc6bf3bc03a94c976618c1aad2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,16 +13,14 @@ import { FragmentRefs } from "relay-runtime";
 export type InvestmentRowRefetchQuery$variables = {
   id: string;
 };
-export type InvestmentRowRefetchQueryVariables = InvestmentRowRefetchQuery$variables;
 export type InvestmentRowRefetchQuery$data = {
   readonly node: {
     readonly " $fragmentSpreads": FragmentRefs<"InvestmentRow_investment">;
   } | null;
 };
-export type InvestmentRowRefetchQueryResponse = InvestmentRowRefetchQuery$data;
 export type InvestmentRowRefetchQuery = {
-  variables: InvestmentRowRefetchQueryVariables;
   response: InvestmentRowRefetchQuery$data;
+  variables: InvestmentRowRefetchQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -102,7 +100,7 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "_id_borrower",
+                "name": "id_borrower",
                 "storageKey": null
               },
               {
@@ -178,16 +176,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3e7d5023ecda9838ecb9f24dcdaaf71f",
+    "cacheID": "7aa0c1e7e5857621e0bb60e0746b544a",
     "id": null,
     "metadata": {},
     "name": "InvestmentRowRefetchQuery",
     "operationKind": "query",
-    "text": "query InvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...InvestmentRow_investment\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  _id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n"
+    "text": "query InvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...InvestmentRow_investment\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3e1cac86e549c2f4e368fcae142c5584";
+(node as any).hash = "3696d71d0110801a9c520856264c3e47";
 
 export default node;

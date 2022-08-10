@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<12e8b2a34a043245f826942bf1090a30>>
+ * @generated SignedSource<<98604464b682ac48fb20351420ed61e5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,16 +13,14 @@ import { FragmentRefs } from "relay-runtime";
 export type LoanRowRefetchQuery$variables = {
   id: string;
 };
-export type LoanRowRefetchQueryVariables = LoanRowRefetchQuery$variables;
 export type LoanRowRefetchQuery$data = {
   readonly node: {
     readonly " $fragmentSpreads": FragmentRefs<"LoanRow_loan">;
   } | null;
 };
-export type LoanRowRefetchQueryResponse = LoanRowRefetchQuery$data;
 export type LoanRowRefetchQuery = {
-  variables: LoanRowRefetchQueryVariables;
   response: LoanRowRefetchQuery$data;
+  variables: LoanRowRefetchQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){

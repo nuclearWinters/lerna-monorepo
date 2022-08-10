@@ -30,11 +30,13 @@ describe("AddLends tests", () => {
     await users.insertMany([
       {
         _id: new ObjectId("000000000000000000000004"),
+        id: "wHHR1SUBT0dspoF4YUO31",
         accountAvailable: 100000,
         investments: [],
       },
       {
         _id: new ObjectId("000000000000000000000005"),
+        id: "wHHR1SUBT0dspoF4YUO32",
         accountAvailable: 100000,
         investments: [],
       },
@@ -43,7 +45,7 @@ describe("AddLends tests", () => {
     await loans.insertMany([
       {
         _id: new ObjectId("000000000000000000000002"),
-        _id_user: new ObjectId("000000000000000000000005"),
+        id_user: "wHHR1SUBT0dspoF4YUO32",
         score: "AAA",
         ROI: 10,
         goal: 50000,
@@ -56,7 +58,7 @@ describe("AddLends tests", () => {
       },
       {
         _id: new ObjectId("000000000000000000000003"),
-        _id_user: new ObjectId("000000000000000000000005"),
+        id_user: "wHHR1SUBT0dspoF4YUO32",
         score: "AAA",
         ROI: 10,
         goal: 50000,
@@ -71,7 +73,7 @@ describe("AddLends tests", () => {
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
@@ -81,12 +83,11 @@ describe("AddLends tests", () => {
         }`,
         variables: {
           input: {
-            lender_gid: base64Name("000000000000000000000004", "User"),
             lends: [
               {
                 loan_gid: base64Name("000000000000000000000002", "Loan"),
                 quantity: "100.00",
-                borrower_id: "000000000000000000000005",
+                borrower_id: "wHHR1SUBT0dspoF4YUO32",
                 term: 2,
                 goal: "500.00",
                 ROI: 10,
@@ -94,7 +95,7 @@ describe("AddLends tests", () => {
               {
                 loan_gid: base64Name("000000000000000000000003", "Loan"),
                 quantity: "50.00",
-                borrower_id: "000000000000000000000005",
+                borrower_id: "wHHR1SUBT0dspoF4YUO32",
                 term: 2,
                 goal: "500.00",
                 ROI: 10,
@@ -107,19 +108,36 @@ describe("AddLends tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000004", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO31",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          {
+            expiresIn: "15m",
+          }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO31",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addLends.error).toBeFalsy();
     expect(response.body.data.addLends.validAccessToken).toBeTruthy();
     const user = await users.findOne({
-      _id: new ObjectId("000000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO31",
     });
     expect(user?.accountAvailable).toBe(85000);
     expect(user?.investments).toEqual([
@@ -139,7 +157,7 @@ describe("AddLends tests", () => {
       },
     ]);
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("000000000000000000000004") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions[0].history.length).toBe(2);
@@ -147,25 +165,25 @@ describe("AddLends tests", () => {
       allTransactions[0].history.map((transaction) => ({
         type: transaction.type,
         quantity: transaction.quantity,
-        _id_borrower: transaction._id_borrower?.toHexString(),
+        id_borrower: transaction.id_borrower,
         _id_loan: transaction._id_loan?.toHexString(),
       }))
     ).toEqual([
       {
         type: "invest",
         quantity: 10000,
-        _id_borrower: "000000000000000000000005",
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
         _id_loan: "000000000000000000000002",
       },
       {
         type: "invest",
         quantity: 5000,
-        _id_borrower: "000000000000000000000005",
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
         _id_loan: "000000000000000000000003",
       },
     ]);
     const allLoans = await loans
-      .find({ _id_user: new ObjectId("000000000000000000000005") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO32" })
       .toArray();
     expect(allLoans.length).toBe(2);
     expect(
@@ -174,7 +192,7 @@ describe("AddLends tests", () => {
         status: loan.status,
         investors: loan.investors.map((investor) => ({
           ...investor,
-          _id_lender: investor._id_lender.toHexString(),
+          id_lender: investor.id_lender,
         })),
       }))
     ).toEqual([
@@ -183,7 +201,7 @@ describe("AddLends tests", () => {
         status: "financing",
         investors: [
           {
-            _id_lender: "000000000000000000000004",
+            id_lender: "wHHR1SUBT0dspoF4YUO31",
             quantity: 10000,
           },
         ],
@@ -193,7 +211,7 @@ describe("AddLends tests", () => {
         status: "financing",
         investors: [
           {
-            _id_lender: "000000000000000000000004",
+            id_lender: "wHHR1SUBT0dspoF4YUO31",
             quantity: 5000,
           },
         ],
@@ -201,7 +219,7 @@ describe("AddLends tests", () => {
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ _id_lender: new ObjectId("000000000000000000000004") })
+      .find({ id_lender: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
     expect(allInvestments.length).toBe(2);
     expect(
@@ -229,7 +247,7 @@ describe("AddLends tests", () => {
       },
     ]);
     const response2 = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
@@ -239,12 +257,11 @@ describe("AddLends tests", () => {
         }`,
         variables: {
           input: {
-            lender_gid: base64Name("000000000000000000000004", "User"),
             lends: [
               {
                 loan_gid: base64Name("000000000000000000000002", "Loan"),
                 quantity: "400.00",
-                borrower_id: "000000000000000000000005",
+                borrower_id: "wHHR1SUBT0dspoF4YUO32",
                 term: 2,
                 goal: "500.00",
                 ROI: 10,
@@ -252,7 +269,7 @@ describe("AddLends tests", () => {
               {
                 loan_gid: base64Name("000000000000000000000003", "Loan"),
                 quantity: "450.00",
-                borrower_id: "000000000000000000000005",
+                borrower_id: "wHHR1SUBT0dspoF4YUO32",
                 term: 2,
                 goal: "500.00",
                 ROI: 10,
@@ -265,19 +282,36 @@ describe("AddLends tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000004", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO31",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          {
+            expiresIn: "15m",
+          }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO31",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response2.body.data.addLends.error).toBeFalsy();
     expect(response2.body.data.addLends.validAccessToken).toBeTruthy();
     const user2 = await users.findOne({
-      _id: new ObjectId("000000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO31",
     });
     expect(user2?.accountAvailable).toBe(0);
     expect(user2?.investments).toEqual([
@@ -311,11 +345,11 @@ describe("AddLends tests", () => {
       },
     ]);
     const user3 = await users.findOne({
-      _id: new ObjectId("000000000000000000000005"),
+      id: "wHHR1SUBT0dspoF4YUO32",
     });
     expect(user3?.accountAvailable).toBe(200000);
     const allTransactions2 = await transactions
-      .find({ _id_user: new ObjectId("000000000000000000000004") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
     expect(allTransactions2.length).toBe(1);
     expect(allTransactions2[0].history.length).toBe(4);
@@ -323,37 +357,37 @@ describe("AddLends tests", () => {
       allTransactions2[0].history.map((transaction) => ({
         type: transaction.type,
         quantity: transaction.quantity,
-        _id_borrower: transaction._id_borrower?.toHexString(),
+        id_borrower: transaction.id_borrower,
         _id_loan: transaction._id_loan?.toHexString(),
       }))
     ).toEqual([
       {
         type: "invest",
         quantity: 10000,
-        _id_borrower: "000000000000000000000005",
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
         _id_loan: "000000000000000000000002",
       },
       {
         type: "invest",
         quantity: 5000,
-        _id_borrower: "000000000000000000000005",
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
         _id_loan: "000000000000000000000003",
       },
       {
         type: "invest",
         quantity: 40000,
-        _id_borrower: "000000000000000000000005",
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
         _id_loan: "000000000000000000000002",
       },
       {
         type: "invest",
         quantity: 45000,
-        _id_borrower: "000000000000000000000005",
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
         _id_loan: "000000000000000000000003",
       },
     ]);
     const allLoans2 = await loans
-      .find({ _id_user: new ObjectId("000000000000000000000005") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO32" })
       .toArray();
     expect(allLoans2.length).toBe(2);
     expect(
@@ -362,7 +396,7 @@ describe("AddLends tests", () => {
         status: loan.status,
         investors: loan.investors.map((investor) => ({
           ...investor,
-          _id_lender: investor._id_lender.toHexString(),
+          id_lender: investor.id_lender,
         })),
         scheduledPayments: loan.scheduledPayments?.map((payment) => ({
           amortize: payment.amortize,
@@ -385,11 +419,11 @@ describe("AddLends tests", () => {
         ],
         investors: [
           {
-            _id_lender: "000000000000000000000004",
+            id_lender: "wHHR1SUBT0dspoF4YUO31",
             quantity: 10000,
           },
           {
-            _id_lender: "000000000000000000000004",
+            id_lender: "wHHR1SUBT0dspoF4YUO31",
             quantity: 40000,
           },
         ],
@@ -409,11 +443,11 @@ describe("AddLends tests", () => {
         ],
         investors: [
           {
-            _id_lender: "000000000000000000000004",
+            id_lender: "wHHR1SUBT0dspoF4YUO31",
             quantity: 5000,
           },
           {
-            _id_lender: "000000000000000000000004",
+            id_lender: "wHHR1SUBT0dspoF4YUO31",
             quantity: 45000,
           },
         ],
@@ -421,7 +455,7 @@ describe("AddLends tests", () => {
     ]);
     const investments2 = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments2 = await investments2
-      .find({ _id_lender: new ObjectId("000000000000000000000004") })
+      .find({ id_lender: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
     expect(allInvestments2.length).toBe(2);
     expect(
@@ -455,11 +489,13 @@ describe("AddLends tests", () => {
     await users.insertMany([
       {
         _id: new ObjectId("400000000000000000000004"),
+        id: "wHHR1SUBT0dspoF4YUO33",
         accountAvailable: 10000,
         investments: [],
       },
       {
         _id: new ObjectId("400000000000000000000005"),
+        id: "wHHR1SUBT0dspoF4YUO34",
         accountAvailable: 10000,
         investments: [],
       },
@@ -468,7 +504,7 @@ describe("AddLends tests", () => {
     await loans.insertMany([
       {
         _id: new ObjectId("400000000000000000000002"),
-        _id_user: new ObjectId("400000000000000000000005"),
+        id_user: "wHHR1SUBT0dspoF4YUO34",
         score: "AAA",
         ROI: 10,
         goal: 50000,
@@ -483,7 +519,7 @@ describe("AddLends tests", () => {
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
@@ -493,12 +529,11 @@ describe("AddLends tests", () => {
         }`,
         variables: {
           input: {
-            lender_gid: base64Name("400000000000000000000004", "User"),
             lends: [
               {
                 loan_gid: base64Name("400000000000000000000002", "Loan"),
                 quantity: "150.00",
-                borrower_id: "400000000000000000000005",
+                borrower_id: "wHHR1SUBT0dspoF4YUO34",
                 term: 2,
                 goal: "500.00",
                 ROI: 10,
@@ -511,30 +546,45 @@ describe("AddLends tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "400000000000000000000004", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO33",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "15m" }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO33",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addLends.error).toBe(
       "No se tienen suficientes fondos."
     );
     expect(response.body.data.addLends.validAccessToken).toBeFalsy();
     const user = await users.findOne({
-      _id: new ObjectId("400000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO33",
     });
     expect(user?.accountAvailable).toBe(10000);
     expect(user?.investments).toEqual([]);
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("400000000000000000000004") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO33" })
       .toArray();
     expect(allTransactions.length).toBe(0);
     const allLoans = await loans
-      .find({ _id_user: new ObjectId("400000000000000000000005") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO34" })
       .toArray();
     expect(allLoans.length).toBe(1);
     expect(
@@ -543,7 +593,7 @@ describe("AddLends tests", () => {
         status: loan.status,
         investors: loan.investors.map((investor) => ({
           ...investor,
-          _id_lender: investor._id_lender.toHexString(),
+          id_lender: investor.id_lender,
         })),
       }))
     ).toEqual([
@@ -555,7 +605,7 @@ describe("AddLends tests", () => {
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ _id_lender: new ObjectId("400000000000000000000004") })
+      .find({ id_lender: "wHHR1SUBT0dspoF4YUO33" })
       .toArray();
     expect(allInvestments.length).toBe(0);
   });
@@ -565,11 +615,13 @@ describe("AddLends tests", () => {
     await users.insertMany([
       {
         _id: new ObjectId("500000000000000000000004"),
+        id: "wHHR1SUBT0dspoF4YUO35",
         accountAvailable: 10000,
         investments: [],
       },
       {
         _id: new ObjectId("500000000000000000000005"),
+        id: "wHHR1SUBT0dspoF4YUO36",
         accountAvailable: 10000,
         investments: [],
       },
@@ -578,7 +630,7 @@ describe("AddLends tests", () => {
     await loans.insertMany([
       {
         _id: new ObjectId("500000000000000000000002"),
-        _id_user: new ObjectId("500000000000000000000005"),
+        id_user: "wHHR1SUBT0dspoF4YUO36",
         score: "AAA",
         ROI: 10,
         goal: 50000,
@@ -593,7 +645,7 @@ describe("AddLends tests", () => {
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
@@ -603,12 +655,11 @@ describe("AddLends tests", () => {
         }`,
         variables: {
           input: {
-            lender_gid: base64Name("500000000000000000000004", "User"),
             lends: [
               {
                 loan_gid: base64Name("500000000000000000000002", "Loan"),
                 quantity: "50.00",
-                borrower_id: "500000000000000000000005",
+                borrower_id: "wHHR1SUBT0dspoF4YUO36",
                 term: 2,
                 goal: "500.00",
                 ROI: 10,
@@ -621,30 +672,45 @@ describe("AddLends tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "500000000000000000000004", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO35",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "15m" }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO35",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addLends.error).toBe(
       "Error: no se realizó ninguna operación. Intenta de nuevo."
     );
     expect(response.body.data.addLends.validAccessToken).toBeFalsy();
     const user = await users.findOne({
-      _id: new ObjectId("500000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO35",
     });
     expect(user?.accountAvailable).toBe(10000);
     expect(user?.investments).toEqual([]);
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("500000000000000000000004") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO35" })
       .toArray();
     expect(allTransactions.length).toBe(0);
     const allLoans = await loans
-      .find({ _id_user: new ObjectId("500000000000000000000005") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO36" })
       .toArray();
     expect(allLoans.length).toBe(1);
     expect(
@@ -653,7 +719,7 @@ describe("AddLends tests", () => {
         status: loan.status,
         investors: loan.investors.map((investor) => ({
           ...investor,
-          _id_lender: investor._id_lender.toHexString(),
+          id_lender: investor.id_lender,
         })),
       }))
     ).toEqual([
@@ -665,7 +731,7 @@ describe("AddLends tests", () => {
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ _id_lender: new ObjectId("500000000000000000000004") })
+      .find({ id_lender: "wHHR1SUBT0dspoF4YUO35" })
       .toArray();
     expect(allInvestments.length).toBe(0);
   });
@@ -675,11 +741,13 @@ describe("AddLends tests", () => {
     await users.insertMany([
       {
         _id: new ObjectId("600000000000000000000004"),
+        id: "wHHR1SUBT0dspoF4YUO37",
         accountAvailable: 10000,
         investments: [],
       },
       {
         _id: new ObjectId("600000000000000000000005"),
+        id: "wHHR1SUBT0dspoF4YUO38",
         accountAvailable: 10000,
         investments: [],
       },
@@ -688,7 +756,7 @@ describe("AddLends tests", () => {
     await loans.insertMany([
       {
         _id: new ObjectId("600000000000000000000002"),
-        _id_user: new ObjectId("600000000000000000000005"),
+        id_user: "wHHR1SUBT0dspoF4YUO38",
         score: "AAA",
         ROI: 10,
         goal: 50000,
@@ -701,7 +769,7 @@ describe("AddLends tests", () => {
       },
       {
         _id: new ObjectId("600000000000000000000003"),
-        _id_user: new ObjectId("600000000000000000000005"),
+        id_user: "wHHR1SUBT0dspoF4YUO38",
         score: "AAA",
         ROI: 10,
         goal: 50000,
@@ -716,7 +784,7 @@ describe("AddLends tests", () => {
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
@@ -726,12 +794,11 @@ describe("AddLends tests", () => {
         }`,
         variables: {
           input: {
-            lender_gid: base64Name("600000000000000000000004", "User"),
             lends: [
               {
                 loan_gid: base64Name("600000000000000000000002", "Loan"),
                 quantity: "50.00",
-                borrower_id: "600000000000000000000005",
+                borrower_id: "wHHR1SUBT0dspoF4YUO38",
                 term: 2,
                 goal: "500.00",
                 ROI: 10,
@@ -739,7 +806,7 @@ describe("AddLends tests", () => {
               {
                 loan_gid: base64Name("600000000000000000000003", "Loan"),
                 quantity: "50.00",
-                borrower_id: "600000000000000000000005",
+                borrower_id: "wHHR1SUBT0dspoF4YUO38",
                 term: 2,
                 goal: "500.00",
                 ROI: 10,
@@ -752,19 +819,34 @@ describe("AddLends tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "600000000000000000000004", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO37",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          { expiresIn: "15m" }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO37",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.addLends.error).toBeFalsy();
     expect(response.body.data.addLends.validAccessToken).toBeTruthy();
     const user = await users.findOne({
-      _id: new ObjectId("600000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO37",
     });
     expect(user?.accountAvailable).toBe(5000);
     expect(user?.investments).toEqual([
@@ -777,7 +859,7 @@ describe("AddLends tests", () => {
       },
     ]);
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("600000000000000000000004") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO37" })
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions[0].history.length).toBe(1);
@@ -785,19 +867,19 @@ describe("AddLends tests", () => {
       allTransactions[0].history.map((transaction) => ({
         type: transaction.type,
         quantity: transaction.quantity,
-        _id_borrower: transaction._id_borrower?.toHexString(),
+        id_borrower: transaction.id_borrower,
         _id_loan: transaction._id_loan?.toHexString(),
       }))
     ).toEqual([
       {
         type: "invest",
         quantity: 5000,
-        _id_borrower: "600000000000000000000005",
+        id_borrower: "wHHR1SUBT0dspoF4YUO38",
         _id_loan: "600000000000000000000003",
       },
     ]);
     const allLoans = await loans
-      .find({ _id_user: new ObjectId("600000000000000000000005") })
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO38" })
       .toArray();
     expect(allLoans.length).toBe(2);
     expect(
@@ -806,7 +888,7 @@ describe("AddLends tests", () => {
         status: loan.status,
         investors: loan.investors.map((investor) => ({
           ...investor,
-          _id_lender: investor._id_lender.toHexString(),
+          id_lender: investor.id_lender,
         })),
       }))
     ).toEqual([
@@ -820,7 +902,7 @@ describe("AddLends tests", () => {
         status: "financing",
         investors: [
           {
-            _id_lender: "600000000000000000000004",
+            id_lender: "wHHR1SUBT0dspoF4YUO37",
             quantity: 5000,
           },
         ],
@@ -828,7 +910,7 @@ describe("AddLends tests", () => {
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ _id_lender: new ObjectId("600000000000000000000004") })
+      .find({ id_lender: "wHHR1SUBT0dspoF4YUO37" })
       .toArray();
     expect(allInvestments.length).toBe(1);
     expect(

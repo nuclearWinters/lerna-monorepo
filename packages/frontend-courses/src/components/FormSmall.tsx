@@ -1,6 +1,6 @@
-import React, { CSSProperties, FC } from "react";
+import React, { CSSProperties, FC, ReactNode } from "react";
 
-export const FormSmall: FC = ({ children }) => {
+export const FormSmall: FC<{ children: ReactNode }> = ({ children }) => {
   return <div style={container}>{children}</div>;
 };
 

@@ -11,7 +11,6 @@ import {
   useSubscription,
   ConnectionHandler,
 } from "react-relay";
-import { Routes_query$key } from "./__generated__/Routes_query.graphql";
 import {
   Account,
   AddInvestments,
@@ -24,8 +23,6 @@ import {
   MyInvestments,
   Settings,
 } from "./screens";
-import { AppQueryResponse } from "__generated__/AppQuery.graphql";
-import { tokensAndData } from "App";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
 import {
@@ -56,40 +53,48 @@ import { Rows } from "components/Rows";
 import { generateCents, generateCurrency, logOut } from "utils";
 import { useTranslation } from "react-i18next";
 import { CheckExpiration } from "components/CheckExpiration";
+import { Routes_user$key } from "__generated__/Routes_user.graphql";
+import { Routes_auth_user$key } from "__generated__/Routes_auth_user.graphql";
 
 const routesFragment = graphql`
-  fragment Routes_query on Query {
-    user(id: $id) {
-      id
-      investments {
-        _id_loan
-        quantity
-        term
-        ROI
-        payments
-      }
-      accountAvailable
-      ...AddFunds_user
-      ...RetireFunds_user
-      ...AddLoan_user
-      ...Account_user
+  fragment Routes_user on User {
+    id
+    investmentsUser {
+      _id_loan
+      quantity
+      term
+      ROI
+      payments
     }
-    authUser(id: $id) {
-      id
-      name
-      apellidoPaterno
-      apellidoMaterno
-      language
-      isBorrower
-      isSupport
-      ...Settings_auth_user
-      ...CheckExpiration_auth_user
-    }
+    accountAvailable
+    ...AddFunds_user
+    ...RetireFunds_user
+    ...AddLoan_user
+    ...Account_user
+    ...MyTransactions_user
+    ...MyInvestments_user
+    ...AddInvestments_user
+  }
+`;
+
+const routesFragmentAuth = graphql`
+  fragment Routes_auth_user on AuthUser {
+    id
+    name
+    apellidoPaterno
+    apellidoMaterno
+    language
+    isBorrower
+    isSupport
+    ...Settings_auth_user
+    ...AddInvestments_auth_user
+    ...MyTransactions_auth_user
   }
 `;
 
 type Props = {
-  data: AppQueryResponse;
+  user: Routes_user$key;
+  authUser: Routes_auth_user$key;
 };
 
 export interface IUserInvestments {
@@ -106,7 +111,7 @@ const subscriptionLoans = graphql`
       loan_edge {
         node {
           id
-          _id_user
+          id_user
           score
           ROI
           goal
@@ -133,11 +138,11 @@ const subscriptionTransactions = graphql`
       transaction_edge {
         node {
           id
-          _id_user
+          id_user
           count
           history {
             id
-            _id_borrower
+            id_borrower
             _id_loan
             type
             quantity
@@ -160,8 +165,8 @@ const subscriptionInvestments = graphql`
       investment_edge {
         node {
           id
-          _id_borrower
-          _id_lender
+          id_borrower
+          id_lender
           _id_loan
           quantity
           created
@@ -181,7 +186,7 @@ const subscriptionUser = graphql`
       user {
         id
         accountAvailable
-        investments {
+        investmentsUser {
           _id_loan
           quantity
           term
@@ -195,18 +200,22 @@ const subscriptionUser = graphql`
 
 export const Routes: FC<Props> = (props) => {
   const { t, i18n } = useTranslation();
-  const user = useFragment<Routes_query$key>(routesFragment, props.data);
-  const { isBorrower, isSupport } = user.authUser;
-  const user_gid = user.user.id;
+  const user = useFragment<Routes_user$key>(routesFragment, props.user);
+  const authUser = useFragment<Routes_auth_user$key>(
+    routesFragmentAuth,
+    props.authUser
+  );
+  const { isBorrower, isSupport } = authUser;
+  const user_gid = user.id;
   const userRef = useRef(user_gid);
-  const isLogged = user.user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=";
+  const isLogged = user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=";
   useEffect(() => {
     if (isLogged) {
-      i18n.changeLanguage(user.authUser.language);
+      i18n.changeLanguage(authUser.language);
     } else {
       i18n.changeLanguage(navigator.language.includes("es") ? "es" : "en");
     }
-  }, [i18n, isLogged, user]);
+  }, [i18n, isLogged, user, authUser]);
   const configLoans = useMemo<
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
   >(
@@ -237,7 +246,6 @@ export const Routes: FC<Props> = (props) => {
                 : isSupport
                 ? ["WAITING_FOR_APPROVAL"]
                 : ["FINANCING"],
-              ...(isBorrower ? { borrower_id: tokensAndData.data._id } : {}),
             }
           );
           if (!connectionRecord) {
@@ -291,7 +299,6 @@ export const Routes: FC<Props> = (props) => {
             root,
             "MyInvestments_query_investments",
             {
-              user_id: tokensAndData.data._id,
               status:
                 userRef.current !== user_gid
                   ? ([
@@ -350,9 +357,7 @@ export const Routes: FC<Props> = (props) => {
           const connectionRecord = ConnectionHandler.getConnection(
             root,
             "MyTransactions_query_transactions",
-            {
-              user_id: tokensAndData.data._id,
-            }
+            {}
           );
           if (!connectionRecord) {
             throw new Error("no existe el connectionRecord transactions");
@@ -377,7 +382,7 @@ export const Routes: FC<Props> = (props) => {
   useSubscription<RoutesInvestmentsSubscription>(configInvestments);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   useSubscription<RoutesUserSubscription>(configUser);
-  const reducedInvestments = user.user.investments.reduce<IUserInvestments[]>(
+  const reducedInvestments = user.investmentsUser.reduce<IUserInvestments[]>(
     (acc, item) => {
       const index = acc.findIndex((acc) => acc._id_loan === item._id_loan);
       if (index === -1) {
@@ -396,10 +401,10 @@ export const Routes: FC<Props> = (props) => {
         Math.floor(quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)) *
         (term - payments);
       return acc + owes;
-    }, 0) + generateCents(user.user.accountAvailable);
+    }, 0) + generateCents(user.accountAvailable);
   return (
     <Router>
-      <CheckExpiration user={user.authUser} />
+      <CheckExpiration />
       <div
         style={{
           display: "flex",
@@ -422,7 +427,7 @@ export const Routes: FC<Props> = (props) => {
                 colorValue="rgb(1,120,221)"
               />
               <AccountInfo
-                value={user.user.accountAvailable}
+                value={user.accountAvailable}
                 title={t("Saldo disponible")}
                 colorValue="rgb(58,179,152)"
               />
@@ -480,7 +485,7 @@ export const Routes: FC<Props> = (props) => {
                 colorValue="rgb(1,120,221)"
               />
               <AccountInfo
-                value={user.user.accountAvailable}
+                value={user.accountAvailable}
                 title={t("Saldo disponible")}
                 colorValue="rgb(58,179,152)"
               />
@@ -556,9 +561,9 @@ export const Routes: FC<Props> = (props) => {
                   marginLeft: 10,
                 }}
               >
-                {`${user.authUser.name || ""} ${
-                  user.authUser.apellidoPaterno || ""
-                } ${user.authUser.apellidoMaterno || ""}`.toUpperCase()}
+                {`${authUser.name || ""} ${authUser.apellidoPaterno || ""} ${
+                  authUser.apellidoMaterno || ""
+                }`.toUpperCase()}
               </Link>
               <FontAwesomeIcon
                 onClick={logOut}
@@ -599,23 +604,20 @@ export const Routes: FC<Props> = (props) => {
               <BrowserRoutes>
                 <Route path="/login" element={<LogIn />} />
                 <Route path="/register" element={<SignUp />} />
-                <Route path="/account" element={<Account user={user.user} />} />
-                <Route path="/addLoan" element={<AddLoan user={user.user} />} />
+                <Route path="/account" element={<Account user={user} />} />
+                <Route path="/addLoan" element={<AddLoan user={user} />} />
                 <Route
                   path="/myLoans"
-                  element={<AddInvestments data={props.data} />}
+                  element={<AddInvestments user={user} authUser={authUser} />}
                 />
-                <Route
-                  path="/addFunds"
-                  element={<AddFunds user={user.user} />}
-                />
+                <Route path="/addFunds" element={<AddFunds user={user} />} />
                 <Route
                   path="/retireFunds"
-                  element={<RetireFunds user={user.user} />}
+                  element={<RetireFunds user={user} />}
                 />
                 <Route
                   path="/settings"
-                  element={<Settings user={user.authUser} />}
+                  element={<Settings user={authUser} />}
                 />
               </BrowserRoutes>
             ) : isSupport ? (
@@ -624,39 +626,36 @@ export const Routes: FC<Props> = (props) => {
                 <Route path="/register" element={<SignUp />} />
                 <Route
                   path="/approveLoan"
-                  element={<AddInvestments data={props.data} />}
+                  element={<AddInvestments user={user} authUser={authUser} />}
                 />
                 <Route
                   path="/settings"
-                  element={<Settings user={user.authUser} />}
+                  element={<Settings user={authUser} />}
                 />
               </BrowserRoutes>
             ) : (
               <BrowserRoutes>
                 <Route path="/login" element={<LogIn />} />
                 <Route path="/register" element={<SignUp />} />
-                <Route path="/account" element={<Account user={user.user} />} />
+                <Route path="/account" element={<Account user={user} />} />
                 <Route
                   path="/addInvestments"
-                  element={<AddInvestments data={props.data} />}
+                  element={<AddInvestments user={user} authUser={authUser} />}
                 />
-                <Route
-                  path="/addFunds"
-                  element={<AddFunds user={user.user} />}
-                />
+                <Route path="/addFunds" element={<AddFunds user={user} />} />
                 <Route
                   path="/retireFunds"
-                  element={<RetireFunds user={user.user} />}
+                  element={<RetireFunds user={user} />}
                 />
                 <Route
                   path="/myTransactions"
-                  element={<MyTransactions data={props.data} />}
+                  element={<MyTransactions user={user} authUser={authUser} />}
                 />
                 <Route
                   path="/myInvestments"
                   element={
                     <MyInvestments
-                      data={props.data}
+                      user={user}
                       setInvestmentStatus={setInvestmentStatus}
                       investmentStatus={investmentStatus}
                     />
@@ -664,7 +663,7 @@ export const Routes: FC<Props> = (props) => {
                 />
                 <Route
                   path="/settings"
-                  element={<Settings user={user.authUser} />}
+                  element={<Settings user={authUser} />}
                 />
               </BrowserRoutes>
             )}

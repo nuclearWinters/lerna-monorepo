@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fa493f490d369f97911f0eb10e0728a3>>
+ * @generated SignedSource<<6d2766656ff532b594b8cab5407f6cd2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,37 +9,35 @@
 // @ts-nocheck
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
-export type SubscribeType = "UPDATE" | "INSERT" | "%future added value";
-export type TransactionType = "CREDIT" | "WITHDRAWAL" | "INVEST" | "COLLECT" | "%future added value";
+export type SubscribeType = "INSERT" | "UPDATE" | "%future added value";
+export type TransactionType = "COLLECT" | "CREDIT" | "INVEST" | "WITHDRAWAL" | "%future added value";
 export type RoutesTransactionsSubscription$variables = {
   user_gid: string;
 };
-export type RoutesTransactionsSubscriptionVariables = RoutesTransactionsSubscription$variables;
 export type RoutesTransactionsSubscription$data = {
   readonly transactions_subscribe: {
     readonly transaction_edge: {
+      readonly cursor: string;
       readonly node: {
-        readonly id: string;
         readonly _id_user: string;
         readonly count: number;
         readonly history: ReadonlyArray<{
-          readonly id: string;
-          readonly _id_borrower: string | null;
           readonly _id_loan: string | null;
-          readonly type: TransactionType;
-          readonly quantity: string;
           readonly created: Int;
+          readonly id: string;
+          readonly id_borrower: string | null;
+          readonly quantity: string;
+          readonly type: TransactionType;
         }>;
+        readonly id: string;
       } | null;
-      readonly cursor: string;
     };
     readonly type: SubscribeType;
   };
 };
-export type RoutesTransactionsSubscriptionResponse = RoutesTransactionsSubscription$data;
 export type RoutesTransactionsSubscription = {
-  variables: RoutesTransactionsSubscriptionVariables;
   response: RoutesTransactionsSubscription$data;
+  variables: RoutesTransactionsSubscription$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -123,7 +121,7 @@ v3 = [
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "_id_borrower",
+                    "name": "id_borrower",
                     "storageKey": null
                   },
                   {
@@ -187,16 +185,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "0febc3f254d092d2491e90718b447b37",
+    "cacheID": "2c9c89406f07e4d73ad972d45ab3a419",
     "id": null,
     "metadata": {},
     "name": "RoutesTransactionsSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesTransactionsSubscription(\n  $user_gid: ID!\n) {\n  transactions_subscribe(user_gid: $user_gid) {\n    transaction_edge {\n      node {\n        id\n        _id_user\n        count\n        history {\n          id\n          _id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n"
+    "text": "subscription RoutesTransactionsSubscription(\n  $user_gid: ID!\n) {\n  transactions_subscribe(user_gid: $user_gid) {\n    transaction_edge {\n      node {\n        id\n        _id_user\n        count\n        history {\n          id\n          id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "13cd67a52739535eb1c5dc76a657846f";
+(node as any).hash = "734fa4d63b620d2290c1cfad28094e76";
 
 export default node;

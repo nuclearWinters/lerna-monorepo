@@ -2,7 +2,7 @@ import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context, LoanMongo } from "../types";
 import { ObjectId } from "mongodb";
-import { base64, refreshTokenMiddleware } from "../utils";
+import { base64 } from "../utils";
 import { GraphQLLoan } from "../Nodes";
 import { LOAN, pubsub } from "../subscriptions/subscriptions";
 
@@ -38,14 +38,13 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { loan_gid }: Input,
-    { loans, accessToken, refreshToken }: Context
+    { loans, validAccessToken }: Context
   ): Promise<Payload> => {
     try {
+      if (!validAccessToken) {
+        throw new Error("No valid access token.");
+      }
       const { id: loan_id } = fromGlobalId(loan_gid);
-      const { validAccessToken } = await refreshTokenMiddleware(
-        accessToken,
-        refreshToken
-      );
       const { value: loan } = await loans.findOneAndUpdate(
         { _id: new ObjectId(loan_id) },
         { $set: { status: "financing" } },

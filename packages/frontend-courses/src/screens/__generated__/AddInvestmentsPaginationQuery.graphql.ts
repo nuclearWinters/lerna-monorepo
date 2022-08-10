@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2ab047444109804ed7a975bf92abdc88>>
+ * @generated SignedSource<<b6b729aac08886b51b4c10de2311c2d7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,22 +10,19 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type LoanStatus = "PAID" | "TO_BE_PAID" | "FINANCING" | "WAITING_FOR_APPROVAL" | "PAST_DUE" | "%future added value";
+export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 export type AddInvestmentsPaginationQuery$variables = {
   borrower_id?: string | null;
   count?: number | null;
   cursor?: string | null;
-  id: string;
   status: ReadonlyArray<LoanStatus>;
 };
-export type AddInvestmentsPaginationQueryVariables = AddInvestmentsPaginationQuery$variables;
 export type AddInvestmentsPaginationQuery$data = {
   readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_query">;
 };
-export type AddInvestmentsPaginationQueryResponse = AddInvestmentsPaginationQuery$data;
 export type AddInvestmentsPaginationQuery = {
-  variables: AddInvestmentsPaginationQueryVariables;
   response: AddInvestmentsPaginationQuery$data;
+  variables: AddInvestmentsPaginationQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -44,11 +41,6 @@ var v0 = [
     "defaultValue": "",
     "kind": "LocalArgument",
     "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
   },
   {
     "defaultValue": null,
@@ -91,14 +83,7 @@ v3 = {
   "kind": "ScalarField",
   "name": "status",
   "storageKey": null
-},
-v4 = [
-  {
-    "kind": "Variable",
-    "name": "id",
-    "variableName": "id"
-  }
-];
+};
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -295,7 +280,7 @@ return {
       },
       {
         "alias": null,
-        "args": (v4/*: any*/),
+        "args": null,
         "concreteType": "User",
         "kind": "LinkedField",
         "name": "user",
@@ -307,7 +292,7 @@ return {
       },
       {
         "alias": null,
-        "args": (v4/*: any*/),
+        "args": null,
         "concreteType": "AuthUser",
         "kind": "LinkedField",
         "name": "authUser",
@@ -348,16 +333,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "88cf32daa44c2771f48243a14404bc11",
+    "cacheID": "0b557355eeac41ee435a9921dfdc3414",
     "id": null,
     "metadata": {},
     "name": "AddInvestmentsPaginationQuery",
     "operationKind": "query",
-    "text": "query AddInvestmentsPaginationQuery(\n  $borrower_id: String\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: String!\n  $status: [LoanStatus!]!\n) {\n  ...AddInvestments_query_1G22uz\n}\n\nfragment AddInvestments_query_1G22uz on Query {\n  loans(first: $count, after: $cursor, borrower_id: $borrower_id, status: $status) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  user(id: $id) {\n    id\n  }\n  authUser(id: $id) {\n    isLender\n    isSupport\n    isBorrower\n    language\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n}\n"
+    "text": "query AddInvestmentsPaginationQuery(\n  $borrower_id: String\n  $count: Int = 5\n  $cursor: String = \"\"\n  $status: [LoanStatus!]!\n) {\n  ...AddInvestments_query_1G22uz\n}\n\nfragment AddInvestments_query_1G22uz on Query {\n  loans(first: $count, after: $cursor, borrower_id: $borrower_id, status: $status) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  user {\n    id\n  }\n  authUser {\n    isLender\n    isSupport\n    isBorrower\n    language\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "6c1eddd0856edeecd172f43b25ba812c";
+(node as any).hash = "1f768959ddebf319a1ccba8837284472";
 
 export default node;

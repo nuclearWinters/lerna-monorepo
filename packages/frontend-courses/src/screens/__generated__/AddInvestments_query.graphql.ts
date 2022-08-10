@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f7dd77fe816520354ffea835698d210b>>
+ * @generated SignedSource<<c93bf8d07e6fbb64b1a4d0015dfbebb8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,9 +9,15 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
-export type Languages = "EN" | "ES" | "DEFAULT" | "%future added value";
+export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestments_query$data = {
+  readonly authUser: {
+    readonly isBorrower: boolean;
+    readonly isLender: boolean;
+    readonly isSupport: boolean;
+    readonly language: Languages;
+  };
   readonly loans: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -23,15 +29,8 @@ export type AddInvestments_query$data = {
   readonly user: {
     readonly id: string;
   };
-  readonly authUser: {
-    readonly isLender: boolean;
-    readonly isSupport: boolean;
-    readonly isBorrower: boolean;
-    readonly language: Languages;
-  };
   readonly " $fragmentType": "AddInvestments_query";
 };
-export type AddInvestments_query = AddInvestments_query$data;
 export type AddInvestments_query$key = {
   readonly " $data"?: AddInvestments_query$data;
   readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_query">;
@@ -47,14 +46,7 @@ v1 = {
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
-},
-v2 = [
-  {
-    "kind": "Variable",
-    "name": "id",
-    "variableName": "id"
-  }
-];
+};
 return {
   "argumentDefinitions": [
     {
@@ -70,10 +62,6 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
-    },
-    {
-      "kind": "RootArgument",
-      "name": "id"
     },
     {
       "kind": "RootArgument",
@@ -196,7 +184,7 @@ return {
     },
     {
       "alias": null,
-      "args": (v2/*: any*/),
+      "args": null,
       "concreteType": "User",
       "kind": "LinkedField",
       "name": "user",
@@ -208,7 +196,7 @@ return {
     },
     {
       "alias": null,
-      "args": (v2/*: any*/),
+      "args": null,
       "concreteType": "AuthUser",
       "kind": "LinkedField",
       "name": "authUser",
@@ -251,6 +239,6 @@ return {
 };
 })();
 
-(node as any).hash = "6c1eddd0856edeecd172f43b25ba812c";
+(node as any).hash = "1f768959ddebf319a1ccba8837284472";
 
 export default node;

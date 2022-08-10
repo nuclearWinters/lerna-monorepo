@@ -25,7 +25,7 @@ describe("QueryLoans tests", () => {
     await loans.insertMany([
       {
         _id: new ObjectId("000000000000000000000041"),
-        _id_user: new ObjectId("000000000000000000000040"),
+        id_user: "wHHR1SUBT0dspoF4YUO23",
         score: "AAA",
         ROI: 17,
         goal: 100000,
@@ -44,7 +44,7 @@ describe("QueryLoans tests", () => {
       },
       {
         _id: new ObjectId("000000000000000000000042"),
-        _id_user: new ObjectId("000000000000000000000040"),
+        id_user: "wHHR1SUBT0dspoF4YUO23",
         score: "BBB",
         ROI: 20,
         goal: 50000,
@@ -57,7 +57,7 @@ describe("QueryLoans tests", () => {
       },
       {
         _id: new ObjectId("000000000000000000000043"),
-        _id_user: new ObjectId("000000000000000000000040"),
+        id_user: "wHHR1SUBT0dspoF4YUO23",
         score: "CCC",
         ROI: 24,
         goal: 150000,
@@ -70,53 +70,73 @@ describe("QueryLoans tests", () => {
       },
     ]);
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
-        query: `query GetLoansConnection($first: Int, $after: String!, $status: [LoanStatus!]!) {
-          loans(first: $first, after: $after, status: $status) {
-            edges {
-              cursor
-              node {
-                id
-                _id_user
-                score
-                ROI
-                goal
-                term
-                raised
-                expiry
-                status
+        query: `query GetLoansConnection($first: Int, $after: String!) {
+          user {
+            loans(first: $first, after: $after) {
+              edges {
+                cursor
+                node {
+                  id
+                  id_user
+                  score
+                  ROI
+                  goal
+                  term
+                  raised
+                  expiry
+                  status
+                }
               }
             }
-          }  
+          }
         }`,
         variables: {
           first: 2,
           after: "",
-          status: ["FINANCING", "WAITING_FOR_APPROVAL", "TO_BE_PAID"],
         },
         operationName: "GetLoansConnection",
       })
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign({ _id: "", email: "" }, "ACCESSSECRET", {
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO23",
+            isBorrower: true,
+            isLender: false,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          {
             expiresIn: "15m",
-          }),
-          refreshToken: "validRefreshToken",
-        })
+          }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO23",
+            isBorrower: true,
+            isLender: false,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
-    expect(response.body.data.loans.edges.length).toBe(2);
-    expect(response.body.data.loans.edges[0].cursor).toBeTruthy();
-    expect(response.body.data.loans.edges[0].node.id).toBeTruthy();
-    expect(response.body.data.loans.edges[0].node._id_user).toBeTruthy();
-    expect(response.body.data.loans.edges[0].node.score).toBeTruthy();
-    expect(response.body.data.loans.edges[0].node.ROI).toBeTruthy();
-    expect(response.body.data.loans.edges[0].node.goal).toBeTruthy();
-    expect(response.body.data.loans.edges[0].node.term).toBeTruthy();
-    expect(response.body.data.loans.edges[0].node.raised).toBeTruthy();
-    expect(response.body.data.loans.edges[0].node.expiry).toBeTruthy();
-    expect(response.body.data.loans.edges[0].node.status).toBeTruthy();
+    expect(response.body.data.user.loans.edges.length).toBe(2);
+    expect(response.body.data.user.loans.edges[0].cursor).toBeTruthy();
+    expect(response.body.data.user.loans.edges[0].node.id).toBeTruthy();
+    expect(response.body.data.user.loans.edges[0].node.id_user).toBeTruthy();
+    expect(response.body.data.user.loans.edges[0].node.score).toBeTruthy();
+    expect(response.body.data.user.loans.edges[0].node.ROI).toBeTruthy();
+    expect(response.body.data.user.loans.edges[0].node.goal).toBeTruthy();
+    expect(response.body.data.user.loans.edges[0].node.term).toBeTruthy();
+    expect(response.body.data.user.loans.edges[0].node.raised).toBeTruthy();
+    expect(response.body.data.user.loans.edges[0].node.expiry).toBeTruthy();
+    expect(response.body.data.user.loans.edges[0].node.status).toBeTruthy();
   });
 });

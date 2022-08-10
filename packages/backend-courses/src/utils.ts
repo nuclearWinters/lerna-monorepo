@@ -14,6 +14,7 @@ import {
 } from "./proto/auth_pb";
 import { AuthClient } from "./proto/auth_grpc_pb";
 import { credentials } from "@grpc/grpc-js";
+import { Request } from "express";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -25,7 +26,12 @@ export const jwt = {
     return decoded as DecodeJWT | undefined;
   },
   sign: (
-    data: { _id: string; email: string; exp?: number },
+    data: {
+      id: string;
+      isBorrower: boolean;
+      isLender: boolean;
+      isSupport: boolean;
+    },
     secret: string,
     options?: SignOptions
   ): string => {
@@ -34,18 +40,26 @@ export const jwt = {
   },
 };
 
-export const getContext = (req: any): Context => {
+export const getContext = async (req: Request): Promise<Context> => {
   const db = req.app.locals.db as Db;
   const ch = req.app.locals.ch;
-  const authorization = JSON.parse(req.headers.authorization || "{}");
+  const accessToken = req.headers.authorization || "";
+  const refreshToken = req.cookies?.refreshToken || "";
+  const { id, validAccessToken, isBorrower, isLender, isSupport } =
+    await refreshTokenMiddleware(accessToken, refreshToken);
   return {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
     investments: db.collection<InvestmentMongo>("investments"),
     transactions: db.collection<BucketTransactionMongo>("transactions"),
-    accessToken: authorization.accessToken,
-    refreshToken: authorization.refreshToken,
+    accessToken,
+    refreshToken,
     ch,
+    id,
+    validAccessToken,
+    isBorrower,
+    isLender,
+    isSupport,
   };
 };
 
@@ -69,38 +83,71 @@ export const renewAccessToken = (
 };
 
 interface IResolve {
-  validAccessToken: string;
-  _id: string;
-  email: string;
+  validAccessToken?: string;
+  id?: string;
+  isLender: boolean;
+  isBorrower: boolean;
+  isSupport: boolean;
 }
 
 export const refreshTokenMiddleware = async (
   accessToken: string | undefined,
   refreshToken: string | undefined
 ): Promise<IResolve> => {
-  if (!accessToken) {
-    throw new Error("Sin access token.");
-  }
-  if (!refreshToken) {
-    throw new Error("Sin refresh token.");
+  if (!accessToken || !refreshToken) {
+    return {
+      validAccessToken: undefined,
+      id: undefined,
+      isLender: false,
+      isBorrower: false,
+      isSupport: false,
+    };
   }
   try {
     const user = jwt.verify(accessToken, ACCESSSECRET);
     if (!user) throw new Error("El token esta corrompido.");
+    const { id, isLender, isBorrower, isSupport } = user;
     return {
       validAccessToken: accessToken,
-      _id: user._id,
-      email: user.email,
+      id,
+      isLender,
+      isBorrower,
+      isSupport,
     };
   } catch (e) {
     if (e instanceof Error && e.message === "jwt expired") {
-      const response = await renewAccessToken(refreshToken);
-      const validAccessToken = response.getValidaccesstoken();
-      const user = jwt.verify(validAccessToken, ACCESSSECRET);
-      if (!user) throw new Error("El token esta corrompido.");
-      return { validAccessToken, _id: user._id, email: user.email };
+      try {
+        const response = await renewAccessToken(refreshToken);
+        const validAccessToken = response.getValidaccesstoken();
+        const user = jwt.verify(validAccessToken, ACCESSSECRET);
+        if (!user) {
+          return {
+            validAccessToken: undefined,
+            id: undefined,
+            isLender: false,
+            isBorrower: false,
+            isSupport: false,
+          };
+        }
+        const { id, isLender, isBorrower, isSupport } = user;
+        return { validAccessToken, id, isLender, isBorrower, isSupport };
+      } catch (e) {
+        return {
+          validAccessToken: undefined,
+          id: undefined,
+          isLender: false,
+          isBorrower: false,
+          isSupport: false,
+        };
+      }
     } else {
-      throw e;
+      return {
+        validAccessToken: undefined,
+        id: undefined,
+        isLender: false,
+        isBorrower: false,
+        isSupport: false,
+      };
     }
   }
 };

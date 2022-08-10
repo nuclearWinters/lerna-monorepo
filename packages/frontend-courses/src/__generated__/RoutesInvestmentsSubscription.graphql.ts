@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b233f4ddac08dc1476a0e1cd96f0a280>>
+ * @generated SignedSource<<2acfa08342ef40d18a0b54ce2eafee93>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,35 +9,33 @@
 // @ts-nocheck
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
-export type InvestmentStatus = "DELAY_PAYMENT" | "UP_TO_DATE" | "FINANCING" | "PAST_DUE" | "PAID" | "%future added value";
-export type SubscribeType = "UPDATE" | "INSERT" | "%future added value";
+export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
+export type SubscribeType = "INSERT" | "UPDATE" | "%future added value";
 export type RoutesInvestmentsSubscription$variables = {
-  user_gid: string;
   status: ReadonlyArray<InvestmentStatus>;
+  user_gid: string;
 };
-export type RoutesInvestmentsSubscriptionVariables = RoutesInvestmentsSubscription$variables;
 export type RoutesInvestmentsSubscription$data = {
   readonly investments_subscribe: {
     readonly investment_edge: {
-      readonly node: {
-        readonly id: string;
-        readonly _id_borrower: string;
-        readonly _id_lender: string;
-        readonly _id_loan: string;
-        readonly quantity: number;
-        readonly created: Int;
-        readonly updated: Int;
-        readonly status: InvestmentStatus;
-      } | null;
       readonly cursor: string;
+      readonly node: {
+        readonly _id_loan: string;
+        readonly created: Int;
+        readonly id: string;
+        readonly id_borrower: string;
+        readonly id_lender: string;
+        readonly quantity: number;
+        readonly status: InvestmentStatus;
+        readonly updated: Int;
+      } | null;
     };
     readonly type: SubscribeType;
   };
 };
-export type RoutesInvestmentsSubscriptionResponse = RoutesInvestmentsSubscription$data;
 export type RoutesInvestmentsSubscription = {
-  variables: RoutesInvestmentsSubscriptionVariables;
   response: RoutesInvestmentsSubscription$data;
+  variables: RoutesInvestmentsSubscription$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -98,14 +96,14 @@ v2 = [
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "_id_borrower",
+                "name": "id_borrower",
                 "storageKey": null
               },
               {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "_id_lender",
+                "name": "id_lender",
                 "storageKey": null
               },
               {
@@ -191,16 +189,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "3da334ed88ac2b6bcff04d79f0870cf6",
+    "cacheID": "15054c4e49c2c8c6b9f6dd679c3e749b",
     "id": null,
     "metadata": {},
     "name": "RoutesInvestmentsSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesInvestmentsSubscription(\n  $user_gid: ID!\n  $status: [InvestmentStatus!]!\n) {\n  investments_subscribe(user_gid: $user_gid, status: $status) {\n    investment_edge {\n      node {\n        id\n        _id_borrower\n        _id_lender\n        _id_loan\n        quantity\n        created\n        updated\n        status\n      }\n      cursor\n    }\n    type\n  }\n}\n"
+    "text": "subscription RoutesInvestmentsSubscription(\n  $user_gid: ID!\n  $status: [InvestmentStatus!]!\n) {\n  investments_subscribe(user_gid: $user_gid, status: $status) {\n    investment_edge {\n      node {\n        id\n        id_borrower\n        id_lender\n        _id_loan\n        quantity\n        created\n        updated\n        status\n      }\n      cursor\n    }\n    type\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "96c548362008b65e1fa584fb168d213c";
+(node as any).hash = "a60951f9f2fc31bc54a02ab632e42780";
 
 export default node;

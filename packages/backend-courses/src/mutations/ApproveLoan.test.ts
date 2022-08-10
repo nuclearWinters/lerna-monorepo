@@ -25,11 +25,13 @@ describe("ApproveLoan tests", () => {
     await users.insertMany([
       {
         _id: new ObjectId("000000000000000000000009"),
+        id: "wHHR1SUBT0dspoF4YUO21",
         accountAvailable: 100000,
         investments: [],
       },
       {
         _id: new ObjectId("000000000000000000000010"),
+        id: "wHHR1SUBT0dspoF4YUO22",
         accountAvailable: 100000,
         investments: [],
       },
@@ -37,7 +39,7 @@ describe("ApproveLoan tests", () => {
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertOne({
       _id: new ObjectId("000000000000000000000008"),
-      _id_user: new ObjectId("000000000000000000000010"),
+      id_user: "wHHR1SUBT0dspoF4YUO22",
       score: "AAA",
       ROI: 17,
       goal: 100000,
@@ -49,7 +51,7 @@ describe("ApproveLoan tests", () => {
       investors: [],
     });
     const response = await request
-      .post("/api/graphql")
+      .post("/graphql")
       .send({
         query: `mutation ApproveLoanMutation($input: ApproveLoanInput!) {
           approveLoan(input: $input) {
@@ -70,14 +72,31 @@ describe("ApproveLoan tests", () => {
       .set("Accept", "application/json")
       .set(
         "Authorization",
-        JSON.stringify({
-          accessToken: jwt.sign(
-            { _id: "000000000000000000000009", email: "" },
-            "ACCESSSECRET",
-            { expiresIn: "15m" }
-          ),
-          refreshToken: "validRefreshToken",
-        })
+        jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO21",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "ACCESSSECRET",
+          {
+            expiresIn: "15m",
+          }
+        )
+      )
+      .set(
+        "Cookie",
+        `refreshToken=${jwt.sign(
+          {
+            id: "wHHR1SUBT0dspoF4YUO21",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+          },
+          "REFRESHSECRET",
+          { expiresIn: "15m" }
+        )}`
       );
     expect(response.body.data.approveLoan.error).toBeFalsy();
     expect(response.body.data.approveLoan.validAccessToken).toBeTruthy();
@@ -89,7 +108,7 @@ describe("ApproveLoan tests", () => {
     expect(
       allLoans.map((loan) => ({
         ROI: loan.ROI,
-        _id_user: loan._id_user.toHexString(),
+        id_user: loan.id_user,
         goal: loan.goal,
         raised: loan.raised,
         scheduledPayments: loan.scheduledPayments,
@@ -100,7 +119,7 @@ describe("ApproveLoan tests", () => {
     ).toEqual([
       {
         ROI: 17,
-        _id_user: "000000000000000000000010",
+        id_user: "wHHR1SUBT0dspoF4YUO22",
         goal: 100000,
         raised: 0,
         scheduledPayments: null,

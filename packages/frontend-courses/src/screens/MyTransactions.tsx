@@ -1,14 +1,9 @@
 import React, { FC } from "react";
-import { graphql, usePaginationFragment } from "react-relay";
-import {
-  MyTransactions_query$key,
-  TransactionType,
-} from "./__generated__/MyTransactions_query.graphql";
-import { MyTransactionsPaginationQuery } from "./__generated__/MyTransactionsPaginationQuery.graphql";
+import { graphql, useFragment, usePaginationFragment } from "react-relay";
+import { TransactionType } from "./__generated__/MyTransactions_query.graphql";
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
 import en from "date-fns/locale/en-US";
-import { AppQueryResponse } from "__generated__/AppQuery.graphql";
 import { CustomButton } from "components/CustomButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -22,23 +17,26 @@ import { Rows } from "components/Rows";
 import { Space } from "components/Space";
 import { Columns } from "components/Colums";
 import { useTranslation } from "react-i18next";
+import { MyTransactionsPaginationUser } from "./__generated__/MyTransactionsPaginationUser.graphql";
+import { MyTransactions_auth_user$key } from "./__generated__/MyTransactions_auth_user.graphql";
+import { MyTransactions_user$key } from "./__generated__/MyTransactions_user.graphql";
 
 const transactionsFragment = graphql`
-  fragment MyTransactions_query on Query
+  fragment MyTransactions_user on User
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 2 }
     cursor: { type: "String", defaultValue: "" }
   )
-  @refetchable(queryName: "MyTransactionsPaginationQuery") {
-    transactions(first: $count, after: $cursor, user_id: $id)
-      @connection(key: "MyTransactions_query_transactions") {
+  @refetchable(queryName: "MyTransactionsPaginationUser") {
+    transactions(first: $count, after: $cursor)
+      @connection(key: "MyTransactions_user_transactions") {
       edges {
         node {
           id
           count
           history {
             id
-            _id_borrower
+            id_borrower
             _id_loan
             type
             quantity
@@ -47,22 +45,31 @@ const transactionsFragment = graphql`
         }
       }
     }
-    authUser(id: $id) {
-      language
-    }
+  }
+`;
+
+const transactionsFragmentAuthUser = graphql`
+  fragment MyTransactions_auth_user on AuthUser {
+    language
   }
 `;
 
 type Props = {
-  data: AppQueryResponse;
+  user: MyTransactions_user$key;
+  authUser: MyTransactions_auth_user$key;
 };
 
 export const MyTransactions: FC<Props> = (props) => {
   const { t } = useTranslation();
   const { data, loadNext, refetch } = usePaginationFragment<
-    MyTransactionsPaginationQuery,
-    MyTransactions_query$key
-  >(transactionsFragment, props.data);
+    MyTransactionsPaginationUser,
+    MyTransactions_user$key
+  >(transactionsFragment, props.user);
+
+  const authUser = useFragment<MyTransactions_auth_user$key>(
+    transactionsFragmentAuthUser,
+    props.authUser
+  );
 
   const getStatus = (type: TransactionType) => {
     switch (type) {
@@ -122,7 +129,7 @@ export const MyTransactions: FC<Props> = (props) => {
                         <div style={{ fontSize: 18, color }}>
                           {getStatus(transaction.type)}
                         </div>
-                        {transaction._id_borrower && (
+                        {transaction.id_borrower && (
                           <div
                             style={{
                               fontSize: 16,
@@ -133,7 +140,7 @@ export const MyTransactions: FC<Props> = (props) => {
                             <FontAwesomeIcon
                               onClick={() => {
                                 navigator.clipboard.writeText(
-                                  transaction._id_borrower || ""
+                                  transaction.id_borrower || ""
                                 );
                               }}
                               icon={faUserCircle}
@@ -161,11 +168,11 @@ export const MyTransactions: FC<Props> = (props) => {
                             "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
                             {
                               locale:
-                                data.authUser.language === "DEFAULT"
+                                authUser.language === "DEFAULT"
                                   ? navigator.language.includes("es")
                                     ? es
                                     : en
-                                  : data.authUser.language === "ES"
+                                  : authUser.language === "ES"
                                   ? es
                                   : en,
                             }

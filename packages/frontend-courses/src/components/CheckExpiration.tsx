@@ -1,48 +1,33 @@
-import { getDataFromToken, tokensAndData } from "App";
-import { differenceInSeconds } from "date-fns";
-import React, { FC, useEffect, useState } from "react";
+import { tokensAndData } from "App";
+import { addMinutes, differenceInSeconds } from "date-fns";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { graphql, useFragment, useMutation } from "react-relay";
-import { logOut } from "utils";
+import { graphql, useMutation } from "react-relay";
+import { expireSessionTime, logOut } from "utils";
 import { Columns } from "./Colums";
 import { CustomButton } from "./CustomButton";
 import { Space } from "./Space";
 import { Spinner } from "./Spinner";
 import { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
-import { CheckExpiration_auth_user$key } from "./__generated__/CheckExpiration_auth_user.graphql";
+import { useIdleTimer } from "react-idle-timer";
 
-const checkExpirationFragment = graphql`
-  fragment CheckExpiration_auth_user on AuthUser {
-    isBorrower
-    isSupport
-  }
-`;
-
-interface Props {
-  user: CheckExpiration_auth_user$key;
-}
-
-export const CheckExpiration: FC<Props> = (props) => {
+export const CheckExpiration: FC = () => {
   const { t } = useTranslation();
-  const { isBorrower, isSupport } = useFragment(
-    checkExpirationFragment,
-    props.user
-  );
   const [commit, isInFlight] = useMutation<CheckExpirationMutation>(graphql`
-    mutation CheckExpirationMutation($input: SignInInput!) {
-      signIn(input: $input) {
+    mutation CheckExpirationMutation($input: ExtendSessionInput!) {
+      extendSession(input: $input) {
         error
-        accessToken
-        refreshToken
       }
     }
   `);
   const [time, setTime] = useState(new Date());
-  const [show, setShow] = useState(false);
-  const difference = differenceInSeconds(
-    new Date(tokensAndData.data.exp * 1000),
-    time
-  );
+  const difference = tokensAndData.exp
+    ? differenceInSeconds(tokensAndData.exp, time)
+    : 0;
+  const show = difference <= 60 && difference > 0;
+  const { isIdle } = useIdleTimer({
+    timeout: 1000 * 60 * 10,
+  });
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date());
@@ -51,19 +36,28 @@ export const CheckExpiration: FC<Props> = (props) => {
       clearInterval(interval);
     };
   }, []);
+  const isFetching = useRef(false);
   useEffect(() => {
-    if (difference <= 60 && difference > 0) {
-      if (!show) {
-        setShow(true);
-      }
+    if (difference < 0 && isIdle()) {
+      logOut();
+    } else if (
+      difference < 100 &&
+      !isIdle() &&
+      !isFetching.current &&
+      tokensAndData.accessToken
+    ) {
+      isFetching.current = true;
+      commit({
+        variables: {
+          input: {},
+        },
+        onCompleted: () => {
+          tokensAndData.exp = addMinutes(new Date(), expireSessionTime);
+          isFetching.current = false;
+        },
+      });
     }
-    if (difference <= 0 && show) {
-      if (show) {
-        setShow(false);
-        logOut();
-      }
-    }
-  }, [difference, setShow, show]);
+  }, [difference, isIdle, commit, isInFlight]);
   return show ? (
     <div
       style={{
@@ -92,37 +86,14 @@ export const CheckExpiration: FC<Props> = (props) => {
           <Spinner />
         ) : (
           <CustomButton
-            text={t("Extender sesión 1 hora")}
+            text={t("Extender sesión 15 minutos")}
             onClick={() => {
               commit({
                 variables: {
-                  input: {
-                    email: tokensAndData.credentials.email,
-                    password: tokensAndData.credentials.password,
-                  },
+                  input: {},
                 },
-                onCompleted: (response) => {
-                  if (response.signIn.error) {
-                    if (response.signIn.error === "jwt expired") {
-                      logOut();
-                    }
-                    return window.alert(response.signIn.error);
-                  }
-                  tokensAndData.tokens.accessToken =
-                    response.signIn.accessToken;
-                  tokensAndData.tokens.refreshToken =
-                    response.signIn.refreshToken;
-                  const user = getDataFromToken(response.signIn.refreshToken);
-                  tokensAndData.data = user;
-                  tokensAndData.refetchUser(
-                    isBorrower
-                      ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
-                      : isSupport
-                      ? ["WAITING_FOR_APPROVAL"]
-                      : ["FINANCING"],
-                    user._id,
-                    isBorrower ? user._id : null
-                  );
+                onCompleted: () => {
+                  tokensAndData.exp = addMinutes(new Date(), expireSessionTime);
                 },
               });
             }}

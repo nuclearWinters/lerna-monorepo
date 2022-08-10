@@ -1,4 +1,4 @@
-import { Channel } from "amqplib";
+import { CookieOptions } from "express";
 import { ObjectId, Collection } from "mongodb";
 import { createClient } from "redis";
 
@@ -8,12 +8,17 @@ export interface Context {
   users: Collection<UserMongo>;
   rdb: RedisClientType;
   accessToken?: string;
-  ch: Channel;
   refreshToken?: string;
+  res: {
+    cookie: (name: string, val: string, options: CookieOptions) => void;
+    clearCookie: (name: string, options?: CookieOptions | undefined) => void;
+  };
+  validAccessToken?: string;
+  id?: string;
 }
 
 export interface UserMongo {
-  _id: ObjectId;
+  _id?: ObjectId;
   email: string;
   password: string;
   isLender: boolean;
@@ -27,13 +32,12 @@ export interface UserMongo {
   CURP: string;
   clabe: string;
   mobile: string;
+  id: string;
 }
 
 export interface DecodeJWT {
-  _id: string;
+  id: string;
   isLender: boolean;
   isBorrower: boolean;
   isSupport: boolean;
 }
-
-export const SIGN_UP = "SIGN_UP";
