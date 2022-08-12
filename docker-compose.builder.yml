@@ -38,11 +38,11 @@ x-lerna-base: &lerna
 services:
   install_backend_auth:
     <<: *backendauth
-    command: npm i
+    command: npm i --target_arch=x64
 
   install_backend_courses:
     <<: *backendcourses
-    command: npm i
+    command: npm i --target_arch=x64
 
   install_frontend:
     <<: *frontend
