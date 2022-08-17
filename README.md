@@ -81,13 +81,13 @@ To set up the project in dev mode:
 To make websockets work, connect to mongodb and run in a mongodb command line:
 
 ```
-rs.initiate(
-   {
-      _id: "rs0",
-      version: 1,
-      members: [
-         { _id: 0, host : "mongo-courses:27017" },
-      ]
-   }
-)
+ docker exec -it mongo-courses bash
+```
+
+```
+ mongo --port 27017
+```
+
+```
+rs.initiate({_id:"rs0",members:[{_id:1, host:"mongo-courses:27017"}]})
 ```

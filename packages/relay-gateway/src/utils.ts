@@ -7,10 +7,10 @@ export interface IContextResult {
 }
 
 export const getContext = (ctx: unknown): IContextResult => {
-  const ctxTyped = ctx as { req: Request };
+  const ctxTyped = ctx as { req?: Request } | undefined;
   return {
-    accessToken: ctxTyped.req.headers.authorization || "",
-    refreshToken: ctxTyped.req.cookies.refreshToken || "",
+    accessToken: ctxTyped?.req?.headers.authorization || "",
+    refreshToken: ctxTyped?.req?.cookies.refreshToken || "",
   };
 };
 

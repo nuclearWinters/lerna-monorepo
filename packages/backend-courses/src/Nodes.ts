@@ -219,15 +219,15 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
       resolve: ({ status }): IInvestmentStatus => status,
     },
     interest_to_earn: {
-      type: new GraphQLNonNull(InvestmentStatus),
+      type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ interest_to_earn }): number => interest_to_earn,
     },
     paid_already: {
-      type: new GraphQLNonNull(InvestmentStatus),
+      type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ paid_already }): number => paid_already,
     },
     still_invested: {
-      type: new GraphQLNonNull(InvestmentStatus),
+      type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ still_invested }): number => still_invested,
     },
   },
