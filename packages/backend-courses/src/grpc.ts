@@ -41,7 +41,8 @@ export const AuthServer: IAuthServer = {
     try {
       const nanoId = call.request.getNanoid();
       ctx.db?.collection<UserMongo>("users").insertOne({
-        investments: [],
+        accountLent: 0,
+        accountInterests: 0,
         accountAvailable: 0,
         id: nanoId,
       });

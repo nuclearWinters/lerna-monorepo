@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<586dde721bd01f26ac5852c412bf5379>>
+ * @generated SignedSource<<5a0009c11aa87e56ea72aeee3920af08>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -169,7 +169,7 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "_id_user",
+                            "name": "id_user",
                             "storageKey": null
                           },
                           {
@@ -241,6 +241,20 @@ return {
                             ],
                             "storageKey": null
                           },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "pending",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "pendingCents",
+                            "storageKey": null
+                          },
                           (v2/*: any*/)
                         ],
                         "storageKey": null
@@ -302,12 +316,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1c097144271154bd94b9e64895f4d05d",
+    "cacheID": "6b1a608b0be1fd2812741cd859d18d1b",
     "id": null,
     "metadata": {},
     "name": "AddInvestmentsPaginationUser",
     "operationKind": "query",
-    "text": "query AddInvestmentsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...AddInvestments_user_1G22uz\n    id\n  }\n}\n\nfragment AddInvestments_user_1G22uz on User {\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n}\n"
+    "text": "query AddInvestmentsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...AddInvestments_user_1G22uz\n    id\n  }\n}\n\nfragment AddInvestments_user_1G22uz on User {\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
   }
 };
 })();

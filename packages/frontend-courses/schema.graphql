@@ -190,7 +190,7 @@ type Investment implements Node {
   id_borrower: String!
   id_lender: String!
   _id_loan: String!
-  quantity: Int!
+  quantity: MXN!
   ROI: Float!
   payments: Int!
   term: Int!
@@ -198,6 +198,9 @@ type Investment implements Node {
   created: Date!
   updated: Date!
   status: InvestmentStatus!
+  interest_to_earn: MXN!
+  paid_already: MXN!
+  still_invested: MXN!
 }
 
 type InvestmentsConnection {
@@ -233,6 +236,8 @@ type Loan implements Node {
   expiry: Date!
   status: LoanStatus!
   scheduledPayments: [ScheduledPayments!]
+  pending: MXN!
+  pendingCents: Int!
 }
 
 type LoanConnection {
@@ -305,18 +310,12 @@ type BucketTransactionEdge {
   cursor: String!
 }
 
-type InvestmentsUser {
-  _id_loan: String!
-  quantity: Int!
-  term: Int!
-  ROI: Float!
-  payments: Int!
-}
-
 type User implements Node {
   id: ID!
   accountAvailable: MXN!
-  investmentsUser: [InvestmentsUser!]!
+  accountLent: MXN!
+  accountInterests: MXN!
+  accountTotal: MXN!
   loans(after: String, first: Int, before: String, last: Int): LoanConnection
   transactions(
     after: String

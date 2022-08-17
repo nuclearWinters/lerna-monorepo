@@ -1,7 +1,6 @@
 import { AnyBulkWriteOperation, Db, ObjectId } from "mongodb";
 import {
   BucketTransactionMongo,
-  ILoanInvestors,
   InvestmentMongo,
   LoanMongo,
   UserMongo,
@@ -86,53 +85,49 @@ export const monthFunction = async (db: Db): Promise<void> => {
           ],
         }
       );
-      //Se actualizan todos las inversiones y se suma 1 a los pagos realizados, aparte, si todos los pagos ya se realizaron su estatus se vuelve pagado
-      await investments.updateMany(
-        { _id_loan: loan._id },
-        {
-          $inc: { payments: 1 },
-          ...(allPaid ? { $set: { status: "paid" } } : {}),
-        }
-      );
-      //La propiedad investors cantidades añadidas en diferentes momentos, se itera para hacer calculos sobre un solo monto prestado
-      const investors = loan.investors.reduce<ILoanInvestors[]>((acc, item) => {
-        const index = acc.findIndex((acc) => acc.id_lender === item.id_lender);
-        if (index === -1) {
-          acc.push(item);
-        } else {
-          acc[index].quantity += item.quantity;
-        }
-        return acc;
-      }, []);
-      const pull = allPaid
-        ? { $pull: { investments: { _id_loan: loan._id } } }
-        : {};
-      const inc = allPaid ? {} : { "investments.$[item].payments": 1 };
-      const options = allPaid
-        ? {}
-        : {
-            arrayFilters: [
-              {
-                "item._id_loan": loan._id,
+      const setStatus = allPaid ? { status: "paid" as const } : {};
+      //Conseguir todas las inversiones con el id de la deuda
+      const allInvestments = await investments
+        .find({ _id_loan: loan._id })
+        .toArray();
+      //Actualizar lista de operaciones con intereses moratorios
+      const investmentWrites = allInvestments.map<
+        AnyBulkWriteOperation<InvestmentMongo>
+      >(({ _id, amortize, term, payments }) => {
+        const totalAmortize = amortize * term;
+        const paid_already = amortize * (payments + 1);
+        const still_invested = totalAmortize - paid_already;
+        return {
+          updateOne: {
+            filter: { _id },
+            update: {
+              $set: {
+                still_invested,
+                paid_already,
+                //Si todos los pagos se realizaron cambiar estatus a "paid" o si todos los pagos atrasados se realizaron cambiar status a "up to date"
+                ...setStatus,
               },
-            ],
-          };
-      const { ROI, term } = loan;
+              $inc: {
+                payments: 1,
+              },
+            },
+          },
+        };
+      });
+      //Actualizar el los intereses moratorios en las inversiones
+      await investments.bulkWrite(investmentWrites);
+      const { term } = loan;
       //Crear lista de operaciones bulkwrite para transacciones y usuarios
-      const operations = investors.map<{
+      const operations = allInvestments.map<{
         transactionsOperations: AnyBulkWriteOperation<BucketTransactionMongo>;
         usersOperations: AnyBulkWriteOperation<UserMongo>;
-      }>((investor) => {
-        const investor_id = investor.id_lender;
-        const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
-        const amortize = Math.floor(
-          investor.quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
-        );
+      }>(({ id_lender, quantity, amortize }) => {
+        const lent = quantity / term;
         return {
           transactionsOperations: {
             updateOne: {
               filter: {
-                _id: new RegExp(`^${investor_id}`),
+                _id: new RegExp(`^${id_lender}`),
                 count: { $lt: 5 },
               },
               update: {
@@ -148,8 +143,8 @@ export const monthFunction = async (db: Db): Promise<void> => {
                 },
                 $inc: { count: 1 },
                 $setOnInsert: {
-                  _id: `${investor_id}_${now.getTime()}`,
-                  id_user: investor.id_lender,
+                  _id: `${id_lender}_${now.getTime()}`,
+                  id_user: id_lender,
                 },
               },
               upsert: true,
@@ -158,19 +153,15 @@ export const monthFunction = async (db: Db): Promise<void> => {
           usersOperations: {
             updateOne: {
               filter: {
-                id: investor.id_lender,
+                id: id_lender,
               },
               update: {
-                //Si todos los pagos se han cumplido: quitar las inversiones con el id de la deuda
-                ...pull,
                 $inc: {
                   accountAvailable: amortize,
-                  //Si NO todos los pagos se han cumplido: incrementar en uno el número de pagos de la deuda en el elemento investors correspondiente
-                  ...inc,
+                  accountLent: -lent,
+                  accountInterests: -(amortize - lent),
                 },
               },
-              //Si NO todos los pagos se han cumplido: identificar los elementos en investors con el id de la deuda
-              ...options,
             },
           },
         };

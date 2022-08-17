@@ -19,7 +19,7 @@ import { Space } from "components/Space";
 import { Columns } from "components/Colums";
 import { TableColumnName } from "components/TableColumnName";
 import { Table } from "components/Table";
-import { generateCurrency, logOut } from "utils";
+import { logOut } from "utils";
 import { useTranslation } from "react-i18next";
 import { AddInvestments_auth_user$key } from "./__generated__/AddInvestments_auth_user.graphql";
 import { AddInvestments_user$key } from "./__generated__/AddInvestments_user.graphql";
@@ -99,7 +99,7 @@ export const AddInvestments: FC<Props> = (props) => {
     { key: "ROI", title: t("Retorno anual") },
     { key: "goal", title: t("Monto") },
     { key: "term", title: t("Periodo") },
-    { key: "raised", title: t("Faltan") },
+    { key: "pending", title: t("Faltan") },
     { key: "expiry", title: t("Termina") },
     {
       key: "lend",
@@ -110,16 +110,17 @@ export const AddInvestments: FC<Props> = (props) => {
 
   const [lends, setLends] = useState<ILends[]>([]);
 
-  const getValue = (id: string | undefined) => {
-    if (!id) {
-      return "";
-    }
+  const getValue = (id: string) => {
     const lend = lends.find((lend) => id === lend.loan_gid);
     if (!lend) {
       return "";
     }
     return lend.quantity;
   };
+
+  const total = lends.reduce((acc, item) => {
+    return acc + Number(item.quantity);
+  }, 0);
 
   return (
     <Main>
@@ -196,12 +197,8 @@ export const AddInvestments: FC<Props> = (props) => {
                     }}
                   />
                   <div style={{ marginTop: 14, fontWeight: "bold" }}>
-                    {t("Total")}:{" "}
-                    {generateCurrency(
-                      lends.reduce((acc, item) => {
-                        return acc + Number(item.quantity) * 100;
-                      }, 0)
-                    )}
+                    {t("Total")}
+                    {`: $${total}`}
                   </div>
                   <div style={{ marginTop: 14, fontWeight: "bold" }}>
                     {t("Inversiones")}: {lends.length}

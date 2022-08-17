@@ -2,9 +2,7 @@ import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context, LoanMongo } from "../types";
 import { ObjectId } from "mongodb";
-import { base64 } from "../utils";
 import { GraphQLLoan } from "../Nodes";
-import { LOAN, pubsub } from "../subscriptions/subscriptions";
 
 interface Input {
   loan_gid: string;
@@ -53,15 +51,6 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
       if (!loan) {
         throw new Error("No se encontró la deuda.");
       }
-      pubsub.publish(LOAN, {
-        loans_subscribe: {
-          loan_edge: {
-            node: loan,
-            cursor: base64(loan._id.toHexString()),
-          },
-          type: "insert",
-        },
-      });
       return { validAccessToken, error: "", loan };
     } catch (e) {
       return {

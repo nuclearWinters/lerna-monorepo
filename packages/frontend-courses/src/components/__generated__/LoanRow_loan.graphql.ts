@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<00d1e7c2c15e56d6e4ce99cdffc09b6f>>
+ * @generated SignedSource<<8841d8c7bba13226389050827efc3fb6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,10 +14,12 @@ export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAI
 import { FragmentRefs } from "relay-runtime";
 export type LoanRow_loan$data = {
   readonly ROI: number;
-  readonly _id_user: string;
   readonly expiry: Int;
   readonly goal: string;
   readonly id: string;
+  readonly id_user: string;
+  readonly pending: string;
+  readonly pendingCents: number;
   readonly raised: string;
   readonly scheduledPayments: ReadonlyArray<{
     readonly amortize: string;
@@ -68,7 +70,7 @@ return {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "_id_user",
+      "name": "id_user",
       "storageKey": null
     },
     {
@@ -139,6 +141,20 @@ return {
         }
       ],
       "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "pending",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "pendingCents",
+      "storageKey": null
     }
   ],
   "type": "Loan",
@@ -146,6 +162,6 @@ return {
 };
 })();
 
-(node as any).hash = "02ecb10e18a8b0a5924d6890b3fd7400";
+(node as any).hash = "69923bcac15fc0ac98ab7b3c948e328a";
 
 export default node;

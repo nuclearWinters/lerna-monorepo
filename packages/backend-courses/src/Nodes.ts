@@ -33,7 +33,6 @@ import {
   IScheduledPaymentsStatus,
   TransactionMongoType,
   UserMongo,
-  InvestmentsUserMongo,
 } from "./types";
 import { base64, unbase64 } from "./utils";
 
@@ -188,7 +187,7 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
       resolve: ({ _id_loan }): string => _id_loan.toHexString(),
     },
     quantity: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ quantity }): number => quantity,
     },
     ROI: {
@@ -218,6 +217,18 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
     status: {
       type: new GraphQLNonNull(InvestmentStatus),
       resolve: ({ status }): IInvestmentStatus => status,
+    },
+    interest_to_earn: {
+      type: new GraphQLNonNull(InvestmentStatus),
+      resolve: ({ interest_to_earn }): number => interest_to_earn,
+    },
+    paid_already: {
+      type: new GraphQLNonNull(InvestmentStatus),
+      resolve: ({ paid_already }): number => paid_already,
+    },
+    still_invested: {
+      type: new GraphQLNonNull(InvestmentStatus),
+      resolve: ({ still_invested }): number => still_invested,
     },
   },
   interfaces: [nodeInterface],
@@ -349,6 +360,14 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
       resolve: ({ scheduledPayments }): IScheduledPayments[] | null =>
         scheduledPayments,
     },
+    pending: {
+      type: new GraphQLNonNull(MXNScalarType),
+      resolve: ({ pending }): number => pending,
+    },
+    pendingCents: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ pending }): number => pending,
+    },
   },
   interfaces: [nodeInterface],
 });
@@ -359,33 +378,6 @@ const { connectionType: LoanConnection, edgeType: GraphQLLoanEdge } =
     nodeType: GraphQLLoan,
   });
 
-export const GraphQLInvestmentsUser =
-  new GraphQLObjectType<InvestmentsUserMongo>({
-    name: "InvestmentsUser",
-    fields: {
-      _id_loan: {
-        type: new GraphQLNonNull(GraphQLString),
-        resolve: ({ _id_loan }): string => _id_loan.toHexString(),
-      },
-      quantity: {
-        type: new GraphQLNonNull(GraphQLInt),
-        resolve: ({ quantity }): number => quantity,
-      },
-      term: {
-        type: new GraphQLNonNull(GraphQLInt),
-        resolve: ({ term }): number => term,
-      },
-      ROI: {
-        type: new GraphQLNonNull(GraphQLFloat),
-        resolve: ({ ROI }): number => ROI,
-      },
-      payments: {
-        type: new GraphQLNonNull(GraphQLInt),
-        resolve: ({ payments }): number => payments,
-      },
-    },
-  });
-
 const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
   name: "User",
   fields: {
@@ -394,9 +386,13 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountAvailable }): number => accountAvailable,
     },
-    investmentsUser: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLInvestmentsUser)),
-      resolve: ({ investments }): InvestmentsUserMongo[] => investments,
+    accountLent: {
+      type: new GraphQLNonNull(MXNScalarType),
+      resolve: ({ accountLent }): number => accountLent,
+    },
+    accountInterests: {
+      type: new GraphQLNonNull(MXNScalarType),
+      resolve: ({ accountInterests }): number => accountInterests,
     },
     loans: {
       type: new GraphQLNonNull(LoanConnection),

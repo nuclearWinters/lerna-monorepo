@@ -23,69 +23,22 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       _id: new ObjectId("607bd608ef9719001cf38fd5"),
       id: "wHHR1SUBT0dspoF4YUOw1",
       accountAvailable: 0,
-      investments: [
-        {
-          _id_loan: new ObjectId("609875a48f2814002aaefe25"),
-          quantity: 5000000,
-          term: 6,
-          ROI: 17,
-          payments: 0,
-        },
-        {
-          _id_loan: new ObjectId("609875a48f2814002aaefe25"),
-          quantity: 1000000,
-          term: 6,
-          ROI: 17,
-          payments: 0,
-        },
-        {
-          _id_loan: new ObjectId("609875a48f2814002aaefe25"),
-          quantity: 1000000,
-          term: 6,
-          ROI: 17,
-          payments: 0,
-        },
-        {
-          _id_loan: new ObjectId("609875a48f2814002aaefe25"),
-          quantity: 1000000,
-          term: 6,
-          ROI: 17,
-          payments: 0,
-        },
-        {
-          _id_loan: new ObjectId("609875a48f2814002aaefe25"),
-          quantity: 500000,
-          term: 6,
-          ROI: 17,
-          payments: 0,
-        },
-        {
-          _id_loan: new ObjectId("609875a48f2814002aaefe25"),
-          quantity: 500000,
-          term: 6,
-          ROI: 17,
-          payments: 0,
-        },
-        {
-          _id_loan: new ObjectId("609875a48f2814002aaefe25"),
-          quantity: 500000,
-          term: 6,
-          ROI: 17,
-          payments: 0,
-        },
-      ],
+      accountInterests: 0,
+      accountLent: 0,
     },
     {
       _id: new ObjectId("6095f055f92be2001a15885b"),
       id: "wHHR1SUBT0dspoF4YUOw2",
       accountAvailable: 0,
-      investments: [],
+      accountInterests: 0,
+      accountLent: 0,
     },
     {
       _id: new ObjectId("6095f172f92be2001a15885c"),
       id: "wHHR1SUBT0dspoF4YUOw3",
       accountAvailable: 0,
-      investments: [],
+      accountInterests: 0,
+      accountLent: 0,
     },
   ]);
 
@@ -101,7 +54,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       term: 9,
       status: "waiting for approval",
       scheduledPayments: null,
-      investors: [],
+      pending: 0,
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe25"),
@@ -114,36 +67,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       term: 6,
       status: "financing",
       scheduledPayments: null,
-      investors: [
-        {
-          id_lender: "wHHR1SUBT0dspoF4YUOw1",
-          quantity: 5000000,
-        },
-        {
-          id_lender: "wHHR1SUBT0dspoF4YUOw1",
-          quantity: 1000000,
-        },
-        {
-          id_lender: "wHHR1SUBT0dspoF4YUOw1",
-          quantity: 1000000,
-        },
-        {
-          id_lender: "wHHR1SUBT0dspoF4YUOw1",
-          quantity: 1000000,
-        },
-        {
-          id_lender: "wHHR1SUBT0dspoF4YUOw1",
-          quantity: 500000,
-        },
-        {
-          id_lender: "wHHR1SUBT0dspoF4YUOw1",
-          quantity: 500000,
-        },
-        {
-          id_lender: "wHHR1SUBT0dspoF4YUOw1",
-          quantity: 500000,
-        },
-      ],
+      pending: 0,
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe26"),
@@ -156,7 +80,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       term: 8,
       status: "financing",
       scheduledPayments: null,
-      investors: [],
+      pending: 0,
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe27"),
@@ -200,7 +124,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
           status: "paid",
         },
       ],
-      investors: [],
+      pending: 0,
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe31"),
@@ -213,7 +137,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       term: 7,
       status: "financing",
       scheduledPayments: null,
-      investors: [],
+      pending: 0,
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe28"),
@@ -226,7 +150,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       term: 9,
       status: "financing",
       scheduledPayments: null,
-      investors: [],
+      pending: 0,
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe29"),
@@ -239,7 +163,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       term: 6,
       status: "financing",
       scheduledPayments: null,
-      investors: [],
+      pending: 0,
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe30"),
@@ -252,7 +176,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       term: 8,
       status: "financing",
       scheduledPayments: null,
-      investors: [],
+      pending: 0,
     },
     {
       _id: new ObjectId("609875a48f2814002aaefe32"),
@@ -291,7 +215,7 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
           status: "to be paid",
         },
       ],
-      investors: [],
+      pending: 0,
     },
   ]);
 
@@ -308,6 +232,10 @@ MongoClient.connect("mongodb://localhost:27017", {}).then(async (client) => {
       moratory: 0,
       payments: 0,
       term: 6,
+      interest_to_earn: 0,
+      still_invested: 0,
+      paid_already: 0,
+      amortize: 0,
     },
   ]);
 

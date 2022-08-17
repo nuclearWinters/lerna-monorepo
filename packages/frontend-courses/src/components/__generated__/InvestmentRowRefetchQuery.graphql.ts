@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1c9931dc6bf3bc03a94c976618c1aad2>>
+ * @generated SignedSource<<756799c007f21f2a02f1c39d2c624771>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -165,6 +165,27 @@ return {
                 "kind": "ScalarField",
                 "name": "moratory",
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "interest_to_earn",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "paid_already",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "still_invested",
+                "storageKey": null
               }
             ],
             "type": "Investment",
@@ -176,16 +197,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7aa0c1e7e5857621e0bb60e0746b544a",
+    "cacheID": "117c30bb7505cf167437fd8bdcaf8283",
     "id": null,
     "metadata": {},
     "name": "InvestmentRowRefetchQuery",
     "operationKind": "query",
-    "text": "query InvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...InvestmentRow_investment\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n}\n"
+    "text": "query InvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...InvestmentRow_investment\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  still_invested\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3696d71d0110801a9c520856264c3e47";
+(node as any).hash = "2c9377ed917485504d3cbceaae446a7c";
 
 export default node;

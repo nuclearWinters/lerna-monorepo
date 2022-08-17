@@ -27,7 +27,8 @@ describe("QueryUser tests", () => {
         _id: new ObjectId("000000000000000000000060"),
         id: "wHHR1SUBT0dspoF4YUO24",
         accountAvailable: 50000,
-        investments: [],
+        accountInterests: 0,
+        accountLent: 0,
       },
     ]);
     const response = await request
@@ -37,9 +38,8 @@ describe("QueryUser tests", () => {
           user {
             id
             accountAvailable
-            investmentsUser {
-              _id_loan
-            }
+            accountLent
+            accountInterests
           }  
         }`,
         variables: {},
@@ -74,6 +74,7 @@ describe("QueryUser tests", () => {
       );
     expect(response.body.data.user.id).toBeTruthy();
     expect(response.body.data.user.accountAvailable).toBe("$500.00");
-    expect(response.body.data.user.investmentsUser.length).toBe(0);
+    expect(response.body.data.user.accountLent).toBe("$0.00");
+    expect(response.body.data.user.accountInterests).toBe("$0.00");
   });
 });

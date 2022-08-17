@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1a1681dc9f8f5caf8d0c26981d74a242>>
+ * @generated SignedSource<<2a70da177a4129acaa837bc2792f80e9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,10 +21,10 @@ export type RoutesLoansSubscription$data = {
       readonly cursor: string;
       readonly node: {
         readonly ROI: number;
-        readonly _id_user: string;
         readonly expiry: Int;
         readonly goal: string;
         readonly id: string;
+        readonly id_user: string;
         readonly raised: string;
         readonly scheduledPayments: ReadonlyArray<{
           readonly amortize: string;
@@ -101,7 +101,7 @@ v2 = [
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "_id_user",
+                "name": "id_user",
                 "storageKey": null
               },
               {
@@ -215,16 +215,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "ad92025489beddea4f351e38eb1f6260",
+    "cacheID": "1e6ca67320f32786ebeee69422453d68",
     "id": null,
     "metadata": {},
     "name": "RoutesLoansSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesLoansSubscription(\n  $status: [LoanStatus!]!\n) {\n  loans_subscribe(status: $status) {\n    loan_edge {\n      node {\n        id\n        _id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n        scheduledPayments {\n          amortize\n          status\n          scheduledDate\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n"
+    "text": "subscription RoutesLoansSubscription(\n  $status: [LoanStatus!]!\n) {\n  loans_subscribe(status: $status) {\n    loan_edge {\n      node {\n        id\n        id_user\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n        scheduledPayments {\n          amortize\n          status\n          scheduledDate\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "49f15ce5518f2311b8575c229580744d";
+(node as any).hash = "996119fb63fdb1771ca67593d26383fc";
 
 export default node;

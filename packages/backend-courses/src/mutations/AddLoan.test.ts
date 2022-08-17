@@ -26,7 +26,8 @@ describe("AddLoan tests", () => {
       _id: new ObjectId("000000000000000000000006"),
       id: "wHHR1SUBT0dspoF4YUO20",
       accountAvailable: 100000,
-      investments: [],
+      accountInterests: 0,
+      accountLent: 0,
     });
     const response = await request
       .post("/graphql")
@@ -91,6 +92,7 @@ describe("AddLoan tests", () => {
         score: loan.score,
         status: loan.status,
         term: loan.term,
+        pending: loan.pending,
       }))
     ).toEqual([
       {
@@ -102,6 +104,7 @@ describe("AddLoan tests", () => {
         score: "AAA",
         status: "waiting for approval",
         term: 2,
+        pending: 0,
       },
     ]);
   });

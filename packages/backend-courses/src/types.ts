@@ -16,18 +16,11 @@ export interface Context {
   isLender: boolean;
 }
 
-export interface InvestmentsUserMongo {
-  _id_loan: ObjectId;
-  quantity: number;
-  term: number;
-  ROI: number;
-  payments: number;
-}
-
 export interface UserMongo {
   _id?: ObjectId;
   accountAvailable: number;
-  investments: InvestmentsUserMongo[];
+  accountLent: number;
+  accountInterests: number;
   id: string;
 }
 
@@ -69,11 +62,6 @@ export interface IScheduledPayments {
   scheduledDate: Date;
 }
 
-export interface ILoanInvestors {
-  id_lender: string;
-  quantity: number;
-}
-
 export interface LoanMongo {
   _id?: ObjectId;
   id_user: string;
@@ -85,7 +73,7 @@ export interface LoanMongo {
   expiry: Date;
   status: ILoanStatus;
   scheduledPayments: IScheduledPayments[] | null;
-  investors: ILoanInvestors[];
+  pending: number;
 }
 
 export type IInvestmentStatus =
@@ -108,6 +96,10 @@ export interface InvestmentMongo {
   term: number;
   payments: number;
   moratory: number;
+  amortize: number;
+  interest_to_earn: number;
+  paid_already: number;
+  still_invested: number;
 }
 
 export interface DecodeJWT {

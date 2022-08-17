@@ -40,7 +40,7 @@ describe("QueryLoans tests", () => {
           },
         ],
         expiry: new Date(),
-        investors: [],
+        pending: 0,
       },
       {
         _id: new ObjectId("000000000000000000000042"),
@@ -53,7 +53,7 @@ describe("QueryLoans tests", () => {
         status: "waiting for approval",
         scheduledPayments: null,
         expiry: new Date(),
-        investors: [],
+        pending: 0,
       },
       {
         _id: new ObjectId("000000000000000000000043"),
@@ -66,7 +66,7 @@ describe("QueryLoans tests", () => {
         status: "financing",
         scheduledPayments: null,
         expiry: new Date(),
-        investors: [],
+        pending: 0,
       },
     ]);
     const response = await request

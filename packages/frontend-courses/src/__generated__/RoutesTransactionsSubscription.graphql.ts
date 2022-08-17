@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6d2766656ff532b594b8cab5407f6cd2>>
+ * @generated SignedSource<<ec9635fc960e9beaf7cf7b118b151f54>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,6 @@ export type RoutesTransactionsSubscription$data = {
     readonly transaction_edge: {
       readonly cursor: string;
       readonly node: {
-        readonly _id_user: string;
         readonly count: number;
         readonly history: ReadonlyArray<{
           readonly _id_loan: string | null;
@@ -30,6 +29,7 @@ export type RoutesTransactionsSubscription$data = {
           readonly type: TransactionType;
         }>;
         readonly id: string;
+        readonly id_user: string;
       } | null;
     };
     readonly type: SubscribeType;
@@ -98,7 +98,7 @@ v3 = [
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "_id_user",
+                "name": "id_user",
                 "storageKey": null
               },
               {
@@ -185,16 +185,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "2c9c89406f07e4d73ad972d45ab3a419",
+    "cacheID": "69af2f134817c7b00f3f33df9a25132d",
     "id": null,
     "metadata": {},
     "name": "RoutesTransactionsSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesTransactionsSubscription(\n  $user_gid: ID!\n) {\n  transactions_subscribe(user_gid: $user_gid) {\n    transaction_edge {\n      node {\n        id\n        _id_user\n        count\n        history {\n          id\n          id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n"
+    "text": "subscription RoutesTransactionsSubscription(\n  $user_gid: ID!\n) {\n  transactions_subscribe(user_gid: $user_gid) {\n    transaction_edge {\n      node {\n        id\n        id_user\n        count\n        history {\n          id\n          id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n      }\n      cursor\n    }\n    type\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "734fa4d63b620d2290c1cfad28094e76";
+(node as any).hash = "4ca60a820a3590b5bf86ab46de30df9a";
 
 export default node;

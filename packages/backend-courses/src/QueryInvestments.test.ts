@@ -36,6 +36,10 @@ describe("QueryInvestments tests", () => {
         term: 3,
         ROI: 17,
         moratory: 0,
+        interest_to_earn: 0,
+        still_invested: 0,
+        paid_already: 0,
+        amortize: 50989,
       },
       {
         _id: new ObjectId("000000000000000000000034"),
@@ -50,6 +54,10 @@ describe("QueryInvestments tests", () => {
         term: 50000,
         ROI: 17,
         moratory: 0,
+        interest_to_earn: 0,
+        still_invested: 0,
+        paid_already: 0,
+        amortize: 50989,
       },
       {
         _id: new ObjectId("000000000000000000000035"),
@@ -64,6 +72,10 @@ describe("QueryInvestments tests", () => {
         term: 50000,
         ROI: 17,
         moratory: 0,
+        interest_to_earn: 0,
+        still_invested: 0,
+        paid_already: 0,
+        amortize: 50989,
       },
     ]);
     const response = await request
@@ -137,7 +149,7 @@ describe("QueryInvestments tests", () => {
       response.body.data.user.investments.edges[0].node._id_loan
     ).toBeTruthy();
     expect(response.body.data.user.investments.edges[0].node.quantity).toBe(
-      50000
+      "$500.00"
     );
     expect(
       response.body.data.user.investments.edges[0].node.created

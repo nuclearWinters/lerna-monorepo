@@ -27,13 +27,15 @@ describe("ApproveLoan tests", () => {
         _id: new ObjectId("000000000000000000000009"),
         id: "wHHR1SUBT0dspoF4YUO21",
         accountAvailable: 100000,
-        investments: [],
+        accountInterests: 0,
+        accountLent: 0,
       },
       {
         _id: new ObjectId("000000000000000000000010"),
         id: "wHHR1SUBT0dspoF4YUO22",
         accountAvailable: 100000,
-        investments: [],
+        accountInterests: 0,
+        accountLent: 0,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -48,7 +50,7 @@ describe("ApproveLoan tests", () => {
       expiry: new Date(),
       status: "waiting for approval",
       scheduledPayments: null,
-      investors: [],
+      pending: 0,
     });
     const response = await request
       .post("/graphql")

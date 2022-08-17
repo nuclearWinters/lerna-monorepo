@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2acfa08342ef40d18a0b54ce2eafee93>>
+ * @generated SignedSource<<c5574d2d96f4fda1e9fd1dd8476f2019>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -25,7 +25,7 @@ export type RoutesInvestmentsSubscription$data = {
         readonly id: string;
         readonly id_borrower: string;
         readonly id_lender: string;
-        readonly quantity: number;
+        readonly quantity: string;
         readonly status: InvestmentStatus;
         readonly updated: Int;
       } | null;

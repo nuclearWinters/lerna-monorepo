@@ -5,7 +5,6 @@ import { InvestmentRow_investment$key } from "./__generated__/InvestmentRow_inve
 import { format } from "date-fns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt, faClipboard } from "@fortawesome/free-solid-svg-icons";
-import { generateCurrency } from "utils";
 import { useTranslation } from "react-i18next";
 
 const investmentRowRefetchableFragment = graphql`
@@ -22,6 +21,9 @@ const investmentRowRefetchableFragment = graphql`
     ROI
     term
     moratory
+    interest_to_earn
+    paid_already
+    still_invested
   }
 `;
 
@@ -35,14 +37,6 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
     InvestmentRowRefetchQuery,
     InvestmentRow_investment$key
   >(investmentRowRefetchableFragment, investment);
-  const { ROI, term, payments, quantity } = data;
-  const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
-  const amortize = Math.floor(
-    quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
-  );
-  const paid = generateCurrency(amortize * payments);
-  const owes = generateCurrency(amortize * (term - payments));
-  const interests = generateCurrency(amortize * term - quantity);
   const status = () => {
     switch (data.status) {
       case "DELAY_PAYMENT":
@@ -107,7 +101,7 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
           color={"rgba(90,96,255)"}
         />
       </div>
-      <div style={style.cell}>{generateCurrency(data.quantity)}</div>
+      <div style={style.cell}>{data.quantity}</div>
       <div style={style.status}>
         <div
           style={{
@@ -123,9 +117,9 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
           {status()}
         </div>
       </div>
-      <div style={style.cell}>{paid}</div>
-      <div style={style.cell}>{owes}</div>
-      <div style={style.cell}>{interests}</div>
+      <div style={style.cell}>{data.paid_already}</div>
+      <div style={style.cell}>{data.still_invested}</div>
+      <div style={style.cell}>{data.interest_to_earn}</div>
       <div style={style.cell}>{data.moratory}</div>
       <div style={style.cell}>{format(data.updated, "dd/mm/yyyy")}</div>
       <div style={style.cell}>{format(data.created, "dd/MM/yyyy")}</div>

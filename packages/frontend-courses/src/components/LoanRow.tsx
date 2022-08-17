@@ -15,7 +15,7 @@ import {
   faThumbsUp,
   faPlusSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import { generateCents, generateCurrency, logOut } from "utils";
+import { logOut } from "utils";
 import { useTranslation } from "react-i18next";
 import { Rows } from "./Rows";
 import { Columns } from "./Colums";
@@ -42,6 +42,8 @@ const loanRowRefetchableFragment = graphql`
       status
       scheduledDate
     }
+    pending
+    pendingCents
   }
 `;
 
@@ -200,11 +202,7 @@ export const LoanRow: FC<Props> = ({
         <div style={style.cell}>
           {data.term} {t("meses")}
         </div>
-        <div style={style.cell}>
-          {generateCurrency(
-            generateCents(data.goal) - generateCents(data.raised)
-          )}
-        </div>
+        <div style={style.cell}>{data.pending}</div>
         <div style={style.cell}>
           {differenceInMonths(data.expiry, new Date()) ??
             differenceInDays(data.expiry, new Date())}{" "}
@@ -219,7 +217,7 @@ export const LoanRow: FC<Props> = ({
               style={style.input}
               value={value}
               onChange={(e) => {
-                const val = e.target.value;
+                const val = e.target.value.replace("e", "");
                 if (isNaN(Number(val))) {
                   return;
                 }
@@ -244,11 +242,10 @@ export const LoanRow: FC<Props> = ({
                       },
                     ];
                   }
-                  const raised = generateCents(data.raised) / 100;
-                  const goal = generateCents(data.goal) / 100;
+                  const pendingDollars = data.pendingCents / 100;
                   const quantity = Number(val);
-                  if (Number(quantity) + raised > goal) {
-                    state[idx].quantity = String(goal - raised);
+                  if (Number(quantity) > pendingDollars) {
+                    state[idx].quantity = String(pendingDollars);
                   } else {
                     state[idx].quantity = val;
                   }

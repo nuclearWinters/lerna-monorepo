@@ -50,7 +50,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthButton } from "components/AuthButton";
 import { Rows } from "components/Rows";
-import { generateCents, generateCurrency, logOut } from "utils";
+import { logOut } from "utils";
 import { useTranslation } from "react-i18next";
 import { CheckExpiration } from "components/CheckExpiration";
 import { Routes_user$key } from "__generated__/Routes_user.graphql";
@@ -59,14 +59,8 @@ import { Routes_auth_user$key } from "__generated__/Routes_auth_user.graphql";
 const routesFragment = graphql`
   fragment Routes_user on User {
     id
-    investmentsUser {
-      _id_loan
-      quantity
-      term
-      ROI
-      payments
-    }
     accountAvailable
+    accountTotal
     ...AddFunds_user
     ...RetireFunds_user
     ...AddLoan_user
@@ -186,13 +180,6 @@ const subscriptionUser = graphql`
       user {
         id
         accountAvailable
-        investmentsUser {
-          _id_loan
-          quantity
-          term
-          ROI
-          payments
-        }
       }
     }
   }
@@ -382,26 +369,6 @@ export const Routes: FC<Props> = (props) => {
   useSubscription<RoutesInvestmentsSubscription>(configInvestments);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   useSubscription<RoutesUserSubscription>(configUser);
-  const reducedInvestments = user.investmentsUser.reduce<IUserInvestments[]>(
-    (acc, item) => {
-      const index = acc.findIndex((acc) => acc._id_loan === item._id_loan);
-      if (index === -1) {
-        acc.push({ ...item, quantity: item.quantity });
-      } else {
-        acc[index].quantity += item.quantity;
-      }
-      return acc;
-    },
-    []
-  );
-  const accountTotal =
-    reducedInvestments.reduce((acc, { term, ROI, quantity, payments }) => {
-      const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
-      const owes =
-        Math.floor(quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)) *
-        (term - payments);
-      return acc + owes;
-    }, 0) + generateCents(user.accountAvailable);
   return (
     <Router>
       <CheckExpiration />
@@ -422,7 +389,7 @@ export const Routes: FC<Props> = (props) => {
                 isSupport={isSupport}
               />
               <AccountInfo
-                value={generateCurrency(accountTotal)}
+                value={user.accountTotal}
                 title={t("Valor de la cuenta")}
                 colorValue="rgb(1,120,221)"
               />
@@ -480,7 +447,7 @@ export const Routes: FC<Props> = (props) => {
                 isSupport={isSupport}
               />
               <AccountInfo
-                value={generateCurrency(accountTotal)}
+                value={user.accountTotal}
                 title={t("Valor de la cuenta")}
                 colorValue="rgb(1,120,221)"
               />

@@ -29,7 +29,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000000"),
       id: "wHHR1SUBT0dspoF4YUO25",
       accountAvailable: 100000,
-      investments: [],
+      accountInterests: 0,
+      accountLent: 0,
     });
     const response = await request
       .post("/graphql")
@@ -83,7 +84,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000000"),
       id: "wHHR1SUBT0dspoF4YUO25",
       accountAvailable: 150000,
-      investments: [],
+      accountLent: 0,
+      accountInterests: 0,
     });
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
@@ -111,7 +113,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("020000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO26",
       accountAvailable: 100000,
-      investments: [],
+      accountInterests: 0,
+      accountLent: 0,
     });
     const response = await request
       .post("/graphql")
@@ -167,7 +170,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("020000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO26",
       accountAvailable: 50000,
-      investments: [],
+      accountLent: 0,
+      accountInterests: 0,
     });
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
@@ -195,7 +199,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000001"),
       id: "wHHR1SUBT0dspoF4YUO27",
       accountAvailable: 100000,
-      investments: [],
+      accountInterests: 0,
+      accountLent: 0,
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
@@ -273,7 +278,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000001"),
       id: "wHHR1SUBT0dspoF4YUO27",
       accountAvailable: 150000,
-      investments: [],
+      accountLent: 0,
+      accountInterests: 0,
     });
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
@@ -301,7 +307,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000002"),
       id: "wHHR1SUBT0dspoF4YUO28",
       accountAvailable: 100000,
-      investments: [],
+      accountInterests: 0,
+      accountLent: 0,
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
@@ -362,7 +369,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000002"),
       id: "wHHR1SUBT0dspoF4YUO28",
       accountAvailable: 100000,
-      investments: [],
+      accountLent: 0,
+      accountInterests: 0,
     });
     const transactions =
       dbInstance.collection<BucketTransactionMongo>("transactions");
@@ -378,7 +386,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("100000000000000000000002"),
       id: "wHHR1SUBT0dspoF4YUO29",
       accountAvailable: 100000,
-      investments: [],
+      accountInterests: 0,
+      accountLent: 0,
     });
     const response = await request
       .post("/graphql")
@@ -434,7 +443,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("100000000000000000000002"),
       id: "wHHR1SUBT0dspoF4YUO29",
       accountAvailable: 100000,
-      investments: [],
+      accountLent: 0,
+      accountInterests: 0,
     });
 
     const transactions =
@@ -451,7 +461,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("100000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO30",
       accountAvailable: 100000,
-      investments: [],
+      accountInterests: 0,
+      accountLent: 0,
     });
     const response = await request
       .post("/graphql")
@@ -507,7 +518,8 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("100000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO30",
       accountAvailable: 100000,
-      investments: [],
+      accountLent: 0,
+      accountInterests: 0,
     });
 
     const transactions =

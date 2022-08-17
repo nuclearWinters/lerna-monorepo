@@ -52,7 +52,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
         ROI: 17.0,
         status: "waiting for approval",
         scheduledPayments: null,
-        investors: [],
+        pending: 0,
         ...loan,
       });
       return {

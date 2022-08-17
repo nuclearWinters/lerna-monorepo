@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<98604464b682ac48fb20351420ed61e5>>
+ * @generated SignedSource<<b092e2c98770545ad90d4f3773f3b61d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -107,7 +107,7 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "_id_user",
+                "name": "id_user",
                 "storageKey": null
               },
               {
@@ -178,6 +178,20 @@ return {
                   }
                 ],
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "pending",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "pendingCents",
+                "storageKey": null
               }
             ],
             "type": "Loan",
@@ -189,16 +203,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "9d38ae3d457fc3a1527322aa75ef3399",
+    "cacheID": "55a21f33bf504e50310f809e71e42b7b",
     "id": null,
     "metadata": {},
     "name": "LoanRowRefetchQuery",
     "operationKind": "query",
-    "text": "query LoanRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...LoanRow_loan\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  _id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n}\n"
+    "text": "query LoanRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...LoanRow_loan\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
   }
 };
 })();
 
-(node as any).hash = "02ecb10e18a8b0a5924d6890b3fd7400";
+(node as any).hash = "69923bcac15fc0ac98ab7b3c948e328a";
 
 export default node;

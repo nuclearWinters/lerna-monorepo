@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<234d67933977a612799062c56a528c6d>>
+ * @generated SignedSource<<b6196f2ad339083bc43c54a152d542d2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,10 +17,13 @@ export type InvestmentRow_investment$data = {
   readonly created: Int;
   readonly id: string;
   readonly id_borrower: string;
+  readonly interest_to_earn: string;
   readonly moratory: string;
+  readonly paid_already: string;
   readonly payments: number;
-  readonly quantity: number;
+  readonly quantity: string;
   readonly status: InvestmentStatus;
+  readonly still_invested: string;
   readonly term: number;
   readonly updated: Int;
   readonly " $fragmentType": "InvestmentRow_investment";
@@ -121,12 +124,33 @@ const node: ReaderFragment = {
       "kind": "ScalarField",
       "name": "moratory",
       "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "interest_to_earn",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "paid_already",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "still_invested",
+      "storageKey": null
     }
   ],
   "type": "Investment",
   "abstractKey": null
 };
 
-(node as any).hash = "3696d71d0110801a9c520856264c3e47";
+(node as any).hash = "2c9377ed917485504d3cbceaae446a7c";
 
 export default node;

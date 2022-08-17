@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4926881617cf61045e29bfa7a1b9d72e>>
+ * @generated SignedSource<<c6c205a4910534b6f16394f99d0ae8b4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,13 +17,6 @@ export type RoutesUserSubscription$data = {
     readonly user: {
       readonly accountAvailable: string;
       readonly id: string;
-      readonly investmentsUser: ReadonlyArray<{
-        readonly ROI: number;
-        readonly _id_loan: string;
-        readonly payments: number;
-        readonly quantity: number;
-        readonly term: number;
-      }>;
     };
   };
 };
@@ -76,52 +69,6 @@ v1 = [
             "kind": "ScalarField",
             "name": "accountAvailable",
             "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "InvestmentsUser",
-            "kind": "LinkedField",
-            "name": "investmentsUser",
-            "plural": true,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "_id_loan",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "quantity",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "term",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "ROI",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "payments",
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
           }
         ],
         "storageKey": null
@@ -148,16 +95,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "55af187334ee0a466e9a4b1f10ff51d8",
+    "cacheID": "a2f9649122e474188da86c0d1bc632e8",
     "id": null,
     "metadata": {},
     "name": "RoutesUserSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesUserSubscription(\n  $user_gid: ID!\n) {\n  user_subscribe(user_gid: $user_gid) {\n    user {\n      id\n      accountAvailable\n      investmentsUser {\n        _id_loan\n        quantity\n        term\n        ROI\n        payments\n      }\n    }\n  }\n}\n"
+    "text": "subscription RoutesUserSubscription(\n  $user_gid: ID!\n) {\n  user_subscribe(user_gid: $user_gid) {\n    user {\n      id\n      accountAvailable\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "651cad6f1b268f78153ae135c7c2e9de";
+(node as any).hash = "98bdef7ecc9e2025fc420f196de54918";
 
 export default node;
