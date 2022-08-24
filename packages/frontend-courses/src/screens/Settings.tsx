@@ -21,6 +21,7 @@ import { logOut } from "utils";
 const settingsFragment = graphql`
   fragment Settings_auth_user on AuthUser {
     id
+    accountId
     name
     apellidoPaterno
     apellidoMaterno

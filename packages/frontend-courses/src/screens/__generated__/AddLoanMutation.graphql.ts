@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d7a7f06c9a7c465bf20559f5a10055d8>>
+ * @generated SignedSource<<c8de6680e8d4d2b7d1e9772eff00e1aa>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,6 @@ export type AddLoanInput = {
   clientMutationId?: string | null;
   goal: string;
   term: number;
-  user_gid: string;
 };
 export type AddLoanMutation$variables = {
   input: AddLoanInput;

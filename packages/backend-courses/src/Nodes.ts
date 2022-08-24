@@ -26,7 +26,6 @@ import {
   InvestmentMongo,
   LoanMongo,
   TransactionMongo,
-  BucketTransactionMongo,
   ILoanStatus,
   IInvestmentStatus,
   IScheduledPayments,
@@ -245,7 +244,13 @@ const {
 export const GraphQLTransaction = new GraphQLObjectType<TransactionMongo>({
   name: "Transaction",
   fields: {
-    id: globalIdField("Transaction", ({ _id }): string => _id.toHexString()),
+    id: globalIdField("Transaction", ({ _id }): string => {
+      return typeof _id === "string" ? _id : _id.toHexString();
+    }),
+    id_user: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ id_user }): string => id_user,
+    },
     id_borrower: {
       type: GraphQLString,
       resolve: ({ id_borrower }): string | null => id_borrower || null,
@@ -260,7 +265,8 @@ export const GraphQLTransaction = new GraphQLObjectType<TransactionMongo>({
     },
     created: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created }): Date => created,
+      resolve: ({ created }): Date =>
+        typeof created === "string" ? new Date(created) : created,
     },
     type: {
       type: new GraphQLNonNull(TransactionType),
@@ -269,35 +275,12 @@ export const GraphQLTransaction = new GraphQLObjectType<TransactionMongo>({
   },
 });
 
-export const GraphQLBucketTransaction =
-  new GraphQLObjectType<BucketTransactionMongo>({
-    name: "BucketTransaction",
-    fields: {
-      id: globalIdField("BucketTransaction", ({ _id }): string => _id),
-      history: {
-        type: new GraphQLNonNull(
-          new GraphQLList(new GraphQLNonNull(GraphQLTransaction))
-        ),
-        resolve: ({ history }): TransactionMongo[] => history,
-      },
-      count: {
-        type: new GraphQLNonNull(GraphQLInt),
-        resolve: ({ count }): number => count,
-      },
-      id_user: {
-        type: new GraphQLNonNull(GraphQLString),
-        resolve: ({ id_user }): string => id_user,
-      },
-    },
-    interfaces: [nodeInterface],
-  });
-
 const {
-  connectionType: BucketTransactionConnection,
-  edgeType: GraphQLBucketTransactionEdge,
+  connectionType: TransactionConnection,
+  edgeType: GraphQLTransactionEdge,
 } = connectionDefinitions({
   name: "BucketTransaction",
-  nodeType: GraphQLBucketTransaction,
+  nodeType: GraphQLTransaction,
 });
 
 export const GraphQLScheduledPayments =
@@ -381,7 +364,13 @@ const { connectionType: LoanConnection, edgeType: GraphQLLoanEdge } =
 const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
   name: "User",
   fields: {
-    id: globalIdField("User", ({ _id }): string => _id.toHexString()),
+    id: globalIdField("User", ({ _id }): string =>
+      typeof _id === "string" ? _id : _id.toHexString()
+    ),
+    accountId: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ id }): string => id,
+    },
     accountAvailable: {
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountAvailable }): number => accountAvailable,
@@ -393,6 +382,10 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
     accountInterests: {
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountInterests }): number => accountInterests,
+    },
+    accountTotal: {
+      type: new GraphQLNonNull(MXNScalarType),
+      resolve: ({ accountTotal }): number => accountTotal,
     },
     loans: {
       type: new GraphQLNonNull(LoanConnection),
@@ -509,13 +502,13 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       },
     },
     transactions: {
-      type: new GraphQLNonNull(BucketTransactionConnection),
+      type: new GraphQLNonNull(TransactionConnection),
       args: connectionArgs,
       resolve: async (
         _: unknown,
         args: unknown,
         { transactions, id }: Context
-      ): Promise<Connection<BucketTransactionMongo>> => {
+      ): Promise<Connection<TransactionMongo>> => {
         const { first, after } = args as ConnectionArguments;
         try {
           const transaction_id = unbase64(after || "");
@@ -523,21 +516,21 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           if (limit <= 0) {
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
-          const query: Filter<BucketTransactionMongo> = {
+          const query: Filter<TransactionMongo> = {
             id_user: id,
           };
           if (transaction_id) {
-            query._id = { $lt: transaction_id };
+            query._id = { $lt: new ObjectId(transaction_id) };
           }
           const result = await transactions
             .find(query)
             .limit(limit)
             .sort({ $natural: -1 })
             .toArray();
-          const edgesMapped = result.map((loan) => {
+          const edgesMapped = result.map((transaction) => {
             return {
-              cursor: base64(loan._id),
-              node: loan,
+              cursor: base64(transaction._id.toHexString()),
+              node: transaction,
             };
           });
           const edges = edgesMapped.slice(0, first || 5);
@@ -564,8 +557,8 @@ export {
   nodeInterface,
   LoanConnection,
   GraphQLLoanEdge,
-  BucketTransactionConnection,
-  GraphQLBucketTransactionEdge,
+  TransactionConnection,
+  GraphQLTransactionEdge,
   InvestmentConnection,
   GraphQLInvestmentEdge,
   GraphQLUser,

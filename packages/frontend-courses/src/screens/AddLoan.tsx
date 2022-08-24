@@ -1,6 +1,5 @@
 import React, { FC, useState } from "react";
-import { graphql, useFragment, useMutation } from "react-relay";
-import { AddLoan_user$key } from "./__generated__/AddLoan_user.graphql";
+import { graphql, useMutation } from "react-relay";
 import { AddLoanMutation } from "./__generated__/AddLoanMutation.graphql";
 import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
@@ -16,17 +15,7 @@ import { Space } from "components/Space";
 import { useTranslation } from "react-i18next";
 import { logOut } from "utils";
 
-const addLoanFragment = graphql`
-  fragment AddLoan_user on User {
-    id
-  }
-`;
-
-type Props = {
-  user: AddLoan_user$key;
-};
-
-export const AddLoan: FC<Props> = (props) => {
+export const AddLoan: FC = () => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<AddLoanMutation>(graphql`
     mutation AddLoanMutation($input: AddLoanInput!) {
@@ -36,7 +25,6 @@ export const AddLoan: FC<Props> = (props) => {
       }
     }
   `);
-  const user = useFragment(addLoanFragment, props.user);
   const [form, setForm] = useState({
     goal: "",
     term: "3",
@@ -119,7 +107,6 @@ export const AddLoan: FC<Props> = (props) => {
                     input: {
                       goal: form.goal,
                       term: Number(form.term),
-                      user_gid: user.id,
                     },
                   },
                   onCompleted: (response) => {

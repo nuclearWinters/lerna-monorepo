@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fc2081ddc7d51401da33e49bb0787592>>
+ * @generated SignedSource<<cda0a5d5c9d5cb3957b62c38a8c900c3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -33,62 +33,75 @@ var v0 = {
   "storageKey": null
 },
 v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "accountId",
+  "storageKey": null
+},
+v2 = {
   "kind": "Literal",
   "name": "after",
   "value": ""
 },
-v2 = {
-  "kind": "Literal",
-  "name": "first",
-  "value": 2
-},
 v3 = [
-  (v1/*: any*/),
-  (v2/*: any*/)
+  (v2/*: any*/),
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 5
+  }
 ],
 v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "id_borrower",
+  "name": "id_user",
   "storageKey": null
 },
 v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "_id_loan",
+  "name": "id_borrower",
   "storageKey": null
 },
 v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "quantity",
+  "name": "_id_loan",
   "storageKey": null
 },
 v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "created",
+  "name": "quantity",
   "storageKey": null
 },
 v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "__typename",
+  "name": "created",
   "storageKey": null
 },
 v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "cursor",
+  "name": "__typename",
   "storageKey": null
 },
 v10 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "cursor",
+  "storageKey": null
+},
+v11 = {
   "alias": null,
   "args": null,
   "concreteType": "PageInfo",
@@ -113,9 +126,13 @@ v10 = {
   ],
   "storageKey": null
 },
-v11 = [
-  (v1/*: any*/),
+v12 = [
   (v2/*: any*/),
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 2
+  },
   {
     "kind": "Literal",
     "name": "status",
@@ -126,35 +143,27 @@ v11 = [
     ]
   }
 ],
-v12 = {
+v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "status",
   "storageKey": null
 },
-v13 = {
+v14 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "ROI",
   "storageKey": null
 },
-v14 = {
+v15 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "term",
   "storageKey": null
-},
-v15 = [
-  (v1/*: any*/),
-  {
-    "kind": "Literal",
-    "name": "first",
-    "value": 5
-  }
-];
+};
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -227,6 +236,7 @@ return {
             "name": "accountTotal",
             "storageKey": null
           },
+          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -244,7 +254,7 @@ return {
           {
             "alias": null,
             "args": (v3/*: any*/),
-            "concreteType": "BucketTransactionConnection",
+            "concreteType": "TransactionConnection",
             "kind": "LinkedField",
             "name": "transactions",
             "plural": false,
@@ -252,7 +262,7 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "BucketTransactionEdge",
+                "concreteType": "TransactionEdge",
                 "kind": "LinkedField",
                 "name": "edges",
                 "plural": true,
@@ -260,53 +270,35 @@ return {
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "BucketTransaction",
+                    "concreteType": "Transaction",
                     "kind": "LinkedField",
                     "name": "node",
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
+                      (v4/*: any*/),
+                      (v5/*: any*/),
+                      (v6/*: any*/),
                       {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "count",
+                        "name": "type",
                         "storageKey": null
                       },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "Transaction",
-                        "kind": "LinkedField",
-                        "name": "history",
-                        "plural": true,
-                        "selections": [
-                          (v0/*: any*/),
-                          (v4/*: any*/),
-                          (v5/*: any*/),
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "type",
-                            "storageKey": null
-                          },
-                          (v6/*: any*/),
-                          (v7/*: any*/)
-                        ],
-                        "storageKey": null
-                      },
-                      (v8/*: any*/)
+                      (v7/*: any*/),
+                      (v8/*: any*/),
+                      (v9/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v9/*: any*/)
+                  (v10/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v10/*: any*/)
+              (v11/*: any*/)
             ],
-            "storageKey": "transactions(after:\"\",first:2)"
+            "storageKey": "transactions(after:\"\",first:5)"
           },
           {
             "alias": null,
@@ -319,7 +311,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v11/*: any*/),
+            "args": (v12/*: any*/),
             "concreteType": "InvestmentsConnection",
             "kind": "LinkedField",
             "name": "investments",
@@ -342,10 +334,10 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
-                      (v4/*: any*/),
                       (v5/*: any*/),
                       (v6/*: any*/),
                       (v7/*: any*/),
+                      (v8/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -353,7 +345,7 @@ return {
                         "name": "updated",
                         "storageKey": null
                       },
-                      (v12/*: any*/),
+                      (v13/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -361,8 +353,8 @@ return {
                         "name": "payments",
                         "storageKey": null
                       },
-                      (v13/*: any*/),
                       (v14/*: any*/),
+                      (v15/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -391,21 +383,21 @@ return {
                         "name": "still_invested",
                         "storageKey": null
                       },
-                      (v8/*: any*/)
+                      (v9/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v9/*: any*/)
+                  (v10/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v10/*: any*/)
+              (v11/*: any*/)
             ],
             "storageKey": "investments(after:\"\",first:2,status:[\"DELAY_PAYMENT\",\"UP_TO_DATE\",\"FINANCING\"])"
           },
           {
             "alias": null,
-            "args": (v11/*: any*/),
+            "args": (v12/*: any*/),
             "filters": [
               "status"
             ],
@@ -416,7 +408,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v15/*: any*/),
+            "args": (v3/*: any*/),
             "concreteType": "LoanConnection",
             "kind": "LinkedField",
             "name": "loans",
@@ -439,13 +431,7 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "id_user",
-                        "storageKey": null
-                      },
+                      (v4/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -453,7 +439,7 @@ return {
                         "name": "score",
                         "storageKey": null
                       },
-                      (v13/*: any*/),
+                      (v14/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -461,7 +447,7 @@ return {
                         "name": "goal",
                         "storageKey": null
                       },
-                      (v14/*: any*/),
+                      (v15/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -476,7 +462,7 @@ return {
                         "name": "expiry",
                         "storageKey": null
                       },
-                      (v12/*: any*/),
+                      (v13/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -492,7 +478,7 @@ return {
                             "name": "amortize",
                             "storageKey": null
                           },
-                          (v12/*: any*/),
+                          (v13/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -517,21 +503,21 @@ return {
                         "name": "pendingCents",
                         "storageKey": null
                       },
-                      (v8/*: any*/)
+                      (v9/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v9/*: any*/)
+                  (v10/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v10/*: any*/)
+              (v11/*: any*/)
             ],
             "storageKey": "loans(after:\"\",first:5)"
           },
           {
             "alias": null,
-            "args": (v15/*: any*/),
+            "args": (v3/*: any*/),
             "filters": null,
             "handle": "connection",
             "key": "AddInvestments_user_loans",
@@ -592,6 +578,7 @@ return {
             "name": "isSupport",
             "storageKey": null
           },
+          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -640,12 +627,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "43bf5b199cb32edc80ff097dfe8fe0d1",
+    "cacheID": "55fcd3d683ce848ecb0e982b96d7c28c",
     "id": null,
     "metadata": {},
     "name": "AppQuery",
     "operationKind": "query",
-    "text": "query AppQuery {\n  user {\n    ...Routes_user\n    id\n  }\n  authUser {\n    ...Routes_auth_user\n    id\n  }\n}\n\nfragment Account_user on User {\n  accountAvailable\n  accountLent\n  accountInterests\n  accountTotal\n}\n\nfragment AddFunds_user on User {\n  id\n}\n\nfragment AddInvestments_auth_user on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n}\n\nfragment AddInvestments_user on User {\n  loans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment AddLoan_user on User {\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  still_invested\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 2, after: \"\", status: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment MyTransactions_auth_user on AuthUser {\n  language\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 2, after: \"\") {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment RetireFunds_user on User {\n  id\n}\n\nfragment Routes_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  language\n  isBorrower\n  isSupport\n  ...Settings_auth_user\n  ...AddInvestments_auth_user\n  ...MyTransactions_auth_user\n}\n\nfragment Routes_user on User {\n  id\n  accountAvailable\n  accountTotal\n  ...AddFunds_user\n  ...RetireFunds_user\n  ...AddLoan_user\n  ...Account_user\n  ...MyTransactions_user\n  ...MyInvestments_user\n  ...AddInvestments_user\n}\n\nfragment Settings_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  language\n}\n"
+    "text": "query AppQuery {\n  user {\n    ...Routes_user\n    id\n  }\n  authUser {\n    ...Routes_auth_user\n    id\n  }\n}\n\nfragment Account_user on User {\n  accountAvailable\n  accountLent\n  accountInterests\n  accountTotal\n}\n\nfragment AddInvestments_auth_user on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n}\n\nfragment AddInvestments_user on User {\n  loans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  accountId\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  still_invested\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 2, after: \"\", status: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment MyTransactions_auth_user on AuthUser {\n  language\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Routes_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  language\n  isBorrower\n  isSupport\n  ...Settings_auth_user\n  ...AddInvestments_auth_user\n  ...MyTransactions_auth_user\n}\n\nfragment Routes_user on User {\n  id\n  accountAvailable\n  accountTotal\n  accountId\n  ...Account_user\n  ...MyTransactions_user\n  ...MyInvestments_user\n  ...AddInvestments_user\n}\n\nfragment Settings_auth_user on AuthUser {\n  id\n  accountId\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  language\n}\n"
   }
 };
 })();

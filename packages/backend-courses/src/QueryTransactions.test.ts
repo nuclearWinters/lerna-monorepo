@@ -1,8 +1,20 @@
 import { app } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { BucketTransactionMongo } from "./types";
+import { TransactionMongo } from "./types";
 import { jwt } from "./utils";
+
+jest.mock("graphql-redis-subscriptions", () => ({
+  RedisPubSub: jest.fn().mockImplementation(() => {
+    return {};
+  }),
+}));
+
+jest.mock("ioredis", () =>
+  jest.fn().mockImplementation(() => {
+    return {};
+  })
+);
 
 const request = supertest(app);
 
@@ -22,81 +34,77 @@ describe("QueryTransactions tests", () => {
 
   it("test TransactionsConnection valid access token", async () => {
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     await transactions.insertMany([
       {
-        _id: "000000000000000000000050_0",
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        count: 5,
-        history: [
-          {
-            _id: new ObjectId("000000000000000000000051"),
-            type: "credit",
-            quantity: 100,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId("000000000000000000000052"),
-            type: "invest",
-            quantity: -100,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId("000000000000000000000053"),
-            type: "payment",
-            quantity: -100,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId("000000000000000000000054"),
-            type: "withdrawal",
-            quantity: -100,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId("000000000000000000000055"),
-            type: "credit",
-            quantity: 100,
-            created: new Date(),
-          },
-        ],
+        _id: new ObjectId("000000000000000000000051"),
+        type: "credit",
+        quantity: 100,
+        created: new Date(),
       },
       {
-        _id: "000000000000000000000050_1",
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        count: 5,
-        history: [
-          {
-            _id: new ObjectId("000000000000000000000051"),
-            type: "credit",
-            quantity: 200,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId("000000000000000000000052"),
-            type: "invest",
-            quantity: -200,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId("000000000000000000000053"),
-            type: "payment",
-            quantity: -200,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId("000000000000000000000054"),
-            type: "withdrawal",
-            quantity: -200,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId("000000000000000000000055"),
-            type: "credit",
-            quantity: 200,
-            created: new Date(),
-          },
-        ],
+        _id: new ObjectId("000000000000000000000052"),
+        type: "invest",
+        quantity: -100,
+        created: new Date(),
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUO15",
+        _id: new ObjectId("000000000000000000000053"),
+        type: "payment",
+        quantity: -100,
+        created: new Date(),
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUO15",
+        _id: new ObjectId("000000000000000000000054"),
+        type: "withdrawal",
+        quantity: -100,
+        created: new Date(),
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUO15",
+        _id: new ObjectId("000000000000000000000055"),
+        type: "credit",
+        quantity: 100,
+        created: new Date(),
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUO15",
+        _id: new ObjectId("000000000000000000000151"),
+        type: "credit",
+        quantity: 200,
+        created: new Date(),
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUO15",
+        _id: new ObjectId("000000000000000000000152"),
+        type: "invest",
+        quantity: -200,
+        created: new Date(),
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUO15",
+        _id: new ObjectId("000000000000000000000153"),
+        type: "payment",
+        quantity: -200,
+        created: new Date(),
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUO15",
+        _id: new ObjectId("000000000000000000000154"),
+        type: "withdrawal",
+        quantity: -200,
+        created: new Date(),
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUO15",
+        _id: new ObjectId("000000000000000000000155"),
+        type: "credit",
+        quantity: 200,
+        created: new Date(),
       },
     ]);
     const response = await request
@@ -110,20 +118,18 @@ describe("QueryTransactions tests", () => {
                 node {
                   id
                   id_user
-                  count
-                  history {
-                    id
-                    type
-                    quantity
-                    created
-                  }
+                  type
+                  quantity
+                  created
+                  id_borrower
+                  _id_loan
                 }
               }
             } 
           } 
         }`,
         variables: {
-          first: 1,
+          first: 9,
           after: "",
         },
         operationName: "GetTransactionsConnection",
@@ -157,29 +163,21 @@ describe("QueryTransactions tests", () => {
           { expiresIn: "15m" }
         )}`
       );
-    expect(response.body.data.user.transactions.edges.length).toBe(1);
+    expect(response.body.data.user.transactions.edges.length).toBe(9);
     expect(response.body.data.user.transactions.edges[0].cursor).toBeTruthy();
     expect(response.body.data.user.transactions.edges[0].node.id).toBeTruthy();
     expect(
       response.body.data.user.transactions.edges[0].node.id_user
     ).toBeTruthy();
+    expect(response.body.data.user.transactions.edges[0].node.id).toBeTruthy();
+    expect(response.body.data.user.transactions.edges[0].node.type).toBe(
+      "CREDIT"
+    );
+    expect(response.body.data.user.transactions.edges[0].node.quantity).toBe(
+      "$2.00"
+    );
     expect(
-      response.body.data.user.transactions.edges[0].node.count
-    ).toBeTruthy();
-    expect(
-      response.body.data.user.transactions.edges[0].node.history.length
-    ).toBe(5);
-    expect(
-      response.body.data.user.transactions.edges[0].node.history[0].id
-    ).toBeTruthy();
-    expect(
-      response.body.data.user.transactions.edges[0].node.history[0].type
-    ).toBe("CREDIT");
-    expect(
-      response.body.data.user.transactions.edges[0].node.history[0].quantity
-    ).toBe("$2.00");
-    expect(
-      response.body.data.user.transactions.edges[0].node.history[0].created
+      response.body.data.user.transactions.edges[0].node.created
     ).toBeTruthy();
   });
 });

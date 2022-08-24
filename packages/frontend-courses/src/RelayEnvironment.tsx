@@ -12,7 +12,7 @@ import { tokensAndData } from "App";
 import { API_GATEWAY } from "utils";
 import { createClient, Sink } from "graphql-sse";
 
-const subscriptionsClient = createClient({
+export const subscriptionsClient = createClient({
   url: API_GATEWAY
     ? API_GATEWAY + "/stream"
     : "http://localhost:4001/graphql/stream",
@@ -21,6 +21,7 @@ const subscriptionsClient = createClient({
       Authorization: tokensAndData.accessToken,
     };
   },
+  credentials: "include",
 });
 
 const fetchRelay = async (params: RequestParameters, variables: Variables) => {

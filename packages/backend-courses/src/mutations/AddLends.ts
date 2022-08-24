@@ -8,10 +8,14 @@ import {
   GraphQLInt,
   GraphQLFloat,
 } from "graphql";
-import { BucketTransactionMongo, Context } from "../types";
-import { ObjectId, AnyBulkWriteOperation } from "mongodb";
+import { TransactionMongo, Context } from "../types";
+import { ObjectId } from "mongodb";
 import { MXNScalarType } from "../Nodes";
 import { addMonths, startOfMonth } from "date-fns";
+import {
+  publishTransactionInsert,
+  publishUser,
+} from "../subscriptions/subscriptionsUtils";
 
 interface Input {
   lends: {
@@ -108,18 +112,20 @@ export const AddLendsMutation = mutationWithClientMutationId({
         return account + quantity;
       }, 0);
       //Actualizar el usuario
-      const result = await users.updateOne(
+      const result = await users.findOneAndUpdate(
         { id, accountAvailable: { $gte: total } },
         {
           $inc: {
             accountAvailable: -total,
             accountLent: total,
           },
-        }
+        },
+        { returnDocument: "after" }
       );
-      if (!result.modifiedCount) {
+      if (!result.value) {
         throw new Error("No se tienen suficientes fondos.");
       }
+      publishUser(result.value);
       //Crear lista filtrada vacía
       const docsFiltered = docs.filter(() => false);
       for (const doc of docs) {
@@ -140,12 +146,16 @@ export const AddLendsMutation = mutationWithClientMutationId({
         );
         //Si NO se realizó la operación: incrementar saldo y no realizar más acciones
         if (!result.value) {
-          await users.updateOne(
+          const result = await users.findOneAndUpdate(
             { id },
             {
               $inc: { accountAvailable: quantity, accountLent: -quantity },
-            }
+            },
+            { returnDocument: "after" }
           );
+          if (result.value) {
+            publishUser(result.value);
+          }
           continue;
         }
         //Si se realizó la operación: agregar elemento a la lista
@@ -203,7 +213,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
               id: inv.id_lender,
             },
             {
-              $inc: { accountInterests },
+              $inc: { accountInterests, accountTotal: accountInterests },
             }
           );
           //Añadir intereses a cada inversion
@@ -245,10 +255,19 @@ export const AddLendsMutation = mutationWithClientMutationId({
           }
         );
         //Si raised es igual a goal: añadir fondos a quien pidio prestado
-        await users.updateOne(
+        const { value } = await users.findOneAndUpdate(
           { id: result.value.id_user },
-          { $inc: { accountAvailable: result.value.goal } }
+          {
+            $inc: {
+              accountAvailable: result.value.goal,
+              accountTotal: result.value.goal,
+            },
+          },
+          { returnDocument: "after" }
         );
+        if (value) {
+          publishUser(value);
+        }
       }
       //Si no se realizó nungun cambio en loans arrojar error
       if (docsFiltered.length === 0) {
@@ -257,33 +276,22 @@ export const AddLendsMutation = mutationWithClientMutationId({
         );
       }
       //Crear lista de operaciones para el bulkWrite en transacciones
-      const transactionsOperations = docsFiltered.map<
-        AnyBulkWriteOperation<BucketTransactionMongo>
-      >(({ quantity, _id_loan, id_borrower }) => ({
-        updateOne: {
-          filter: { _id: new RegExp(`^${id}`), count: { $lt: 5 } },
-          update: {
-            $push: {
-              history: {
-                _id: new ObjectId(),
-                type: "invest",
-                quantity,
-                created: now,
-                _id_loan,
-                id_borrower,
-              },
-            },
-            $inc: { count: 1 },
-            $setOnInsert: {
-              _id: `${id}_${now.getTime()}`,
-              id_user: id,
-            },
-          },
-          upsert: true,
-        },
-      }));
-      //Actualizar transacciones
-      transactions.bulkWrite(transactionsOperations);
+      const transactionsOperations = docsFiltered.map<TransactionMongo>(
+        ({ quantity, _id_loan, id_borrower }) => ({
+          _id: new ObjectId(),
+          id_user: id,
+          type: "invest",
+          quantity,
+          created: now,
+          _id_loan,
+          id_borrower,
+        })
+      );
+      //Insertar transacciones
+      transactions.insertMany(transactionsOperations);
+      transactionsOperations.forEach((op) => {
+        publishTransactionInsert(op);
+      });
       return { validAccessToken, error: "" };
     } catch (e) {
       return {

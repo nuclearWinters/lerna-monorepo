@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useMemo /*useRef*/, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes as BrowserRoutes,
@@ -24,11 +24,11 @@ import {
   Settings,
 } from "./screens";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
-import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
-import {
-  InvestmentStatus,
-  RoutesInvestmentsSubscription,
-} from "__generated__/RoutesInvestmentsSubscription.graphql";
+//import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
+//import {
+//  InvestmentStatus,
+//  RoutesInvestmentsSubscription,
+//} from "__generated__/RoutesInvestmentsSubscription.graphql";
 import { RoutesTransactionsSubscription } from "__generated__/RoutesTransactionsSubscription.graphql";
 import { RoutesUserSubscription } from "__generated__/RoutesUserSubscription.graphql";
 import { Icon } from "components/Icon";
@@ -61,9 +61,7 @@ const routesFragment = graphql`
     id
     accountAvailable
     accountTotal
-    ...AddFunds_user
-    ...RetireFunds_user
-    ...AddLoan_user
+    accountId
     ...Account_user
     ...MyTransactions_user
     ...MyInvestments_user
@@ -91,15 +89,7 @@ type Props = {
   authUser: Routes_auth_user$key;
 };
 
-export interface IUserInvestments {
-  _id_loan: string;
-  quantity: number;
-  term: number;
-  ROI: number;
-  payments: number;
-}
-
-const subscriptionLoans = graphql`
+/*const subscriptionLoans = graphql`
   subscription RoutesLoansSubscription($status: [LoanStatus!]!) {
     loans_subscribe(status: $status) {
       loan_edge {
@@ -124,33 +114,26 @@ const subscriptionLoans = graphql`
       type
     }
   }
-`;
+`;*/
 
 const subscriptionTransactions = graphql`
-  subscription RoutesTransactionsSubscription($user_gid: ID!) {
-    transactions_subscribe(user_gid: $user_gid) {
-      transaction_edge {
-        node {
-          id
-          id_user
-          count
-          history {
-            id
-            id_borrower
-            _id_loan
-            type
-            quantity
-            created
-          }
-        }
-        cursor
+  subscription RoutesTransactionsSubscription($connections: [ID!]!) {
+    transactions_subscribe_insert @prependEdge(connections: $connections) {
+      node {
+        id
+        id_user
+        id_borrower
+        _id_loan
+        type
+        quantity
+        created
       }
-      type
+      cursor
     }
   }
 `;
 
-const subscriptionInvestments = graphql`
+/*const subscriptionInvestments = graphql`
   subscription RoutesInvestmentsSubscription(
     $user_gid: ID!
     $status: [InvestmentStatus!]!
@@ -172,15 +155,16 @@ const subscriptionInvestments = graphql`
       type
     }
   }
-`;
+`;*/
 
 const subscriptionUser = graphql`
-  subscription RoutesUserSubscription($user_gid: ID!) {
-    user_subscribe(user_gid: $user_gid) {
-      user {
-        id
-        accountAvailable
-      }
+  subscription RoutesUserSubscription {
+    user_subscribe {
+      id
+      accountAvailable
+      accountLent
+      accountInterests
+      accountTotal
     }
   }
 `;
@@ -193,8 +177,7 @@ export const Routes: FC<Props> = (props) => {
     props.authUser
   );
   const { isBorrower, isSupport } = authUser;
-  const user_gid = user.id;
-  const userRef = useRef(user_gid);
+  //const userRef = useRef(user_gid);
   const isLogged = user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=";
   useEffect(() => {
     if (isLogged) {
@@ -203,7 +186,7 @@ export const Routes: FC<Props> = (props) => {
       i18n.changeLanguage(navigator.language.includes("es") ? "es" : "en");
     }
   }, [i18n, isLogged, user, authUser]);
-  const configLoans = useMemo<
+  /*const configLoans = useMemo<
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
   >(
     () => ({
@@ -253,11 +236,11 @@ export const Routes: FC<Props> = (props) => {
       },
     }),
     [isBorrower, isSupport]
-  );
+  );*/
   const [investmentStatus, setInvestmentStatus] = useState<"on_going" | "over">(
     "on_going"
   );
-  const configInvestments = useMemo<
+  /*const configInvestments = useMemo<
     GraphQLSubscriptionConfig<RoutesInvestmentsSubscription>
   >(
     () => ({
@@ -320,53 +303,30 @@ export const Routes: FC<Props> = (props) => {
       },
     }),
     [user_gid, investmentStatus]
+  );*/
+  const connectionTransactionID = ConnectionHandler.getConnectionID(
+    user.id,
+    "MyTransactions_user_transactions",
+    {}
   );
   const configUser = useMemo<GraphQLSubscriptionConfig<RoutesUserSubscription>>(
     () => ({
-      variables: {
-        user_gid,
-      },
+      variables: {},
       subscription: subscriptionUser,
     }),
-    [user_gid]
+    [user.id]
   );
   const configTransactions = useMemo<
     GraphQLSubscriptionConfig<RoutesTransactionsSubscription>
   >(
     () => ({
-      variables: {
-        user_gid,
-      },
+      variables: { connections: [connectionTransactionID] },
       subscription: subscriptionTransactions,
-      updater: (store, data) => {
-        if (data.transactions_subscribe.type === "INSERT") {
-          const root = store.getRoot();
-          const connectionRecord = ConnectionHandler.getConnection(
-            root,
-            "MyTransactions_query_transactions",
-            {}
-          );
-          if (!connectionRecord) {
-            throw new Error("no existe el connectionRecord transactions");
-          }
-          const payload = store.getRootField("transactions_subscribe");
-          const serverEdge = payload?.getLinkedRecord("transaction_edge");
-          const newEdge = ConnectionHandler.buildConnectionEdge(
-            store,
-            connectionRecord,
-            serverEdge
-          );
-          if (!newEdge) {
-            throw new Error("no existe el newEdge");
-          }
-          ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge);
-        }
-      },
     }),
-    [user_gid]
+    [connectionTransactionID]
   );
-  useSubscription<RoutesLoansSubscription>(configLoans);
-  useSubscription<RoutesInvestmentsSubscription>(configInvestments);
+  //useSubscription<RoutesLoansSubscription>(configLoans);
+  //useSubscription<RoutesInvestmentsSubscription>(configInvestments);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   useSubscription<RoutesUserSubscription>(configUser);
   return (
@@ -572,16 +532,13 @@ export const Routes: FC<Props> = (props) => {
                 <Route path="/login" element={<LogIn />} />
                 <Route path="/register" element={<SignUp />} />
                 <Route path="/account" element={<Account user={user} />} />
-                <Route path="/addLoan" element={<AddLoan user={user} />} />
+                <Route path="/addLoan" element={<AddLoan />} />
                 <Route
                   path="/myLoans"
                   element={<AddInvestments user={user} authUser={authUser} />}
                 />
-                <Route path="/addFunds" element={<AddFunds user={user} />} />
-                <Route
-                  path="/retireFunds"
-                  element={<RetireFunds user={user} />}
-                />
+                <Route path="/addFunds" element={<AddFunds />} />
+                <Route path="/retireFunds" element={<RetireFunds />} />
                 <Route
                   path="/settings"
                   element={<Settings user={authUser} />}
@@ -609,11 +566,8 @@ export const Routes: FC<Props> = (props) => {
                   path="/addInvestments"
                   element={<AddInvestments user={user} authUser={authUser} />}
                 />
-                <Route path="/addFunds" element={<AddFunds user={user} />} />
-                <Route
-                  path="/retireFunds"
-                  element={<RetireFunds user={user} />}
-                />
+                <Route path="/addFunds" element={<AddFunds />} />
+                <Route path="/retireFunds" element={<RetireFunds />} />
                 <Route
                   path="/myTransactions"
                   element={<MyTransactions user={user} authUser={authUser} />}

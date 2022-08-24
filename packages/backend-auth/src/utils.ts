@@ -57,9 +57,14 @@ export const refreshTokenMiddleware = async (
       if (!user) {
         return { validAccessToken: undefined, id: undefined };
       }
-      const validAccessToken = jwt.sign(user, ACCESSSECRET, {
-        expiresIn: ACCESS_TOKEN_EXP_STRING,
-      });
+      const { id, isBorrower, isLender, isSupport } = user;
+      const validAccessToken = jwt.sign(
+        { id, isBorrower, isLender, isSupport },
+        ACCESSSECRET,
+        {
+          expiresIn: ACCESS_TOKEN_EXP_STRING,
+        }
+      );
       return {
         validAccessToken,
         id: user.id,

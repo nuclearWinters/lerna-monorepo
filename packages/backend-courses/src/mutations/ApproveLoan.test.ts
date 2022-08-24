@@ -4,6 +4,18 @@ import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
 
+jest.mock("graphql-redis-subscriptions", () => ({
+  RedisPubSub: jest.fn().mockImplementation(() => {
+    return {};
+  }),
+}));
+
+jest.mock("ioredis", () =>
+  jest.fn().mockImplementation(() => {
+    return {};
+  })
+);
+
 const request = supertest(app);
 
 describe("ApproveLoan tests", () => {
@@ -29,6 +41,7 @@ describe("ApproveLoan tests", () => {
         accountAvailable: 100000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 100000,
       },
       {
         _id: new ObjectId("000000000000000000000010"),
@@ -36,6 +49,7 @@ describe("ApproveLoan tests", () => {
         accountAvailable: 100000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 100000,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");

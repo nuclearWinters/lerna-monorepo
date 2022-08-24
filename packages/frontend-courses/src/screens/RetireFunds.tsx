@@ -1,6 +1,5 @@
 import React, { FC, useState } from "react";
-import { graphql, useFragment, useMutation } from "react-relay";
-import { RetireFunds_user$key } from "./__generated__/RetireFunds_user.graphql";
+import { graphql, useMutation } from "react-relay";
 import { RetireFundsMutation } from "./__generated__/RetireFundsMutation.graphql";
 import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
@@ -15,17 +14,7 @@ import { Space } from "components/Space";
 import { useTranslation } from "react-i18next";
 import { logOut } from "utils";
 
-const retireFundsFragment = graphql`
-  fragment RetireFunds_user on User {
-    id
-  }
-`;
-
-type Props = {
-  user: RetireFunds_user$key;
-};
-
-export const RetireFunds: FC<Props> = (props) => {
+export const RetireFunds: FC = () => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<RetireFundsMutation>(graphql`
     mutation RetireFundsMutation($input: AddFundsInput!) {
@@ -35,7 +24,6 @@ export const RetireFunds: FC<Props> = (props) => {
       }
     }
   `);
-  const user = useFragment(retireFundsFragment, props.user);
   const [quantity, setQuantity] = useState("");
   const handleQuantityOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -75,7 +63,6 @@ export const RetireFunds: FC<Props> = (props) => {
                 commit({
                   variables: {
                     input: {
-                      user_gid: user.id,
                       quantity: `-${quantity}`,
                     },
                   },

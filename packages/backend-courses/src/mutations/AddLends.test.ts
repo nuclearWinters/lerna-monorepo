@@ -2,12 +2,29 @@ import { app } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import {
-  BucketTransactionMongo,
+  TransactionMongo,
   InvestmentMongo,
   LoanMongo,
   UserMongo,
 } from "../types";
 import { base64Name, jwt } from "../utils";
+
+jest.mock("../subscriptions/subscriptionsUtils", () => ({
+  publishUser: jest.fn,
+  publishTransactionInsert: jest.fn,
+}));
+
+jest.mock("graphql-redis-subscriptions", () => ({
+  RedisPubSub: jest.fn().mockImplementation(() => {
+    return {};
+  }),
+}));
+
+jest.mock("ioredis", () =>
+  jest.fn().mockImplementation(() => {
+    return {};
+  })
+);
 
 const request = supertest(app);
 
@@ -34,6 +51,7 @@ describe("AddLends tests", () => {
         accountAvailable: 100000,
         accountLent: 0,
         accountInterests: 0,
+        accountTotal: 100000,
       },
       {
         _id: new ObjectId("000000000000000000000005"),
@@ -41,6 +59,7 @@ describe("AddLends tests", () => {
         accountAvailable: 100000,
         accountLent: 0,
         accountInterests: 0,
+        accountTotal: 100000,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -73,7 +92,7 @@ describe("AddLends tests", () => {
       },
     ]);
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const response = await request
       .post("/graphql")
       .send({
@@ -141,16 +160,20 @@ describe("AddLends tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO31",
     });
-    expect(user?.accountAvailable).toBe(85000);
-    expect(user?.accountLent).toBe(15000);
-    expect(user?.accountInterests).toBe(0);
+    expect(user).toEqual({
+      _id: new ObjectId("000000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO31",
+      accountAvailable: 85000,
+      accountLent: 15000,
+      accountInterests: 0,
+      accountTotal: 100000,
+    });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
-    expect(allTransactions.length).toBe(1);
-    expect(allTransactions[0].history.length).toBe(2);
+    expect(allTransactions.length).toBe(2);
     expect(
-      allTransactions[0].history.map((transaction) => ({
+      allTransactions.map((transaction) => ({
         type: transaction.type,
         quantity: transaction.quantity,
         id_borrower: transaction.id_borrower,
@@ -300,22 +323,31 @@ describe("AddLends tests", () => {
     const user2 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO31",
     });
-    expect(user2?.accountAvailable).toBe(0);
-    expect(user2?.accountLent).toBe(100000);
-    expect(user2?.accountInterests).toBe(1196);
+    expect(user2).toEqual({
+      _id: new ObjectId("000000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO31",
+      accountAvailable: 0,
+      accountLent: 100000,
+      accountInterests: 1196,
+      accountTotal: 101196,
+    });
     const user3 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO32",
     });
-    expect(user3?.accountAvailable).toBe(200000);
-    expect(user3?.accountLent).toBe(0);
-    expect(user3?.accountInterests).toBe(0);
+    expect(user3).toEqual({
+      _id: new ObjectId("000000000000000000000005"),
+      id: "wHHR1SUBT0dspoF4YUO32",
+      accountAvailable: 200000,
+      accountLent: 0,
+      accountInterests: 0,
+      accountTotal: 200000,
+    });
     const allTransactions2 = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
-    expect(allTransactions2.length).toBe(1);
-    expect(allTransactions2[0].history.length).toBe(4);
+    expect(allTransactions2.length).toBe(4);
     expect(
-      allTransactions2[0].history.map((transaction) => ({
+      allTransactions2.map((transaction) => ({
         type: transaction.type,
         quantity: transaction.quantity,
         id_borrower: transaction.id_borrower,
@@ -445,6 +477,7 @@ describe("AddLends tests", () => {
         accountAvailable: 10000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 10000,
       },
       {
         _id: new ObjectId("400000000000000000000005"),
@@ -452,6 +485,7 @@ describe("AddLends tests", () => {
         accountAvailable: 10000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 10000,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -471,7 +505,7 @@ describe("AddLends tests", () => {
       },
     ]);
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const response = await request
       .post("/graphql")
       .send({
@@ -531,9 +565,14 @@ describe("AddLends tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO33",
     });
-    expect(user?.accountAvailable).toBe(10000);
-    expect(user?.accountInterests).toBe(0);
-    expect(user?.accountLent).toBe(0);
+    expect(user).toEqual({
+      _id: new ObjectId("400000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO33",
+      accountAvailable: 10000,
+      accountLent: 0,
+      accountInterests: 0,
+      accountTotal: 10000,
+    });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO33" })
       .toArray();
@@ -571,6 +610,7 @@ describe("AddLends tests", () => {
         accountAvailable: 10000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 10000,
       },
       {
         _id: new ObjectId("500000000000000000000005"),
@@ -578,6 +618,7 @@ describe("AddLends tests", () => {
         accountAvailable: 10000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 10000,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -597,7 +638,7 @@ describe("AddLends tests", () => {
       },
     ]);
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const response = await request
       .post("/graphql")
       .send({
@@ -657,9 +698,14 @@ describe("AddLends tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO35",
     });
-    expect(user?.accountAvailable).toBe(10000);
-    expect(user?.accountInterests).toBe(0);
-    expect(user?.accountLent).toBe(0);
+    expect(user).toEqual({
+      _id: new ObjectId("500000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO35",
+      accountAvailable: 10000,
+      accountLent: 0,
+      accountInterests: 0,
+      accountTotal: 10000,
+    });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO35" })
       .toArray();
@@ -697,6 +743,7 @@ describe("AddLends tests", () => {
         accountAvailable: 10000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 10000,
       },
       {
         _id: new ObjectId("600000000000000000000005"),
@@ -704,6 +751,7 @@ describe("AddLends tests", () => {
         accountAvailable: 10000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 10000,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -736,7 +784,7 @@ describe("AddLends tests", () => {
       },
     ]);
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const response = await request
       .post("/graphql")
       .send({
@@ -802,16 +850,20 @@ describe("AddLends tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO37",
     });
-    expect(user?.accountAvailable).toBe(5000);
-    expect(user?.accountInterests).toBe(0);
-    expect(user?.accountLent).toBe(5000);
+    expect(user).toEqual({
+      _id: new ObjectId("600000000000000000000004"),
+      id: "wHHR1SUBT0dspoF4YUO37",
+      accountAvailable: 5000,
+      accountLent: 5000,
+      accountInterests: 0,
+      accountTotal: 10000,
+    });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO37" })
       .toArray();
     expect(allTransactions.length).toBe(1);
-    expect(allTransactions[0].history.length).toBe(1);
     expect(
-      allTransactions[0].history.map((transaction) => ({
+      allTransactions.map((transaction) => ({
         type: transaction.type,
         quantity: transaction.quantity,
         id_borrower: transaction.id_borrower,

@@ -4,6 +4,18 @@ import { Db, MongoClient, ObjectId } from "mongodb";
 import { InvestmentMongo } from "./types";
 import { jwt } from "./utils";
 
+jest.mock("graphql-redis-subscriptions", () => ({
+  RedisPubSub: jest.fn().mockImplementation(() => {
+    return {};
+  }),
+}));
+
+jest.mock("ioredis", () =>
+  jest.fn().mockImplementation(() => {
+    return {};
+  })
+);
+
 const request = supertest(app);
 
 describe("QueryInvestments tests", () => {

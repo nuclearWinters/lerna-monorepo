@@ -86,7 +86,6 @@ type AddLendsPayload {
 
 input AddLoanInput {
   clientMutationId: String
-  user_gid: ID!
   term: Int!
   goal: MXN!
 }
@@ -99,7 +98,6 @@ type AddLoanPayload {
 
 input AddFundsInput {
   clientMutationId: String
-  user_gid: ID!
   quantity: MXN!
 }
 
@@ -139,10 +137,6 @@ type Query {
   node(id: ID!): Node
 }
 
-type User_Subscribe {
-  user: User!
-}
-
 type Loan_Subscribe {
   loan_edge: LoanEdge!
   type: SubscribeType!
@@ -153,19 +147,15 @@ type Investment_Subscribe {
   type: SubscribeType!
 }
 
-type Transaction_Subscribe {
-  transaction_edge: BucketTransactionEdge!
-  type: SubscribeType!
-}
-
 type Subscription {
-  user_subscribe(user_gid: ID!): User_Subscribe!
+  user_subscribe: User!
   loans_subscribe(status: [LoanStatus!]!): Loan_Subscribe!
   investments_subscribe(
     user_gid: ID!
     status: [InvestmentStatus!]!
   ): Investment_Subscribe!
-  transactions_subscribe(user_gid: ID!): Transaction_Subscribe!
+  transactions_subscribe_insert: TransactionEdge!
+  transactions_subscribe_update(gid: ID!): Transaction!
 }
 
 schema {
@@ -286,6 +276,7 @@ enum Languages {
 
 type Transaction {
   id: ID!
+  id_user: String!
   id_borrower: String
   _id_loan: String
   type: TransactionType!
@@ -293,25 +284,19 @@ type Transaction {
   created: Date!
 }
 
-type BucketTransaction {
-  id: String!
-  id_user: String!
-  count: Int!
-  history: [Transaction!]!
-}
-
-type BucketTransactionConnection {
+type TransactionConnection {
   pageInfo: PageInfo!
-  edges: [BucketTransactionEdge]
+  edges: [TransactionEdge]
 }
 
-type BucketTransactionEdge {
-  node: BucketTransaction
+type TransactionEdge {
+  node: Transaction
   cursor: String!
 }
 
 type User implements Node {
   id: ID!
+  accountId: String!
   accountAvailable: MXN!
   accountLent: MXN!
   accountInterests: MXN!
@@ -322,7 +307,7 @@ type User implements Node {
     first: Int
     before: String
     last: Int
-  ): BucketTransactionConnection
+  ): TransactionConnection
   investments(
     after: String
     first: Int
@@ -334,6 +319,7 @@ type User implements Node {
 
 type AuthUser {
   id: ID!
+  accountId: String!
   name: String!
   apellidoPaterno: String!
   apellidoMaterno: String!

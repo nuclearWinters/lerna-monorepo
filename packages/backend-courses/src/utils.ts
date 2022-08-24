@@ -2,7 +2,7 @@ import { Db } from "mongodb";
 import {
   UserMongo,
   LoanMongo,
-  BucketTransactionMongo,
+  TransactionMongo,
   InvestmentMongo,
 } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
@@ -51,7 +51,7 @@ export const getContext = async (req: Request): Promise<Context> => {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
     investments: db.collection<InvestmentMongo>("investments"),
-    transactions: db.collection<BucketTransactionMongo>("transactions"),
+    transactions: db.collection<TransactionMongo>("transactions"),
     accessToken,
     refreshToken,
     ch,
@@ -76,8 +76,12 @@ export const renewAccessToken = (
     request.setRefreshtoken(refreshToken);
 
     client.renewAccessToken(request, (err, user) => {
-      if (err) reject(err);
-      else resolve(user);
+      if (err) {
+        const error = new Error(err.message);
+        reject(error);
+      } else {
+        resolve(user);
+      }
     });
   });
 };

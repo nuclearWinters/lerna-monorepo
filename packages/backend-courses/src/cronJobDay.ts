@@ -1,16 +1,27 @@
-import { AnyBulkWriteOperation, Db, ObjectId } from "mongodb";
 import {
-  BucketTransactionMongo,
+  AnyBulkWriteOperation,
+  Db,
+  Filter,
+  ObjectId,
+  OptionalId,
+  UpdateFilter,
+} from "mongodb";
+import {
+  TransactionMongo,
   InvestmentMongo,
   LoanMongo,
   UserMongo,
 } from "./types";
 import { isBefore, differenceInDays } from "date-fns";
+import {
+  publishTransactionInsert,
+  publishUser,
+} from "./subscriptions/subscriptionsUtils";
 
 export const dayFunction = async (db: Db): Promise<void> => {
   const loans = db.collection<LoanMongo>("loans");
   const investments = db.collection<InvestmentMongo>("investments");
-  const transactions = db.collection<BucketTransactionMongo>("transactions");
+  const transactions = db.collection<TransactionMongo>("transactions");
   const results = await loans
     .find({ "scheduledPayments.status": "delayed" })
     .toArray();
@@ -34,7 +45,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
       );
       const delayedTotal = delayedPayment.amortize + moratory;
       //Se actualiza el usuario del deudor al mover dinero de cuenta
-      const result = await users.updateOne(
+      const result = await users.findOneAndUpdate(
         {
           id: loan.id_user,
           accountAvailable: { $gte: delayedTotal },
@@ -42,11 +53,16 @@ export const dayFunction = async (db: Db): Promise<void> => {
         {
           $inc: {
             accountAvailable: -delayedTotal,
+            accountTotal: -delayedTotal,
           },
-        }
+        },
+        { returnDocument: "after" }
       );
+      if (result.value) {
+        publishUser(result.value);
+      }
       //Si el deudor no tiene suficiente dinero el estatus ya no se realizan acciones
-      if (result.modifiedCount === 0) {
+      if (!result.value) {
         const allInvestments = await investments
           .find({ _id_loan: loan._id })
           .toArray();
@@ -62,14 +78,21 @@ export const dayFunction = async (db: Db): Promise<void> => {
               },
             }
           );
-          users.updateOne(
+          const result = await users.findOneAndUpdate(
             { id: invest.id_lender },
             {
               $inc: {
                 accountInterests: moratory,
+                accountTotal: moratory,
               },
+            },
+            {
+              returnDocument: "after",
             }
           );
+          if (result.value) {
+            publishUser(result.value);
+          }
         }
         continue;
       }
@@ -140,87 +163,60 @@ export const dayFunction = async (db: Db): Promise<void> => {
       const { ROI, term } = loan;
       //Crear lista de operaciones bulkwrite para transacciones y usuarios
       const operations = allInvestments.map<{
-        transactionsOperations: AnyBulkWriteOperation<BucketTransactionMongo>;
-        usersOperations: AnyBulkWriteOperation<UserMongo>;
+        userFilter: Filter<UserMongo>;
+        userUpdate: UpdateFilter<UserMongo>;
+        transactionsInsert: OptionalId<TransactionMongo>;
       }>(({ id_lender, amortize, quantity }) => {
         //Decimales?
         const lent = quantity / term;
         const moratory = Math.floor((amortize * (ROI / 100)) / 360);
         return {
-          transactionsOperations: {
-            updateOne: {
-              filter: {
-                _id: new RegExp(`^${id_lender}`),
-                count: { $lt: 5 },
-              },
-              update: {
-                $push: {
-                  history: {
-                    _id: new ObjectId(),
-                    type: "collect",
-                    quantity: amortize,
-                    created: now,
-                    id_borrower: loan.id_user,
-                    _id_loan: loan._id,
-                  },
-                },
-                $inc: { count: 1 },
-                $setOnInsert: {
-                  _id: `${id_lender}_${now.getTime()}`,
-                  id_user: id_lender,
-                },
-              },
-              upsert: true,
-            },
+          transactionsInsert: {
+            _id: new ObjectId(),
+            id_user: id_lender,
+            type: "collect",
+            quantity: amortize,
+            created: now,
+            id_borrower: loan.id_user,
+            _id_loan: loan._id,
           },
-          usersOperations: {
-            updateOne: {
-              filter: {
-                id: id_lender,
-              },
-              update: {
-                $inc: {
-                  accountAvailable: amortize + moratory,
-                  accountLent: -lent,
-                  accountInterests: -(amortize - lent + moratory),
-                },
-              },
+          userFilter: {
+            id: id_lender,
+          },
+          userUpdate: {
+            $inc: {
+              accountAvailable: amortize + moratory,
+              accountLent: -lent,
+              accountInterests: -(amortize - lent + moratory),
             },
           },
         };
       });
       const transactionsOperations = operations.map(
-        (operation) => operation.transactionsOperations
+        (operation) => operation.transactionsInsert
       );
       const user_id = loan.id_user;
       //transacción para informar al deudor de su pago
-      const transactionUpdateOne: AnyBulkWriteOperation<BucketTransactionMongo> =
-        {
-          updateOne: {
-            filter: { _id: new RegExp(`^${user_id}`), count: { $lt: 5 } },
-            update: {
-              $push: {
-                history: {
-                  _id: new ObjectId(),
-                  type: "payment",
-                  quantity: -delayedTotal,
-                  created: now,
-                },
-              },
-              $inc: { count: 1 },
-              $setOnInsert: {
-                _id: `${user_id}_${now.getTime()}`,
-                id_user: loan.id_user,
-              },
-            },
-            upsert: true,
-          },
-        };
+      const transactionUpdateOne: OptionalId<TransactionMongo> = {
+        _id: new ObjectId(),
+        id_user: user_id,
+        type: "payment",
+        quantity: -delayedTotal,
+        created: now,
+      };
       transactionsOperations.unshift(transactionUpdateOne);
-      await transactions.bulkWrite(transactionsOperations);
-      await users.bulkWrite(
-        operations.map((operation) => operation.usersOperations)
-      );
+      transactions.insertMany(transactionsOperations);
+      for (const operation of operations) {
+        const result = await users.findOneAndUpdate(
+          operation.userFilter,
+          operation.userUpdate,
+          { returnDocument: "after" }
+        );
+        publishTransactionInsert(operation.transactionsInsert);
+        if (result.value) {
+          publishUser(result.value);
+        }
+      }
     }
   }
   return;

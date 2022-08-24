@@ -2,11 +2,28 @@ import { addMonths, startOfDay } from "date-fns";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { monthFunction } from "./cronJobMonth";
 import {
-  BucketTransactionMongo,
+  TransactionMongo,
   InvestmentMongo,
   LoanMongo,
   UserMongo,
 } from "./types";
+
+jest.mock("./subscriptions/subscriptionsUtils", () => ({
+  publishUser: jest.fn,
+  publishTransactionInsert: jest.fn,
+}));
+
+jest.mock("graphql-redis-subscriptions", () => ({
+  RedisPubSub: jest.fn().mockImplementation(() => {
+    return {};
+  }),
+}));
+
+jest.mock("ioredis", () =>
+  jest.fn().mockImplementation(() => {
+    return {};
+  })
+);
 
 describe("cronJobs tests", () => {
   let client: MongoClient;
@@ -24,7 +41,7 @@ describe("cronJobs tests", () => {
   it("monthFunction test", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const loans = dbInstance.collection<LoanMongo>("loans");
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     await users.insertMany([
@@ -34,6 +51,7 @@ describe("cronJobs tests", () => {
         accountAvailable: 1000000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 1000000,
       },
       {
         _id: new ObjectId("000000000000000000000101"),
@@ -41,6 +59,7 @@ describe("cronJobs tests", () => {
         accountAvailable: 100000,
         accountLent: 200000,
         accountInterests: 3956,
+        accountTotal: 303956,
       },
       {
         _id: new ObjectId("000000000000000000000113"),
@@ -48,6 +67,7 @@ describe("cronJobs tests", () => {
         accountAvailable: 0,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 0,
       },
     ]);
     await loans.insertMany([
@@ -204,6 +224,7 @@ describe("cronJobs tests", () => {
       accountAvailable: 898022,
       accountLent: 0,
       accountInterests: 0,
+      accountTotal: 898022,
     });
     const user2 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUOw8",
@@ -214,16 +235,16 @@ describe("cronJobs tests", () => {
       accountAvailable: 201978,
       accountLent: 100000,
       accountInterests: 1978,
+      accountTotal: 303956,
     });
     const borrower_transactions = await transactions
       .find({
         id_user: "wHHR1SUBT0dspoF4YUOw7",
       })
       .toArray();
-    expect(borrower_transactions.length).toEqual(1);
-    expect(borrower_transactions[0].history.length).toEqual(2);
+    expect(borrower_transactions.length).toEqual(2);
     expect(
-      borrower_transactions[0].history.map((transaction) => ({
+      borrower_transactions.map((transaction) => ({
         ...transaction,
         _id: "",
         created: "",
@@ -234,12 +255,14 @@ describe("cronJobs tests", () => {
         created: "",
         quantity: -50989,
         type: "payment",
+        id_user: "wHHR1SUBT0dspoF4YUOw7",
       },
       {
         _id: "",
         created: "",
         quantity: -50989,
         type: "payment",
+        id_user: "wHHR1SUBT0dspoF4YUOw7",
       },
     ]);
     const lender_transactions = await transactions
@@ -247,10 +270,9 @@ describe("cronJobs tests", () => {
         id_user: "wHHR1SUBT0dspoF4YUOw8",
       })
       .toArray();
-    expect(lender_transactions.length).toEqual(1);
-    expect(lender_transactions[0].history.length).toEqual(2);
+    expect(lender_transactions.length).toEqual(2);
     expect(
-      lender_transactions[0].history.map((transaction) => ({
+      lender_transactions.map((transaction) => ({
         ...transaction,
         _id: "",
         created: "",
@@ -263,6 +285,7 @@ describe("cronJobs tests", () => {
         type: "collect",
         id_borrower: "wHHR1SUBT0dspoF4YUOw7",
         _id_loan: new ObjectId("000000000000000000000014"),
+        id_user: "wHHR1SUBT0dspoF4YUOw8",
       },
       {
         _id: "",
@@ -271,6 +294,7 @@ describe("cronJobs tests", () => {
         created: "",
         quantity: 50989,
         type: "collect",
+        id_user: "wHHR1SUBT0dspoF4YUOw8",
       },
     ]);
     const allLoans = await loans

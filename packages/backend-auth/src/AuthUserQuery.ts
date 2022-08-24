@@ -13,6 +13,10 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
   name: "AuthUser",
   fields: {
     id: globalIdField("AuthUser", ({ _id }): string => _id.toHexString()),
+    accountId: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ id }): string => id,
+    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ name }): string => name,

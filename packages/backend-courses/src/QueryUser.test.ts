@@ -4,6 +4,18 @@ import { Db, MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "./types";
 import { jwt } from "./utils";
 
+jest.mock("graphql-redis-subscriptions", () => ({
+  RedisPubSub: jest.fn().mockImplementation(() => {
+    return {};
+  }),
+}));
+
+jest.mock("ioredis", () =>
+  jest.fn().mockImplementation(() => {
+    return {};
+  })
+);
+
 const request = supertest(app);
 
 describe("QueryUser tests", () => {
@@ -29,6 +41,7 @@ describe("QueryUser tests", () => {
         accountAvailable: 50000,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 50000,
       },
     ]);
     const response = await request
@@ -40,6 +53,7 @@ describe("QueryUser tests", () => {
             accountAvailable
             accountLent
             accountInterests
+            accountTotal
           }  
         }`,
         variables: {},
@@ -76,5 +90,6 @@ describe("QueryUser tests", () => {
     expect(response.body.data.user.accountAvailable).toBe("$500.00");
     expect(response.body.data.user.accountLent).toBe("$0.00");
     expect(response.body.data.user.accountInterests).toBe("$0.00");
+    expect(response.body.data.user.accountTotal).toBe("$500.00");
   });
 });

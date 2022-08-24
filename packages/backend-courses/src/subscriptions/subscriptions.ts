@@ -5,11 +5,14 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
 } from "graphql";
-import { PubSub, withFilter } from "graphql-subscriptions";
+import { withFilter } from "graphql-subscriptions";
+import { RedisPubSub } from "graphql-redis-subscriptions";
+import Redis, { RedisOptions } from "ioredis";
 import {
-  GraphQLBucketTransactionEdge,
+  GraphQLTransactionEdge,
   GraphQLInvestmentEdge,
   GraphQLLoanEdge,
+  GraphQLTransaction,
   GraphQLUser,
   InvestmentStatus,
   LoanStatus,
@@ -17,33 +20,37 @@ import {
 import {
   Context,
   InvestmentMongo,
+  ITransactionEdge,
   LoanMongo,
-  BucketTransactionMongo,
+  TransactionMongo,
   UserMongo,
 } from "../types";
 import { unbase64 } from "../utils";
+import { REDIS } from "../config";
 
-export const pubsub = new PubSub();
+const options: RedisOptions = {
+  host: REDIS,
+  port: 6379,
+  retryStrategy: (times) => {
+    return Math.min(times * 50, 2000);
+  },
+};
+
+export const pubsub = new RedisPubSub({
+  publisher: new Redis(options),
+  subscriber: new Redis(options),
+});
 
 export const LOAN = "LOAN";
-export const TRANSACTION = "TRANSACTION";
+export const TRANSACTION_INSERT = "TRANSACTION_INSERT";
 export const INVESTMENT = "INVESTMENT";
 export const USER = "USER";
+export const TRANSACTION_UPDATE = "TRANSACTION_UPDATE";
 
 type typeSubscribe = "update" | "insert";
 
-interface IUserSubscribe {
-  user: UserMongo;
-  type: typeSubscribe;
-}
-
 interface ILoanSubscribe {
   loan_edge: { node: LoanMongo; cursor: string };
-  type: typeSubscribe;
-}
-
-interface ITransactionSubscribe {
-  transaction_edge: { node: BucketTransactionMongo; cursor: string };
   type: typeSubscribe;
 }
 
@@ -60,39 +67,12 @@ export const SubscribeType = new GraphQLEnumType({
   },
 });
 
-export const User_Subscribe = new GraphQLObjectType<IUserSubscribe, Context>({
-  name: "User_Subscribe",
-  fields: () => ({
-    user: {
-      type: new GraphQLNonNull(GraphQLUser),
-      resolve: ({ user }) => user,
-    },
-  }),
-});
-
 export const Loan_Subscribe = new GraphQLObjectType<ILoanSubscribe, Context>({
   name: "Loan_Subscribe",
   fields: () => ({
     loan_edge: {
       type: new GraphQLNonNull(GraphQLLoanEdge),
       resolve: ({ loan_edge }) => loan_edge,
-    },
-    type: {
-      type: new GraphQLNonNull(SubscribeType),
-      resolve: ({ type }) => type,
-    },
-  }),
-});
-
-export const Transaction_Subscribe = new GraphQLObjectType<
-  ITransactionSubscribe,
-  Context
->({
-  name: "Transaction_Subscribe",
-  fields: () => ({
-    transaction_edge: {
-      type: new GraphQLNonNull(GraphQLBucketTransactionEdge),
-      resolve: ({ transaction_edge }) => transaction_edge,
     },
     type: {
       type: new GraphQLNonNull(SubscribeType),
@@ -136,18 +116,39 @@ export const loans_subscribe = {
   ),
 };
 
-export const transactions_subscribe = {
-  type: new GraphQLNonNull(Transaction_Subscribe),
-  args: {
-    user_gid: { type: new GraphQLNonNull(GraphQLID) },
-  },
-  description: "New or updated transactions",
+export const transactions_subscribe_insert = {
+  type: new GraphQLNonNull(GraphQLTransactionEdge),
+  args: {},
+  description: "New transactions",
   subscribe: withFilter(
-    () => pubsub.asyncIterator(TRANSACTION),
-    (payload: { transactions_subscribe: ITransactionSubscribe }, variables) => {
+    () => pubsub.asyncIterator(TRANSACTION_INSERT),
+    (
+      payload: {
+        transactions_subscribe_insert: ITransactionEdge;
+      },
+      _,
+      context
+    ) => {
+      return payload.transactions_subscribe_insert.node.id_user === context.id;
+    }
+  ),
+};
+
+export const transactions_subscribe_update = {
+  type: new GraphQLNonNull(GraphQLTransaction),
+  args: {
+    gid: { type: new GraphQLNonNull(GraphQLID) },
+  },
+  description: "Updated transactions",
+  subscribe: withFilter(
+    () => pubsub.asyncIterator(TRANSACTION_UPDATE),
+    (
+      payload: { transactions_subscribe_update: TransactionMongo },
+      variables
+    ) => {
       return (
-        payload.transactions_subscribe.transaction_edge.node.id_user ===
-        unbase64(variables.user_gid)
+        payload.transactions_subscribe_update._id?.toHexString() ===
+        unbase64(variables.gid)
       );
     }
   ),
@@ -179,18 +180,13 @@ export const investments_subscribe = {
 };
 
 export const user_subscribe = {
-  type: new GraphQLNonNull(User_Subscribe),
-  description: "Updated users",
-  args: {
-    user_gid: { type: new GraphQLNonNull(GraphQLID) },
-  },
+  type: new GraphQLNonNull(GraphQLUser),
+  description: "Updated user",
+  args: {},
   subscribe: withFilter(
     () => pubsub.asyncIterator(USER),
-    (payload: { user_subscribe: IUserSubscribe }, variables) => {
-      return (
-        payload.user_subscribe.user._id?.toHexString() ===
-        unbase64(variables.user_gid)
-      );
+    (payload: { user_subscribe: UserMongo }, _, context) => {
+      return payload.user_subscribe.id === context.id;
     }
   ),
 };

@@ -79,6 +79,7 @@ export const LogIn: FC = () => {
                       expireSessionTime
                     );
                     tokensAndData.refetchUser();
+                    tokensAndData.setToken(response.signIn.accessToken);
                   },
                 });
               }}

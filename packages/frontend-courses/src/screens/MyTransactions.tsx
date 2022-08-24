@@ -24,7 +24,7 @@ import { MyTransactions_user$key } from "./__generated__/MyTransactions_user.gra
 const transactionsFragment = graphql`
   fragment MyTransactions_user on User
   @argumentDefinitions(
-    count: { type: "Int", defaultValue: 2 }
+    count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
   )
   @refetchable(queryName: "MyTransactionsPaginationUser") {
@@ -33,15 +33,12 @@ const transactionsFragment = graphql`
       edges {
         node {
           id
-          count
-          history {
-            id
-            id_borrower
-            _id_loan
-            type
-            quantity
-            created
-          }
+          id_user
+          id_borrower
+          _id_loan
+          type
+          quantity
+          created
         }
       }
     }
@@ -99,102 +96,96 @@ export const MyTransactions: FC<Props> = (props) => {
           {data.transactions &&
             data.transactions.edges &&
             data.transactions.edges.map((edge) => {
-              const history =
-                edge &&
-                edge.node &&
-                edge.node.history &&
-                [...edge.node.history].reverse().map((transaction) => {
-                  const color = transaction.quantity.includes("-")
-                    ? "#CD5C5C"
-                    : "#50C878";
-                  return (
+              if (edge && edge.node) {
+                const { id_borrower, _id_loan } = edge.node;
+                console.log(edge.node);
+                const color = edge.node.quantity.includes("-")
+                  ? "#CD5C5C"
+                  : "#50C878";
+                return (
+                  <div
+                    style={{
+                      display: "flex",
+                      flex: 1,
+                      flexDirection: "row",
+                      borderBottom: "1px solid rgb(203,203,203)",
+                    }}
+                    key={edge.node.id}
+                  >
+                    <div
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        margin: "12px 0px",
+                      }}
+                    >
+                      <div style={{ fontSize: 18, color }}>
+                        {getStatus(edge.node.type)}
+                      </div>
+                      {id_borrower && _id_loan ? (
+                        <div
+                          style={{
+                            fontSize: 16,
+                            padding: "4px 0px",
+                          }}
+                        >
+                          {t("Prestado a")}{" "}
+                          <FontAwesomeIcon
+                            onClick={() => {
+                              navigator.clipboard.writeText(id_borrower);
+                            }}
+                            icon={faUserCircle}
+                            size={"1x"}
+                            color={"rgba(255,90,96,0.5)"}
+                            style={{ margin: "0px 4px", cursor: "pointer" }}
+                          />{" "}
+                          {t("al fondo")}:{" "}
+                          <FontAwesomeIcon
+                            onClick={() => {
+                              navigator.clipboard.writeText(_id_loan);
+                            }}
+                            icon={faFileContract}
+                            size={"1x"}
+                            color={"rgba(255,90,96,0.5)"}
+                            style={{ margin: "0px 4px", cursor: "pointer" }}
+                          />
+                        </div>
+                      ) : null}
+                      <div style={{ letterSpacing: 1 }}>
+                        {format(
+                          edge.node.created,
+                          "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
+                          {
+                            locale:
+                              authUser.language === "DEFAULT"
+                                ? navigator.language.includes("es")
+                                  ? es
+                                  : en
+                                : authUser.language === "ES"
+                                ? es
+                                : en,
+                          }
+                        )}
+                      </div>
+                    </div>
                     <div
                       style={{
                         display: "flex",
-                        flex: 1,
-                        flexDirection: "row",
-                        borderBottom: "1px solid rgb(203,203,203)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        color,
                       }}
-                      key={transaction.id}
                     >
-                      <div
-                        style={{
-                          flex: 1,
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                          margin: "12px 0px",
-                        }}
-                      >
-                        <div style={{ fontSize: 18, color }}>
-                          {getStatus(transaction.type)}
-                        </div>
-                        {transaction.id_borrower && (
-                          <div
-                            style={{
-                              fontSize: 16,
-                              padding: "4px 0px",
-                            }}
-                          >
-                            {t("Prestado a")}{" "}
-                            <FontAwesomeIcon
-                              onClick={() => {
-                                navigator.clipboard.writeText(
-                                  transaction.id_borrower || ""
-                                );
-                              }}
-                              icon={faUserCircle}
-                              size={"1x"}
-                              color={"rgba(255,90,96,0.5)"}
-                              style={{ margin: "0px 4px", cursor: "pointer" }}
-                            />{" "}
-                            {t("al fondo")}:{" "}
-                            <FontAwesomeIcon
-                              onClick={() => {
-                                navigator.clipboard.writeText(
-                                  transaction._id_loan || ""
-                                );
-                              }}
-                              icon={faFileContract}
-                              size={"1x"}
-                              color={"rgba(255,90,96,0.5)"}
-                              style={{ margin: "0px 4px", cursor: "pointer" }}
-                            />
-                          </div>
-                        )}
-                        <div style={{ letterSpacing: 1 }}>
-                          {format(
-                            transaction.created,
-                            "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
-                            {
-                              locale:
-                                authUser.language === "DEFAULT"
-                                  ? navigator.language.includes("es")
-                                    ? es
-                                    : en
-                                  : authUser.language === "ES"
-                                  ? es
-                                  : en,
-                            }
-                          )}
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 20,
-                          fontWeight: "bold",
-                          color,
-                        }}
-                      >
-                        {transaction.quantity}
-                      </div>
+                      {edge.node.quantity}
                     </div>
-                  );
-                });
-              return <div key={edge?.node?.id}>{history}</div>;
+                  </div>
+                );
+              }
+              return null;
             })}
         </Rows>
         <Space h={20} />
@@ -206,7 +197,7 @@ export const MyTransactions: FC<Props> = (props) => {
           <CustomButton
             text={t("Cargar más")}
             color="secondary"
-            onClick={() => loadNext(1)}
+            onClick={() => loadNext(5)}
           />
           <Space w={20} />
           <CustomButton

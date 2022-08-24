@@ -40,4 +40,6 @@ export interface DecodeJWT {
   isLender: boolean;
   isBorrower: boolean;
   isSupport: boolean;
+  iat: number;
+  exp: number;
 }

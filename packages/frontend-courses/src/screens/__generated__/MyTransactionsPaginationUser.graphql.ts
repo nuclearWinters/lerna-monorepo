@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2f8e8e213ee4946da84d6e09910492fd>>
+ * @generated SignedSource<<8c600345624c759d4c5dea086a119673>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -28,7 +28,7 @@ export type MyTransactionsPaginationUser = {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
-    "defaultValue": 2,
+    "defaultValue": 5,
     "kind": "LocalArgument",
     "name": "count"
   },
@@ -136,7 +136,7 @@ return {
               {
                 "alias": null,
                 "args": (v4/*: any*/),
-                "concreteType": "BucketTransactionConnection",
+                "concreteType": "TransactionConnection",
                 "kind": "LinkedField",
                 "name": "transactions",
                 "plural": false,
@@ -144,7 +144,7 @@ return {
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "BucketTransactionEdge",
+                    "concreteType": "TransactionEdge",
                     "kind": "LinkedField",
                     "name": "edges",
                     "plural": true,
@@ -152,7 +152,7 @@ return {
                       {
                         "alias": null,
                         "args": null,
-                        "concreteType": "BucketTransaction",
+                        "concreteType": "Transaction",
                         "kind": "LinkedField",
                         "name": "node",
                         "plural": false,
@@ -162,54 +162,42 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "count",
+                            "name": "id_user",
                             "storageKey": null
                           },
                           {
                             "alias": null,
                             "args": null,
-                            "concreteType": "Transaction",
-                            "kind": "LinkedField",
-                            "name": "history",
-                            "plural": true,
-                            "selections": [
-                              (v3/*: any*/),
-                              {
-                                "alias": null,
-                                "args": null,
-                                "kind": "ScalarField",
-                                "name": "id_borrower",
-                                "storageKey": null
-                              },
-                              {
-                                "alias": null,
-                                "args": null,
-                                "kind": "ScalarField",
-                                "name": "_id_loan",
-                                "storageKey": null
-                              },
-                              {
-                                "alias": null,
-                                "args": null,
-                                "kind": "ScalarField",
-                                "name": "type",
-                                "storageKey": null
-                              },
-                              {
-                                "alias": null,
-                                "args": null,
-                                "kind": "ScalarField",
-                                "name": "quantity",
-                                "storageKey": null
-                              },
-                              {
-                                "alias": null,
-                                "args": null,
-                                "kind": "ScalarField",
-                                "name": "created",
-                                "storageKey": null
-                              }
-                            ],
+                            "kind": "ScalarField",
+                            "name": "id_borrower",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "_id_loan",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "type",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "quantity",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "created",
                             "storageKey": null
                           },
                           (v2/*: any*/)
@@ -273,16 +261,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "4d8293f224a46828f87871b7e08e93cd",
+    "cacheID": "5257e9bd9ee88f0eb6b87449da8a4217",
     "id": null,
     "metadata": {},
     "name": "MyTransactionsPaginationUser",
     "operationKind": "query",
-    "text": "query MyTransactionsPaginationUser(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyTransactions_user_1G22uz\n    id\n  }\n}\n\nfragment MyTransactions_user_1G22uz on User {\n  transactions(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        count\n        history {\n          id\n          id_borrower\n          _id_loan\n          type\n          quantity\n          created\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyTransactionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyTransactions_user_1G22uz\n    id\n  }\n}\n\nfragment MyTransactions_user_1G22uz on User {\n  transactions(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "cc5902c25f85fe36f3c9b556871423dc";
+(node as any).hash = "3167f487899935e3a47f82b92e6c81bd";
 
 export default node;

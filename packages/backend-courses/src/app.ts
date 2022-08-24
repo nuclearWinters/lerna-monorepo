@@ -10,7 +10,8 @@ import { getContext } from "./utils";
 import {
   investments_subscribe,
   loans_subscribe,
-  transactions_subscribe,
+  transactions_subscribe_insert,
+  transactions_subscribe_update,
   user_subscribe,
 } from "./subscriptions/subscriptions";
 import { ApproveLoanMutation } from "./mutations/ApproveLoan";
@@ -46,7 +47,8 @@ const Subscription = new GraphQLObjectType({
   description: "Subscribe to data event streams",
   fields: () => ({
     loans_subscribe,
-    transactions_subscribe,
+    transactions_subscribe_insert,
+    transactions_subscribe_update,
     investments_subscribe,
     user_subscribe,
   }),

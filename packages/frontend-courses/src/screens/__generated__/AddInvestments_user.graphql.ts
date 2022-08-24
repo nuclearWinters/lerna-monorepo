@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fcbf2aeeb62487e82af9229221619d7d>>
+ * @generated SignedSource<<a838c3d0d6f273d490474817ed3026cb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,6 +11,7 @@
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestments_user$data = {
+  readonly accountId: string;
   readonly id: string;
   readonly loans: {
     readonly edges: ReadonlyArray<{
@@ -157,6 +158,13 @@ return {
       ],
       "storageKey": null
     },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "accountId",
+      "storageKey": null
+    },
     (v1/*: any*/)
   ],
   "type": "User",
@@ -164,6 +172,6 @@ return {
 };
 })();
 
-(node as any).hash = "76d4d43318aa4e555338cd2e953d33d4";
+(node as any).hash = "0f34e332891f0510544ad69033a76f0d";
 
 export default node;

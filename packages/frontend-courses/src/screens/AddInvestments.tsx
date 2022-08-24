@@ -41,7 +41,7 @@ const debtInSaleFragment = graphql`
         }
       }
     }
-    id
+    accountId
   }
 `;
 

@@ -5,7 +5,7 @@ export interface Context {
   users: Collection<UserMongo>;
   loans: Collection<LoanMongo>;
   investments: Collection<InvestmentMongo>;
-  transactions: Collection<BucketTransactionMongo>;
+  transactions: Collection<TransactionMongo>;
   accessToken: string | undefined;
   refreshToken: string | undefined;
   ch: Channel;
@@ -21,7 +21,13 @@ export interface UserMongo {
   accountAvailable: number;
   accountLent: number;
   accountInterests: number;
+  accountTotal: number;
   id: string;
+}
+
+export interface ITransactionEdge {
+  node: TransactionMongo;
+  cursor: string;
 }
 
 export type TransactionMongoType =
@@ -33,18 +39,12 @@ export type TransactionMongoType =
 
 export interface TransactionMongo {
   _id?: ObjectId;
+  id_user: string;
   type: TransactionMongoType;
   quantity: number;
   id_borrower?: string;
   _id_loan?: ObjectId;
   created: Date;
-}
-
-export interface BucketTransactionMongo {
-  _id?: string;
-  id_user: string;
-  count: number;
-  history: TransactionMongo[];
 }
 
 export type ILoanStatus =
@@ -107,6 +107,8 @@ export interface DecodeJWT {
   isLender: boolean;
   isBorrower: boolean;
   isSupport: boolean;
+  iat: number;
+  exp: number;
 }
 
 export const SIGN_UP = "SIGN_UP";

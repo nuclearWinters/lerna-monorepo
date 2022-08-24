@@ -3,7 +3,7 @@ import { introspectSchema } from "@graphql-tools/wrap";
 import { stitchSchemas } from "@graphql-tools/stitch";
 import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
 import { getOperationAST, OperationTypeNode, print } from "graphql";
-import { createClient, Client, createHandler } from "graphql-sse";
+import { createClient, createHandler } from "graphql-sse";
 import { getContext, IContextResult, setCookieContext } from "./utils";
 import {
   getGraphQLParameters,
@@ -13,11 +13,6 @@ import {
 } from "graphql-helix";
 import { Request, Response } from "express";
 import { fetch } from "cross-undici-fetch";
-
-const subscriptionClientCourses = createClient({
-  url: "http://backend-courses:4000/graphql/stream",
-  fetchFn: fetch,
-});
 
 const httpExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
@@ -46,20 +41,41 @@ const httpExecutor = (url: string): AsyncExecutor => {
 };
 
 const executorBoth =
-  (url: string, client: Client): AsyncExecutor =>
+  (url: string, streamUrl: string): AsyncExecutor =>
   async (args) => {
     // get the operation node of from the document that should be executed
     const operation = getOperationAST(args.document, args.operationName);
     // subscription operations should be handled by the wsExecutor
     if (operation?.operation === OperationTypeNode.SUBSCRIPTION) {
-      return sseExecutor(client)(args);
+      return sseExecutor(streamUrl)(args);
     }
     // all other operations should be handles by the httpExecutor
     return httpExecutor(url)(args);
   };
 
-const sseExecutor = (client: Client): AsyncExecutor => {
-  return async ({ document, variables, operationName, extensions }) => {
+const sseExecutor = (url: string): AsyncExecutor => {
+  return async ({
+    document,
+    variables,
+    operationName,
+    extensions,
+    context,
+  }) => {
+    const { accessToken, refreshToken } = getContext(context);
+    const client = createClient({
+      url,
+      fetchFn: fetch,
+      headers: () => {
+        return {
+          Authorization: accessToken,
+          ...(refreshToken
+            ? {
+                Cookie: `refreshToken=${refreshToken}`,
+              }
+            : {}),
+        };
+      },
+    });
     return observableToAsyncIterable({
       subscribe: (observer) => ({
         unsubscribe: client.subscribe(
@@ -101,7 +117,7 @@ const sseExecutor = (client: Client): AsyncExecutor => {
 const makeGatewaySchema = async () => {
   const courses = executorBoth(
     "http://backend-courses:4000/graphql",
-    subscriptionClientCourses
+    "http://backend-courses:4000/graphql/stream"
   );
   const auth = httpExecutor("http://backend-auth:4002/graphql");
   const gatewaySchema = stitchSchemas({
@@ -121,8 +137,8 @@ const makeGatewaySchema = async () => {
 
 makeGatewaySchema().then((schema) => {
   const handler = async (req: Request, res: Response) => {
-    //const context = getContext(req);
-    const created = createHandler({ schema });
+    const context = { req };
+    const created = createHandler({ schema, context });
     return created(req, res);
   };
   app.use("/graphql/stream", handler);

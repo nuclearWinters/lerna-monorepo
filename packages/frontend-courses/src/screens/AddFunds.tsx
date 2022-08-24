@@ -1,6 +1,5 @@
 import React, { FC, useState } from "react";
-import { graphql, useFragment, useMutation } from "react-relay";
-import { AddFunds_user$key } from "./__generated__/AddFunds_user.graphql";
+import { graphql, useMutation } from "react-relay";
 import { AddFundsMutation } from "./__generated__/AddFundsMutation.graphql";
 import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
@@ -15,17 +14,7 @@ import { Space } from "components/Space";
 import { useTranslation } from "react-i18next";
 import { logOut } from "utils";
 
-const addFundsFragment = graphql`
-  fragment AddFunds_user on User {
-    id
-  }
-`;
-
-type Props = {
-  user: AddFunds_user$key;
-};
-
-export const AddFunds: FC<Props> = (props) => {
+export const AddFunds: FC = () => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<AddFundsMutation>(graphql`
     mutation AddFundsMutation($input: AddFundsInput!) {
@@ -35,7 +24,6 @@ export const AddFunds: FC<Props> = (props) => {
       }
     }
   `);
-  const user = useFragment(addFundsFragment, props.user);
   const [quantity, setQuantity] = useState("");
   const handleQuantityOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -76,7 +64,6 @@ export const AddFunds: FC<Props> = (props) => {
                   commit({
                     variables: {
                       input: {
-                        user_gid: user.id,
                         quantity,
                       },
                     },

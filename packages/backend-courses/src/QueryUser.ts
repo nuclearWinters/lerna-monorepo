@@ -25,6 +25,7 @@ const QueryUser = {
         accountInterests: 0,
         accountLent: 0,
         id: "",
+        accountTotal: 0,
       };
     }
   },

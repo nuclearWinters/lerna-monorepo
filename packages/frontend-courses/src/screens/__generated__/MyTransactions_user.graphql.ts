@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<09d321ae06a197296959e711a62b9236>>
+ * @generated SignedSource<<45e8e309f7c7d5000eca8e856dd44dd2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,16 +16,13 @@ export type MyTransactions_user$data = {
   readonly transactions: {
     readonly edges: ReadonlyArray<{
       readonly node: {
-        readonly count: number;
-        readonly history: ReadonlyArray<{
-          readonly _id_loan: string | null;
-          readonly created: Int;
-          readonly id: string;
-          readonly id_borrower: string | null;
-          readonly quantity: string;
-          readonly type: TransactionType;
-        }>;
+        readonly _id_loan: string | null;
+        readonly created: Int;
         readonly id: string;
+        readonly id_borrower: string | null;
+        readonly id_user: string;
+        readonly quantity: string;
+        readonly type: TransactionType;
       } | null;
     } | null> | null;
   } | null;
@@ -50,7 +47,7 @@ v1 = {
 return {
   "argumentDefinitions": [
     {
-      "defaultValue": 2,
+      "defaultValue": 5,
       "kind": "LocalArgument",
       "name": "count"
     },
@@ -91,7 +88,7 @@ return {
     {
       "alias": "transactions",
       "args": null,
-      "concreteType": "BucketTransactionConnection",
+      "concreteType": "TransactionConnection",
       "kind": "LinkedField",
       "name": "__MyTransactions_user_transactions_connection",
       "plural": false,
@@ -99,7 +96,7 @@ return {
         {
           "alias": null,
           "args": null,
-          "concreteType": "BucketTransactionEdge",
+          "concreteType": "TransactionEdge",
           "kind": "LinkedField",
           "name": "edges",
           "plural": true,
@@ -107,7 +104,7 @@ return {
             {
               "alias": null,
               "args": null,
-              "concreteType": "BucketTransaction",
+              "concreteType": "Transaction",
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
@@ -117,54 +114,42 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "count",
+                  "name": "id_user",
                   "storageKey": null
                 },
                 {
                   "alias": null,
                   "args": null,
-                  "concreteType": "Transaction",
-                  "kind": "LinkedField",
-                  "name": "history",
-                  "plural": true,
-                  "selections": [
-                    (v1/*: any*/),
-                    {
-                      "alias": null,
-                      "args": null,
-                      "kind": "ScalarField",
-                      "name": "id_borrower",
-                      "storageKey": null
-                    },
-                    {
-                      "alias": null,
-                      "args": null,
-                      "kind": "ScalarField",
-                      "name": "_id_loan",
-                      "storageKey": null
-                    },
-                    {
-                      "alias": null,
-                      "args": null,
-                      "kind": "ScalarField",
-                      "name": "type",
-                      "storageKey": null
-                    },
-                    {
-                      "alias": null,
-                      "args": null,
-                      "kind": "ScalarField",
-                      "name": "quantity",
-                      "storageKey": null
-                    },
-                    {
-                      "alias": null,
-                      "args": null,
-                      "kind": "ScalarField",
-                      "name": "created",
-                      "storageKey": null
-                    }
-                  ],
+                  "kind": "ScalarField",
+                  "name": "id_borrower",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "_id_loan",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "type",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "quantity",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "created",
                   "storageKey": null
                 },
                 {
@@ -222,6 +207,6 @@ return {
 };
 })();
 
-(node as any).hash = "cc5902c25f85fe36f3c9b556871423dc";
+(node as any).hash = "3167f487899935e3a47f82b92e6c81bd";
 
 export default node;

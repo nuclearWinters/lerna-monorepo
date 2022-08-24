@@ -1,8 +1,12 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull } from "graphql";
-import { Context } from "../types";
-import { ObjectId } from "mongodb";
+import { Context, TransactionMongo } from "../types";
 import { MXNScalarType } from "../Nodes";
+import {
+  publishTransactionInsert,
+  publishUser,
+} from "../subscriptions/subscriptionsUtils";
+import { ObjectId, OptionalId } from "mongodb";
 
 interface Input {
   quantity: number;
@@ -35,48 +39,38 @@ export const AddFundsMutation = mutationWithClientMutationId({
     { users, transactions, id, validAccessToken }: Context
   ): Promise<Payload> => {
     try {
-      if (!validAccessToken) {
+      if (!validAccessToken || !id) {
         throw new Error("No valid access token.");
       }
       if (quantity === 0) {
         throw new Error("La cantidad no puede ser cero.");
       }
-      const result = await users.updateOne(
+      const result = await users.findOneAndUpdate(
         { id, accountAvailable: { $gte: -quantity } },
-        { $inc: { accountAvailable: quantity } }
+        { $inc: { accountAvailable: quantity, accountTotal: quantity } },
+        { returnDocument: "after" }
       );
-      if (!result.modifiedCount) {
+      if (result.value) {
+        publishUser(result.value);
+      }
+      if (!result.value) {
         throw new Error("No cuentas con fondos suficientes.");
       }
-      transactions.updateOne(
-        { _id: new RegExp(`^${id}`), count: { $lt: 5 } },
-        {
-          $push: {
-            history: {
-              _id: new ObjectId(),
-              type: quantity > 0 ? "credit" : "withdrawal",
-              quantity,
-              created: new Date(),
-            },
-          },
-          $inc: { count: 1 },
-          $setOnInsert: {
-            _id: `${id}_${new Date().getTime()}`,
-            id_user: id,
-          },
-        },
-        { upsert: true }
-      );
+      const now = new Date();
+      const doc: OptionalId<TransactionMongo> = {
+        _id: new ObjectId(),
+        id_user: id,
+        type: quantity > 0 ? "credit" : "withdrawal",
+        quantity,
+        created: now,
+      };
+      transactions.insertOne(doc);
+      publishTransactionInsert(doc);
       return { validAccessToken, error: "" };
     } catch (e) {
       return {
         validAccessToken: "",
-        error:
-          e instanceof Error
-            ? e.message
-            : (e as { message: string }).message
-            ? (e as { message: string }).message
-            : "",
+        error: e instanceof Error ? e.message : "",
       };
     }
   },

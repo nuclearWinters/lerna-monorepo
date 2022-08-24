@@ -1,11 +1,28 @@
 import { app } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { BucketTransactionMongo, UserMongo } from "../types";
+import { TransactionMongo, UserMongo } from "../types";
 import { jwt } from "../utils";
 import { client as grpcClient } from "../utils";
 import { Metadata } from "@grpc/grpc-js";
 import { SurfaceCall } from "@grpc/grpc-js/build/src/call";
+
+jest.mock("../subscriptions/subscriptionsUtils", () => ({
+  publishUser: jest.fn,
+  publishTransactionInsert: jest.fn,
+}));
+
+jest.mock("graphql-redis-subscriptions", () => ({
+  RedisPubSub: jest.fn().mockImplementation(() => {
+    return {};
+  }),
+}));
+
+jest.mock("ioredis", () =>
+  jest.fn().mockImplementation(() => {
+    return {};
+  })
+);
 
 const request = supertest(app);
 
@@ -31,6 +48,7 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountInterests: 0,
       accountLent: 0,
+      accountTotal: 100000,
     });
     const response = await request
       .post("/graphql")
@@ -86,16 +104,17 @@ describe("AddFunds tests", () => {
       accountAvailable: 150000,
       accountLent: 0,
       accountInterests: 0,
+      accountTotal: 150000,
     });
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO25" })
       .toArray();
     expect(allTransactions.length).toBe(1);
-    expect(allTransactions[0].history.length).toBe(1);
+    expect(allTransactions.length).toBe(1);
     expect(
-      allTransactions[0].history.map((transaction) => ({
+      allTransactions.map((transaction) => ({
         type: transaction.type,
         quantity: transaction.quantity,
       }))
@@ -115,6 +134,7 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountInterests: 0,
       accountLent: 0,
+      accountTotal: 100000,
     });
     const response = await request
       .post("/graphql")
@@ -172,16 +192,17 @@ describe("AddFunds tests", () => {
       accountAvailable: 50000,
       accountLent: 0,
       accountInterests: 0,
+      accountTotal: 50000,
     });
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO26" })
       .toArray();
     expect(allTransactions.length).toBe(1);
-    expect(allTransactions[0].history.length).toBe(1);
+    expect(allTransactions.length).toBe(1);
     expect(
-      allTransactions[0].history.map((transaction) => ({
+      allTransactions.map((transaction) => ({
         type: transaction.type,
         quantity: transaction.quantity,
       }))
@@ -201,6 +222,7 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountInterests: 0,
       accountLent: 0,
+      accountTotal: 100000,
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
@@ -280,16 +302,17 @@ describe("AddFunds tests", () => {
       accountAvailable: 150000,
       accountLent: 0,
       accountInterests: 0,
+      accountTotal: 150000,
     });
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO27" })
       .toArray();
     expect(allTransactions.length).toBe(1);
-    expect(allTransactions[0].history.length).toBe(1);
+    expect(allTransactions.length).toBe(1);
     expect(
-      allTransactions[0].history.map((transaction) => ({
+      allTransactions.map((transaction) => ({
         type: transaction.type,
         quantity: transaction.quantity,
       }))
@@ -309,6 +332,7 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountInterests: 0,
       accountLent: 0,
+      accountTotal: 100000,
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
@@ -371,9 +395,10 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountLent: 0,
       accountInterests: 0,
+      accountTotal: 100000,
     });
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions
       .find({ _id_user: new ObjectId("000000000000000000000002") })
       .toArray();
@@ -388,6 +413,7 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountInterests: 0,
       accountLent: 0,
+      accountTotal: 100000,
     });
     const response = await request
       .post("/graphql")
@@ -445,10 +471,11 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountLent: 0,
       accountInterests: 0,
+      accountTotal: 100000,
     });
 
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions
       .find({ _id_user: new ObjectId("100000000000000000000002") })
       .toArray();
@@ -463,6 +490,7 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountInterests: 0,
       accountLent: 0,
+      accountTotal: 100000,
     });
     const response = await request
       .post("/graphql")
@@ -520,10 +548,11 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountLent: 0,
       accountInterests: 0,
+      accountTotal: 100000,
     });
 
     const transactions =
-      dbInstance.collection<BucketTransactionMongo>("transactions");
+      dbInstance.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions
       .find({ _id_user: new ObjectId("100000000000000000000003") })
       .toArray();

@@ -1,11 +1,11 @@
 import { MongoClient, ObjectId } from "mongodb";
 import {
-  BucketTransactionMongo,
+  TransactionMongo,
   InvestmentMongo,
   LoanMongo,
   UserMongo,
 } from "./types";
-import { startOfMonth, addMonths, addSeconds } from "date-fns";
+import { startOfMonth, addMonths } from "date-fns";
 
 MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
   async (client) => {
@@ -17,7 +17,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     await users.deleteMany({});
     const investments = db.collection<InvestmentMongo>("investments");
     await investments.deleteMany({});
-    const transactions = db.collection<BucketTransactionMongo>("transactions");
+    const transactions = db.collection<TransactionMongo>("transactions");
     await transactions.deleteMany({});
     await users.insertMany([
       {
@@ -26,6 +26,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         accountAvailable: 0,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 0,
       },
       {
         _id: new ObjectId("6095f055f92be2001a15885b"),
@@ -33,6 +34,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         accountAvailable: 0,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 0,
       },
       {
         _id: new ObjectId("6095f172f92be2001a15885c"),
@@ -40,6 +42,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         accountAvailable: 0,
         accountInterests: 0,
         accountLent: 0,
+        accountTotal: 0,
       },
     ]);
 
@@ -68,7 +71,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         term: 6,
         status: "financing",
         scheduledPayments: null,
-        pending: 0,
+        pending: 500000,
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe26"),
@@ -240,69 +243,50 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
     ]);
 
+    const now = new Date();
+
     await transactions.insertMany([
       {
-        _id: `wHHR1SUBT0dspoF4YUOw1_${new Date().getTime()}`,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
-        count: 1,
-        history: [
-          {
-            _id: new ObjectId("609de4f0df540d019218f248"),
-            type: "invest",
-            quantity: -5000000,
-            created: new Date(),
-          },
-        ],
+        type: "invest",
+        quantity: -5000000,
+        created: now,
       },
       {
-        _id: `wHHR1SUBT0dspoF4YUOw1_${addSeconds(new Date(), 1).getTime()}`,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
-        count: 5,
-        history: [
-          {
-            _id: new ObjectId(),
-            type: "invest",
-            quantity: -1000000,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId(),
-            type: "invest",
-            quantity: -1000000,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId(),
-            type: "invest",
-            quantity: -1000000,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId(),
-            type: "invest",
-            quantity: -500000,
-            created: new Date(),
-          },
-          {
-            _id: new ObjectId(),
-            type: "invest",
-            quantity: -500000,
-            created: new Date(),
-          },
-        ],
+        type: "invest",
+        quantity: -1000000,
+        created: now,
       },
       {
-        _id: `wHHR1SUBT0dspoF4YUOw1_${addSeconds(new Date(), 2).getTime()}`,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
-        count: 1,
-        history: [
-          {
-            _id: new ObjectId(),
-            type: "invest",
-            quantity: -500000,
-            created: new Date(),
-          },
-        ],
+        type: "invest",
+        quantity: -1000000,
+        created: now,
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUOw1",
+        type: "invest",
+        quantity: -1000000,
+        created: now,
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUOw1",
+        type: "invest",
+        quantity: -500000,
+        created: now,
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUOw1",
+        type: "invest",
+        quantity: -500000,
+        created: now,
+      },
+      {
+        id_user: "wHHR1SUBT0dspoF4YUOw1",
+        type: "invest",
+        quantity: -500000,
+        created: now,
       },
     ]);
     process.exit();
