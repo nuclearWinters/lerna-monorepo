@@ -242,8 +242,8 @@ export const Settings: FC<Props> = (props) => {
               />
             )}
             <Space w={30} />
-            {user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=" &&
-              (isInFlightBlacklist ? (
+            {user.accountId ? (
+              isInFlightBlacklist ? (
                 <Spinner />
               ) : (
                 <CustomButton
@@ -268,7 +268,8 @@ export const Settings: FC<Props> = (props) => {
                     });
                   }}
                 />
-              ))}
+              )
+            ) : null}
           </Columns>
           <Space h={30} />
         </div>

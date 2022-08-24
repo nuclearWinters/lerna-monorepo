@@ -167,9 +167,7 @@ export const AddInvestments: FC<Props> = (props) => {
                   <CustomButton
                     text={t("Prestar")}
                     onClick={() => {
-                      if (
-                        user_gid === "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA="
-                      ) {
+                      if (!data.accountId) {
                         return navigate("/login");
                       }
                       commit({

@@ -98,7 +98,6 @@ export const MyTransactions: FC<Props> = (props) => {
             data.transactions.edges.map((edge) => {
               if (edge && edge.node) {
                 const { id_borrower, _id_loan } = edge.node;
-                console.log(edge.node);
                 const color = edge.node.quantity.includes("-")
                   ? "#CD5C5C"
                   : "#50C878";

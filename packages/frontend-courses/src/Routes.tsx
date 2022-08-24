@@ -178,7 +178,7 @@ export const Routes: FC<Props> = (props) => {
   );
   const { isBorrower, isSupport } = authUser;
   //const userRef = useRef(user_gid);
-  const isLogged = user.id !== "VXNlcjowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=";
+  const isLogged = user.accountId;
   useEffect(() => {
     if (isLogged) {
       i18n.changeLanguage(authUser.language);
