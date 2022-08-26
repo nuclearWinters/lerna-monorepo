@@ -166,10 +166,12 @@ export const dayFunction = async (db: Db): Promise<void> => {
         userFilter: Filter<UserMongo>;
         userUpdate: UpdateFilter<UserMongo>;
         transactionsInsert: OptionalId<TransactionMongo>;
-      }>(({ id_lender, amortize, quantity }) => {
-        //Decimales?
-        const lent = quantity / term;
+      }>(({ id_lender, amortize, quantity, payments }) => {
+        const firstPayments = Math.floor(quantity / term);
+        const lastPayment = quantity - firstPayments * (term - 1);
+        const isLastPayment = term === payments + 1;
         const moratory = Math.floor((amortize * (ROI / 100)) / 360);
+        const lent = isLastPayment ? lastPayment : firstPayments;
         return {
           transactionsInsert: {
             _id: new ObjectId(),

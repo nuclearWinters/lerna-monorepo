@@ -35,6 +35,7 @@ export const CheckExpiration: FC = () => {
       logOut();
     } else if (
       difference < 100 &&
+      difference > 0 &&
       !isIdle() &&
       !isFetching.current &&
       tokensAndData.accessToken
