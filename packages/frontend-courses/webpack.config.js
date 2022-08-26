@@ -2,7 +2,10 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 
+const isDevelopment = process.env.NODE_ENV !== "production";
+
 module.exports = {
+  mode: isDevelopment ? "development" : "production",
   entry: "./src/index.tsx",
   output: {
     path: path.resolve(__dirname, "./build"),
@@ -31,7 +34,6 @@ module.exports = {
   plugins: [
     new webpack.EnvironmentPlugin({
       API_GATEWAY: null,
-      WS_GATEWAY: null,
     }),
     new HtmlWebpackPlugin({
       filename: "index.html",
@@ -42,5 +44,6 @@ module.exports = {
     port: 8000,
     host: "0.0.0.0",
     historyApiFallback: true,
+    hot: true,
   },
 };

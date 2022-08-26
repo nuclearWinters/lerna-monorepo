@@ -33,9 +33,14 @@ export const AuthServer: IAuthServer = {
       if (blacklistedUser) {
         throw new Error("El usuario estará bloqueado por una hora.");
       }
-      const validAccessToken = jwt.sign(user, ACCESSSECRET, {
-        expiresIn: ACCESS_TOKEN_EXP_STRING,
-      });
+      const { isBorrower, isLender, isSupport, id } = user;
+      const validAccessToken = jwt.sign(
+        { isBorrower, isLender, isSupport, id },
+        ACCESSSECRET,
+        {
+          expiresIn: ACCESS_TOKEN_EXP_STRING,
+        }
+      );
       const payload = new RenewAccessTokenPayload();
       payload.setValidaccesstoken(validAccessToken);
       callback(null, payload);

@@ -1,4 +1,4 @@
-import React, { Dispatch, FC, SetStateAction, useCallback } from "react";
+import React, { FC, useCallback } from "react";
 import {
   RelayEnvironmentProvider,
   loadQuery,
@@ -19,12 +19,10 @@ export const tokensAndData: {
   refetchUser: () => void;
   accessToken: string;
   exp?: Date;
-  setToken: Dispatch<SetStateAction<string>>;
 } = {
   accessToken: "",
   exp: undefined,
   refetchUser: () => {},
-  setToken: () => {},
 };
 
 const RepositoryNameQuery = graphql`

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c5574d2d96f4fda1e9fd1dd8476f2019>>
+ * @generated SignedSource<<8c738af06abf5f03dc443c4b7b568cfc>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,27 +10,23 @@
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
-export type SubscribeType = "INSERT" | "UPDATE" | "%future added value";
 export type RoutesInvestmentsSubscription$variables = {
+  connections: ReadonlyArray<string>;
   status: ReadonlyArray<InvestmentStatus>;
-  user_gid: string;
 };
 export type RoutesInvestmentsSubscription$data = {
-  readonly investments_subscribe: {
-    readonly investment_edge: {
-      readonly cursor: string;
-      readonly node: {
-        readonly _id_loan: string;
-        readonly created: Int;
-        readonly id: string;
-        readonly id_borrower: string;
-        readonly id_lender: string;
-        readonly quantity: string;
-        readonly status: InvestmentStatus;
-        readonly updated: Int;
-      } | null;
-    };
-    readonly type: SubscribeType;
+  readonly investments_subscribe_insert: {
+    readonly cursor: string;
+    readonly node: {
+      readonly _id_loan: string;
+      readonly created: Int;
+      readonly id: string;
+      readonly id_borrower: string;
+      readonly id_lender: string;
+      readonly quantity: string;
+      readonly status: InvestmentStatus;
+      readonly updated: Int;
+    } | null;
   };
 };
 export type RoutesInvestmentsSubscription = {
@@ -39,166 +35,158 @@ export type RoutesInvestmentsSubscription = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "status"
-},
-v1 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "user_gid"
-},
-v2 = [
+var v0 = [
   {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "status",
-        "variableName": "status"
-      },
-      {
-        "kind": "Variable",
-        "name": "user_gid",
-        "variableName": "user_gid"
-      }
-    ],
-    "concreteType": "Investment_Subscribe",
-    "kind": "LinkedField",
-    "name": "investments_subscribe",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "InvestmentsEdge",
-        "kind": "LinkedField",
-        "name": "investment_edge",
-        "plural": false,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "Investment",
-            "kind": "LinkedField",
-            "name": "node",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "id",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "id_borrower",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "id_lender",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "_id_loan",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "quantity",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "created",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "updated",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "status",
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "cursor",
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "type",
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "connections"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "status"
   }
-];
+],
+v1 = [
+  {
+    "kind": "Variable",
+    "name": "status",
+    "variableName": "status"
+  }
+],
+v2 = {
+  "alias": null,
+  "args": (v1/*: any*/),
+  "concreteType": "InvestmentsEdge",
+  "kind": "LinkedField",
+  "name": "investments_subscribe_insert",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "Investment",
+      "kind": "LinkedField",
+      "name": "node",
+      "plural": false,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "id",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "id_borrower",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "id_lender",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "_id_loan",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "quantity",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "created",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "updated",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "status",
+          "storageKey": null
+        }
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "cursor",
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+};
 return {
   "fragment": {
-    "argumentDefinitions": [
-      (v0/*: any*/),
-      (v1/*: any*/)
-    ],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "RoutesInvestmentsSubscription",
-    "selections": (v2/*: any*/),
+    "selections": [
+      (v2/*: any*/)
+    ],
     "type": "Subscription",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": [
-      (v1/*: any*/),
-      (v0/*: any*/)
-    ],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "RoutesInvestmentsSubscription",
-    "selections": (v2/*: any*/)
+    "selections": [
+      (v2/*: any*/),
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "filters": null,
+        "handle": "prependEdge",
+        "key": "",
+        "kind": "LinkedHandle",
+        "name": "investments_subscribe_insert",
+        "handleArgs": [
+          {
+            "kind": "Variable",
+            "name": "connections",
+            "variableName": "connections"
+          }
+        ]
+      }
+    ]
   },
   "params": {
-    "cacheID": "15054c4e49c2c8c6b9f6dd679c3e749b",
+    "cacheID": "54961231fe7c9ebbe4cefa3c7a461ce9",
     "id": null,
     "metadata": {},
     "name": "RoutesInvestmentsSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesInvestmentsSubscription(\n  $user_gid: ID!\n  $status: [InvestmentStatus!]!\n) {\n  investments_subscribe(user_gid: $user_gid, status: $status) {\n    investment_edge {\n      node {\n        id\n        id_borrower\n        id_lender\n        _id_loan\n        quantity\n        created\n        updated\n        status\n      }\n      cursor\n    }\n    type\n  }\n}\n"
+    "text": "subscription RoutesInvestmentsSubscription(\n  $status: [InvestmentStatus!]!\n) {\n  investments_subscribe_insert(status: $status) {\n    node {\n      id\n      id_borrower\n      id_lender\n      _id_loan\n      quantity\n      created\n      updated\n      status\n    }\n    cursor\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "a60951f9f2fc31bc54a02ab632e42780";
+(node as any).hash = "70b6bc83ac84a2e1dd8f7968f79ad85f";
 
 export default node;

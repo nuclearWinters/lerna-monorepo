@@ -8,8 +8,8 @@ import { AddFundsMutation } from "./mutations/AddFunds";
 import { AddLoanMutation } from "./mutations/AddLoan";
 import { getContext } from "./utils";
 import {
-  investments_subscribe,
-  loans_subscribe,
+  investments_subscribe_insert,
+  loans_subscribe_insert,
   transactions_subscribe_insert,
   transactions_subscribe_update,
   user_subscribe,
@@ -46,10 +46,10 @@ const Subscription = new GraphQLObjectType({
   name: "Subscription",
   description: "Subscribe to data event streams",
   fields: () => ({
-    loans_subscribe,
+    loans_subscribe_insert,
     transactions_subscribe_insert,
     transactions_subscribe_update,
-    investments_subscribe,
+    investments_subscribe_insert,
     user_subscribe,
   }),
 });

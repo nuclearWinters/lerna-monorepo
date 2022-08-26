@@ -15,7 +15,6 @@ import {
   GraphQLTransaction,
   GraphQLUser,
   InvestmentStatus,
-  LoanStatus,
 } from "../Nodes";
 import {
   Context,
@@ -98,14 +97,10 @@ export const Investment_Subscribe = new GraphQLObjectType<
   }),
 });
 
-export const loans_subscribe = {
-  type: new GraphQLNonNull(Loan_Subscribe),
+export const loans_subscribe_insert = {
+  type: new GraphQLNonNull(GraphQLLoanEdge),
   description: "New or updated loans",
-  args: {
-    status: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LoanStatus))),
-    },
-  },
+  args: {},
   subscribe: withFilter(
     () => pubsub.asyncIterator<ILoanSubscribe>(LOAN),
     (payload: { loans_subscribe: ILoanSubscribe }, variables) => {
@@ -154,10 +149,9 @@ export const transactions_subscribe_update = {
   ),
 };
 
-export const investments_subscribe = {
-  type: new GraphQLNonNull(Investment_Subscribe),
+export const investments_subscribe_insert = {
+  type: new GraphQLNonNull(GraphQLInvestmentEdge),
   args: {
-    user_gid: { type: new GraphQLNonNull(GraphQLID) },
     status: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(InvestmentStatus))

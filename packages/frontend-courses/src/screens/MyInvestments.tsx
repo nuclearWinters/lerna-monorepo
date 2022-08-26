@@ -1,5 +1,10 @@
-import React, { FC, useEffect, useRef } from "react";
-import { graphql, usePaginationFragment } from "react-relay";
+import React, { FC } from "react";
+import {
+  Environment,
+  graphql,
+  usePaginationFragment,
+  commitLocalUpdate,
+} from "react-relay";
 import { InvestmentRow } from "../components/InvestmentRow";
 import { CustomButton } from "components/CustomButton";
 import { Title } from "components/Title";
@@ -14,6 +19,7 @@ import { TableColumnName } from "components/TableColumnName";
 import { useTranslation } from "react-i18next";
 import { MyInvestmentsPaginationUser } from "./__generated__/MyInvestmentsPaginationUser.graphql";
 import { MyInvestments_user$key } from "./__generated__/MyInvestments_user.graphql";
+import { RelayEnvironment } from "RelayEnvironment";
 
 const myInvestmentsFragment = graphql`
   fragment MyInvestments_user on User
@@ -26,6 +32,8 @@ const myInvestmentsFragment = graphql`
     }
   )
   @refetchable(queryName: "MyInvestmentsPaginationUser") {
+    id
+    statusLocal
     investments(first: $count, after: $cursor, status: $status)
       @connection(key: "MyInvestments_user_investments") {
       edges {
@@ -40,10 +48,6 @@ const myInvestmentsFragment = graphql`
 
 type Props = {
   user: MyInvestments_user$key;
-  setInvestmentStatus: React.Dispatch<
-    React.SetStateAction<"on_going" | "over">
-  >;
-  investmentStatus: "on_going" | "over";
 };
 
 export const MyInvestments: FC<Props> = (props) => {
@@ -68,37 +72,46 @@ export const MyInvestments: FC<Props> = (props) => {
     { key: "refetch", title: t("Refrescar") },
   ];
 
-  const handleInvestmentStatusOnChange = () => {
-    props.setInvestmentStatus((state) => {
-      return state === "on_going" ? "over" : "on_going";
+  const investmentStatus =
+    !data.statusLocal || data.statusLocal.includes("UP_TO_DATE")
+      ? "on_going"
+      : "over";
+
+  const commitCommentCreateLocally = (
+    environment: Environment,
+    userID: string,
+    status: "on_going" | "over"
+  ) => {
+    return commitLocalUpdate(environment, (store) => {
+      const user = store.get(userID);
+      user?.setValue(
+        status === "on_going"
+          ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
+          : ["PAID", "PAST_DUE"],
+        "statusLocal"
+      );
     });
   };
-
-  const statusRef = useRef(props.investmentStatus);
-
-  useEffect(() => {
-    const isDifferent = statusRef.current !== props.investmentStatus;
-    if (isDifferent) {
-      refetch(
-        {
-          status:
-            props.investmentStatus === "on_going"
-              ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
-              : ["PAID", "PAST_DUE"],
-        },
-        { fetchPolicy: "network-only" }
-      );
-      statusRef.current = props.investmentStatus;
-    }
-  }, [props.investmentStatus, refetch]);
 
   return (
     <Main>
       <WrapperBig>
         <Title text={t("Mis inversiones")} />
         <Select
-          value={props.investmentStatus}
-          onChange={handleInvestmentStatusOnChange}
+          value={investmentStatus}
+          onChange={(e) => {
+            const status = e.target.value as "on_going" | "over";
+            commitCommentCreateLocally(RelayEnvironment, data.id, status);
+            refetch(
+              {
+                status:
+                  status === "on_going"
+                    ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
+                    : ["PAID", "PAST_DUE"],
+              },
+              { fetchPolicy: "network-only" }
+            );
+          }}
           options={[
             {
               value: "on_going",

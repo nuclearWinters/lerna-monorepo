@@ -137,23 +137,10 @@ type Query {
   node(id: ID!): Node
 }
 
-type Loan_Subscribe {
-  loan_edge: LoanEdge!
-  type: SubscribeType!
-}
-
-type Investment_Subscribe {
-  investment_edge: InvestmentsEdge!
-  type: SubscribeType!
-}
-
 type Subscription {
   user_subscribe: User!
-  loans_subscribe(status: [LoanStatus!]!): Loan_Subscribe!
-  investments_subscribe(
-    user_gid: ID!
-    status: [InvestmentStatus!]!
-  ): Investment_Subscribe!
+  loans_subscribe_insert: LoanEdge!
+  investments_subscribe_insert(status: [InvestmentStatus!]!): InvestmentsEdge!
   transactions_subscribe_insert: TransactionEdge!
   transactions_subscribe_update(gid: ID!): Transaction!
 }
@@ -336,3 +323,7 @@ type AuthUser {
 
 scalar Date
 scalar MXN
+
+extend type User {
+  statusLocal: [InvestmentStatus!]
+}

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo /*useRef*/, useState } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 import {
   BrowserRouter as Router,
   Routes as BrowserRoutes,
@@ -24,11 +24,8 @@ import {
   Settings,
 } from "./screens";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
-//import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
-//import {
-//  InvestmentStatus,
-//  RoutesInvestmentsSubscription,
-//} from "__generated__/RoutesInvestmentsSubscription.graphql";
+import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
+import { RoutesInvestmentsSubscription } from "__generated__/RoutesInvestmentsSubscription.graphql";
 import { RoutesTransactionsSubscription } from "__generated__/RoutesTransactionsSubscription.graphql";
 import { RoutesUserSubscription } from "__generated__/RoutesUserSubscription.graphql";
 import { Icon } from "components/Icon";
@@ -59,6 +56,7 @@ import { Routes_auth_user$key } from "__generated__/Routes_auth_user.graphql";
 const routesFragment = graphql`
   fragment Routes_user on User {
     id
+    statusLocal
     accountAvailable
     accountTotal
     accountId
@@ -89,32 +87,29 @@ type Props = {
   authUser: Routes_auth_user$key;
 };
 
-/*const subscriptionLoans = graphql`
-  subscription RoutesLoansSubscription($status: [LoanStatus!]!) {
-    loans_subscribe(status: $status) {
-      loan_edge {
-        node {
-          id
-          id_user
-          score
-          ROI
-          goal
-          term
-          raised
-          expiry
+const subscriptionLoans = graphql`
+  subscription RoutesLoansSubscription($connections: [ID!]!) {
+    loans_subscribe_insert @prependEdge(connections: $connections) {
+      node {
+        id
+        id_user
+        score
+        ROI
+        goal
+        term
+        raised
+        expiry
+        status
+        scheduledPayments {
+          amortize
           status
-          scheduledPayments {
-            amortize
-            status
-            scheduledDate
-          }
+          scheduledDate
         }
-        cursor
       }
-      type
+      cursor
     }
   }
-`;*/
+`;
 
 const subscriptionTransactions = graphql`
   subscription RoutesTransactionsSubscription($connections: [ID!]!) {
@@ -133,29 +128,27 @@ const subscriptionTransactions = graphql`
   }
 `;
 
-/*const subscriptionInvestments = graphql`
+const subscriptionInvestments = graphql`
   subscription RoutesInvestmentsSubscription(
-    $user_gid: ID!
+    $connections: [ID!]!
     $status: [InvestmentStatus!]!
   ) {
-    investments_subscribe(user_gid: $user_gid, status: $status) {
-      investment_edge {
-        node {
-          id
-          id_borrower
-          id_lender
-          _id_loan
-          quantity
-          created
-          updated
-          status
-        }
-        cursor
+    investments_subscribe_insert(status: $status)
+      @prependEdge(connections: $connections) {
+      node {
+        id
+        id_borrower
+        id_lender
+        _id_loan
+        quantity
+        created
+        updated
+        status
       }
-      type
+      cursor
     }
   }
-`;*/
+`;
 
 const subscriptionUser = graphql`
   subscription RoutesUserSubscription {
@@ -172,12 +165,12 @@ const subscriptionUser = graphql`
 export const Routes: FC<Props> = (props) => {
   const { t, i18n } = useTranslation();
   const user = useFragment<Routes_user$key>(routesFragment, props.user);
+  const { statusLocal } = user;
   const authUser = useFragment<Routes_auth_user$key>(
     routesFragmentAuth,
     props.authUser
   );
   const { isBorrower, isSupport } = authUser;
-  //const userRef = useRef(user_gid);
   const isLogged = !!user.accountId;
   useEffect(() => {
     if (isLogged) {
@@ -186,124 +179,48 @@ export const Routes: FC<Props> = (props) => {
       i18n.changeLanguage(navigator.language.includes("es") ? "es" : "en");
     }
   }, [i18n, isLogged, user, authUser]);
-  /*const configLoans = useMemo<
+
+  const connectionLoanID = ConnectionHandler.getConnectionID(
+    user.id,
+    "AddInvestments_user_loans",
+    {}
+  );
+  const configLoans = useMemo<
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
   >(
     () => ({
       variables: {
-        status: isBorrower
-          ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
-          : isSupport
-          ? ["WAITING_FOR_APPROVAL"]
-          : ["FINANCING"],
+        connections: [connectionLoanID],
       },
       subscription: subscriptionLoans,
-      updater: (store, data) => {
-        if (data.loans_subscribe.type === "INSERT") {
-          const root = store.getRoot();
-          const record = store.get(
-            data.loans_subscribe.loan_edge.node?.id || ""
-          );
-          if (record) {
-            return;
-          }
-          const connectionRecord = ConnectionHandler.getConnection(
-            root,
-            "AddInvestments_query_loans",
-            {
-              status: isBorrower
-                ? ["FINANCING", "TO_BE_PAID", "WAITING_FOR_APPROVAL"]
-                : isSupport
-                ? ["WAITING_FOR_APPROVAL"]
-                : ["FINANCING"],
-            }
-          );
-          if (!connectionRecord) {
-            throw new Error("no existe el connectionRecord loans");
-          }
-          const payload = store.getRootField("loans_subscribe");
-          const serverEdge = payload?.getLinkedRecord("loan_edge");
-          const newEdge = ConnectionHandler.buildConnectionEdge(
-            store,
-            connectionRecord,
-            serverEdge
-          );
-          if (!newEdge) {
-            throw new Error("no existe el newEdge");
-          }
-          ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge);
-        }
-      },
     }),
-    [isBorrower, isSupport]
-  );*/
-  const [investmentStatus, setInvestmentStatus] = useState<"on_going" | "over">(
-    "on_going"
+    [connectionLoanID]
   );
-  /*const configInvestments = useMemo<
+  const status = useMemo(() => {
+    const status = statusLocal
+      ? statusLocal
+      : (["UP_TO_DATE", "DELAY_PAYMENT", "FINANCING"] as const);
+    return status;
+  }, [statusLocal]);
+  const connectionInvestmentID = ConnectionHandler.getConnectionID(
+    user.id,
+    "MyInvestments_user_investments",
+    {
+      status,
+    }
+  );
+  const configInvestments = useMemo<
     GraphQLSubscriptionConfig<RoutesInvestmentsSubscription>
   >(
     () => ({
       variables: {
-        user_gid,
-        status:
-          userRef.current !== user_gid
-            ? ([
-                "UP_TO_DATE",
-                "DELAY_PAYMENT",
-                "FINANCING",
-              ] as InvestmentStatus[])
-            : investmentStatus === "on_going"
-            ? ([
-                "UP_TO_DATE",
-                "DELAY_PAYMENT",
-                "FINANCING",
-              ] as InvestmentStatus[])
-            : (["PAID", "PAST_DUE"] as InvestmentStatus[]),
+        status,
+        connections: [connectionInvestmentID],
       },
       subscription: subscriptionInvestments,
-      updater: (store, data) => {
-        if (data.investments_subscribe.type === "INSERT") {
-          const root = store.getRoot();
-          const connectionRecord = ConnectionHandler.getConnection(
-            root,
-            "MyInvestments_query_investments",
-            {
-              status:
-                userRef.current !== user_gid
-                  ? ([
-                      "UP_TO_DATE",
-                      "DELAY_PAYMENT",
-                      "FINANCING",
-                    ] as InvestmentStatus[])
-                  : investmentStatus === "on_going"
-                  ? ([
-                      "UP_TO_DATE",
-                      "DELAY_PAYMENT",
-                      "FINANCING",
-                    ] as InvestmentStatus[])
-                  : (["PAID", "PAST_DUE"] as InvestmentStatus[]),
-            }
-          );
-          if (!connectionRecord) {
-            throw new Error("no existe el connectionRecord investments");
-          }
-          const payload = store.getRootField("investments_subscribe");
-          const serverEdge = payload?.getLinkedRecord("investment_edge");
-          const newEdge = ConnectionHandler.buildConnectionEdge(
-            store,
-            connectionRecord,
-            serverEdge
-          );
-          if (!newEdge) {
-            throw new Error("no existe el newEdge");
-          }
-          ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge);
-        }
-      },
     }),
-    [user_gid, investmentStatus]
-  );*/
+    [status, connectionInvestmentID]
+  );
   const connectionTransactionID = ConnectionHandler.getConnectionID(
     user.id,
     "MyTransactions_user_transactions",
@@ -325,8 +242,8 @@ export const Routes: FC<Props> = (props) => {
     }),
     [connectionTransactionID]
   );
-  //useSubscription<RoutesLoansSubscription>(configLoans);
-  //useSubscription<RoutesInvestmentsSubscription>(configInvestments);
+  useSubscription<RoutesLoansSubscription>(configLoans);
+  useSubscription<RoutesInvestmentsSubscription>(configInvestments);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   useSubscription<RoutesUserSubscription>(configUser);
   return (
@@ -574,13 +491,7 @@ export const Routes: FC<Props> = (props) => {
                 />
                 <Route
                   path="/myInvestments"
-                  element={
-                    <MyInvestments
-                      user={user}
-                      setInvestmentStatus={setInvestmentStatus}
-                      investmentStatus={investmentStatus}
-                    />
-                  }
+                  element={<MyInvestments user={user} />}
                 />
                 <Route
                   path="/settings"
