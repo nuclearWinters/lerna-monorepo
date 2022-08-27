@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0a2758374cb2155975762e5ab9978d0c>>
+ * @generated SignedSource<<641071bdca339320e89909fad28f6811>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,7 @@ import { Fragment, ReaderFragment } from 'relay-runtime';
 export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestments_auth_user$data = {
+  readonly accountId: string;
   readonly isBorrower: boolean;
   readonly isLender: boolean;
   readonly isSupport: boolean;
@@ -56,12 +57,19 @@ const node: ReaderFragment = {
       "kind": "ScalarField",
       "name": "language",
       "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "accountId",
+      "storageKey": null
     }
   ],
   "type": "AuthUser",
   "abstractKey": null
 };
 
-(node as any).hash = "fbcfe944df4c2665d4493de33e57358b";
+(node as any).hash = "54234596e3f94b8789a8ed6bc7f0718a";
 
 export default node;

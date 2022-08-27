@@ -4,6 +4,7 @@ import { Context } from "../types";
 import { ObjectId } from "mongodb";
 import { add } from "date-fns";
 import { MXNScalarType } from "../Nodes";
+import { publishLoanInsert } from "../subscriptions/subscriptionsUtils";
 
 interface Input {
   goal: number;
@@ -44,6 +45,18 @@ export const AddLoanMutation = mutationWithClientMutationId({
       const _id_loan = new ObjectId();
       const expiry = add(new Date(), { months: 3 });
       await loans.insertOne({
+        _id: _id_loan,
+        id_user: id,
+        score: "AAA",
+        raised: 0,
+        expiry,
+        ROI: 17.0,
+        status: "waiting for approval",
+        scheduledPayments: null,
+        pending: 0,
+        ...loan,
+      });
+      publishLoanInsert({
         _id: _id_loan,
         id_user: id,
         score: "AAA",

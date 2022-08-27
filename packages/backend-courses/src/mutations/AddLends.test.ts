@@ -12,6 +12,8 @@ import { base64Name, jwt } from "../utils";
 jest.mock("../subscriptions/subscriptionsUtils", () => ({
   publishUser: jest.fn,
   publishTransactionInsert: jest.fn,
+  publishLoanUpdate: jest.fn,
+  publishInvestmentUpdate: jest.fn,
 }));
 
 jest.mock("graphql-redis-subscriptions", () => ({
@@ -49,16 +51,14 @@ describe("AddLends tests", () => {
         _id: new ObjectId("000000000000000000000004"),
         id: "wHHR1SUBT0dspoF4YUO31",
         accountAvailable: 100000,
-        accountLent: 0,
-        accountInterests: 0,
+        accountToBePaid: 0,
         accountTotal: 100000,
       },
       {
         _id: new ObjectId("000000000000000000000005"),
         id: "wHHR1SUBT0dspoF4YUO32",
         accountAvailable: 100000,
-        accountLent: 0,
-        accountInterests: 0,
+        accountToBePaid: 0,
         accountTotal: 100000,
       },
     ]);
@@ -164,8 +164,7 @@ describe("AddLends tests", () => {
       _id: new ObjectId("000000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO31",
       accountAvailable: 85000,
-      accountLent: 15000,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
     const allTransactions = await transactions
@@ -222,15 +221,10 @@ describe("AddLends tests", () => {
     expect(allInvestments.length).toBe(2);
     expect(
       allInvestments.map((investment) => ({
-        quantity: investment.quantity,
-        payments: investment.payments,
-        term: investment.term,
-        moratory: investment.moratory,
-        ROI: investment.ROI,
-        interest_to_earn: investment.interest_to_earn,
-        still_invested: investment.still_invested,
-        amortize: investment.amortize,
-        paid_already: investment.paid_already,
+        ...investment,
+        _id: "",
+        updated: "",
+        created: "",
       }))
     ).toEqual([
       {
@@ -240,9 +234,16 @@ describe("AddLends tests", () => {
         moratory: 0,
         term: 2,
         interest_to_earn: 0,
-        still_invested: 10000,
+        to_be_paid: 0,
         paid_already: 0,
         amortize: 0,
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
+        id_lender: "wHHR1SUBT0dspoF4YUO31",
+        _id_loan: new ObjectId("000000000000000000000002"),
+        status: "financing",
+        _id: "",
+        updated: "",
+        created: "",
       },
       {
         quantity: 5000,
@@ -251,9 +252,16 @@ describe("AddLends tests", () => {
         term: 2,
         payments: 0,
         interest_to_earn: 0,
-        still_invested: 5000,
+        to_be_paid: 0,
         paid_already: 0,
         amortize: 0,
+        _id_loan: new ObjectId("000000000000000000000003"),
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
+        id_lender: "wHHR1SUBT0dspoF4YUO31",
+        status: "financing",
+        _id: "",
+        updated: "",
+        created: "",
       },
     ]);
     const response2 = await request
@@ -327,8 +335,7 @@ describe("AddLends tests", () => {
       _id: new ObjectId("000000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO31",
       accountAvailable: 0,
-      accountLent: 100000,
-      accountInterests: 1196,
+      accountToBePaid: 101196,
       accountTotal: 101196,
     });
     const user3 = await users.findOne({
@@ -338,8 +345,7 @@ describe("AddLends tests", () => {
       _id: new ObjectId("000000000000000000000005"),
       id: "wHHR1SUBT0dspoF4YUO32",
       accountAvailable: 200000,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 200000,
     });
     const allTransactions2 = await transactions
@@ -432,27 +438,29 @@ describe("AddLends tests", () => {
     expect(allInvestments2.length).toBe(2);
     expect(
       allInvestments2.map((investment) => ({
-        quantity: investment.quantity,
-        payments: investment.payments,
-        term: investment.term,
-        moratory: investment.moratory,
-        ROI: investment.ROI,
-        interest_to_earn: investment.interest_to_earn,
-        still_invested: investment.still_invested,
-        amortize: investment.amortize,
-        paid_already: investment.paid_already,
+        ...investment,
+        _id: "",
+        updated: "",
+        created: "",
       }))
     ).toEqual([
       {
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
+        id_lender: "wHHR1SUBT0dspoF4YUO31",
+        _id_loan: new ObjectId("000000000000000000000002"),
         quantity: 50000,
         ROI: 10,
         moratory: 0,
         term: 2,
         payments: 0,
         interest_to_earn: 598,
-        still_invested: 50598,
+        to_be_paid: 50598,
         amortize: 25299,
         paid_already: 0,
+        status: "financing",
+        _id: "",
+        updated: "",
+        created: "",
       },
       {
         quantity: 50000,
@@ -461,9 +469,16 @@ describe("AddLends tests", () => {
         term: 2,
         payments: 0,
         interest_to_earn: 598,
-        still_invested: 50598,
+        to_be_paid: 50598,
         amortize: 25299,
         paid_already: 0,
+        _id_loan: new ObjectId("000000000000000000000003"),
+        status: "financing",
+        id_borrower: "wHHR1SUBT0dspoF4YUO32",
+        id_lender: "wHHR1SUBT0dspoF4YUO31",
+        _id: "",
+        updated: "",
+        created: "",
       },
     ]);
   });
@@ -475,16 +490,14 @@ describe("AddLends tests", () => {
         _id: new ObjectId("400000000000000000000004"),
         id: "wHHR1SUBT0dspoF4YUO33",
         accountAvailable: 10000,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         accountTotal: 10000,
       },
       {
         _id: new ObjectId("400000000000000000000005"),
         id: "wHHR1SUBT0dspoF4YUO34",
         accountAvailable: 10000,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         accountTotal: 10000,
       },
     ]);
@@ -569,8 +582,7 @@ describe("AddLends tests", () => {
       _id: new ObjectId("400000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO33",
       accountAvailable: 10000,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 10000,
     });
     const allTransactions = await transactions
@@ -608,16 +620,14 @@ describe("AddLends tests", () => {
         _id: new ObjectId("500000000000000000000004"),
         id: "wHHR1SUBT0dspoF4YUO35",
         accountAvailable: 10000,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         accountTotal: 10000,
       },
       {
         _id: new ObjectId("500000000000000000000005"),
         id: "wHHR1SUBT0dspoF4YUO36",
         accountAvailable: 10000,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         accountTotal: 10000,
       },
     ]);
@@ -702,8 +712,7 @@ describe("AddLends tests", () => {
       _id: new ObjectId("500000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO35",
       accountAvailable: 10000,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 10000,
     });
     const allTransactions = await transactions
@@ -741,16 +750,14 @@ describe("AddLends tests", () => {
         _id: new ObjectId("600000000000000000000004"),
         id: "wHHR1SUBT0dspoF4YUO37",
         accountAvailable: 10000,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         accountTotal: 10000,
       },
       {
         _id: new ObjectId("600000000000000000000005"),
         id: "wHHR1SUBT0dspoF4YUO38",
         accountAvailable: 10000,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         accountTotal: 10000,
       },
     ]);
@@ -854,8 +861,7 @@ describe("AddLends tests", () => {
       _id: new ObjectId("600000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO37",
       accountAvailable: 5000,
-      accountLent: 5000,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 10000,
     });
     const allTransactions = await transactions
@@ -906,27 +912,29 @@ describe("AddLends tests", () => {
     expect(allInvestments.length).toBe(1);
     expect(
       allInvestments.map((investment) => ({
-        quantity: investment.quantity,
-        payments: investment.payments,
-        term: investment.term,
-        moratory: investment.moratory,
-        ROI: investment.ROI,
-        interest_to_earn: investment.interest_to_earn,
-        still_invested: investment.still_invested,
-        amortize: investment.amortize,
-        paid_already: investment.paid_already,
+        ...investment,
+        _id: "",
+        created: "",
+        updated: "",
       }))
     ).toEqual([
       {
+        _id_loan: new ObjectId("600000000000000000000003"),
         quantity: 5000,
         ROI: 10,
         payments: 0,
         moratory: 0,
         term: 2,
         interest_to_earn: 0,
-        still_invested: 5000,
+        to_be_paid: 0,
         paid_already: 0,
         amortize: 0,
+        id_borrower: "wHHR1SUBT0dspoF4YUO38",
+        id_lender: "wHHR1SUBT0dspoF4YUO37",
+        status: "financing",
+        created: "",
+        updated: "",
+        _id: "",
       },
     ]);
   });

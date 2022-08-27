@@ -11,6 +11,8 @@ import {
 jest.mock("./subscriptions/subscriptionsUtils", () => ({
   publishUser: jest.fn,
   publishTransactionInsert: jest.fn,
+  publishLoanUpdate: jest.fn,
+  publishInvestmentUpdate: jest.fn,
 }));
 
 jest.mock("graphql-redis-subscriptions", () => ({
@@ -49,24 +51,21 @@ describe("cronJobs tests", () => {
         _id: new ObjectId("300000000000000000000011"),
         id: "wHHR1SUBT0dspoF4YUO11",
         accountAvailable: 1000000,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         accountTotal: 1000000,
       },
       {
         _id: new ObjectId("300000000000000000000100"),
         id: "wHHR1SUBT0dspoF4YUO12",
         accountAvailable: 100000,
-        accountInterests: 6125,
-        accountLent: 200000,
+        accountToBePaid: 206125,
         accountTotal: 306125,
       },
       {
         _id: new ObjectId("300000000000000000000017"),
         id: "wHHR1SUBT0dspoF4YUO13",
         accountAvailable: 0,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         accountTotal: 0,
       },
     ]);
@@ -174,7 +173,7 @@ describe("cronJobs tests", () => {
         moratory: 720,
         interest_to_earn: 1978,
         paid_already: 0,
-        still_invested: 0,
+        to_be_paid: 0,
         amortize: 50989,
       },
       {
@@ -192,7 +191,7 @@ describe("cronJobs tests", () => {
         moratory: 720,
         interest_to_earn: 1978,
         paid_already: 0,
-        still_invested: 0,
+        to_be_paid: 0,
         amortize: 50989,
       },
       {
@@ -210,7 +209,7 @@ describe("cronJobs tests", () => {
         moratory: 720,
         interest_to_earn: 1978,
         paid_already: 0,
-        still_invested: 0,
+        to_be_paid: 0,
         amortize: 50989,
       },
     ]);
@@ -222,8 +221,7 @@ describe("cronJobs tests", () => {
       _id: new ObjectId("300000000000000000000011"),
       id: "wHHR1SUBT0dspoF4YUO11",
       accountAvailable: 896578,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 896578,
     });
     const user2 = await users.findOne({
@@ -233,8 +231,7 @@ describe("cronJobs tests", () => {
       _id: new ObjectId("300000000000000000000100"),
       id: "wHHR1SUBT0dspoF4YUO12",
       accountAvailable: 202026,
-      accountLent: 100000,
-      accountInterests: 4123,
+      accountToBePaid: 104123,
       accountTotal: 306149,
     });
     const transactions_borrower = await transactions
@@ -378,7 +375,7 @@ describe("cronJobs tests", () => {
         updated: now,
         created: now,
         interest_to_earn: 1978,
-        still_invested: 50989,
+        to_be_paid: 50989,
         paid_already: 50989,
         amortize: 50989,
       },
@@ -396,7 +393,7 @@ describe("cronJobs tests", () => {
         term: 2,
         updated: now,
         interest_to_earn: 1978,
-        still_invested: 0,
+        to_be_paid: 0,
         paid_already: 101978,
         amortize: 50989,
       },
@@ -414,7 +411,7 @@ describe("cronJobs tests", () => {
         term: 2,
         updated: now,
         interest_to_earn: 1978,
-        still_invested: 0,
+        to_be_paid: 0,
         paid_already: 0,
         amortize: 50989,
       },

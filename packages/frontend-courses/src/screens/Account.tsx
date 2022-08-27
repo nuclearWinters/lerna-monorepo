@@ -13,8 +13,7 @@ import { useTranslation } from "react-i18next";
 const accountFragment = graphql`
   fragment Account_user on User {
     accountAvailable
-    accountLent
-    accountInterests
+    accountToBePaid
     accountTotal
   }
 `;
@@ -34,10 +33,9 @@ export const Account: FC<Props> = (props) => {
           value={user.accountTotal}
         />
         <FormSmall>
-          <AccountRow text={t("Prestado")} value={user.accountLent} />
           <AccountRow
-            text={t("Estimado de los intereses")}
-            value={user.accountInterests}
+            text={t("Falta por recibir")}
+            value={user.accountToBePaid}
           />
           <AccountRow
             text={t("Disponible")}

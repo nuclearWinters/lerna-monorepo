@@ -13,6 +13,8 @@ import { ObjectId } from "mongodb";
 import { MXNScalarType } from "../Nodes";
 import { addMonths, startOfMonth } from "date-fns";
 import {
+  publishInvestmentUpdate,
+  publishLoanUpdate,
   publishTransactionInsert,
   publishUser,
 } from "../subscriptions/subscriptionsUtils";
@@ -117,7 +119,6 @@ export const AddLendsMutation = mutationWithClientMutationId({
         {
           $inc: {
             accountAvailable: -total,
-            accountLent: total,
           },
         },
         { returnDocument: "after" }
@@ -144,12 +145,15 @@ export const AddLendsMutation = mutationWithClientMutationId({
           },
           { returnDocument: "after" }
         );
+        if (result.value) {
+          publishLoanUpdate(result.value);
+        }
         //Si NO se realizó la operación: incrementar saldo y no realizar más acciones
         if (!result.value) {
           const result = await users.findOneAndUpdate(
             { id },
             {
-              $inc: { accountAvailable: quantity, accountLent: -quantity },
+              $inc: { accountAvailable: quantity },
             },
             { returnDocument: "after" }
           );
@@ -162,14 +166,14 @@ export const AddLendsMutation = mutationWithClientMutationId({
         docsFiltered.push(doc);
         const completed = result.value.raised === result.value.goal;
         //Si se realizo la operacion crear inversion
-        await investments.updateOne(
+        const updatedInvestment = await investments.findOneAndUpdate(
           {
             _id_loan: doc._id_loan,
             id_borrower: doc.id_borrower,
             id_lender: id,
           },
           {
-            $inc: { quantity, still_invested: quantity },
+            $inc: { quantity },
             $setOnInsert: {
               _id: new ObjectId(),
               id_lender: id,
@@ -185,12 +189,17 @@ export const AddLendsMutation = mutationWithClientMutationId({
               interest_to_earn: 0,
               amortize: 0,
               paid_already: 0,
+              to_be_paid: 0,
             },
           },
           {
             upsert: true,
+            returnDocument: "after",
           }
         );
+        if (updatedInvestment.value) {
+          publishInvestmentUpdate(updatedInvestment.value);
+        }
         //Si raised NO es igual a goal: no realizar más acciones
         if (!(result.value.raised === result.value.goal)) {
           continue;
@@ -206,32 +215,43 @@ export const AddLendsMutation = mutationWithClientMutationId({
             inv.quantity / ((1 - Math.pow(1 / (1 + TEM), inv.term)) / TEM)
           );
           const amortizes = amortize * inv.term;
-          const accountInterests = amortizes - inv.quantity;
+          const interest_to_earn = amortizes - inv.quantity;
           //Añadir intereses a la cuenta de cada usuario
-          await users.updateOne(
+          const updatedUser = await users.findOneAndUpdate(
             {
               id: inv.id_lender,
             },
             {
-              $inc: { accountInterests, accountTotal: accountInterests },
-            }
+              $inc: {
+                accountToBePaid: amortizes,
+                accountTotal: interest_to_earn,
+              },
+            },
+            { returnDocument: "after" }
           );
+          if (updatedUser.value) {
+            publishUser(updatedUser.value);
+          }
           //Añadir intereses a cada inversion
-          await investments.updateOne(
+          const updatedInvestments = await investments.findOneAndUpdate(
             {
               _id: inv._id,
             },
             {
               $set: {
-                interest_to_earn: accountInterests,
+                interest_to_earn,
                 amortize,
-                still_invested: amortizes,
+                to_be_paid: amortizes,
               },
-            }
+            },
+            { returnDocument: "after" }
           );
+          if (updatedInvestments.value) {
+            publishInvestmentUpdate(updatedInvestments.value);
+          }
         }
         //Si raised es igual a goal: Actualizar scheduledPayments y status
-        await loans.updateOne(
+        const updatedLoan = await loans.findOneAndUpdate(
           {
             _id: _id_loan,
           },
@@ -252,8 +272,12 @@ export const AddLendsMutation = mutationWithClientMutationId({
                 }),
               status: "to be paid",
             },
-          }
+          },
+          { returnDocument: "after" }
         );
+        if (updatedLoan.value) {
+          publishLoanUpdate(updatedLoan.value);
+        }
         //Si raised es igual a goal: añadir fondos a quien pidio prestado
         const { value } = await users.findOneAndUpdate(
           { id: result.value.id_user },

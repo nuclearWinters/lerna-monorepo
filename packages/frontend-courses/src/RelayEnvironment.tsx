@@ -9,11 +9,12 @@ import {
   GraphQLResponse,
 } from "relay-runtime";
 import { tokensAndData } from "App";
-import { API_GATEWAY } from "utils";
+import { API_GATEWAY, STREAM_GATEWAY } from "utils";
 import { createClient, Sink } from "graphql-sse";
 
 export const subscriptionsClient = createClient({
-  url: API_GATEWAY + "/stream",
+  singleConnection: true,
+  url: STREAM_GATEWAY,
   headers: () => {
     return {
       Authorization: tokensAndData.accessToken,

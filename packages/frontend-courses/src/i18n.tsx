@@ -4,6 +4,7 @@ import { initReactI18next } from "react-i18next";
 const resources: Record<"EN", Record<"translation", Record<string, string>>> = {
   EN: {
     translation: {
+      "Falta por recibir": "To be paid",
       "Valor de la cuenta": "Account value",
       Prestado: "Lent",
       "Estimado de los intereses": "Interest to be paid",

@@ -3,6 +3,7 @@ import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context, LoanMongo } from "../types";
 import { ObjectId } from "mongodb";
 import { GraphQLLoan } from "../Nodes";
+import { publishLoanUpdate } from "../subscriptions/subscriptionsUtils";
 
 interface Input {
   loan_gid: string;
@@ -51,6 +52,7 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
       if (!loan) {
         throw new Error("No se encontró la deuda.");
       }
+      publishLoanUpdate(loan);
       return { validAccessToken, error: "", loan };
     } catch (e) {
       return {

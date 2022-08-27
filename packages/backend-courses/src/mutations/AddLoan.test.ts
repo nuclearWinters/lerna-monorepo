@@ -16,6 +16,10 @@ jest.mock("ioredis", () =>
   })
 );
 
+jest.mock("../subscriptions/subscriptionsUtils", () => ({
+  publishLoanInsert: jest.fn,
+}));
+
 const request = supertest(app);
 
 describe("AddLoan tests", () => {
@@ -38,8 +42,7 @@ describe("AddLoan tests", () => {
       _id: new ObjectId("000000000000000000000006"),
       id: "wHHR1SUBT0dspoF4YUO20",
       accountAvailable: 100000,
-      accountInterests: 0,
-      accountLent: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
     const response = await request

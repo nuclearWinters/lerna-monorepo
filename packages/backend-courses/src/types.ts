@@ -19,10 +19,19 @@ export interface Context {
 export interface UserMongo {
   _id?: ObjectId;
   accountAvailable: number;
-  accountLent: number;
-  accountInterests: number;
+  accountToBePaid: number;
   accountTotal: number;
   id: string;
+}
+
+export interface ILoanEdge {
+  node: LoanMongo;
+  cursor: string;
+}
+
+export interface IInvestmentEdge {
+  node: InvestmentMongo;
+  cursor: string;
 }
 
 export interface ITransactionEdge {
@@ -99,7 +108,7 @@ export interface InvestmentMongo {
   amortize: number;
   interest_to_earn: number;
   paid_already: number;
-  still_invested: number;
+  to_be_paid: number;
 }
 
 export interface DecodeJWT {

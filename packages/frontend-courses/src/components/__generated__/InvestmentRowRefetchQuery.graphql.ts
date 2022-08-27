@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<756799c007f21f2a02f1c39d2c624771>>
+ * @generated SignedSource<<e1205ec44e44761b05e0a5698b881487>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -184,7 +184,7 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "still_invested",
+                "name": "to_be_paid",
                 "storageKey": null
               }
             ],
@@ -197,16 +197,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "117c30bb7505cf167437fd8bdcaf8283",
+    "cacheID": "f8c1a58291cddf1b00867c84bd2209e4",
     "id": null,
     "metadata": {},
     "name": "InvestmentRowRefetchQuery",
     "operationKind": "query",
-    "text": "query InvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...InvestmentRow_investment\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  still_invested\n}\n"
+    "text": "query InvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...InvestmentRow_investment\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2c9377ed917485504d3cbceaae446a7c";
+(node as any).hash = "4d94b72d10e0af57e32f5810533bd97b";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3dbc54067c1e0ce9c0c4e35f2cfe6f45>>
+ * @generated SignedSource<<0bf48093eb4907aa34b39c30179795a1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,8 +12,7 @@ import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type Account_user$data = {
   readonly accountAvailable: string;
-  readonly accountInterests: string;
-  readonly accountLent: string;
+  readonly accountToBePaid: string;
   readonly accountTotal: string;
   readonly " $fragmentType": "Account_user";
 };
@@ -39,14 +38,7 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "accountLent",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "accountInterests",
+      "name": "accountToBePaid",
       "storageKey": null
     },
     {
@@ -61,6 +53,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "24e0beafd6a4f9fb985f28a4c9eaef7c";
+(node as any).hash = "d278d7eb1771a9bbe5622b33386cab08";
 
 export default node;

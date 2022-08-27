@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b6196f2ad339083bc43c54a152d542d2>>
+ * @generated SignedSource<<90144a1cd74bd5a17175b6d514bc0431>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,8 +23,8 @@ export type InvestmentRow_investment$data = {
   readonly payments: number;
   readonly quantity: string;
   readonly status: InvestmentStatus;
-  readonly still_invested: string;
   readonly term: number;
+  readonly to_be_paid: string;
   readonly updated: Int;
   readonly " $fragmentType": "InvestmentRow_investment";
 };
@@ -143,7 +143,7 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "still_invested",
+      "name": "to_be_paid",
       "storageKey": null
     }
   ],
@@ -151,6 +151,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "2c9377ed917485504d3cbceaae446a7c";
+(node as any).hash = "4d94b72d10e0af57e32f5810533bd97b";
 
 export default node;

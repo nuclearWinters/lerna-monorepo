@@ -39,8 +39,7 @@ describe("QueryUser tests", () => {
         _id: new ObjectId("000000000000000000000060"),
         id: "wHHR1SUBT0dspoF4YUO24",
         accountAvailable: 50000,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         accountTotal: 50000,
       },
     ]);
@@ -51,8 +50,7 @@ describe("QueryUser tests", () => {
           user {
             id
             accountAvailable
-            accountLent
-            accountInterests
+            accountToBePaid
             accountTotal
           }  
         }`,
@@ -88,8 +86,7 @@ describe("QueryUser tests", () => {
       );
     expect(response.body.data.user.id).toBeTruthy();
     expect(response.body.data.user.accountAvailable).toBe("$500.00");
-    expect(response.body.data.user.accountLent).toBe("$0.00");
-    expect(response.body.data.user.accountInterests).toBe("$0.00");
+    expect(response.body.data.user.accountToBePaid).toBe("$0.00");
     expect(response.body.data.user.accountTotal).toBe("$500.00");
   });
 });

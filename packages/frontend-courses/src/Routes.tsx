@@ -52,6 +52,7 @@ import { useTranslation } from "react-i18next";
 import { CheckExpiration } from "components/CheckExpiration";
 import { Routes_user$key } from "__generated__/Routes_user.graphql";
 import { Routes_auth_user$key } from "__generated__/Routes_auth_user.graphql";
+import { RoutesInvestmentsUpdateSubscription } from "__generated__/RoutesInvestmentsUpdateSubscription.graphql";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -150,13 +151,27 @@ const subscriptionInvestments = graphql`
   }
 `;
 
+const subscriptionInvestmentsUpdate = graphql`
+  subscription RoutesInvestmentsUpdateSubscription {
+    investments_subscribe_update {
+      id
+      id_borrower
+      id_lender
+      _id_loan
+      quantity
+      created
+      updated
+      status
+    }
+  }
+`;
+
 const subscriptionUser = graphql`
   subscription RoutesUserSubscription {
     user_subscribe {
       id
       accountAvailable
-      accountLent
-      accountInterests
+      accountToBePaid
       accountTotal
     }
   }
@@ -221,6 +236,15 @@ export const Routes: FC<Props> = (props) => {
     }),
     [status, connectionInvestmentID]
   );
+  const configInvestmentsUpdate = useMemo<
+    GraphQLSubscriptionConfig<RoutesInvestmentsUpdateSubscription>
+  >(
+    () => ({
+      variables: {},
+      subscription: subscriptionInvestmentsUpdate,
+    }),
+    []
+  );
   const connectionTransactionID = ConnectionHandler.getConnectionID(
     user.id,
     "MyTransactions_user_transactions",
@@ -244,6 +268,7 @@ export const Routes: FC<Props> = (props) => {
   );
   useSubscription<RoutesLoansSubscription>(configLoans);
   useSubscription<RoutesInvestmentsSubscription>(configInvestments);
+  useSubscription<RoutesInvestmentsUpdateSubscription>(configInvestmentsUpdate);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   useSubscription<RoutesUserSubscription>(configUser);
   return (

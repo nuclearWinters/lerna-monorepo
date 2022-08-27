@@ -22,8 +22,7 @@ const QueryUser = {
       return {
         _id: new ObjectId("000000000000000000000000"),
         accountAvailable: 0,
-        accountInterests: 0,
-        accountLent: 0,
+        accountToBePaid: 0,
         id: "",
         accountTotal: 0,
       };

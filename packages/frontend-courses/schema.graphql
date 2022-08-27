@@ -142,7 +142,8 @@ type Subscription {
   loans_subscribe_insert: LoanEdge!
   investments_subscribe_insert(status: [InvestmentStatus!]!): InvestmentsEdge!
   transactions_subscribe_insert: TransactionEdge!
-  transactions_subscribe_update(gid: ID!): Transaction!
+  loans_subscribe_update(gid: ID!): Loan!
+  investments_subscribe_update: Investment!
 }
 
 schema {
@@ -177,7 +178,7 @@ type Investment implements Node {
   status: InvestmentStatus!
   interest_to_earn: MXN!
   paid_already: MXN!
-  still_invested: MXN!
+  to_be_paid: MXN!
 }
 
 type InvestmentsConnection {
@@ -250,11 +251,6 @@ enum LoanStatus {
   PAST_DUE
 }
 
-enum SubscribeType {
-  UPDATE
-  INSERT
-}
-
 enum Languages {
   EN
   ES
@@ -285,8 +281,7 @@ type User implements Node {
   id: ID!
   accountId: String!
   accountAvailable: MXN!
-  accountLent: MXN!
-  accountInterests: MXN!
+  accountToBePaid: MXN!
   accountTotal: MXN!
   loans(after: String, first: Int, before: String, last: Int): LoanConnection
   transactions(

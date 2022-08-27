@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f7373528f03c49b1f368f01a005d48e1>>
+ * @generated SignedSource<<41bcdc24d4d6c7845cb3c96e5ede1d35>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -305,13 +305,6 @@ return {
                 "key": "AddInvestments_user_loans",
                 "kind": "LinkedHandle",
                 "name": "loans"
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "accountId",
-                "storageKey": null
               }
             ],
             "type": "User",
@@ -323,16 +316,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "484f24bf9882442e4e15f877c4100ed0",
+    "cacheID": "6b1a608b0be1fd2812741cd859d18d1b",
     "id": null,
     "metadata": {},
     "name": "AddInvestmentsPaginationUser",
     "operationKind": "query",
-    "text": "query AddInvestmentsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...AddInvestments_user_1G22uz\n    id\n  }\n}\n\nfragment AddInvestments_user_1G22uz on User {\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  accountId\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
+    "text": "query AddInvestmentsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...AddInvestments_user_1G22uz\n    id\n  }\n}\n\nfragment AddInvestments_user_1G22uz on User {\n  loans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0f34e332891f0510544ad69033a76f0d";
+(node as any).hash = "6a32273295d954de5476959663f1a42f";
 
 export default node;

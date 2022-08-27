@@ -41,7 +41,6 @@ const debtInSaleFragment = graphql`
         }
       }
     }
-    accountId
   }
 `;
 
@@ -51,6 +50,7 @@ const debtInSaleFragmentAuthUser = graphql`
     isSupport
     isBorrower
     language
+    accountId
   }
 `;
 
@@ -167,7 +167,7 @@ export const AddInvestments: FC<Props> = (props) => {
                   <CustomButton
                     text={t("Prestar")}
                     onClick={() => {
-                      if (!data.accountId) {
+                      if (!authUser.accountId) {
                         return navigate("/login");
                       }
                       commit({

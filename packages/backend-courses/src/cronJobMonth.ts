@@ -1,11 +1,4 @@
-import {
-  AnyBulkWriteOperation,
-  Db,
-  Filter,
-  ObjectId,
-  OptionalId,
-  UpdateFilter,
-} from "mongodb";
+import { Db, Filter, ObjectId, OptionalId, UpdateFilter } from "mongodb";
 import {
   TransactionMongo,
   InvestmentMongo,
@@ -14,6 +7,8 @@ import {
 } from "./types";
 import { isSameDay } from "date-fns";
 import {
+  publishInvestmentUpdate,
+  publishLoanUpdate,
   publishTransactionInsert,
   publishUser,
 } from "./subscriptions/subscriptionsUtils";
@@ -59,7 +54,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
       }
       if (!result.value) {
         //Si el deudor no tiene suficiente dinero el estatus de su deuda se vuelve atrasada
-        await loans.updateOne(
+        const updatedLoan = await loans.findOneAndUpdate(
           { _id: loan._id },
           { $set: { "scheduledPayments.$[item].status": "delayed" } },
           {
@@ -68,15 +63,24 @@ export const monthFunction = async (db: Db): Promise<void> => {
                 "item.scheduledDate": payment.scheduledDate,
               },
             ],
+            returnDocument: "after",
           }
         );
+        if (updatedLoan.value) {
+          publishLoanUpdate(updatedLoan.value);
+        }
         //Si el deudor no tiene suficiente dinero el estatus de las inversiones se vuelve atrasada
-        await investments.updateMany(
-          { _id_loan: loan._id },
-          {
-            $set: { status: "delay payment" },
-          }
-        );
+        const allInvestments = await investments
+          .find({ _id_loan: loan._id })
+          .toArray();
+        for (const investment of allInvestments) {
+          investments.updateOne(
+            { _id: investment._id },
+            { $set: { status: "delay payment" } }
+          );
+          investment.status = "delay payment";
+          publishInvestmentUpdate(investment);
+        }
         //No se realizan mas acciones pues el pago no se realizó
         continue;
       }
@@ -87,7 +91,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
           1 ===
         loan.scheduledPayments?.length;
       //El pago SI se realizó, por lo tanto se actualiza la deuda y el estatus del pago correspondiente se vuelve pagada
-      await loans.updateOne(
+      const updatedLoan = await loans.findOneAndUpdate(
         { _id: loan._id },
         {
           $set: {
@@ -101,47 +105,29 @@ export const monthFunction = async (db: Db): Promise<void> => {
               "item.scheduledDate": payment.scheduledDate,
             },
           ],
+          returnDocument: "after",
         }
       );
+      if (updatedLoan.value) {
+        publishLoanUpdate(updatedLoan.value);
+      }
       const setStatus = allPaid ? { status: "paid" as const } : {};
       //Conseguir todas las inversiones con el id de la deuda
       const allInvestments = await investments
         .find({ _id_loan: loan._id })
         .toArray();
-      //Actualizar lista de operaciones con intereses moratorios
-      const investmentWrites = allInvestments.map<
-        AnyBulkWriteOperation<InvestmentMongo>
-      >(({ _id, amortize, term, payments }) => {
-        const totalAmortize = amortize * term;
-        const paid_already = amortize * (payments + 1);
-        const still_invested = totalAmortize - paid_already;
-        return {
-          updateOne: {
-            filter: { _id },
-            update: {
-              $set: {
-                still_invested,
-                paid_already,
-                //Si todos los pagos se realizaron cambiar estatus a "paid" o si todos los pagos atrasados se realizaron cambiar status a "up to date"
-                ...setStatus,
-              },
-              $inc: {
-                payments: 1,
-              },
-            },
-          },
-        };
-      });
-      //Actualizar el los intereses moratorios en las inversiones
-      await investments.bulkWrite(investmentWrites);
       const { term } = loan;
       //Crear lista de operaciones bulkwrite para transacciones y usuarios
       const operations = allInvestments.map<{
         userFilter: Filter<UserMongo>;
         userUpdate: UpdateFilter<UserMongo>;
         transactionsInsert: OptionalId<TransactionMongo>;
-      }>(({ id_lender, quantity, amortize }) => {
-        const lent = quantity / term;
+        investmentFilter: Filter<InvestmentMongo>;
+        investmentUpdate: UpdateFilter<InvestmentMongo>;
+      }>(({ _id, id_lender, payments, amortize }) => {
+        const totalAmortize = amortize * term;
+        const paid_already = amortize * (payments + 1);
+        const to_be_paid = totalAmortize - paid_already;
         return {
           transactionsInsert: {
             _id: new ObjectId(),
@@ -158,8 +144,21 @@ export const monthFunction = async (db: Db): Promise<void> => {
           userUpdate: {
             $inc: {
               accountAvailable: amortize,
-              accountLent: -lent,
-              accountInterests: -(amortize - lent),
+              accountToBePaid: -amortize,
+            },
+          },
+          investmentFilter: {
+            _id,
+          },
+          investmentUpdate: {
+            $set: {
+              to_be_paid,
+              paid_already,
+              //Si todos los pagos se realizaron cambiar estatus a "paid" o si todos los pagos atrasados se realizaron cambiar status a "up to date"
+              ...setStatus,
+            },
+            $inc: {
+              payments: 1,
             },
           },
         };
@@ -187,6 +186,15 @@ export const monthFunction = async (db: Db): Promise<void> => {
         publishTransactionInsert(operation.transactionsInsert);
         if (result.value) {
           publishUser(result.value);
+        }
+        //Actualizar el los intereses moratorios en las inversiones
+        const updatedInvestment = await investments.findOneAndUpdate(
+          operation.investmentFilter,
+          operation.investmentUpdate,
+          { returnDocument: "after" }
+        );
+        if (updatedInvestment.value) {
+          publishInvestmentUpdate(updatedInvestment.value);
         }
       }
     }

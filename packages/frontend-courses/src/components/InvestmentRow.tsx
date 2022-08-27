@@ -23,7 +23,7 @@ const investmentRowRefetchableFragment = graphql`
     moratory
     interest_to_earn
     paid_already
-    still_invested
+    to_be_paid
   }
 `;
 
@@ -118,7 +118,7 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
         </div>
       </div>
       <div style={style.cell}>{data.paid_already}</div>
-      <div style={style.cell}>{data.still_invested}</div>
+      <div style={style.cell}>{data.to_be_paid}</div>
       <div style={style.cell}>{data.interest_to_earn}</div>
       <div style={style.cell}>{data.moratory}</div>
       <div style={style.cell}>{format(data.updated, "dd/mm/yyyy")}</div>

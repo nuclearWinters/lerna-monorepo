@@ -1,5 +1,10 @@
-import React, { CSSProperties, FC, useState } from "react";
-import { graphql, useMutation, useRefetchableFragment } from "react-relay";
+import React, { CSSProperties, FC, useMemo, useState } from "react";
+import {
+  graphql,
+  useMutation,
+  useRefetchableFragment,
+  useSubscription,
+} from "react-relay";
 import { differenceInMonths, differenceInDays } from "date-fns";
 import { tokensAndData } from "App";
 import { LoanRowMutation } from "./__generated__/LoanRowMutation.graphql";
@@ -25,6 +30,8 @@ import es from "date-fns/locale/es";
 import en from "date-fns/locale/en-US";
 import { Space } from "./Space";
 import { Languages } from "__generated__/Routes_query.graphql";
+import { GraphQLSubscriptionConfig } from "relay-runtime";
+import { LoanRowUpdateSubscription } from "./__generated__/LoanRowUpdateSubscription.graphql";
 
 const loanRowRefetchableFragment = graphql`
   fragment LoanRow_loan on Loan @refetchable(queryName: "LoanRowRefetchQuery") {
@@ -44,6 +51,14 @@ const loanRowRefetchableFragment = graphql`
     }
     pending
     pendingCents
+  }
+`;
+
+const subscriptionLoansUpdate = graphql`
+  subscription LoanRowUpdateSubscription($gid: ID!) {
+    loans_subscribe_update(gid: $gid) {
+      id
+    }
   }
 `;
 
@@ -145,6 +160,20 @@ export const LoanRow: FC<Props> = ({
     { key: "status", title: t("Estatus") },
     { key: "scheduledDate", title: t("Fecha de pago") },
   ];
+
+  const configLoansUpdate = useMemo<
+    GraphQLSubscriptionConfig<LoanRowUpdateSubscription>
+  >(
+    () => ({
+      variables: {
+        gid: data.id,
+      },
+      subscription: subscriptionLoansUpdate,
+    }),
+    [data.id]
+  );
+
+  useSubscription<LoanRowUpdateSubscription>(configLoansUpdate);
 
   return (
     <>

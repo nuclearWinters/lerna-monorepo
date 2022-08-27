@@ -1,11 +1,4 @@
-import {
-  AnyBulkWriteOperation,
-  Db,
-  Filter,
-  ObjectId,
-  OptionalId,
-  UpdateFilter,
-} from "mongodb";
+import { Db, Filter, ObjectId, OptionalId, UpdateFilter } from "mongodb";
 import {
   TransactionMongo,
   InvestmentMongo,
@@ -14,6 +7,8 @@ import {
 } from "./types";
 import { isBefore, differenceInDays } from "date-fns";
 import {
+  publishInvestmentUpdate,
+  publishLoanUpdate,
   publishTransactionInsert,
   publishUser,
 } from "./subscriptions/subscriptionsUtils";
@@ -70,19 +65,23 @@ export const dayFunction = async (db: Db): Promise<void> => {
           const moratory = Math.floor(
             (invest.amortize * (loan.ROI / 100)) / 360
           );
-          investments.updateOne(
+          const updatedInvestments = await investments.findOneAndUpdate(
             { _id: invest._id },
             {
               $inc: {
                 moratory,
               },
-            }
+            },
+            { returnDocument: "after" }
           );
+          if (updatedInvestments.value) {
+            publishInvestmentUpdate(updatedInvestments.value);
+          }
           const result = await users.findOneAndUpdate(
             { id: invest.id_lender },
             {
               $inc: {
-                accountInterests: moratory,
+                accountToBePaid: moratory,
                 accountTotal: moratory,
               },
             },
@@ -108,7 +107,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
           count ===
         0;
       //El pago SI se realizó, por lo tanto se actualiza la deuda y el estatus del pago correspondiente se vuelve pagada
-      await loans.updateOne(
+      const updatedLoan = await loans.findOneAndUpdate(
         { _id: loan._id },
         {
           $set: {
@@ -122,8 +121,12 @@ export const dayFunction = async (db: Db): Promise<void> => {
               "item.scheduledDate": delayedPayment.scheduledDate,
             },
           ],
+          returnDocument: "after",
         }
       );
+      if (updatedLoan.value) {
+        publishLoanUpdate(updatedLoan.value);
+      }
       const setStatus =
         noDelayed || allPaid
           ? {
@@ -134,44 +137,19 @@ export const dayFunction = async (db: Db): Promise<void> => {
       const allInvestments = await investments
         .find({ _id_loan: loan._id })
         .toArray();
-      //Crear lista de operaciones con intereses moratorios
-      const investmentWrites = allInvestments.map<
-        AnyBulkWriteOperation<InvestmentMongo>
-      >(({ _id, amortize, term, payments }) => {
-        const totalAmortize = amortize * term;
-        const paid_already = amortize * (payments + 1);
-        const still_invested = totalAmortize - paid_already;
-        return {
-          updateOne: {
-            filter: { _id },
-            update: {
-              $set: {
-                still_invested,
-                paid_already,
-                //Si todos los pagos se realizaron cambiar estatus a "paid" o si todos los pagos atrasados se realizaron cambiar status a "up to date"
-                ...setStatus,
-              },
-              $inc: {
-                payments: 1,
-              },
-            },
-          },
-        };
-      });
-      //Actualizar el los intereses moratorios en las inversiones
-      await investments.bulkWrite(investmentWrites);
       const { ROI, term } = loan;
       //Crear lista de operaciones bulkwrite para transacciones y usuarios
       const operations = allInvestments.map<{
         userFilter: Filter<UserMongo>;
         userUpdate: UpdateFilter<UserMongo>;
         transactionsInsert: OptionalId<TransactionMongo>;
-      }>(({ id_lender, amortize, quantity, payments }) => {
-        const firstPayments = Math.floor(quantity / term);
-        const lastPayment = quantity - firstPayments * (term - 1);
-        const isLastPayment = term === payments + 1;
+        investmentsFilter: Filter<InvestmentMongo>;
+        investmentsUpdates: UpdateFilter<InvestmentMongo>;
+      }>(({ _id, id_lender, payments, amortize }) => {
         const moratory = Math.floor((amortize * (ROI / 100)) / 360);
-        const lent = isLastPayment ? lastPayment : firstPayments;
+        const totalAmortize = amortize * term;
+        const paid_already = amortize * (payments + 1);
+        const to_be_paid = totalAmortize - paid_already;
         return {
           transactionsInsert: {
             _id: new ObjectId(),
@@ -188,8 +166,21 @@ export const dayFunction = async (db: Db): Promise<void> => {
           userUpdate: {
             $inc: {
               accountAvailable: amortize + moratory,
-              accountLent: -lent,
-              accountInterests: -(amortize - lent + moratory),
+              accountToBePaid: -(amortize + moratory),
+            },
+          },
+          investmentsFilter: {
+            _id,
+          },
+          investmentsUpdates: {
+            $set: {
+              to_be_paid,
+              paid_already,
+              //Si todos los pagos se realizaron cambiar estatus a "paid" o si todos los pagos atrasados se realizaron cambiar status a "up to date"
+              ...setStatus,
+            },
+            $inc: {
+              payments: 1,
             },
           },
         };
@@ -217,6 +208,15 @@ export const dayFunction = async (db: Db): Promise<void> => {
         publishTransactionInsert(operation.transactionsInsert);
         if (result.value) {
           publishUser(result.value);
+        }
+        //Actualizar el los intereses moratorios en las inversiones
+        const updatedInvestment = await investments.findOneAndUpdate(
+          operation.investmentsFilter,
+          operation.investmentsUpdates,
+          { returnDocument: "after" }
+        );
+        if (updatedInvestment.value) {
+          publishInvestmentUpdate(updatedInvestment.value);
         }
       }
     }

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5669f1f32b9c149e2eeca5d0e6e31189>>
+ * @generated SignedSource<<9e05724f87665c32c7df4885ff76ca8f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -272,7 +272,7 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "still_invested",
+                            "name": "to_be_paid",
                             "storageKey": null
                           },
                           (v6/*: any*/)
@@ -350,12 +350,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8ae3a277168afaa24b3a7e22ab9d04dd",
+    "cacheID": "39e87e24924648ba0d1490297fbfe9eb",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsPaginationUser",
     "operationKind": "query",
-    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $status: [InvestmentStatus!] = [DELAY_PAYMENT, UP_TO_DATE, FINANCING]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_4qXjrI\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  still_invested\n}\n\nfragment MyInvestments_user_4qXjrI on User {\n  id\n  investments(first: $count, after: $cursor, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $status: [InvestmentStatus!] = [DELAY_PAYMENT, UP_TO_DATE, FINANCING]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_4qXjrI\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_4qXjrI on User {\n  id\n  investments(first: $count, after: $cursor, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();

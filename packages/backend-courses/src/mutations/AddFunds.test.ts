@@ -46,8 +46,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000000"),
       id: "wHHR1SUBT0dspoF4YUO25",
       accountAvailable: 100000,
-      accountInterests: 0,
-      accountLent: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
     const response = await request
@@ -102,8 +101,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000000"),
       id: "wHHR1SUBT0dspoF4YUO25",
       accountAvailable: 150000,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 150000,
     });
     const transactions =
@@ -132,8 +130,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("020000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO26",
       accountAvailable: 100000,
-      accountInterests: 0,
-      accountLent: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
     const response = await request
@@ -190,8 +187,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("020000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO26",
       accountAvailable: 50000,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 50000,
     });
     const transactions =
@@ -220,8 +216,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000001"),
       id: "wHHR1SUBT0dspoF4YUO27",
       accountAvailable: 100000,
-      accountInterests: 0,
-      accountLent: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
     jest
@@ -300,8 +295,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000001"),
       id: "wHHR1SUBT0dspoF4YUO27",
       accountAvailable: 150000,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 150000,
     });
     const transactions =
@@ -330,8 +324,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000002"),
       id: "wHHR1SUBT0dspoF4YUO28",
       accountAvailable: 100000,
-      accountInterests: 0,
-      accountLent: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
     jest
@@ -393,8 +386,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("000000000000000000000002"),
       id: "wHHR1SUBT0dspoF4YUO28",
       accountAvailable: 100000,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
     const transactions =
@@ -411,8 +403,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("100000000000000000000002"),
       id: "wHHR1SUBT0dspoF4YUO29",
       accountAvailable: 100000,
-      accountInterests: 0,
-      accountLent: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
     const response = await request
@@ -469,8 +460,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("100000000000000000000002"),
       id: "wHHR1SUBT0dspoF4YUO29",
       accountAvailable: 100000,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
 
@@ -488,8 +478,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("100000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO30",
       accountAvailable: 100000,
-      accountInterests: 0,
-      accountLent: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
     const response = await request
@@ -546,8 +535,7 @@ describe("AddFunds tests", () => {
       _id: new ObjectId("100000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO30",
       accountAvailable: 100000,
-      accountLent: 0,
-      accountInterests: 0,
+      accountToBePaid: 0,
       accountTotal: 100000,
     });
 

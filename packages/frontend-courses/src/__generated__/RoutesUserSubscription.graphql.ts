@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bd061cc7fafb4090f2b226e03c04500b>>
+ * @generated SignedSource<<4190435f99a34182f039a17891ed458c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,8 +13,7 @@ export type RoutesUserSubscription$variables = {};
 export type RoutesUserSubscription$data = {
   readonly user_subscribe: {
     readonly accountAvailable: string;
-    readonly accountInterests: string;
-    readonly accountLent: string;
+    readonly accountToBePaid: string;
     readonly accountTotal: string;
     readonly id: string;
   };
@@ -52,14 +51,7 @@ var v0 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "accountLent",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "accountInterests",
+        "name": "accountToBePaid",
         "storageKey": null
       },
       {
@@ -91,16 +83,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "64afa8638de18bb70f5a3d79a12113f0",
+    "cacheID": "85cbcadf8c1e71fab472eb8967abc241",
     "id": null,
     "metadata": {},
     "name": "RoutesUserSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesUserSubscription {\n  user_subscribe {\n    id\n    accountAvailable\n    accountLent\n    accountInterests\n    accountTotal\n  }\n}\n"
+    "text": "subscription RoutesUserSubscription {\n  user_subscribe {\n    id\n    accountAvailable\n    accountToBePaid\n    accountTotal\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "30003678222e3207ce0f81de102ff7c5";
+(node as any).hash = "c4d643e32aa71c0df35835b95c6f0b55";
 
 export default node;

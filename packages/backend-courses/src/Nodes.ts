@@ -150,10 +150,20 @@ export const LoanScheduledPaymentStatus = new GraphQLEnumType({
 });
 
 const { nodeInterface, nodeField } = nodeDefinitions<Context>(
-  async (globalId, { users, loans, investments }) => {
+  async (globalId, { users, loans, investments, id: userId }) => {
     const { type, id } = fromGlobalId(globalId);
     switch (type) {
       case "User":
+        if (!userId) {
+          return {
+            _id: new ObjectId("000000000000000000000000"),
+            accountAvailable: 0,
+            accountToBePaid: 0,
+            id: "",
+            accountTotal: 0,
+            type,
+          };
+        }
         return { ...(await users.findOne({ _id: new ObjectId(id) })), type };
       case "Loan":
         return { ...(await loans.findOne({ _id: new ObjectId(id) })), type };
@@ -172,7 +182,9 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
 export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
   name: "Investment",
   fields: {
-    id: globalIdField("Investment", ({ _id }): string => _id.toHexString()),
+    id: globalIdField("Investment", ({ _id }): string =>
+      typeof _id === "string" ? _id : _id.toHexString()
+    ),
     id_borrower: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ id_borrower }): string => id_borrower,
@@ -207,11 +219,13 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
     },
     created: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created }): Date => created,
+      resolve: ({ created }): Date =>
+        typeof created === "string" ? new Date(created) : created,
     },
     updated: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ updated }): Date => updated,
+      resolve: ({ updated }): Date =>
+        typeof updated === "string" ? new Date(updated) : updated,
     },
     status: {
       type: new GraphQLNonNull(InvestmentStatus),
@@ -225,9 +239,9 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ paid_already }): number => paid_already,
     },
-    still_invested: {
+    to_be_paid: {
       type: new GraphQLNonNull(MXNScalarType),
-      resolve: ({ still_invested }): number => still_invested,
+      resolve: ({ to_be_paid }): number => to_be_paid,
     },
   },
   interfaces: [nodeInterface],
@@ -297,7 +311,10 @@ export const GraphQLScheduledPayments =
       },
       scheduledDate: {
         type: new GraphQLNonNull(DateScalarType),
-        resolve: ({ scheduledDate }): Date => scheduledDate,
+        resolve: ({ scheduledDate }): Date =>
+          typeof scheduledDate === "string"
+            ? new Date(scheduledDate)
+            : scheduledDate,
       },
     },
   });
@@ -305,7 +322,9 @@ export const GraphQLScheduledPayments =
 export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
   name: "Loan",
   fields: {
-    id: globalIdField("Loan", ({ _id }): string => _id.toHexString()),
+    id: globalIdField("Loan", ({ _id }): string =>
+      typeof _id === "string" ? _id : _id.toHexString()
+    ),
     id_user: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ id_user }): string => id_user,
@@ -332,7 +351,8 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
     },
     expiry: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ expiry }): Date => expiry,
+      resolve: ({ expiry }): Date =>
+        typeof expiry === "string" ? new Date(expiry) : expiry,
     },
     status: {
       type: new GraphQLNonNull(LoanStatus),
@@ -375,13 +395,9 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountAvailable }): number => accountAvailable,
     },
-    accountLent: {
+    accountToBePaid: {
       type: new GraphQLNonNull(MXNScalarType),
-      resolve: ({ accountLent }): number => accountLent,
-    },
-    accountInterests: {
-      type: new GraphQLNonNull(MXNScalarType),
-      resolve: ({ accountInterests }): number => accountInterests,
+      resolve: ({ accountToBePaid }): number => accountToBePaid,
     },
     accountTotal: {
       type: new GraphQLNonNull(MXNScalarType),
