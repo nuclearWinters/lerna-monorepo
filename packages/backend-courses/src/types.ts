@@ -120,7 +120,4 @@ export interface DecodeJWT {
   exp: number;
 }
 
-export const SIGN_UP = "SIGN_UP";
-
-export const INITIAL_TRANSACTION_RECEIVE_FUND =
-  "INITIAL_TRANSACTION_RECEIVE_FUND";
+export const ADD_LEND = "ADD_LEND";

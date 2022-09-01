@@ -75,6 +75,7 @@ const sseExecutor = (url: string): AsyncExecutor => {
             : {}),
         };
       },
+      singleConnection: true,
     });
     return observableToAsyncIterable({
       subscribe: (observer) => ({

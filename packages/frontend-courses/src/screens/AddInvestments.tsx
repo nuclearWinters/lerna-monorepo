@@ -89,7 +89,6 @@ export const AddInvestments: FC<Props> = (props) => {
     props.authUser
   );
 
-  const user_gid = data.id;
   const { isLender, isSupport, isBorrower, language } = authUser;
 
   const columns = [
@@ -177,7 +176,6 @@ export const AddInvestments: FC<Props> = (props) => {
                               ...lend,
                               quantity: lend.quantity,
                             })),
-                            lender_gid: user_gid,
                           },
                         },
                         onCompleted: (response) => {
