@@ -1,16 +1,12 @@
 # Lerna GraphQL Relay API Gateway Typescript Monorepo
 
-This project explore GraphQL Javascript microservices with a monorepo approach.
+This project explore microservices with a monorepo approach.
 
-docker-compose will build up all microservices and manage images.
+These microservices use GraphQL with Relay specifications and can be requested by using the Gateway
 
-All queries, mutations and subscriptions can be requested to the GraphQL Gateway API, which support Relay specifications.
+Docker-compose will build up all microservices and manage images.
 
-The React app is build from scratch (no create-react-app) and uses Relay to manage state and GraphQL requests.
-
-A basic fintech app that allows lenders invest in loans and return interests once borrowers pay.
-
-App running in AWS: https://www.amigoprogramador.com https://www.amigoprogramador.com/relay/graphql
+A test app that allows users to lend money to other users and receive interests in the future.
 
 **Languages:**
 
@@ -42,20 +38,14 @@ App running in AWS: https://www.amigoprogramador.com https://www.amigoprogramado
 - lerna
 - express
 - graphql
-- graphql-tools
-- graphql-subscriptions
-- graphql-sse
+- graphql-ws
 - jsonwebtokens
 - @grpc/grpc-js
 - amqplib
 - cron
 - mongodb
-- react-router-dom
 - react
-- react-i18next
 - supertest
-- ts-node-dev
-- @shelf/jest-mongodb
 
 **Databases:**
 
@@ -70,24 +60,6 @@ To set up the project in dev mode:
 
 1. Run `make setup`
 
-2. Run `make install`
+2. Run `make up`
 
-3. Run `make bootstrap`
-
-4. Run `make up`
-
-5. Run `npm run populate` on backend-auth and backend-courses root folder projects
-
-To make websockets work, connect to mongodb and run in a mongodb command line:
-
-```
- docker exec -it mongo-courses bash
-```
-
-```
- mongo --port 27017
-```
-
-```
-rs.initiate({_id:"rs0",members:[{_id:1, host:"mongo-courses:27017"}]})
-```
+3. Run `npm run populate` on backend-auth and backend-courses root folder projects

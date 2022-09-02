@@ -55,7 +55,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         term: 9,
         status: "waiting for approval",
         scheduledPayments: null,
-        pending: 0,
+        pending: 10000000,
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe25"),
@@ -81,7 +81,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         term: 8,
         status: "financing",
         scheduledPayments: null,
-        pending: 0,
+        pending: 9000000,
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe27"),
@@ -138,7 +138,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         term: 7,
         status: "financing",
         scheduledPayments: null,
-        pending: 0,
+        pending: 8000000,
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe29"),
@@ -151,7 +151,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         term: 9,
         status: "financing",
         scheduledPayments: null,
-        pending: 0,
+        pending: 7000000,
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe30"),
@@ -164,7 +164,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         term: 6,
         status: "financing",
         scheduledPayments: null,
-        pending: 0,
+        pending: 6000000,
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe31"),
@@ -177,7 +177,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         term: 8,
         status: "financing",
         scheduledPayments: null,
-        pending: 0,
+        pending: 5000000,
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe32"),

@@ -5,7 +5,7 @@ import {
   usePreloadedQuery,
   useQueryLoader,
 } from "react-relay/hooks";
-import { RelayEnvironment } from "./RelayEnvironment";
+import { RelayEnvironment, subscriptionsClient } from "./RelayEnvironment";
 import AppQuery, {
   AppQuery as AppQueryType,
 } from "./__generated__/AppQuery.graphql";
@@ -53,6 +53,7 @@ const AppQueryRoot: FC = () => {
   );
   const refetchUser = useCallback(() => {
     loadQuery({}, { fetchPolicy: "network-only" });
+    subscriptionsClient.restart();
   }, [loadQuery]);
   tokensAndData.refetchUser = refetchUser;
   return <Routes user={data.user} authUser={data.authUser} />;

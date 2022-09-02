@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { GraphQLSchema, GraphQLObjectType } from "graphql";
 import cors from "cors";
 import { QueryUser } from "./QueryUser";
@@ -23,7 +23,6 @@ import {
   shouldRenderGraphiQL,
 } from "graphql-helix";
 import cookieParser from "cookie-parser";
-import { createHandler } from "graphql-sse";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -62,12 +61,6 @@ export const schema = new GraphQLSchema({
   subscription: Subscription,
 });
 
-const handler = async (req: Request, res: Response) => {
-  const context = await getContext(req);
-  const created = createHandler({ schema, context });
-  return created(req, res);
-};
-
 const app = express();
 
 app.use(express.json());
@@ -76,11 +69,14 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: ["http://relay-gateway:4001", "http://0.0.0.0:4001"],
+    origin: [
+      "http://relay-gateway:4001",
+      "http://0.0.0.0:4001",
+      "http://localhost:8000",
+    ],
+    credentials: true,
   })
 );
-
-app.use("/graphql/stream", handler);
 
 app.use("/graphql", async (req, res) => {
   // Create a generic Request object that can be consumed by Graphql Helix's API

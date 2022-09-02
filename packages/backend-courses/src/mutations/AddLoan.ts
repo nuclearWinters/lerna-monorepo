@@ -53,7 +53,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
         ROI: 17.0,
         status: "waiting for approval",
         scheduledPayments: null,
-        pending: 0,
+        pending: loan.goal,
         ...loan,
       });
       publishLoanInsert({
@@ -65,7 +65,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
         ROI: 17.0,
         status: "waiting for approval",
         scheduledPayments: null,
-        pending: 0,
+        pending: loan.goal,
         ...loan,
       });
       return {

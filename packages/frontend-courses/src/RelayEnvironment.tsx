@@ -9,18 +9,59 @@ import {
   GraphQLResponse,
 } from "relay-runtime";
 import { tokensAndData } from "App";
-import { API_GATEWAY, STREAM_GATEWAY } from "utils";
-import { createClient, Sink } from "graphql-sse";
+import { API_GATEWAY, REALTIME_GATEWAY } from "utils";
+import { Client, ClientOptions, createClient, Sink } from "graphql-ws";
 
-export const subscriptionsClient = createClient({
-  singleConnection: true,
-  url: STREAM_GATEWAY,
-  headers: () => {
+interface RestartableClient extends Client {
+  restart(): void;
+}
+
+const createRestartableClient = (options: ClientOptions): RestartableClient => {
+  let restartRequested = false;
+  let restart = () => {
+    restartRequested = true;
+  };
+
+  const client = createClient({
+    ...options,
+    on: {
+      ...options.on,
+      opened: (socket) => {
+        options.on?.opened?.(socket);
+
+        restart = () => {
+          if (socket.readyState === WebSocket.OPEN) {
+            // if the socket is still open for the restart, do the restart
+            socket.close(4205, "Client Restart");
+          } else {
+            // otherwise the socket might've closed, indicate that you want
+            // a restart on the next opened event
+            restartRequested = true;
+          }
+        };
+
+        // just in case you were eager to restart
+        if (restartRequested) {
+          restartRequested = false;
+          restart();
+        }
+      },
+    },
+  });
+
+  return {
+    ...client,
+    restart: () => restart(),
+  };
+};
+
+export const subscriptionsClient = createRestartableClient({
+  url: REALTIME_GATEWAY,
+  connectionParams: () => {
     return {
       Authorization: tokensAndData.accessToken,
     };
   },
-  credentials: "include",
 });
 
 const fetchRelay = async (params: RequestParameters, variables: Variables) => {

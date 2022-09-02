@@ -120,7 +120,7 @@ describe("AddLoan tests", () => {
         score: "AAA",
         status: "waiting for approval",
         term: 2,
-        pending: 0,
+        pending: 100000,
       },
     ]);
   });

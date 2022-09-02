@@ -34,7 +34,7 @@ module.exports = {
   plugins: [
     new webpack.EnvironmentPlugin({
       API_GATEWAY: null,
-      STREAM_GATEWAY: null,
+      REALTIME_GATEWAY: null,
     }),
     new HtmlWebpackPlugin({
       filename: "index.html",
