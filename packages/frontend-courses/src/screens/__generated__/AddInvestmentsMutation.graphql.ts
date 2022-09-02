@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7edfce222dd5654fe4cf81f98925b906>>
+ * @generated SignedSource<<f0fe52a9487a2fb29d7580aa8950485a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,6 @@
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type AddLendsInput = {
   clientMutationId?: string | null;
-  lender_gid: string;
   lends: ReadonlyArray<LendList>;
 };
 export type LendList = {
