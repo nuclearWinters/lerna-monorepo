@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<26cd2aaccf995a92ab2702840cafd6b6>>
+ * @generated SignedSource<<3d26127a972d6961b8db7061351fc3de>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -39,75 +39,73 @@ v1 = {
   "name": "accountId",
   "storageKey": null
 },
-v2 = {
-  "kind": "Literal",
-  "name": "after",
-  "value": ""
-},
-v3 = {
-  "kind": "Literal",
-  "name": "firstFetch",
-  "value": true
-},
-v4 = [
-  (v2/*: any*/),
+v2 = [
+  {
+    "kind": "Literal",
+    "name": "after",
+    "value": ""
+  },
   {
     "kind": "Literal",
     "name": "first",
     "value": 5
   },
-  (v3/*: any*/)
+  {
+    "kind": "Literal",
+    "name": "firstFetch",
+    "value": true
+  }
 ],
-v5 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id_user",
   "storageKey": null
 },
-v6 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id_borrower",
   "storageKey": null
 },
-v7 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "_id_loan",
   "storageKey": null
 },
-v8 = {
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "quantity",
   "storageKey": null
 },
-v9 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "created",
   "storageKey": null
 },
-v10 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v11 = {
+v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "cursor",
   "storageKey": null
 },
-v12 = {
+v10 = {
   "alias": null,
   "args": null,
   "concreteType": "PageInfo",
@@ -132,33 +130,24 @@ v12 = {
   ],
   "storageKey": null
 },
-v13 = [
+v11 = [
   "firstFetch"
 ],
-v14 = [
-  (v2/*: any*/),
-  {
-    "kind": "Literal",
-    "name": "first",
-    "value": 2
-  },
-  (v3/*: any*/)
-],
-v15 = {
+v12 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "status",
   "storageKey": null
 },
-v16 = {
+v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "ROI",
   "storageKey": null
 },
-v17 = {
+v14 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -247,7 +236,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v4/*: any*/),
+            "args": (v2/*: any*/),
             "concreteType": "TransactionConnection",
             "kind": "LinkedField",
             "name": "transactions",
@@ -270,9 +259,9 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
+                      (v3/*: any*/),
+                      (v4/*: any*/),
                       (v5/*: any*/),
-                      (v6/*: any*/),
-                      (v7/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -280,24 +269,24 @@ return {
                         "name": "type",
                         "storageKey": null
                       },
-                      (v8/*: any*/),
-                      (v9/*: any*/),
-                      (v10/*: any*/)
+                      (v6/*: any*/),
+                      (v7/*: any*/),
+                      (v8/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v11/*: any*/)
+                  (v9/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v12/*: any*/)
+              (v10/*: any*/)
             ],
             "storageKey": "transactions(after:\"\",first:5,firstFetch:true)"
           },
           {
             "alias": null,
-            "args": (v4/*: any*/),
-            "filters": (v13/*: any*/),
+            "args": (v2/*: any*/),
+            "filters": (v11/*: any*/),
             "handle": "connection",
             "key": "MyTransactions_user_transactions",
             "kind": "LinkedHandle",
@@ -305,7 +294,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v14/*: any*/),
+            "args": (v2/*: any*/),
             "concreteType": "InvestmentsConnection",
             "kind": "LinkedField",
             "name": "investments",
@@ -328,10 +317,10 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
+                      (v4/*: any*/),
+                      (v5/*: any*/),
                       (v6/*: any*/),
                       (v7/*: any*/),
-                      (v8/*: any*/),
-                      (v9/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -339,7 +328,7 @@ return {
                         "name": "updated",
                         "storageKey": null
                       },
-                      (v15/*: any*/),
+                      (v12/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -347,8 +336,8 @@ return {
                         "name": "payments",
                         "storageKey": null
                       },
-                      (v16/*: any*/),
-                      (v17/*: any*/),
+                      (v13/*: any*/),
+                      (v14/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -377,21 +366,21 @@ return {
                         "name": "to_be_paid",
                         "storageKey": null
                       },
-                      (v10/*: any*/)
+                      (v8/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v11/*: any*/)
+                  (v9/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v12/*: any*/)
+              (v10/*: any*/)
             ],
-            "storageKey": "investments(after:\"\",first:2,firstFetch:true)"
+            "storageKey": "investments(after:\"\",first:5,firstFetch:true)"
           },
           {
             "alias": null,
-            "args": (v14/*: any*/),
+            "args": (v2/*: any*/),
             "filters": [
               "status",
               "firstFetch"
@@ -415,7 +404,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v4/*: any*/),
+            "args": (v2/*: any*/),
             "concreteType": "LoanConnection",
             "kind": "LinkedField",
             "name": "myLoans",
@@ -438,7 +427,7 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
-                      (v5/*: any*/),
+                      (v3/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -446,7 +435,7 @@ return {
                         "name": "score",
                         "storageKey": null
                       },
-                      (v16/*: any*/),
+                      (v13/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -454,7 +443,7 @@ return {
                         "name": "goal",
                         "storageKey": null
                       },
-                      (v17/*: any*/),
+                      (v14/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -469,7 +458,7 @@ return {
                         "name": "expiry",
                         "storageKey": null
                       },
-                      (v15/*: any*/),
+                      (v12/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -485,7 +474,7 @@ return {
                             "name": "amortize",
                             "storageKey": null
                           },
-                          (v15/*: any*/),
+                          (v12/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -510,22 +499,22 @@ return {
                         "name": "pendingCents",
                         "storageKey": null
                       },
-                      (v10/*: any*/)
+                      (v8/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v11/*: any*/)
+                  (v9/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v12/*: any*/)
+              (v10/*: any*/)
             ],
             "storageKey": "myLoans(after:\"\",first:5,firstFetch:true)"
           },
           {
             "alias": null,
-            "args": (v4/*: any*/),
-            "filters": (v13/*: any*/),
+            "args": (v2/*: any*/),
+            "filters": (v11/*: any*/),
             "handle": "connection",
             "key": "MyLoans_user_myLoans",
             "kind": "LinkedHandle",
@@ -634,12 +623,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8f808672b224512831109c41de1d220a",
+    "cacheID": "e4eca441a14ca92b8e2d66758cd5c799",
     "id": null,
     "metadata": {},
     "name": "AppUserQuery",
     "operationKind": "query",
-    "text": "query AppUserQuery {\n  user {\n    ...Routes_user\n    id\n  }\n  authUser {\n    ...Routes_auth_user\n    id\n  }\n}\n\nfragment Account_user on User {\n  accountAvailable\n  accountToBePaid\n  accountTotal\n}\n\nfragment AddInvestments_auth_query on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n  accountId\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 2, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment MyLoans_auth_user on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n  accountId\n}\n\nfragment MyLoans_user on User {\n  myLoans(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment MyTransactions_auth_user on AuthUser {\n  language\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Routes_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  language\n  isBorrower\n  isSupport\n  ...Settings_auth_user\n  ...MyLoans_auth_user\n  ...MyTransactions_auth_user\n  ...AddInvestments_auth_query\n}\n\nfragment Routes_user on User {\n  id\n  accountAvailable\n  accountTotal\n  accountId\n  ...Account_user\n  ...MyTransactions_user\n  ...MyInvestments_user\n  ...MyLoans_user\n}\n\nfragment Settings_auth_user on AuthUser {\n  id\n  accountId\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  language\n}\n"
+    "text": "query AppUserQuery {\n  user {\n    ...Routes_user\n    id\n  }\n  authUser {\n    ...Routes_auth_user\n    id\n  }\n}\n\nfragment Account_user on User {\n  accountAvailable\n  accountToBePaid\n  accountTotal\n}\n\nfragment AddInvestments_auth_query on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n  accountId\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment MyLoans_auth_user on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n  accountId\n}\n\nfragment MyLoans_user on User {\n  myLoans(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment MyTransactions_auth_user on AuthUser {\n  language\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Routes_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  language\n  isBorrower\n  isSupport\n  ...Settings_auth_user\n  ...MyLoans_auth_user\n  ...MyTransactions_auth_user\n  ...AddInvestments_auth_query\n}\n\nfragment Routes_user on User {\n  id\n  accountAvailable\n  accountTotal\n  accountId\n  ...Account_user\n  ...MyTransactions_user\n  ...MyInvestments_user\n  ...MyLoans_user\n}\n\nfragment Settings_auth_user on AuthUser {\n  id\n  accountId\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  language\n}\n"
   }
 };
 })();

@@ -32,7 +32,7 @@ export const publishTransactionInsert = (transaction: TransactionMongo) => {
 
 export const publishLoanInsert = (loan: LoanMongo) => {
   pubsub.publish(LOAN_INSERT, {
-    transactions_subscribe_insert: {
+    loans_subscribe_insert: {
       node: loan,
       cursor: base64(loan._id?.toHexString() || ""),
     },
@@ -41,7 +41,7 @@ export const publishLoanInsert = (loan: LoanMongo) => {
 
 export const publishInvestmentInsert = (investment: InvestmentMongo) => {
   pubsub.publish(INVESTMENT_INSERT, {
-    transactions_subscribe_insert: {
+    investments_subscribe_insert: {
       node: investment,
       cursor: base64(investment._id?.toHexString() || ""),
     },
@@ -50,12 +50,12 @@ export const publishInvestmentInsert = (investment: InvestmentMongo) => {
 
 export const publishLoanUpdate = (loan: LoanMongo) => {
   pubsub.publish(LOAN_UPDATE, {
-    transactions_subscribe_update: loan,
+    loans_subscribe_update: loan,
   });
 };
 
 export const publishInvestmentUpdate = (investment: InvestmentMongo) => {
   pubsub.publish(INVESTMENT_UPDATE, {
-    transactions_subscribe_update: investment,
+    investments_subscribe_update: investment,
   });
 };

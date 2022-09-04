@@ -58,6 +58,21 @@ const subscriptionLoansUpdate = graphql`
   subscription LoanRowUpdateSubscription($gid: ID!) {
     loans_subscribe_update(gid: $gid) {
       id
+      id_user
+      score
+      ROI
+      goal
+      term
+      raised
+      expiry
+      status
+      scheduledPayments {
+        amortize
+        status
+        scheduledDate
+      }
+      pending
+      pendingCents
     }
   }
 `;

@@ -146,9 +146,16 @@ const subscriptionInvestments = graphql`
         id_lender
         _id_loan
         quantity
+        ROI
+        payments
+        term
+        moratory
         created
         updated
         status
+        interest_to_earn
+        paid_already
+        to_be_paid
       }
       cursor
     }
@@ -201,7 +208,7 @@ export const Routes: FC<Props> = (props) => {
 
   const connectionLoanID = ConnectionHandler.getConnectionID(
     user.id,
-    "AddInvestments_user_loans",
+    "AddInvestments_query_loansFinancing",
     {
       firstFetch: true,
     }

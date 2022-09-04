@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3e4538ef243a5650d6f9f52e840117eb>>
+ * @generated SignedSource<<3aba5417dd738fb715fab3b590721616>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -30,7 +30,7 @@ export type MyInvestmentsPaginationUser = {
 
 const node: ConcreteRequest = (function(){
 var v0 = {
-  "defaultValue": 2,
+  "defaultValue": 5,
   "kind": "LocalArgument",
   "name": "count"
 },
@@ -362,16 +362,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "bf071c9dacfc6b84a0cbfde8abb7188a",
+    "cacheID": "5b24635a871092af185a5ced2935d982",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsPaginationUser",
     "operationKind": "query",
-    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $firstFetch: Boolean = true\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_3XLn7l\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_3XLn7l on User {\n  investments(first: $count, after: $cursor, status: $status, firstFetch: $firstFetch) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $firstFetch: Boolean = true\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_3XLn7l\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_3XLn7l on User {\n  investments(first: $count, after: $cursor, status: $status, firstFetch: $firstFetch) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1363b9934d0328a7336c48b35f2144f6";
+(node as any).hash = "252c89b826e6a9229b92d272ebf5fbf8";
 
 export default node;

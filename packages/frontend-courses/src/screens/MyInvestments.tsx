@@ -42,7 +42,7 @@ export const commitCommentCreateLocally = (
 const myInvestmentsFragment = graphql`
   fragment MyInvestments_user on User
   @argumentDefinitions(
-    count: { type: "Int", defaultValue: 2 }
+    count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
     status: { type: "[InvestmentStatus!]", defaultValue: null }
     firstFetch: { type: "Boolean", defaultValue: true }

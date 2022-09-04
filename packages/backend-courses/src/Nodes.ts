@@ -204,7 +204,8 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
     },
     _id_loan: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ _id_loan }): string => _id_loan.toHexString(),
+      resolve: ({ _id_loan }): string =>
+        typeof _id_loan === "string" ? _id_loan : _id_loan.toHexString(),
     },
     quantity: {
       type: new GraphQLNonNull(MXNScalarType),

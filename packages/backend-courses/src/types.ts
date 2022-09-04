@@ -28,17 +28,17 @@ export interface UserMongo {
 }
 
 export interface ILoanEdge {
-  node: LoanMongo;
+  node: LoanMongoRedis;
   cursor: string;
 }
 
 export interface IInvestmentEdge {
-  node: InvestmentMongo;
+  node: InvestmentMongoRedis;
   cursor: string;
 }
 
 export interface ITransactionEdge {
-  node: TransactionMongo;
+  node: TransactionMongoRedis;
   cursor: string;
 }
 
@@ -59,6 +59,16 @@ export interface TransactionMongo {
   created: Date;
 }
 
+export interface TransactionMongoRedis {
+  _id: string;
+  id_user: string;
+  type: TransactionMongoType;
+  quantity: number;
+  id_borrower?: string;
+  _id_loan?: string;
+  created: string;
+}
+
 export type ILoanStatus =
   | "paid"
   | "to be paid"
@@ -74,6 +84,12 @@ export interface IScheduledPayments {
   scheduledDate: Date;
 }
 
+export interface IScheduledPaymentsRedis {
+  amortize: number;
+  status: IScheduledPaymentsStatus;
+  scheduledDate: string;
+}
+
 export interface LoanMongo {
   _id?: ObjectId;
   id_user: string;
@@ -85,6 +101,20 @@ export interface LoanMongo {
   expiry: Date;
   status: ILoanStatus;
   scheduledPayments: IScheduledPayments[] | null;
+  pending: number;
+}
+
+export interface LoanMongoRedis {
+  _id: string;
+  id_user: string;
+  score: string;
+  ROI: number;
+  goal: number;
+  term: number;
+  raised: number;
+  expiry: string;
+  status: ILoanStatus;
+  scheduledPayments: IScheduledPaymentsRedis[] | null;
   pending: number;
 }
 
@@ -103,6 +133,25 @@ export interface InvestmentMongo {
   quantity: number;
   created: Date;
   updated: Date;
+  status: IInvestmentStatus;
+  ROI: number;
+  term: number;
+  payments: number;
+  moratory: number;
+  amortize: number;
+  interest_to_earn: number;
+  paid_already: number;
+  to_be_paid: number;
+}
+
+export interface InvestmentMongoRedis {
+  _id: string;
+  id_borrower: string;
+  id_lender: string;
+  _id_loan: string;
+  quantity: number;
+  created: string;
+  updated: string;
   status: IInvestmentStatus;
   ROI: number;
   term: number;

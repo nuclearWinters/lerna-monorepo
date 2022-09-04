@@ -15,9 +15,9 @@ import {
   Context,
   IInvestmentEdge,
   ILoanEdge,
-  InvestmentMongo,
+  InvestmentMongoRedis,
   ITransactionEdge,
-  LoanMongo,
+  LoanMongoRedis,
   UserMongo,
 } from "../types";
 import { unbase64 } from "../utils";
@@ -55,23 +55,25 @@ export const loans_subscribe_insert = {
   ),
 };
 
+interface PayloadTransactionInsert {
+  transactions_subscribe_insert: ITransactionEdge;
+}
+
 export const transactions_subscribe_insert = {
   type: new GraphQLNonNull(GraphQLTransactionEdge),
   args: {},
   description: "New transactions",
   subscribe: withFilter(
     () => pubsub.asyncIterator(TRANSACTION_INSERT),
-    (
-      payload: {
-        transactions_subscribe_insert: ITransactionEdge;
-      },
-      _,
-      context: Context
-    ) => {
+    (payload: PayloadTransactionInsert, _, context: Context) => {
       return payload.transactions_subscribe_insert.node.id_user === context.id;
     }
   ),
 };
+
+interface PayloadInvestmentUpdate {
+  investments_subscribe_update: InvestmentMongoRedis;
+}
 
 export const investments_subscribe_update = {
   type: new GraphQLNonNull(GraphQLInvestment),
@@ -79,15 +81,15 @@ export const investments_subscribe_update = {
   description: "Updated investments",
   subscribe: withFilter(
     () => pubsub.asyncIterator(INVESTMENT_UPDATE),
-    (
-      payload: { investments_subscribe_update: InvestmentMongo },
-      _,
-      context: Context
-    ) => {
+    (payload: PayloadInvestmentUpdate, _, context: Context) => {
       return payload.investments_subscribe_update.id_lender === context.id;
     }
   ),
 };
+
+interface PayloadLoanUpdate {
+  loans_subscribe_update: LoanMongoRedis;
+}
 
 export const loans_subscribe_update = {
   type: new GraphQLNonNull(GraphQLLoan),
@@ -99,14 +101,15 @@ export const loans_subscribe_update = {
   description: "Updated loans",
   subscribe: withFilter(
     () => pubsub.asyncIterator(LOAN_UPDATE),
-    (payload: { loans_subscribe_update: LoanMongo }, variables) => {
-      return (
-        payload.loans_subscribe_update._id?.toHexString() ===
-        unbase64(variables.gid)
-      );
+    (payload: PayloadLoanUpdate, variables) => {
+      return payload.loans_subscribe_update._id === unbase64(variables.gid);
     }
   ),
 };
+
+interface PayloadInvestmentInsert {
+  investments_subscribe_insert: IInvestmentEdge;
+}
 
 export const investments_subscribe_insert = {
   type: new GraphQLNonNull(GraphQLInvestmentEdge),
@@ -118,15 +121,21 @@ export const investments_subscribe_insert = {
   description: "New investment",
   subscribe: withFilter(
     () => pubsub.asyncIterator(INVESTMENT_INSERT),
-    (payload: { investments_subscribe: IInvestmentEdge }, variables) => {
+    (payload: PayloadInvestmentInsert, variables, { id }: Context) => {
       return (
-        payload.investments_subscribe.node.id_lender ===
-          unbase64(variables.user_gid) &&
-        variables.status.includes(payload.investments_subscribe.node.status)
+        payload.investments_subscribe_insert.node.id_lender === id &&
+        (variables.status?.includes(
+          payload.investments_subscribe_insert.node.status
+        ) ||
+          !variables.status)
       );
     }
   ),
 };
+
+interface PayloadUser {
+  user_subscribe: UserMongo;
+}
 
 export const user_subscribe = {
   type: new GraphQLNonNull(GraphQLUser),
@@ -134,7 +143,7 @@ export const user_subscribe = {
   args: {},
   subscribe: withFilter(
     () => pubsub.asyncIterator(USER),
-    (payload: { user_subscribe: UserMongo }, _, context: Context) => {
+    (payload: PayloadUser, _, context: Context) => {
       return payload.user_subscribe.id === context.id;
     }
   ),

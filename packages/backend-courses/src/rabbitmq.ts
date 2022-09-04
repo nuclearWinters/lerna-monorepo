@@ -2,6 +2,7 @@ import { Channel, ConsumeMessage } from "amqplib";
 import { addMonths, startOfMonth } from "date-fns";
 import { Db, ObjectId, WithId } from "mongodb";
 import {
+  publishInvestmentInsert,
   publishInvestmentUpdate,
   publishLoanUpdate,
   publishTransactionInsert,
@@ -32,7 +33,7 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   const investments = db.collection<InvestmentMongo>("investments");
   const transactions = db.collection<TransactionMongo>("transactions");
   const id = doc.id_lender;
-  //Actualizar el usuario
+  //Actualizar a quien presta dinero
   const resultUser = await users.findOneAndUpdate(
     { id, accountAvailable: { $gte: doc.quantity } },
     {
@@ -44,6 +45,7 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     { returnDocument: "after" }
   );
   if (!resultUser.value) {
+    ch.ack(msg);
     return;
   }
   publishUser(resultUser.value);
@@ -64,26 +66,11 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     { returnDocument: "after" }
   );
   if (resultLoan.value) {
-    await users.updateOne(
-      { "myLoans._id": _id_loan },
-      {
-        $inc: {
-          "myLoans.$[item].raised": quantity,
-          "myLoans.$[item].pending": -quantity,
-        },
-      },
-      {
-        arrayFilters: [
-          {
-            "item._id": _id_loan,
-          },
-        ],
-      }
-    );
     publishLoanUpdate(resultLoan.value);
   }
   //Si NO se realizó la operación: incrementar saldo y no realizar más acciones
   if (!resultLoan.value) {
+    //Actualizar a quien presta dinero
     const result = await users.findOneAndUpdate(
       { id },
       {
@@ -98,7 +85,7 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     return;
   }
   const completed = resultLoan.value.raised === resultLoan.value.goal;
-  //Si se realizo la operacion crear inversion
+  //Si se realizo la operacion crear o actualizar inversion
   const updatedInvestment = await investments.findOneAndUpdate(
     {
       _id_loan,
@@ -129,22 +116,123 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       returnDocument: "after",
     }
   );
-  if (updatedInvestment.value) {
-    publishInvestmentUpdate(updatedInvestment.value);
-  }
   const transactionOperation: WithId<TransactionMongo>[] = [
     {
       _id: new ObjectId(),
       id_user: id,
       type: "invest" as const,
-      quantity,
+      quantity: -quantity,
       created: now,
       _id_loan,
       id_borrower,
     },
   ];
-  //Si raised es igual a goal: actualizar inversiones, prestamo y prestador
-  if (resultLoan.value.raised === resultLoan.value.goal) {
+  if (updatedInvestment.value) {
+    const upsert = !updatedInvestment.lastErrorObject?.updatedExisting;
+    await users.updateOne(
+      { id },
+      {
+        $push: {
+          transactions: {
+            $each: [transactionOperation[0]],
+            $sort: { _id: 1 },
+            $slice: -6,
+          },
+          ...(upsert
+            ? {
+                myInvestments: {
+                  $each: [updatedInvestment.value],
+                  $sort: { _id: 1 },
+                  $slice: -6,
+                },
+              }
+            : {}),
+        },
+        ...(!upsert
+          ? {
+              $inc: { "myInvestments.$[item].quantity": quantity },
+            }
+          : {}),
+      },
+      {
+        ...(!upsert
+          ? {
+              arrayFilters: [
+                {
+                  "item._id": updatedInvestment.value._id,
+                },
+              ],
+            }
+          : {}),
+      }
+    );
+    if (upsert) {
+      publishInvestmentInsert(updatedInvestment.value);
+    } else {
+      publishInvestmentUpdate(updatedInvestment.value);
+    }
+  }
+  const goalArchived = resultLoan.value.raised === resultLoan.value.goal;
+  //Si raised es igual a goal: añadir fondos a quien pidio prestado
+  const creditBorrowerTransaction = {
+    _id: new ObjectId(),
+    id_user: resultLoan.value.id_user,
+    type: "credit" as const,
+    quantity: resultLoan.value.goal,
+    created: now,
+  };
+  const scheduledPayments = new Array(doc.term).fill({}).map((_, index) => {
+    const TEM = doc.TEM;
+    return {
+      amortize: Math.floor(
+        doc.goal / ((1 - Math.pow(1 / (1 + TEM), doc.term)) / TEM)
+      ),
+      //Pago cada mismo dia del mes?
+      scheduledDate: startOfMonth(addMonths(now, index + 1)),
+      status: "to be paid" as const,
+    };
+  });
+  //Actualizar a quien pidio dinero prestado
+  const { value } = await users.findOneAndUpdate(
+    { id: resultLoan.value.id_user },
+    {
+      $inc: {
+        "myLoans.$[item].raised": quantity,
+        "myLoans.$[item].pending": -quantity,
+        ...(goalArchived
+          ? {
+              accountAvailable: resultLoan.value.goal,
+              accountTotal: resultLoan.value.goal,
+            }
+          : {}),
+      },
+      ...(goalArchived
+        ? {
+            $push: {
+              transactions: {
+                $each: [creditBorrowerTransaction],
+                $sort: { _id: 1 },
+                $slice: -6,
+              },
+            },
+            $set: {
+              "myLoans.$[item].scheduledPayments": scheduledPayments,
+              "myLoans.$[item].status": "to be paid",
+            },
+          }
+        : {}),
+    },
+    {
+      returnDocument: "after",
+      arrayFilters: [
+        {
+          "item._id": _id_loan,
+        },
+      ],
+    }
+  );
+  //Si raised es igual a goal: actualizar inversiones y prestamo
+  if (goalArchived) {
     //Obtener todas las inversiones del prestamo completado
     const investmentsResults = await investments.find({ _id_loan }).toArray();
     //Calcular intereses por cada prestamo de cada inversionista
@@ -155,7 +243,7 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       );
       const amortizes = amortize * inv.term;
       const interest_to_earn = amortizes - inv.quantity;
-      //Añadir intereses a la cuenta de cada usuario
+      //Añadir intereses a la cuenta de cada usuario que presto dinero
       const updatedUser = await users.findOneAndUpdate(
         {
           id: inv.id_lender,
@@ -172,14 +260,26 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
               $slice: -6,
             },
           },
+          $set: {
+            "myInvestments.$[item].interest_to_earn": interest_to_earn,
+            "myInvestments.$[item].amortize": amortize,
+            "myInvestments.$[item].to_be_paid": amortizes,
+          },
         },
-        { returnDocument: "after" }
+        {
+          returnDocument: "after",
+          arrayFilters: [
+            {
+              "item._id": inv._id,
+            },
+          ],
+        }
       );
       if (updatedUser.value) {
         publishUser(updatedUser.value);
       }
       //Añadir intereses a cada inversion
-      const updatedInvestments = await investments.findOneAndUpdate(
+      const updatedInvestments = await investments.updateOne(
         {
           _id: inv._id,
         },
@@ -189,24 +289,15 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
             amortize,
             to_be_paid: amortizes,
           },
-        },
-        { returnDocument: "after" }
+        }
       );
-      if (updatedInvestments.value) {
-        publishInvestmentUpdate(updatedInvestments.value);
+      if (updatedInvestments.modifiedCount) {
+        inv.interest_to_earn = interest_to_earn;
+        inv.amortize = amortize;
+        inv.to_be_paid = amortizes;
+        publishInvestmentUpdate(inv);
       }
     }
-    const scheduledPayments = new Array(doc.term).fill({}).map((_, index) => {
-      const TEM = doc.TEM;
-      return {
-        amortize: Math.floor(
-          doc.goal / ((1 - Math.pow(1 / (1 + TEM), doc.term)) / TEM)
-        ),
-        //Pago cada mismo dia del mes?
-        scheduledDate: startOfMonth(addMonths(now, index + 1)),
-        status: "to be paid" as const,
-      };
-    });
     //Si raised es igual a goal: Actualizar scheduledPayments y status
     const updatedLoan = await loans.findOneAndUpdate(
       {
@@ -221,53 +312,12 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       { returnDocument: "after" }
     );
     if (updatedLoan.value) {
-      await users.updateOne(
-        { "myLoans._id": _id_loan },
-        {
-          $set: {
-            "myLoans.$[item].scheduledPayments": scheduledPayments,
-            "myLoans.$[item].status": "to be paid",
-          },
-        },
-        {
-          arrayFilters: [
-            {
-              "item._id": _id_loan,
-            },
-          ],
-        }
-      );
       publishLoanUpdate(updatedLoan.value);
     }
-    //Si raised es igual a goal: añadir fondos a quien pidio prestado
-    const creditBorrowerTransaction = {
-      _id: new ObjectId(),
-      id_user: resultLoan.value.id_user,
-      type: "credit" as const,
-      quantity: resultLoan.value.goal,
-      created: now,
-    };
-    const { value } = await users.findOneAndUpdate(
-      { id: resultLoan.value.id_user },
-      {
-        $inc: {
-          accountAvailable: resultLoan.value.goal,
-          accountTotal: resultLoan.value.goal,
-        },
-        $push: {
-          transactions: {
-            $each: [creditBorrowerTransaction],
-            $sort: { _id: 1 },
-            $slice: -6,
-          },
-        },
-      },
-      { returnDocument: "after" }
-    );
-    if (value) {
-      publishUser(value);
-      transactionOperation.push(creditBorrowerTransaction);
-    }
+    transactionOperation.push(creditBorrowerTransaction);
+  }
+  if (value) {
+    publishUser(value);
   }
   //Insertar transaccion
   await transactions.insertMany(transactionOperation);

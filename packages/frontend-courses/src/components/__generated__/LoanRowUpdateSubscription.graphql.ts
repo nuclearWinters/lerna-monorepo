@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bda172f1e9bacd00b3e1dea8d29fa6fa>>
+ * @generated SignedSource<<3f63e59c5a40dbb49cbdd668389af618>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,12 +9,29 @@
 // @ts-nocheck
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
+export type LoanScheduledPaymentStatus = "DELAYED" | "PAID" | "TO_BE_PAID" | "%future added value";
+export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 export type LoanRowUpdateSubscription$variables = {
   gid: string;
 };
 export type LoanRowUpdateSubscription$data = {
   readonly loans_subscribe_update: {
+    readonly ROI: number;
+    readonly expiry: Int;
+    readonly goal: string;
     readonly id: string;
+    readonly id_user: string;
+    readonly pending: string;
+    readonly pendingCents: number;
+    readonly raised: string;
+    readonly scheduledPayments: ReadonlyArray<{
+      readonly amortize: string;
+      readonly scheduledDate: Int;
+      readonly status: LoanScheduledPaymentStatus;
+    }> | null;
+    readonly score: string;
+    readonly status: LoanStatus;
+    readonly term: number;
   };
 };
 export type LoanRowUpdateSubscription = {
@@ -30,7 +47,14 @@ var v0 = [
     "name": "gid"
   }
 ],
-v1 = [
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "status",
+  "storageKey": null
+},
+v2 = [
   {
     "alias": null,
     "args": [
@@ -51,6 +75,96 @@ v1 = [
         "kind": "ScalarField",
         "name": "id",
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "id_user",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "score",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "ROI",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "goal",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "term",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "raised",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "expiry",
+        "storageKey": null
+      },
+      (v1/*: any*/),
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "ScheduledPayments",
+        "kind": "LinkedField",
+        "name": "scheduledPayments",
+        "plural": true,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "amortize",
+            "storageKey": null
+          },
+          (v1/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "scheduledDate",
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "pending",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "pendingCents",
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -62,7 +176,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "LoanRowUpdateSubscription",
-    "selections": (v1/*: any*/),
+    "selections": (v2/*: any*/),
     "type": "Subscription",
     "abstractKey": null
   },
@@ -71,19 +185,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "LoanRowUpdateSubscription",
-    "selections": (v1/*: any*/)
+    "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "5caf878ef357db4ac6f8880b3ef77aa5",
+    "cacheID": "fc82cc9162c291aafd347be0d58be2b1",
     "id": null,
     "metadata": {},
     "name": "LoanRowUpdateSubscription",
     "operationKind": "subscription",
-    "text": "subscription LoanRowUpdateSubscription(\n  $gid: ID!\n) {\n  loans_subscribe_update(gid: $gid) {\n    id\n  }\n}\n"
+    "text": "subscription LoanRowUpdateSubscription(\n  $gid: ID!\n) {\n  loans_subscribe_update(gid: $gid) {\n    id\n    id_user\n    score\n    ROI\n    goal\n    term\n    raised\n    expiry\n    status\n    scheduledPayments {\n      amortize\n      status\n      scheduledDate\n    }\n    pending\n    pendingCents\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2716f19d4cfd50abe53252bca53c3486";
+(node as any).hash = "92d94996e12be222466756ee9fad7321";
 
 export default node;
