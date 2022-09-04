@@ -140,7 +140,7 @@ type Query {
 type Subscription {
   user_subscribe: User!
   loans_subscribe_insert: LoanEdge!
-  investments_subscribe_insert(status: [InvestmentStatus!]!): InvestmentsEdge!
+  investments_subscribe_insert(status: [InvestmentStatus!]): InvestmentsEdge!
   transactions_subscribe_insert: TransactionEdge!
   loans_subscribe_update(gid: ID!): Loan!
   investments_subscribe_update: Investment!
@@ -292,7 +292,8 @@ type User implements Node {
   investments(
     after: String
     first: Int
-    status: [InvestmentStatus!]!
+    status: [InvestmentStatus!]
+    firstFetch: Boolean
   ): InvestmentsConnection
 }
 

@@ -1,4 +1,11 @@
-import { Db, Filter, ObjectId, UpdateFilter, WithId } from "mongodb";
+import {
+  Db,
+  Filter,
+  FindOneAndUpdateOptions,
+  ObjectId,
+  UpdateFilter,
+  WithId,
+} from "mongodb";
 import {
   TransactionMongo,
   InvestmentMongo,
@@ -59,8 +66,8 @@ export const monthFunction = async (db: Db): Promise<void> => {
           $push: {
             transactions: {
               $each: [transactionUpdateOne],
-              $sort: { _id: -1 },
-              $slice: -5,
+              $sort: { _id: 1 },
+              $slice: -6,
             },
           },
         },
@@ -72,7 +79,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
         publishUser(result.value);
       }
       if (!result.value) {
-        loan.scheduledPayments[payment.index].status = "delayed" as const;
+        loan.scheduledPayments[payment.index].status = "delayed";
         //Si el deudor no tiene suficiente dinero el estatus de su deuda se vuelve atrasada
         const updatedLoan = await loans.updateOne(
           { _id: loan._id },
@@ -107,11 +114,35 @@ export const monthFunction = async (db: Db): Promise<void> => {
         const allInvestments = await investments
           .find({ _id_loan: loan._id })
           .toArray();
+        const ids = allInvestments.reduce<{
+          usersIds: string[];
+          investmentIds: ObjectId[];
+        }>(
+          (curr, next) => {
+            curr.usersIds.push(next.id_lender);
+            curr.investmentIds.push(next._id);
+            return curr;
+          },
+          { usersIds: [], investmentIds: [] }
+        );
+        await users.updateMany(
+          { id: { $in: ids.usersIds } },
+          { $set: { "myInvestments.$[item].status": "delay payment" } },
+          {
+            arrayFilters: [
+              {
+                "item._id": {
+                  $in: ids.investmentIds,
+                },
+              },
+            ],
+          }
+        );
+        await investments.updateMany(
+          { _id: { $in: ids.investmentIds } },
+          { $set: { status: "delay payment" } }
+        );
         for (const investment of allInvestments) {
-          investments.updateOne(
-            { _id: investment._id },
-            { $set: { status: "delay payment" } }
-          );
           investment.status = "delay payment";
           publishInvestmentUpdate(investment);
         }
@@ -170,7 +201,12 @@ export const monthFunction = async (db: Db): Promise<void> => {
         transactionsInsert: WithId<TransactionMongo>;
         investmentFilter: Filter<InvestmentMongo>;
         investmentUpdate: UpdateFilter<InvestmentMongo>;
-      }>(({ _id, id_lender, payments, amortize }) => {
+        userOptions: FindOneAndUpdateOptions;
+        investment: InvestmentMongo;
+        to_be_paid: number;
+        paid_already: number;
+      }>((investment) => {
+        const { _id, id_lender, payments, amortize } = investment;
         const totalAmortize = amortize * term;
         const paid_already = amortize * (payments + 1);
         const to_be_paid = totalAmortize - paid_already;
@@ -184,6 +220,9 @@ export const monthFunction = async (db: Db): Promise<void> => {
           _id_loan: loan._id,
         };
         return {
+          to_be_paid,
+          paid_already,
+          investment,
           transactionsInsert: newTransaction,
           userFilter: {
             id: id_lender,
@@ -192,14 +231,32 @@ export const monthFunction = async (db: Db): Promise<void> => {
             $inc: {
               accountAvailable: amortize,
               accountToBePaid: -amortize,
+              "myInvestments.$[item].payments": 1,
             },
             $push: {
               transactions: {
                 $each: [newTransaction],
-                $sort: { _id: -1 },
-                $slice: -5,
+                $sort: { _id: 1 },
+                $slice: -6,
               },
             },
+            $set: {
+              "myInvestments.$[item].to_be_paid": to_be_paid,
+              "myInvestments.$[item].paid_already": paid_already,
+              ...(allPaid
+                ? {
+                    "myInvestments.$[item].status": "paid",
+                  }
+                : {}),
+            },
+          },
+          userOptions: {
+            returnDocument: "after",
+            arrayFilters: [
+              {
+                "item._id": investment._id,
+              },
+            ],
           },
           investmentFilter: {
             _id,
@@ -226,20 +283,25 @@ export const monthFunction = async (db: Db): Promise<void> => {
         const result = await users.findOneAndUpdate(
           operation.userFilter,
           operation.userUpdate,
-          { returnDocument: "after" }
+          operation.userOptions
         );
         publishTransactionInsert(operation.transactionsInsert);
         if (result.value) {
           publishUser(result.value);
         }
         //Actualizar el los intereses moratorios en las inversiones
-        const updatedInvestment = await investments.findOneAndUpdate(
+        const updatedInvestment = await investments.updateOne(
           operation.investmentFilter,
-          operation.investmentUpdate,
-          { returnDocument: "after" }
+          operation.investmentUpdate
         );
-        if (updatedInvestment.value) {
-          publishInvestmentUpdate(updatedInvestment.value);
+        if (updatedInvestment.modifiedCount) {
+          if (allPaid) {
+            operation.investment.status = "paid";
+          }
+          operation.investment.to_be_paid = operation.to_be_paid;
+          operation.investment.paid_already = operation.paid_already;
+          operation.investment.payments = operation.investment.payments += 1;
+          publishInvestmentUpdate(operation.investment);
         }
       }
     }

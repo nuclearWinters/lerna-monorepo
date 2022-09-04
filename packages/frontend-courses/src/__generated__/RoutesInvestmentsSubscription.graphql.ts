@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8c738af06abf5f03dc443c4b7b568cfc>>
+ * @generated SignedSource<<40cf797200dd4015fc37776e0ebb1dfb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,7 +12,7 @@ import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 export type RoutesInvestmentsSubscription$variables = {
   connections: ReadonlyArray<string>;
-  status: ReadonlyArray<InvestmentStatus>;
+  status?: ReadonlyArray<InvestmentStatus> | null;
 };
 export type RoutesInvestmentsSubscription$data = {
   readonly investments_subscribe_insert: {
@@ -177,16 +177,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "54961231fe7c9ebbe4cefa3c7a461ce9",
+    "cacheID": "6fe9c3969f9a6c6fd7fcbe88452ce53c",
     "id": null,
     "metadata": {},
     "name": "RoutesInvestmentsSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesInvestmentsSubscription(\n  $status: [InvestmentStatus!]!\n) {\n  investments_subscribe_insert(status: $status) {\n    node {\n      id\n      id_borrower\n      id_lender\n      _id_loan\n      quantity\n      created\n      updated\n      status\n    }\n    cursor\n  }\n}\n"
+    "text": "subscription RoutesInvestmentsSubscription(\n  $status: [InvestmentStatus!]\n) {\n  investments_subscribe_insert(status: $status) {\n    node {\n      id\n      id_borrower\n      id_lender\n      _id_loan\n      quantity\n      created\n      updated\n      status\n    }\n    cursor\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "70b6bc83ac84a2e1dd8f7968f79ad85f";
+(node as any).hash = "69aa5178aa530936387f532bda9f261c";
 
 export default node;

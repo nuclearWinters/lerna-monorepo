@@ -27,6 +27,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     const _id_transaction_6 = new ObjectId("607bd608ef9719001cf38125");
     const _id_transaction_7 = new ObjectId("607bd608ef9719001cf38126");
     const now = new Date();
+    const _id_investment_1 = new ObjectId("607bd608ef9716001cf38126");
     await users.insertMany([
       {
         _id: new ObjectId("607bd608ef9719001cf38fd5"),
@@ -71,8 +72,34 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
             quantity: -1000000,
             created: now,
           },
+          {
+            _id: _id_transaction_2,
+            id_user: "wHHR1SUBT0dspoF4YUOw1",
+            type: "invest",
+            quantity: -1000000,
+            created: now,
+          },
         ],
-        myInvestments: [],
+        myInvestments: [
+          {
+            _id: _id_investment_1,
+            id_borrower: "wHHR1SUBT0dspoF4YUOw2",
+            id_lender: "wHHR1SUBT0dspoF4YUOw1",
+            _id_loan: new ObjectId("609875a48f2814002aaefe25"),
+            created: new Date(),
+            quantity: 9500000,
+            updated: new Date(),
+            status: "financing",
+            ROI: 17,
+            moratory: 0,
+            payments: 0,
+            term: 6,
+            interest_to_earn: 0,
+            to_be_paid: 0,
+            paid_already: 0,
+            amortize: 0,
+          },
+        ],
       },
       {
         _id: new ObjectId("6095f055f92be2001a15885b"),
@@ -172,6 +199,19 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
             status: "financing",
             scheduledPayments: null,
             pending: 8000000,
+          },
+          {
+            _id: new ObjectId("609875a48f2814002aaefe26"),
+            id_user: "wHHR1SUBT0dspoF4YUOw2",
+            score: "AAA",
+            raised: 0,
+            expiry,
+            ROI: 17,
+            goal: 9000000,
+            term: 8,
+            status: "financing",
+            scheduledPayments: null,
+            pending: 9000000,
           },
         ],
         myInvestments: [],
@@ -367,6 +407,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
 
     await investments.insertMany([
       {
+        _id: _id_investment_1,
         id_borrower: "wHHR1SUBT0dspoF4YUOw2",
         id_lender: "wHHR1SUBT0dspoF4YUOw1",
         _id_loan: new ObjectId("609875a48f2814002aaefe25"),

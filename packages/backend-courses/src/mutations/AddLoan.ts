@@ -63,8 +63,8 @@ export const AddLoanMutation = mutationWithClientMutationId({
           $push: {
             myLoans: {
               $each: [docLoan],
-              $sort: { _id: -1 },
-              $slice: -5,
+              $sort: { _id: 1 },
+              $slice: -6,
             },
           },
         }

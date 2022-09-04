@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<32564953951433fadcf55089cb1e2855>>
+ * @generated SignedSource<<301be55a7caff72920ff2e13e230f59e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -53,11 +53,12 @@ return {
       "name": "cursor"
     },
     {
-      "defaultValue": [
-        "DELAY_PAYMENT",
-        "UP_TO_DATE",
-        "FINANCING"
-      ],
+      "defaultValue": true,
+      "kind": "LocalArgument",
+      "name": "firstFetch"
+    },
+    {
+      "defaultValue": null,
       "kind": "LocalArgument",
       "name": "status"
     }
@@ -93,6 +94,11 @@ return {
     {
       "alias": "investments",
       "args": [
+        {
+          "kind": "Variable",
+          "name": "firstFetch",
+          "variableName": "firstFetch"
+        },
         {
           "kind": "Variable",
           "name": "status",
@@ -193,6 +199,6 @@ return {
 };
 })();
 
-(node as any).hash = "e177d2df82bf5366c0c6ca33505a7357";
+(node as any).hash = "1363b9934d0328a7336c48b35f2144f6";
 
 export default node;

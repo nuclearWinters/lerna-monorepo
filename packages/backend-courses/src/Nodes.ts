@@ -38,6 +38,7 @@ import { base64, unbase64 } from "./utils";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatus[];
+  firstFetch?: boolean;
 }
 
 interface ArgsTransactions extends ConnectionArguments {
@@ -452,7 +453,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           }
           const result =
             firstFetch && !after && isBorrower
-              ? myLoans
+              ? myLoans.reverse()
               : await loans
                   .find(query)
                   .limit(limit)
@@ -483,18 +484,19 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       type: new GraphQLNonNull(InvestmentConnection),
       args: {
         status: {
-          type: new GraphQLNonNull(
-            new GraphQLList(new GraphQLNonNull(InvestmentStatus))
-          ),
+          type: new GraphQLList(new GraphQLNonNull(InvestmentStatus)),
+        },
+        firstFetch: {
+          type: GraphQLBoolean,
         },
         ...forwardConnectionArgs,
       },
       resolve: async (
-        _: unknown,
+        { myInvestments },
         args: unknown,
         { investments, id }: Context
       ): Promise<Connection<InvestmentMongo>> => {
-        const { status, first, after } = args as ArgsInvestments;
+        const { status, first, after, firstFetch } = args as ArgsInvestments;
         try {
           if (!id) {
             throw new Error("Do not return anything to not registered user");
@@ -506,7 +508,6 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           }
           const query: Filter<InvestmentMongo> = {
             id_lender: id,
-            status: { $in: ["delay payment", "up to date"] },
           };
           if (investment_id) {
             query._id = { $lt: new ObjectId(investment_id) };
@@ -514,11 +515,14 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           if (status) {
             query.status = { $in: status };
           }
-          const result = await investments
-            .find(query)
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray();
+          const result =
+            firstFetch && !after && !status
+              ? myInvestments.reverse()
+              : await investments
+                  .find(query)
+                  .limit(limit)
+                  .sort({ $natural: -1 })
+                  .toArray();
           const edgesMapped = result.map((investment) => {
             return {
               cursor: base64(investment._id.toHexString()),
@@ -571,7 +575,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           }
           const result =
             firstFetch && !after
-              ? transactionsUser
+              ? transactionsUser.reverse()
               : await transactions
                   .find(query)
                   .limit(limit)

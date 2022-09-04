@@ -136,7 +136,7 @@ const subscriptionTransactions = graphql`
 const subscriptionInvestments = graphql`
   subscription RoutesInvestmentsSubscription(
     $connections: [ID!]!
-    $status: [InvestmentStatus!]!
+    $status: [InvestmentStatus!]
   ) {
     investments_subscribe_insert(status: $status)
       @prependEdge(connections: $connections) {
@@ -202,7 +202,9 @@ export const Routes: FC<Props> = (props) => {
   const connectionLoanID = ConnectionHandler.getConnectionID(
     user.id,
     "AddInvestments_user_loans",
-    {}
+    {
+      firstFetch: true,
+    }
   );
   const configLoans = useMemo<
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
@@ -216,9 +218,7 @@ export const Routes: FC<Props> = (props) => {
     [connectionLoanID]
   );
   const status = useMemo(() => {
-    const status = statusLocal
-      ? statusLocal
-      : (["UP_TO_DATE", "DELAY_PAYMENT", "FINANCING"] as const);
+    const status = statusLocal ? statusLocal : null;
     return status;
   }, [statusLocal]);
   const connectionInvestmentID = ConnectionHandler.getConnectionID(
@@ -226,6 +226,7 @@ export const Routes: FC<Props> = (props) => {
     "MyInvestments_user_investments",
     {
       status,
+      firstFetch: true,
     }
   );
   const configInvestments = useMemo<
@@ -252,7 +253,9 @@ export const Routes: FC<Props> = (props) => {
   const connectionTransactionID = ConnectionHandler.getConnectionID(
     user.id,
     "MyTransactions_user_transactions",
-    {}
+    {
+      firstFetch: true,
+    }
   );
   const configUser = useMemo<GraphQLSubscriptionConfig<RoutesUserSubscription>>(
     () => ({

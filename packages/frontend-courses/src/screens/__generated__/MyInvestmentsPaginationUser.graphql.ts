@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a4cf47b04e99a38b8f637f82bcb3afa2>>
+ * @generated SignedSource<<3e4538ef243a5650d6f9f52e840117eb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DU
 export type MyInvestmentsPaginationUser$variables = {
   count?: number | null;
   cursor?: string | null;
+  firstFetch?: boolean | null;
   id: string;
   status?: ReadonlyArray<InvestmentStatus> | null;
 };
@@ -39,46 +40,52 @@ v1 = {
   "name": "cursor"
 },
 v2 = {
+  "defaultValue": true,
+  "kind": "LocalArgument",
+  "name": "firstFetch"
+},
+v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
   "name": "id"
 },
-v3 = {
-  "defaultValue": [
-    "DELAY_PAYMENT",
-    "UP_TO_DATE",
-    "FINANCING"
-  ],
+v4 = {
+  "defaultValue": null,
   "kind": "LocalArgument",
   "name": "status"
 },
-v4 = [
+v5 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v5 = {
+v6 = {
+  "kind": "Variable",
+  "name": "firstFetch",
+  "variableName": "firstFetch"
+},
+v7 = {
   "kind": "Variable",
   "name": "status",
   "variableName": "status"
 },
-v6 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v7 = {
+v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v8 = [
+v10 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -89,7 +96,8 @@ v8 = [
     "name": "first",
     "variableName": "count"
   },
-  (v5/*: any*/)
+  (v6/*: any*/),
+  (v7/*: any*/)
 ];
 return {
   "fragment": {
@@ -97,7 +105,8 @@ return {
       (v0/*: any*/),
       (v1/*: any*/),
       (v2/*: any*/),
-      (v3/*: any*/)
+      (v3/*: any*/),
+      (v4/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
@@ -105,7 +114,7 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v4/*: any*/),
+        "args": (v5/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -123,7 +132,8 @@ return {
                 "name": "cursor",
                 "variableName": "cursor"
               },
-              (v5/*: any*/)
+              (v6/*: any*/),
+              (v7/*: any*/)
             ],
             "kind": "FragmentSpread",
             "name": "MyInvestments_user"
@@ -140,28 +150,29 @@ return {
     "argumentDefinitions": [
       (v0/*: any*/),
       (v1/*: any*/),
-      (v3/*: any*/),
-      (v2/*: any*/)
+      (v2/*: any*/),
+      (v4/*: any*/),
+      (v3/*: any*/)
     ],
     "kind": "Operation",
     "name": "MyInvestmentsPaginationUser",
     "selections": [
       {
         "alias": null,
-        "args": (v4/*: any*/),
+        "args": (v5/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v6/*: any*/),
-          (v7/*: any*/),
+          (v8/*: any*/),
+          (v9/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v8/*: any*/),
+                "args": (v10/*: any*/),
                 "concreteType": "InvestmentsConnection",
                 "kind": "LinkedField",
                 "name": "investments",
@@ -183,7 +194,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v7/*: any*/),
+                          (v9/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -275,7 +286,7 @@ return {
                             "name": "to_be_paid",
                             "storageKey": null
                           },
-                          (v6/*: any*/)
+                          (v8/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -319,9 +330,10 @@ return {
               },
               {
                 "alias": null,
-                "args": (v8/*: any*/),
+                "args": (v10/*: any*/),
                 "filters": [
-                  "status"
+                  "status",
+                  "firstFetch"
                 ],
                 "handle": "connection",
                 "key": "MyInvestments_user_investments",
@@ -350,16 +362,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c4e9395cd1707d825b4f12592fa7f297",
+    "cacheID": "bf071c9dacfc6b84a0cbfde8abb7188a",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsPaginationUser",
     "operationKind": "query",
-    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $status: [InvestmentStatus!] = [DELAY_PAYMENT, UP_TO_DATE, FINANCING]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_4qXjrI\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_4qXjrI on User {\n  investments(first: $count, after: $cursor, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 2\n  $cursor: String = \"\"\n  $firstFetch: Boolean = true\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_3XLn7l\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_3XLn7l on User {\n  investments(first: $count, after: $cursor, status: $status, firstFetch: $firstFetch) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e177d2df82bf5366c0c6ca33505a7357";
+(node as any).hash = "1363b9934d0328a7336c48b35f2144f6";
 
 export default node;

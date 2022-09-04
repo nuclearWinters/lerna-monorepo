@@ -93,7 +93,7 @@ describe("QueryInvestments tests", () => {
     const response = await request
       .post("/graphql")
       .send({
-        query: `query GetInvestmentsConnection($first: Int, $after: String, $status: [InvestmentStatus!]!) {
+        query: `query GetInvestmentsConnection($first: Int, $after: String, $status: [InvestmentStatus!]) {
           user {
             investments(first: $first, after: $after, status: $status) {
               edges {

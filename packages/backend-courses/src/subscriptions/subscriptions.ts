@@ -112,9 +112,7 @@ export const investments_subscribe_insert = {
   type: new GraphQLNonNull(GraphQLInvestmentEdge),
   args: {
     status: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(InvestmentStatus))
-      ),
+      type: new GraphQLList(new GraphQLNonNull(InvestmentStatus)),
     },
   },
   description: "New investment",

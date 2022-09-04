@@ -168,8 +168,8 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
           $push: {
             transactions: {
               $each: [transactionOperation[0]],
-              $sort: { _id: -1 },
-              $slice: -5,
+              $sort: { _id: 1 },
+              $slice: -6,
             },
           },
         },
@@ -257,8 +257,8 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
         $push: {
           transactions: {
             $each: [creditBorrowerTransaction],
-            $sort: { _id: -1 },
-            $slice: -5,
+            $sort: { _id: 1 },
+            $slice: -6,
           },
         },
       },

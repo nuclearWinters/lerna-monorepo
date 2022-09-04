@@ -23,7 +23,7 @@ import { RelayEnvironment } from "RelayEnvironment";
 
 export const commitCommentCreateLocally = (
   environment: Environment,
-  status: "on_going" | "over"
+  status: "on_going" | "over" | "none"
 ) => {
   return commitLocalUpdate(environment, (store) => {
     const root = store.getRoot();
@@ -31,7 +31,9 @@ export const commitCommentCreateLocally = (
     user?.setValue(
       status === "on_going"
         ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
-        : ["PAID", "PAST_DUE"],
+        : status === "over"
+        ? ["PAID", "PAST_DUE"]
+        : null,
       "statusLocal"
     );
   });
@@ -42,15 +44,17 @@ const myInvestmentsFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 2 }
     cursor: { type: "String", defaultValue: "" }
-    status: {
-      type: "[InvestmentStatus!]"
-      defaultValue: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]
-    }
+    status: { type: "[InvestmentStatus!]", defaultValue: null }
+    firstFetch: { type: "Boolean", defaultValue: true }
   )
   @refetchable(queryName: "MyInvestmentsPaginationUser") {
     statusLocal
-    investments(first: $count, after: $cursor, status: $status)
-      @connection(key: "MyInvestments_user_investments") {
+    investments(
+      first: $count
+      after: $cursor
+      status: $status
+      firstFetch: $firstFetch
+    ) @connection(key: "MyInvestments_user_investments") {
       edges {
         node {
           id
@@ -87,10 +91,11 @@ export const MyInvestments: FC<Props> = (props) => {
     { key: "refetch", title: t("Refrescar") },
   ];
 
-  const investmentStatus =
-    !data.statusLocal || data.statusLocal.includes("UP_TO_DATE")
-      ? "on_going"
-      : "over";
+  const investmentStatus = !data.statusLocal
+    ? "none"
+    : data.statusLocal.includes("UP_TO_DATE")
+    ? "on_going"
+    : "over";
 
   return (
     <Main>
@@ -99,14 +104,16 @@ export const MyInvestments: FC<Props> = (props) => {
         <Select
           value={investmentStatus}
           onChange={(e) => {
-            const status = e.target.value as "on_going" | "over";
+            const status = e.target.value as "on_going" | "over" | "none";
             commitCommentCreateLocally(RelayEnvironment, status);
             refetch(
               {
                 status:
                   status === "on_going"
                     ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
-                    : ["PAID", "PAST_DUE"],
+                    : status === "over"
+                    ? ["PAID", "PAST_DUE"]
+                    : null,
               },
               { fetchPolicy: "network-only" }
             );
@@ -119,6 +126,10 @@ export const MyInvestments: FC<Props> = (props) => {
             {
               value: "over",
               label: t("Terminados"),
+            },
+            {
+              value: "none",
+              label: t("Selecciona..."),
             },
           ]}
         />

@@ -63,8 +63,8 @@ export const AddFundsMutation = mutationWithClientMutationId({
           $push: {
             transactions: {
               $each: [newTransaction],
-              $sort: { _id: -1 },
-              $slice: -5,
+              $sort: { _id: 1 },
+              $slice: -6,
             },
           },
         },
@@ -76,7 +76,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
       if (!result.value) {
         throw new Error("No cuentas con fondos suficientes.");
       }
-      transactions.insertOne(newTransaction);
+      await transactions.insertOne(newTransaction);
       publishTransactionInsert(newTransaction);
       return { validAccessToken, error: "" };
     } catch (e) {

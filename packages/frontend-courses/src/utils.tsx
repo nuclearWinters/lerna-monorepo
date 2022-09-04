@@ -5,7 +5,7 @@ import { commitCommentCreateLocally } from "screens/MyInvestments";
 export const logOut = () => {
   tokensAndData.accessToken = "";
   tokensAndData.exp = undefined;
-  commitCommentCreateLocally(RelayEnvironment, "on_going");
+  commitCommentCreateLocally(RelayEnvironment, "none");
   tokensAndData.refetchUser();
   subscriptionsClient.restart();
 };
