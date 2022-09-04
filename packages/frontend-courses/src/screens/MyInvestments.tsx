@@ -21,6 +21,22 @@ import { MyInvestmentsPaginationUser } from "./__generated__/MyInvestmentsPagina
 import { MyInvestments_user$key } from "./__generated__/MyInvestments_user.graphql";
 import { RelayEnvironment } from "RelayEnvironment";
 
+export const commitCommentCreateLocally = (
+  environment: Environment,
+  status: "on_going" | "over"
+) => {
+  return commitLocalUpdate(environment, (store) => {
+    const root = store.getRoot();
+    const user = root.getLinkedRecord("user");
+    user?.setValue(
+      status === "on_going"
+        ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
+        : ["PAID", "PAST_DUE"],
+      "statusLocal"
+    );
+  });
+};
+
 const myInvestmentsFragment = graphql`
   fragment MyInvestments_user on User
   @argumentDefinitions(
@@ -32,7 +48,6 @@ const myInvestmentsFragment = graphql`
     }
   )
   @refetchable(queryName: "MyInvestmentsPaginationUser") {
-    id
     statusLocal
     investments(first: $count, after: $cursor, status: $status)
       @connection(key: "MyInvestments_user_investments") {
@@ -77,22 +92,6 @@ export const MyInvestments: FC<Props> = (props) => {
       ? "on_going"
       : "over";
 
-  const commitCommentCreateLocally = (
-    environment: Environment,
-    userID: string,
-    status: "on_going" | "over"
-  ) => {
-    return commitLocalUpdate(environment, (store) => {
-      const user = store.get(userID);
-      user?.setValue(
-        status === "on_going"
-          ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
-          : ["PAID", "PAST_DUE"],
-        "statusLocal"
-      );
-    });
-  };
-
   return (
     <Main>
       <WrapperBig>
@@ -101,7 +100,7 @@ export const MyInvestments: FC<Props> = (props) => {
           value={investmentStatus}
           onChange={(e) => {
             const status = e.target.value as "on_going" | "over";
-            commitCommentCreateLocally(RelayEnvironment, data.id, status);
+            commitCommentCreateLocally(RelayEnvironment, status);
             refetch(
               {
                 status:

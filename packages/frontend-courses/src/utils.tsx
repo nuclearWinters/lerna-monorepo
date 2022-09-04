@@ -1,9 +1,11 @@
 import { tokensAndData } from "App";
-import { subscriptionsClient } from "RelayEnvironment";
+import { RelayEnvironment, subscriptionsClient } from "RelayEnvironment";
+import { commitCommentCreateLocally } from "screens/MyInvestments";
 
 export const logOut = () => {
   tokensAndData.accessToken = "";
   tokensAndData.exp = undefined;
+  commitCommentCreateLocally(RelayEnvironment, "on_going");
   tokensAndData.refetchUser();
   subscriptionsClient.restart();
 };

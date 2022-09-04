@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<98f9f37064127c06474a571dd4e0215f>>
+ * @generated SignedSource<<32564953951433fadcf55089cb1e2855>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -90,7 +90,6 @@ return {
   },
   "name": "MyInvestments_user",
   "selections": [
-    (v1/*: any*/),
     {
       "alias": "investments",
       "args": [
@@ -175,6 +174,7 @@ return {
       ],
       "storageKey": null
     },
+    (v1/*: any*/),
     {
       "kind": "ClientExtension",
       "selections": [
@@ -193,6 +193,6 @@ return {
 };
 })();
 
-(node as any).hash = "f1378b16c8f5ae1688fc69ec7f2213ce";
+(node as any).hash = "e177d2df82bf5366c0c6ca33505a7357";
 
 export default node;
