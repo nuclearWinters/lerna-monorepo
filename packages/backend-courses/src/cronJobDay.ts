@@ -26,11 +26,13 @@ export const dayFunction = async (db: Db): Promise<void> => {
     if (!loan.scheduledPayments) {
       continue;
     }
-    const delayedPayments = loan.scheduledPayments.filter((payment) => {
-      return (
-        isBefore(payment.scheduledDate, now) && payment.status === "delayed"
-      );
-    });
+    const delayedPayments = loan.scheduledPayments
+      .map((payment, index) => ({ ...payment, index }))
+      .filter((payment) => {
+        return (
+          isBefore(payment.scheduledDate, now) && payment.status === "delayed"
+        );
+      });
     let count = 0;
     for (const delayedPayment of delayedPayments) {
       //Sumar amortización con interes moratorio
@@ -123,25 +125,21 @@ export const dayFunction = async (db: Db): Promise<void> => {
           count ===
         0;
       //El pago SI se realizó, por lo tanto se actualiza la deuda y el estatus del pago correspondiente se vuelve pagada
-      const updatedLoan = await loans.findOneAndUpdate(
+      loan.scheduledPayments[delayedPayment.index].status = "paid" as const;
+      if (allPaid) {
+        loan.status = "paid";
+      }
+      const updatedLoan = await loans.updateOne(
         { _id: loan._id },
         {
           $set: {
-            "scheduledPayments.$[item].status": "paid",
+            [`scheduledPayments.${delayedPayment.index}.status`]: "paid",
             ...(allPaid ? { status: "paid" } : {}),
           },
-        },
-        {
-          arrayFilters: [
-            {
-              "item.scheduledDate": delayedPayment.scheduledDate,
-            },
-          ],
-          returnDocument: "after",
         }
       );
-      if (updatedLoan.value) {
-        publishLoanUpdate(updatedLoan.value);
+      if (updatedLoan.modifiedCount) {
+        publishLoanUpdate(loan);
       }
       const setStatus =
         noDelayed || allPaid

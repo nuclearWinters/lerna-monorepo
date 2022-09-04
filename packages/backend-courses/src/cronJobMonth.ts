@@ -26,11 +26,14 @@ export const monthFunction = async (db: Db): Promise<void> => {
     if (!loan.scheduledPayments) {
       continue;
     }
-    const payments = loan.scheduledPayments.filter((payment) => {
-      return (
-        isSameDay(payment.scheduledDate, now) && payment.status === "to be paid"
-      );
-    });
+    const payments = loan.scheduledPayments
+      .map((payment, index) => ({ ...payment, index }))
+      .filter((payment) => {
+        return (
+          isSameDay(payment.scheduledDate, now) &&
+          payment.status === "to be paid"
+        );
+      });
     for (const payment of payments) {
       const delayedTotal = payment.amortize;
       const user_id = loan.id_user;
@@ -69,21 +72,19 @@ export const monthFunction = async (db: Db): Promise<void> => {
         publishUser(result.value);
       }
       if (!result.value) {
+        loan.scheduledPayments[payment.index].status = "delayed" as const;
         //Si el deudor no tiene suficiente dinero el estatus de su deuda se vuelve atrasada
-        const updatedLoan = await loans.findOneAndUpdate(
+        const updatedLoan = await loans.updateOne(
           { _id: loan._id },
-          { $set: { "scheduledPayments.$[item].status": "delayed" } },
           {
-            arrayFilters: [
-              {
-                "item.scheduledDate": payment.scheduledDate,
-              },
-            ],
-            returnDocument: "after",
+            $set: {
+              [`scheduledPayments.${payment.index}.status`]: "delayed",
+              ...{},
+            },
           }
         );
-        if (updatedLoan.value) {
-          publishLoanUpdate(updatedLoan.value);
+        if (updatedLoan.modifiedCount) {
+          publishLoanUpdate(loan);
         }
         //Si el deudor no tiene suficiente dinero el estatus de las inversiones se vuelve atrasada
         const allInvestments = await investments
@@ -106,26 +107,21 @@ export const monthFunction = async (db: Db): Promise<void> => {
           .length +
           1 ===
         loan.scheduledPayments?.length;
+      if (allPaid) {
+        loan.status = "paid";
+      }
       //El pago SI se realizó, por lo tanto se actualiza la deuda y el estatus del pago correspondiente se vuelve pagada
-      const updatedLoan = await loans.findOneAndUpdate(
+      const updatedLoan = await loans.updateOne(
         { _id: loan._id },
         {
           $set: {
-            "scheduledPayments.$[item].status": "paid",
+            [`scheduledPayments.${payment.index}.status`]: "paid",
             ...(allPaid ? { status: "paid" } : {}),
           },
-        },
-        {
-          arrayFilters: [
-            {
-              "item.scheduledDate": payment.scheduledDate,
-            },
-          ],
-          returnDocument: "after",
         }
       );
-      if (updatedLoan.value) {
-        publishLoanUpdate(updatedLoan.value);
+      if (updatedLoan.modifiedCount) {
+        publishLoanUpdate(loan);
       }
       const setStatus = allPaid ? { status: "paid" as const } : {};
       //Conseguir todas las inversiones con el id de la deuda
