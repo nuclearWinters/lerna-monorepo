@@ -44,6 +44,10 @@ interface ArgsTransactions extends ConnectionArguments {
   firstFetch?: boolean;
 }
 
+interface ArgsLoans extends ConnectionArguments {
+  firstFetch?: boolean;
+}
+
 export const DateScalarType = new GraphQLScalarType({
   name: "Date",
   serialize: (value) => {
@@ -407,19 +411,24 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountTotal }): number => accountTotal,
     },
-    //isLender loan is not part of user
-    //Only isSupport and isBorrower is
-    //Create two more connections, one for isSupport and one for isBorrower
-    loans: {
+    myLoans: {
       type: new GraphQLNonNull(LoanConnection),
-      args: forwardConnectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        firstFetch: {
+          type: GraphQLBoolean,
+        },
+      },
       resolve: async (
-        _root: unknown,
+        { myLoans },
         args: unknown,
-        { loans, isBorrower, isSupport, id }: Context
+        { loans, isBorrower, id, isLender }: Context
       ): Promise<Connection<LoanMongo>> => {
-        const { after, first } = args as ConnectionArguments;
+        const { after, first, firstFetch } = args as ArgsLoans;
         try {
+          if (isLender) {
+            throw new Error("Do not return anything to lenders");
+          }
           const loan_id = unbase64(after || "");
           const limit = first ? first + 1 : 0;
           if (limit <= 0) {
@@ -429,9 +438,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
             status: {
               $in: isBorrower
                 ? ["financing", "to be paid", "waiting for approval"]
-                : isSupport
-                ? ["waiting for approval"]
-                : ["financing"],
+                : ["waiting for approval"],
             },
           };
           if (loan_id) {
@@ -440,11 +447,14 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           if (isBorrower) {
             query.id_user = id;
           }
-          const result = await loans
-            .find(query)
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray();
+          const result =
+            firstFetch && !after && isBorrower
+              ? myLoans
+              : await loans
+                  .find(query)
+                  .limit(limit)
+                  .sort({ $natural: -1 })
+                  .toArray();
           const edgesMapped = result.map((loan) => {
             return {
               cursor: base64(loan._id.toHexString()),

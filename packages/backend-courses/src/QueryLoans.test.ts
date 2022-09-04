@@ -86,7 +86,7 @@ describe("QueryLoans tests", () => {
       .send({
         query: `query GetLoansConnection($first: Int, $after: String!) {
           user {
-            loans(first: $first, after: $after) {
+            myLoans(first: $first, after: $after) {
               edges {
                 cursor
                 node {
@@ -139,16 +139,16 @@ describe("QueryLoans tests", () => {
           { expiresIn: "15m" }
         )}`
       );
-    expect(response.body.data.user.loans.edges.length).toBe(2);
-    expect(response.body.data.user.loans.edges[0].cursor).toBeTruthy();
-    expect(response.body.data.user.loans.edges[0].node.id).toBeTruthy();
-    expect(response.body.data.user.loans.edges[0].node.id_user).toBeTruthy();
-    expect(response.body.data.user.loans.edges[0].node.score).toBeTruthy();
-    expect(response.body.data.user.loans.edges[0].node.ROI).toBeTruthy();
-    expect(response.body.data.user.loans.edges[0].node.goal).toBeTruthy();
-    expect(response.body.data.user.loans.edges[0].node.term).toBeTruthy();
-    expect(response.body.data.user.loans.edges[0].node.raised).toBeTruthy();
-    expect(response.body.data.user.loans.edges[0].node.expiry).toBeTruthy();
-    expect(response.body.data.user.loans.edges[0].node.status).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges.length).toBe(2);
+    expect(response.body.data.user.myLoans.edges[0].cursor).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.id).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.id_user).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.score).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.ROI).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.goal).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.term).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.raised).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.expiry).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.status).toBeTruthy();
   });
 });
