@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c7ad9593f4cde34b73fbd7858e586a1c>>
+ * @generated SignedSource<<3a1977f0bb7811158aba52431f4901a3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,7 +17,7 @@ export type Routes_user$data = {
   readonly accountTotal: string;
   readonly id: string;
   readonly statusLocal: ReadonlyArray<InvestmentStatus> | null;
-  readonly " $fragmentSpreads": FragmentRefs<"Account_user" | "LoansToApprove_user" | "MyInvestments_user" | "MyLoans_user" | "MyTransactions_user">;
+  readonly " $fragmentSpreads": FragmentRefs<"Account_user" | "MyInvestments_user" | "MyLoans_user" | "MyTransactions_user">;
   readonly " $fragmentType": "Routes_user";
 };
 export type Routes_user$key = {
@@ -80,11 +80,6 @@ const node: ReaderFragment = {
       "name": "MyLoans_user"
     },
     {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "LoansToApprove_user"
-    },
-    {
       "kind": "ClientExtension",
       "selections": [
         {
@@ -101,6 +96,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "24c7684188c4945a32ef0901a820e909";
+(node as any).hash = "176c7547571250f3dd4c41115c13be91";
 
 export default node;

@@ -20,9 +20,10 @@ const debtInSaleFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
+    firstFetch: { type: "Boolean", defaultValue: true }
   )
   @refetchable(queryName: "MyLoansPaginationUser") {
-    myLoans(first: $count, after: $cursor)
+    myLoans(first: $count, after: $cursor, firstFetch: $firstFetch)
       @connection(key: "MyLoans_user_myLoans") {
       edges {
         node {

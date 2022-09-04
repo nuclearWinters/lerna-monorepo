@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<488aac0a7072e79eb451eec7c79ff862>>
+ * @generated SignedSource<<1c2242e698eb8afea5324e2de495e91c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,6 +13,7 @@ import { FragmentRefs } from "relay-runtime";
 export type MyLoansPaginationUser$variables = {
   count?: number | null;
   cursor?: string | null;
+  firstFetch?: boolean | null;
   id: string;
 };
 export type MyLoansPaginationUser$data = {
@@ -38,6 +39,11 @@ var v0 = [
     "name": "cursor"
   },
   {
+    "defaultValue": true,
+    "kind": "LocalArgument",
+    "name": "firstFetch"
+  },
+  {
     "defaultValue": null,
     "kind": "LocalArgument",
     "name": "id"
@@ -51,20 +57,25 @@ v1 = [
   }
 ],
 v2 = {
+  "kind": "Variable",
+  "name": "firstFetch",
+  "variableName": "firstFetch"
+},
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v5 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -74,9 +85,10 @@ v4 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
-  }
+  },
+  (v2/*: any*/)
 ],
-v5 = {
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -109,7 +121,8 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
-              }
+              },
+              (v2/*: any*/)
             ],
             "kind": "FragmentSpread",
             "name": "MyLoans_user"
@@ -135,14 +148,14 @@ return {
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
           (v3/*: any*/),
+          (v4/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v5/*: any*/),
                 "concreteType": "LoanConnection",
                 "kind": "LinkedField",
                 "name": "myLoans",
@@ -164,7 +177,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v3/*: any*/),
+                          (v4/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -214,7 +227,7 @@ return {
                             "name": "expiry",
                             "storageKey": null
                           },
-                          (v5/*: any*/),
+                          (v6/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -230,7 +243,7 @@ return {
                                 "name": "amortize",
                                 "storageKey": null
                               },
-                              (v5/*: any*/),
+                              (v6/*: any*/),
                               {
                                 "alias": null,
                                 "args": null,
@@ -255,7 +268,7 @@ return {
                             "name": "pendingCents",
                             "storageKey": null
                           },
-                          (v2/*: any*/)
+                          (v3/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -299,8 +312,10 @@ return {
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
-                "filters": null,
+                "args": (v5/*: any*/),
+                "filters": [
+                  "firstFetch"
+                ],
                 "handle": "connection",
                 "key": "MyLoans_user_myLoans",
                 "kind": "LinkedHandle",
@@ -316,16 +331,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d4b9224bcffc7390b7edaee6b064152f",
+    "cacheID": "2659ed92c8414271827567a72cf3bc1f",
     "id": null,
     "metadata": {},
     "name": "MyLoansPaginationUser",
     "operationKind": "query",
-    "text": "query MyLoansPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyLoans_user_1G22uz\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user_1G22uz on User {\n  myLoans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyLoansPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $firstFetch: Boolean = true\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyLoans_user_aKcJb\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user_aKcJb on User {\n  myLoans(first: $count, after: $cursor, firstFetch: $firstFetch) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0496e983a808c4ec507cad7a71ed3d49";
+(node as any).hash = "ee1cfc1a513e936b4363d61403a09475";
 
 export default node;
