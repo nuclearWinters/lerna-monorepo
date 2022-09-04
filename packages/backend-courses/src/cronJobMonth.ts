@@ -1,4 +1,4 @@
-import { Db, Filter, ObjectId, OptionalId, UpdateFilter } from "mongodb";
+import { Db, Filter, ObjectId, UpdateFilter, WithId } from "mongodb";
 import {
   TransactionMongo,
   InvestmentMongo,
@@ -33,6 +33,15 @@ export const monthFunction = async (db: Db): Promise<void> => {
     });
     for (const payment of payments) {
       const delayedTotal = payment.amortize;
+      const user_id = loan.id_user;
+      //transacción para informar al deudor de su pago
+      const transactionUpdateOne: WithId<TransactionMongo> = {
+        _id: new ObjectId(),
+        type: "payment",
+        quantity: -delayedTotal,
+        created: now,
+        id_user: user_id,
+      };
       //Se actualiza el usuario del deudor al mover dinero de cuenta
       const result = await users.findOneAndUpdate(
         {
@@ -43,6 +52,13 @@ export const monthFunction = async (db: Db): Promise<void> => {
           $inc: {
             accountAvailable: -delayedTotal,
             accountTotal: -delayedTotal,
+          },
+          $push: {
+            transactions: {
+              $each: [transactionUpdateOne],
+              $sort: { _id: -1 },
+              $slice: -5,
+            },
           },
         },
         {
@@ -121,23 +137,24 @@ export const monthFunction = async (db: Db): Promise<void> => {
       const operations = allInvestments.map<{
         userFilter: Filter<UserMongo>;
         userUpdate: UpdateFilter<UserMongo>;
-        transactionsInsert: OptionalId<TransactionMongo>;
+        transactionsInsert: WithId<TransactionMongo>;
         investmentFilter: Filter<InvestmentMongo>;
         investmentUpdate: UpdateFilter<InvestmentMongo>;
       }>(({ _id, id_lender, payments, amortize }) => {
         const totalAmortize = amortize * term;
         const paid_already = amortize * (payments + 1);
         const to_be_paid = totalAmortize - paid_already;
+        const newTransaction: WithId<TransactionMongo> = {
+          _id: new ObjectId(),
+          id_user: id_lender,
+          type: "collect",
+          quantity: amortize,
+          created: now,
+          id_borrower: loan.id_user,
+          _id_loan: loan._id,
+        };
         return {
-          transactionsInsert: {
-            _id: new ObjectId(),
-            id_user: id_lender,
-            type: "collect",
-            quantity: amortize,
-            created: now,
-            id_borrower: loan.id_user,
-            _id_loan: loan._id,
-          },
+          transactionsInsert: newTransaction,
           userFilter: {
             id: id_lender,
           },
@@ -145,6 +162,13 @@ export const monthFunction = async (db: Db): Promise<void> => {
             $inc: {
               accountAvailable: amortize,
               accountToBePaid: -amortize,
+            },
+            $push: {
+              transactions: {
+                $each: [newTransaction],
+                $sort: { _id: -1 },
+                $slice: -5,
+              },
             },
           },
           investmentFilter: {
@@ -166,15 +190,6 @@ export const monthFunction = async (db: Db): Promise<void> => {
       const transactionsOperations = operations.map(
         (operation) => operation.transactionsInsert
       );
-      const user_id = loan.id_user;
-      //transacción para informar al deudor de su pago
-      const transactionUpdateOne: OptionalId<TransactionMongo> = {
-        _id: new ObjectId(),
-        type: "payment",
-        quantity: -delayedTotal,
-        created: now,
-        id_user: user_id,
-      };
       transactionsOperations.unshift(transactionUpdateOne);
       await transactions.insertMany(transactionsOperations);
       for (const operation of operations) {

@@ -226,6 +226,15 @@ describe("cronJobs tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO11",
     });
+    const _id_transaction = new ObjectId("000000000000000000000000");
+    const date_transaction = new Date("2001-01-01");
+    if (user) {
+      user.transactions = user?.transactions.map((tr) => ({
+        ...tr,
+        _id: _id_transaction,
+        created: date_transaction,
+      }));
+    }
     expect(user).toEqual({
       _id: new ObjectId("300000000000000000000011"),
       id: "wHHR1SUBT0dspoF4YUO11",
@@ -234,11 +243,33 @@ describe("cronJobs tests", () => {
       accountTotal: 896578,
       myInvestments: [],
       myLoans: [],
-      transactions: [],
+      transactions: [
+        {
+          _id: _id_transaction,
+          created: date_transaction,
+          id_user: "wHHR1SUBT0dspoF4YUO11",
+          quantity: -51711,
+          type: "payment",
+        },
+        {
+          _id: _id_transaction,
+          created: date_transaction,
+          id_user: "wHHR1SUBT0dspoF4YUO11",
+          quantity: -51711,
+          type: "payment",
+        },
+      ],
     });
     const user2 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO12",
     });
+    if (user2) {
+      user2.transactions = user2?.transactions.map((tr) => ({
+        ...tr,
+        _id: _id_transaction,
+        created: date_transaction,
+      }));
+    }
     expect(user2).toEqual({
       _id: new ObjectId("300000000000000000000100"),
       id: "wHHR1SUBT0dspoF4YUO12",
@@ -247,7 +278,26 @@ describe("cronJobs tests", () => {
       accountTotal: 306149,
       myInvestments: [],
       myLoans: [],
-      transactions: [],
+      transactions: [
+        {
+          _id: _id_transaction,
+          _id_loan: new ObjectId("300000000000000000000020"),
+          created: date_transaction,
+          id_borrower: "wHHR1SUBT0dspoF4YUO11",
+          id_user: "wHHR1SUBT0dspoF4YUO12",
+          quantity: 50989,
+          type: "collect",
+        },
+        {
+          _id: _id_transaction,
+          _id_loan: new ObjectId("300000000000000000000012"),
+          created: date_transaction,
+          id_borrower: "wHHR1SUBT0dspoF4YUO11",
+          id_user: "wHHR1SUBT0dspoF4YUO12",
+          quantity: 50989,
+          type: "collect",
+        },
+      ],
     });
     const transactions_borrower = await transactions
       .find({

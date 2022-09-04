@@ -1,6 +1,6 @@
 import { Channel, ConsumeMessage } from "amqplib";
 import { addMonths, startOfMonth } from "date-fns";
-import { Db, ObjectId } from "mongodb";
+import { Db, ObjectId, WithId } from "mongodb";
 import {
   publishInvestmentUpdate,
   publishLoanUpdate,
@@ -116,6 +116,17 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   if (updatedInvestment.value) {
     publishInvestmentUpdate(updatedInvestment.value);
   }
+  const transactionOperation: WithId<TransactionMongo>[] = [
+    {
+      _id: new ObjectId(),
+      id_user: id,
+      type: "invest" as const,
+      quantity,
+      created: now,
+      _id_loan,
+      id_borrower,
+    },
+  ];
   //Si raised es igual a goal: actualizar inversiones, prestamo y prestador
   if (resultLoan.value.raised === resultLoan.value.goal) {
     //Obtener todas las inversiones del prestamo completado
@@ -137,6 +148,13 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
           $inc: {
             accountToBePaid: amortizes,
             accountTotal: amortizes,
+          },
+          $push: {
+            transactions: {
+              $each: [transactionOperation[0]],
+              $sort: { _id: -1 },
+              $slice: -5,
+            },
           },
         },
         { returnDocument: "after" }
@@ -189,6 +207,13 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       publishLoanUpdate(updatedLoan.value);
     }
     //Si raised es igual a goal: añadir fondos a quien pidio prestado
+    const creditBorrowerTransaction = {
+      _id: new ObjectId(),
+      id_user: resultLoan.value.id_user,
+      type: "credit" as const,
+      quantity: resultLoan.value.goal,
+      created: now,
+    };
     const { value } = await users.findOneAndUpdate(
       { id: resultLoan.value.id_user },
       {
@@ -196,25 +221,24 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
           accountAvailable: resultLoan.value.goal,
           accountTotal: resultLoan.value.goal,
         },
+        $push: {
+          transactions: {
+            $each: [creditBorrowerTransaction],
+            $sort: { _id: -1 },
+            $slice: -5,
+          },
+        },
       },
       { returnDocument: "after" }
     );
     if (value) {
       publishUser(value);
+      transactionOperation.push(creditBorrowerTransaction);
     }
   }
-  const transactionOperation = {
-    _id: new ObjectId(),
-    id_user: id,
-    type: "invest" as const,
-    quantity,
-    created: now,
-    _id_loan,
-    id_borrower,
-  };
   //Insertar transaccion
-  await transactions.insertOne(transactionOperation);
-  publishTransactionInsert(transactionOperation);
+  await transactions.insertMany(transactionOperation);
+  publishTransactionInsert(transactionOperation[0]);
   ch.ack(msg);
   return;
 };

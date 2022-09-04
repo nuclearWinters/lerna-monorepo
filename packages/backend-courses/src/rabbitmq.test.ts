@@ -291,6 +291,15 @@ describe("rabbitMQ tests", () => {
     const user2 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO31",
     });
+    const _id_transaction = new ObjectId("000000000000000000000000");
+    const date_transaction = new Date("2001-01-01");
+    if (user2) {
+      user2.transactions = user2?.transactions.map((tr) => ({
+        ...tr,
+        _id: _id_transaction,
+        created: date_transaction,
+      }));
+    }
     expect(user2).toEqual({
       _id: new ObjectId("000000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO31",
@@ -299,11 +308,37 @@ describe("rabbitMQ tests", () => {
       accountTotal: 101196,
       myInvestments: [],
       myLoans: [],
-      transactions: [],
+      transactions: [
+        {
+          _id: _id_transaction,
+          _id_loan: new ObjectId("000000000000000000000003"),
+          created: date_transaction,
+          id_borrower: "wHHR1SUBT0dspoF4YUO32",
+          id_user: "wHHR1SUBT0dspoF4YUO31",
+          quantity: 45000,
+          type: "invest",
+        },
+        {
+          _id: _id_transaction,
+          _id_loan: new ObjectId("000000000000000000000002"),
+          created: date_transaction,
+          id_borrower: "wHHR1SUBT0dspoF4YUO32",
+          id_user: "wHHR1SUBT0dspoF4YUO31",
+          quantity: 40000,
+          type: "invest",
+        },
+      ],
     });
     const user3 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO32",
     });
+    if (user3) {
+      user3.transactions = user3?.transactions.map((tr) => ({
+        ...tr,
+        _id: _id_transaction,
+        created: date_transaction,
+      }));
+    }
     expect(user3).toEqual({
       _id: new ObjectId("000000000000000000000005"),
       id: "wHHR1SUBT0dspoF4YUO32",
@@ -312,7 +347,22 @@ describe("rabbitMQ tests", () => {
       accountTotal: 200000,
       myInvestments: [],
       myLoans: [],
-      transactions: [],
+      transactions: [
+        {
+          _id: _id_transaction,
+          created: date_transaction,
+          id_user: "wHHR1SUBT0dspoF4YUO32",
+          quantity: 50000,
+          type: "credit",
+        },
+        {
+          _id: _id_transaction,
+          created: date_transaction,
+          id_user: "wHHR1SUBT0dspoF4YUO32",
+          quantity: 50000,
+          type: "credit",
+        },
+      ],
     });
     const allTransactions2 = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
