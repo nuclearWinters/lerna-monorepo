@@ -6,7 +6,7 @@ import {
   publishTransactionInsert,
   publishUser,
 } from "../subscriptions/subscriptionsUtils";
-import { ObjectId, OptionalId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 
 interface Input {
   quantity: number;
@@ -45,9 +45,29 @@ export const AddFundsMutation = mutationWithClientMutationId({
       if (quantity === 0) {
         throw new Error("La cantidad no puede ser cero.");
       }
+      const now = new Date();
+      const newTransaction: WithId<TransactionMongo> = {
+        _id: new ObjectId(),
+        id_user: id,
+        type: quantity > 0 ? "credit" : "withdrawal",
+        quantity,
+        created: now,
+      };
       const result = await users.findOneAndUpdate(
         { id, accountAvailable: { $gte: -quantity } },
-        { $inc: { accountAvailable: quantity, accountTotal: quantity } },
+        {
+          $inc: {
+            accountAvailable: quantity,
+            accountTotal: quantity,
+          },
+          $push: {
+            transactions: {
+              $each: [newTransaction],
+              $sort: { _id: -1 },
+              $slice: -5,
+            },
+          },
+        },
         { returnDocument: "after" }
       );
       if (result.value) {
@@ -56,16 +76,8 @@ export const AddFundsMutation = mutationWithClientMutationId({
       if (!result.value) {
         throw new Error("No cuentas con fondos suficientes.");
       }
-      const now = new Date();
-      const doc: OptionalId<TransactionMongo> = {
-        _id: new ObjectId(),
-        id_user: id,
-        type: quantity > 0 ? "credit" : "withdrawal",
-        quantity,
-        created: now,
-      };
-      transactions.insertOne(doc);
-      publishTransactionInsert(doc);
+      transactions.insertOne(newTransaction);
+      publishTransactionInsert(newTransaction);
       return { validAccessToken, error: "" };
     } catch (e) {
       return {

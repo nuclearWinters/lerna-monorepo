@@ -45,6 +45,9 @@ describe("ApproveLoan tests", () => {
         accountAvailable: 100000,
         accountToBePaid: 0,
         accountTotal: 100000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
       {
         _id: new ObjectId("000000000000000000000010"),
@@ -52,6 +55,23 @@ describe("ApproveLoan tests", () => {
         accountAvailable: 100000,
         accountToBePaid: 0,
         accountTotal: 100000,
+        transactions: [],
+        myLoans: [
+          {
+            _id: new ObjectId("000000000000000000000008"),
+            id_user: "wHHR1SUBT0dspoF4YUO22",
+            score: "AAA",
+            ROI: 17,
+            goal: 100000,
+            term: 2,
+            raised: 0,
+            expiry: new Date(),
+            status: "waiting for approval",
+            scheduledPayments: null,
+            pending: 0,
+          },
+        ],
+        myInvestments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -119,6 +139,42 @@ describe("ApproveLoan tests", () => {
     expect(response.body.data.approveLoan.error).toBeFalsy();
     expect(response.body.data.approveLoan.validAccessToken).toBeTruthy();
     expect(response.body.data.approveLoan.loan).toBeTruthy();
+    const user = await users.findOne({
+      id: "wHHR1SUBT0dspoF4YUO22",
+    });
+    const _id_loan = new ObjectId("000000000000000000000000");
+    const date_loan = new Date("2001-01-01");
+    if (user) {
+      user.myLoans = user?.myLoans.map((loan) => ({
+        ...loan,
+        _id: _id_loan,
+        expiry: date_loan,
+      }));
+    }
+    expect(user).toEqual({
+      _id: new ObjectId("000000000000000000000010"),
+      id: "wHHR1SUBT0dspoF4YUO22",
+      accountAvailable: 100000,
+      accountToBePaid: 0,
+      accountTotal: 100000,
+      myInvestments: [],
+      myLoans: [
+        {
+          ROI: 17,
+          _id: _id_loan,
+          expiry: date_loan,
+          goal: 100000,
+          id_user: "wHHR1SUBT0dspoF4YUO22",
+          pending: 0,
+          raised: 0,
+          scheduledPayments: null,
+          score: "AAA",
+          status: "financing",
+          term: 2,
+        },
+      ],
+      transactions: [],
+    });
     const allLoans = await loans
       .find({ _id: new ObjectId("000000000000000000000008") })
       .toArray();

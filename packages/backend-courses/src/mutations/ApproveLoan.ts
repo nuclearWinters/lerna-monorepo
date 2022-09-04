@@ -37,7 +37,7 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { loan_gid }: Input,
-    { loans, validAccessToken }: Context
+    { loans, validAccessToken, users }: Context
   ): Promise<Payload> => {
     try {
       if (!validAccessToken) {
@@ -52,6 +52,21 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
       if (!loan) {
         throw new Error("No se encontró la deuda.");
       }
+      await users.updateOne(
+        { id: loan.id_user },
+        {
+          $set: {
+            "myLoans.$[item].status": "financing",
+          },
+        },
+        {
+          arrayFilters: [
+            {
+              "item._id": loan._id,
+            },
+          ],
+        }
+      );
       publishLoanUpdate(loan);
       return { validAccessToken, error: "", loan };
     } catch (e) {

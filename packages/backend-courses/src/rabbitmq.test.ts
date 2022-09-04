@@ -48,6 +48,9 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 100000,
         accountToBePaid: 0,
         accountTotal: 100000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
       {
         _id: new ObjectId("000000000000000000000005"),
@@ -55,6 +58,9 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 100000,
         accountToBePaid: 0,
         accountTotal: 100000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -139,6 +145,9 @@ describe("rabbitMQ tests", () => {
       accountAvailable: 85000,
       accountToBePaid: 0,
       accountTotal: 85000,
+      myInvestments: [],
+      myLoans: [],
+      transactions: [],
     });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
@@ -288,6 +297,9 @@ describe("rabbitMQ tests", () => {
       accountAvailable: 0,
       accountToBePaid: 101196,
       accountTotal: 101196,
+      myInvestments: [],
+      myLoans: [],
+      transactions: [],
     });
     const user3 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO32",
@@ -298,6 +310,9 @@ describe("rabbitMQ tests", () => {
       accountAvailable: 200000,
       accountToBePaid: 0,
       accountTotal: 200000,
+      myInvestments: [],
+      myLoans: [],
+      transactions: [],
     });
     const allTransactions2 = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
@@ -443,6 +458,9 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
       {
         _id: new ObjectId("400000000000000000000005"),
@@ -450,6 +468,9 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -500,6 +521,9 @@ describe("rabbitMQ tests", () => {
       accountAvailable: 10000,
       accountToBePaid: 0,
       accountTotal: 10000,
+      myInvestments: [],
+      myLoans: [],
+      transactions: [],
     });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO33" })
@@ -538,6 +562,9 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
       {
         _id: new ObjectId("500000000000000000000005"),
@@ -545,6 +572,9 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -595,6 +625,9 @@ describe("rabbitMQ tests", () => {
       accountAvailable: 10000,
       accountToBePaid: 0,
       accountTotal: 10000,
+      myInvestments: [],
+      myLoans: [],
+      transactions: [],
     });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO35" })
@@ -633,6 +666,9 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
       {
         _id: new ObjectId("600000000000000000000005"),
@@ -640,6 +676,9 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -724,6 +763,9 @@ describe("rabbitMQ tests", () => {
       accountAvailable: 5000,
       accountToBePaid: 0,
       accountTotal: 5000,
+      myInvestments: [],
+      myLoans: [],
+      transactions: [],
     });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO37" })

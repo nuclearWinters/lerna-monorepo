@@ -53,6 +53,9 @@ describe("cronJobs tests", () => {
         accountAvailable: 1000000,
         accountToBePaid: 0,
         accountTotal: 1000000,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
       {
         _id: new ObjectId("000000000000000000000101"),
@@ -60,6 +63,9 @@ describe("cronJobs tests", () => {
         accountAvailable: 100000,
         accountToBePaid: 203956,
         accountTotal: 303956,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
       {
         _id: new ObjectId("000000000000000000000113"),
@@ -67,6 +73,9 @@ describe("cronJobs tests", () => {
         accountAvailable: 0,
         accountToBePaid: 0,
         accountTotal: 0,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
     ]);
     await loans.insertMany([
@@ -223,6 +232,9 @@ describe("cronJobs tests", () => {
       accountAvailable: 898022,
       accountToBePaid: 0,
       accountTotal: 898022,
+      myInvestments: [],
+      myLoans: [],
+      transactions: [],
     });
     const user2 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUOw8",
@@ -233,6 +245,9 @@ describe("cronJobs tests", () => {
       accountAvailable: 201978,
       accountToBePaid: 101978,
       accountTotal: 303956,
+      myInvestments: [],
+      myLoans: [],
+      transactions: [],
     });
     const borrower_transactions = await transactions
       .find({

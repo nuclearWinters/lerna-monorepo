@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c8495c9e35ca2a6fd3b28567388b868f>>
+ * @generated SignedSource<<4b9cb75aeafa1bc4e2d351f7e6d4596d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,7 @@ export type Routes_auth_user$data = {
   readonly isSupport: boolean;
   readonly language: Languages;
   readonly name: string;
-  readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_auth_user" | "MyTransactions_auth_user" | "Settings_auth_user">;
+  readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_auth_query" | "LoansToApprove_auth_user" | "MyLoans_auth_user" | "MyTransactions_auth_user" | "Settings_auth_user">;
   readonly " $fragmentType": "Routes_auth_user";
 };
 export type Routes_auth_user$key = {
@@ -90,18 +90,28 @@ const node: ReaderFragment = {
     {
       "args": null,
       "kind": "FragmentSpread",
-      "name": "AddInvestments_auth_user"
+      "name": "MyLoans_auth_user"
     },
     {
       "args": null,
       "kind": "FragmentSpread",
       "name": "MyTransactions_auth_user"
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "AddInvestments_auth_query"
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "LoansToApprove_auth_user"
     }
   ],
   "type": "AuthUser",
   "abstractKey": null
 };
 
-(node as any).hash = "d0e985c369b147d138da9bea3e094e96";
+(node as any).hash = "fe7b900fcee78b19ac3171a8c35ed511";
 
 export default node;

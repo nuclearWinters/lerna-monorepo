@@ -134,6 +134,7 @@ type Query {
   user: User!
   authUser: AuthUser!
   node(id: ID!): Node
+  loansFinancing(after: String, first: Int): LoanConnection
 }
 
 type Subscription {
@@ -282,18 +283,15 @@ type User implements Node {
   accountAvailable: MXN!
   accountToBePaid: MXN!
   accountTotal: MXN!
-  loans(after: String, first: Int, before: String, last: Int): LoanConnection
+  myLoans(after: String, first: Int): LoanConnection
   transactions(
     after: String
     first: Int
-    before: String
-    last: Int
+    firstFetch: Boolean
   ): TransactionConnection
   investments(
     after: String
     first: Int
-    before: String
-    last: Int
     status: [InvestmentStatus!]!
   ): InvestmentsConnection
 }

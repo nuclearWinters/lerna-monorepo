@@ -26,9 +26,10 @@ const transactionsFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
+    firstFetch: { type: "Boolean", defaultValue: true }
   )
   @refetchable(queryName: "MyTransactionsPaginationUser") {
-    transactions(first: $count, after: $cursor)
+    transactions(first: $count, after: $cursor, firstFetch: $firstFetch)
       @connection(key: "MyTransactions_user_transactions") {
       edges {
         node {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c93bf8d07e6fbb64b1a4d0015dfbebb8>>
+ * @generated SignedSource<<d5573bd70e7b312b0c9ac428dcf283a9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,16 +9,9 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
-export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestments_query$data = {
-  readonly authUser: {
-    readonly isBorrower: boolean;
-    readonly isLender: boolean;
-    readonly isSupport: boolean;
-    readonly language: Languages;
-  };
-  readonly loans: {
+  readonly loansFinancing: {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
@@ -26,9 +19,6 @@ export type AddInvestments_query$data = {
       } | null;
     } | null> | null;
   } | null;
-  readonly user: {
-    readonly id: string;
-  };
   readonly " $fragmentType": "AddInvestments_query";
 };
 export type AddInvestments_query$key = {
@@ -38,21 +28,10 @@ export type AddInvestments_query$key = {
 
 const node: ReaderFragment = (function(){
 var v0 = [
-  "loans"
-],
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
+  "loansFinancing"
+];
 return {
   "argumentDefinitions": [
-    {
-      "kind": "RootArgument",
-      "name": "borrower_id"
-    },
     {
       "defaultValue": 5,
       "kind": "LocalArgument",
@@ -62,10 +41,6 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
-    },
-    {
-      "kind": "RootArgument",
-      "name": "status"
     }
   ],
   "kind": "Fragment",
@@ -94,22 +69,11 @@ return {
   "name": "AddInvestments_query",
   "selections": [
     {
-      "alias": "loans",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "borrower_id",
-          "variableName": "borrower_id"
-        },
-        {
-          "kind": "Variable",
-          "name": "status",
-          "variableName": "status"
-        }
-      ],
+      "alias": "loansFinancing",
+      "args": null,
       "concreteType": "LoanConnection",
       "kind": "LinkedField",
-      "name": "__AddInvestments_query_loans_connection",
+      "name": "__AddInvestments_query_loansFinancing_connection",
       "plural": false,
       "selections": [
         {
@@ -128,7 +92,13 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                (v1/*: any*/),
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "id",
+                  "storageKey": null
+                },
                 {
                   "args": null,
                   "kind": "FragmentSpread",
@@ -181,57 +151,6 @@ return {
         }
       ],
       "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "User",
-      "kind": "LinkedField",
-      "name": "user",
-      "plural": false,
-      "selections": [
-        (v1/*: any*/)
-      ],
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "AuthUser",
-      "kind": "LinkedField",
-      "name": "authUser",
-      "plural": false,
-      "selections": [
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "isLender",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "isSupport",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "isBorrower",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "language",
-          "storageKey": null
-        }
-      ],
-      "storageKey": null
     }
   ],
   "type": "Query",
@@ -239,6 +158,6 @@ return {
 };
 })();
 
-(node as any).hash = "1f768959ddebf319a1ccba8837284472";
+(node as any).hash = "8876165637b4be866ff48ff9d1cfc802";
 
 export default node;

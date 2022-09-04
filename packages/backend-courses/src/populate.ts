@@ -19,6 +19,14 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     await investments.deleteMany({});
     const transactions = db.collection<TransactionMongo>("transactions");
     await transactions.deleteMany({});
+    const _id_transaction_1 = new ObjectId("607bd608ef9719001cf38120");
+    const _id_transaction_2 = new ObjectId("607bd608ef9719001cf38121");
+    const _id_transaction_3 = new ObjectId("607bd608ef9719001cf38122");
+    const _id_transaction_4 = new ObjectId("607bd608ef9719001cf38123");
+    const _id_transaction_5 = new ObjectId("607bd608ef9719001cf38124");
+    const _id_transaction_6 = new ObjectId("607bd608ef9719001cf38125");
+    const _id_transaction_7 = new ObjectId("607bd608ef9719001cf38126");
+    const now = new Date();
     await users.insertMany([
       {
         _id: new ObjectId("607bd608ef9719001cf38fd5"),
@@ -26,6 +34,45 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         accountAvailable: 0,
         accountToBePaid: 0,
         accountTotal: 0,
+        myLoans: [],
+        transactions: [
+          {
+            _id: _id_transaction_7,
+            id_user: "wHHR1SUBT0dspoF4YUOw1",
+            type: "invest",
+            quantity: -500000,
+            created: now,
+          },
+          {
+            _id: _id_transaction_6,
+            id_user: "wHHR1SUBT0dspoF4YUOw1",
+            type: "invest",
+            quantity: -500000,
+            created: now,
+          },
+          {
+            _id: _id_transaction_5,
+            id_user: "wHHR1SUBT0dspoF4YUOw1",
+            type: "invest",
+            quantity: -500000,
+            created: now,
+          },
+          {
+            _id: _id_transaction_4,
+            id_user: "wHHR1SUBT0dspoF4YUOw1",
+            type: "invest",
+            quantity: -1000000,
+            created: now,
+          },
+          {
+            _id: _id_transaction_3,
+            id_user: "wHHR1SUBT0dspoF4YUOw1",
+            type: "invest",
+            quantity: -1000000,
+            created: now,
+          },
+        ],
+        myInvestments: [],
       },
       {
         _id: new ObjectId("6095f055f92be2001a15885b"),
@@ -33,6 +80,9 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         accountAvailable: 0,
         accountToBePaid: 0,
         accountTotal: 0,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
       {
         _id: new ObjectId("6095f172f92be2001a15885c"),
@@ -40,6 +90,9 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         accountAvailable: 0,
         accountToBePaid: 0,
         accountTotal: 0,
+        transactions: [],
+        myLoans: [],
+        myInvestments: [],
       },
     ]);
 
@@ -240,46 +293,51 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
     ]);
 
-    const now = new Date();
-
     await transactions.insertMany([
       {
+        _id: _id_transaction_1,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
         type: "invest",
         quantity: -5000000,
         created: now,
       },
       {
+        _id: _id_transaction_2,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
         type: "invest",
         quantity: -1000000,
         created: now,
       },
       {
+        _id: _id_transaction_3,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
         type: "invest",
         quantity: -1000000,
         created: now,
       },
       {
+        _id: _id_transaction_4,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
         type: "invest",
         quantity: -1000000,
         created: now,
       },
       {
+        _id: _id_transaction_5,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
         type: "invest",
         quantity: -500000,
         created: now,
       },
       {
+        _id: _id_transaction_6,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
         type: "invest",
         quantity: -500000,
         created: now,
       },
       {
+        _id: _id_transaction_7,
         id_user: "wHHR1SUBT0dspoF4YUOw1",
         type: "invest",
         quantity: -500000,

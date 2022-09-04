@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3673b310531d0c3907d2591dc7294f19>>
+ * @generated SignedSource<<01120350ce1efda5b7a4e44cd1c21a9c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,33 +9,27 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
-export type TransactionType = "COLLECT" | "CREDIT" | "INVEST" | "WITHDRAWAL" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
-export type MyTransactions_user$data = {
+export type MyLoans_user$data = {
   readonly id: string;
-  readonly transactions: {
+  readonly myLoans: {
     readonly edges: ReadonlyArray<{
       readonly node: {
-        readonly _id_loan: string | null;
-        readonly created: Int;
         readonly id: string;
-        readonly id_borrower: string | null;
-        readonly id_user: string;
-        readonly quantity: string;
-        readonly type: TransactionType;
+        readonly " $fragmentSpreads": FragmentRefs<"LoanRow_loan">;
       } | null;
     } | null> | null;
   } | null;
-  readonly " $fragmentType": "MyTransactions_user";
+  readonly " $fragmentType": "MyLoans_user";
 };
-export type MyTransactions_user$key = {
-  readonly " $data"?: MyTransactions_user$data;
-  readonly " $fragmentSpreads": FragmentRefs<"MyTransactions_user">;
+export type MyLoans_user$key = {
+  readonly " $data"?: MyLoans_user$data;
+  readonly " $fragmentSpreads": FragmentRefs<"MyLoans_user">;
 };
 
 const node: ReaderFragment = (function(){
 var v0 = [
-  "transactions"
+  "myLoans"
 ],
 v1 = {
   "alias": null,
@@ -55,11 +49,6 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
-    },
-    {
-      "defaultValue": true,
-      "kind": "LocalArgument",
-      "name": "firstFetch"
     }
   ],
   "kind": "Fragment",
@@ -84,30 +73,24 @@ return {
       "fragmentPathInResult": [
         "node"
       ],
-      "operation": require('./MyTransactionsPaginationUser.graphql'),
+      "operation": require('./MyLoansPaginationUser.graphql'),
       "identifierField": "id"
     }
   },
-  "name": "MyTransactions_user",
+  "name": "MyLoans_user",
   "selections": [
     {
-      "alias": "transactions",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "firstFetch",
-          "variableName": "firstFetch"
-        }
-      ],
-      "concreteType": "TransactionConnection",
+      "alias": "myLoans",
+      "args": null,
+      "concreteType": "LoanConnection",
       "kind": "LinkedField",
-      "name": "__MyTransactions_user_transactions_connection",
+      "name": "__MyLoans_user_myLoans_connection",
       "plural": false,
       "selections": [
         {
           "alias": null,
           "args": null,
-          "concreteType": "TransactionEdge",
+          "concreteType": "LoanEdge",
           "kind": "LinkedField",
           "name": "edges",
           "plural": true,
@@ -115,53 +98,16 @@ return {
             {
               "alias": null,
               "args": null,
-              "concreteType": "Transaction",
+              "concreteType": "Loan",
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
               "selections": [
                 (v1/*: any*/),
                 {
-                  "alias": null,
                   "args": null,
-                  "kind": "ScalarField",
-                  "name": "id_user",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id_borrower",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "_id_loan",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "type",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "quantity",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "created",
-                  "storageKey": null
+                  "kind": "FragmentSpread",
+                  "name": "LoanRow_loan"
                 },
                 {
                   "alias": null,
@@ -218,6 +164,6 @@ return {
 };
 })();
 
-(node as any).hash = "448fc0b1bfa7a008d3c4591eb73816b6";
+(node as any).hash = "0496e983a808c4ec507cad7a71ed3d49";
 
 export default node;

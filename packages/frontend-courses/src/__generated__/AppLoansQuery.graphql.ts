@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3f5351976c5572da894bb668f65de6e6>>
+ * @generated SignedSource<<e6efb6725976ec0045ebc3dd1f92d1f7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,44 +10,29 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type AddInvestmentsPaginationQuery$variables = {
-  count?: number | null;
-  cursor?: string | null;
-};
-export type AddInvestmentsPaginationQuery$data = {
+export type AppLoansQuery$variables = {};
+export type AppLoansQuery$data = {
   readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_query">;
 };
-export type AddInvestmentsPaginationQuery = {
-  response: AddInvestmentsPaginationQuery$data;
-  variables: AddInvestmentsPaginationQuery$variables;
+export type AppLoansQuery = {
+  response: AppLoansQuery$data;
+  variables: AppLoansQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
-    "defaultValue": 5,
-    "kind": "LocalArgument",
-    "name": "count"
-  },
-  {
-    "defaultValue": "",
-    "kind": "LocalArgument",
-    "name": "cursor"
-  }
-],
-v1 = [
-  {
-    "kind": "Variable",
+    "kind": "Literal",
     "name": "after",
-    "variableName": "cursor"
+    "value": ""
   },
   {
-    "kind": "Variable",
+    "kind": "Literal",
     "name": "first",
-    "variableName": "count"
+    "value": 5
   }
 ],
-v2 = {
+v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -56,24 +41,13 @@ v2 = {
 };
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "AddInvestmentsPaginationQuery",
+    "name": "AppLoansQuery",
     "selections": [
       {
-        "args": [
-          {
-            "kind": "Variable",
-            "name": "count",
-            "variableName": "count"
-          },
-          {
-            "kind": "Variable",
-            "name": "cursor",
-            "variableName": "cursor"
-          }
-        ],
+        "args": null,
         "kind": "FragmentSpread",
         "name": "AddInvestments_query"
       }
@@ -83,13 +57,13 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "AddInvestmentsPaginationQuery",
+    "name": "AppLoansQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v0/*: any*/),
         "concreteType": "LoanConnection",
         "kind": "LinkedField",
         "name": "loansFinancing",
@@ -167,7 +141,7 @@ return {
                     "name": "expiry",
                     "storageKey": null
                   },
-                  (v2/*: any*/),
+                  (v1/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -183,7 +157,7 @@ return {
                         "name": "amortize",
                         "storageKey": null
                       },
-                      (v2/*: any*/),
+                      (v1/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -254,11 +228,11 @@ return {
             "storageKey": null
           }
         ],
-        "storageKey": null
+        "storageKey": "loansFinancing(after:\"\",first:5)"
       },
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v0/*: any*/),
         "filters": null,
         "handle": "connection",
         "key": "AddInvestments_query_loansFinancing",
@@ -268,16 +242,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d6117b0e73d6b925b917ce2811a2e813",
+    "cacheID": "b262a41e6089f5a2e9ece7c35b94c2e5",
     "id": null,
     "metadata": {},
-    "name": "AddInvestmentsPaginationQuery",
+    "name": "AppLoansQuery",
     "operationKind": "query",
-    "text": "query AddInvestmentsPaginationQuery(\n  $count: Int = 5\n  $cursor: String = \"\"\n) {\n  ...AddInvestments_query_1G22uz\n}\n\nfragment AddInvestments_query_1G22uz on Query {\n  loansFinancing(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
+    "text": "query AppLoansQuery {\n  ...AddInvestments_query\n}\n\nfragment AddInvestments_query on Query {\n  loansFinancing(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
   }
 };
 })();
 
-(node as any).hash = "8876165637b4be866ff48ff9d1cfc802";
+(node as any).hash = "02f581ede97f13d14b6ed95fe03d0d22";
 
 export default node;

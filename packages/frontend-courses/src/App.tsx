@@ -7,8 +7,11 @@ import {
 } from "react-relay/hooks";
 import { RelayEnvironment, subscriptionsClient } from "./RelayEnvironment";
 import AppQuery, {
-  AppQuery as AppQueryType,
-} from "./__generated__/AppQuery.graphql";
+  AppUserQuery as AppUserQueryType,
+} from "./__generated__/AppUserQuery.graphql";
+import AppLoanQuery, {
+  AppLoansQuery as AppLoansQueryType,
+} from "./__generated__/AppLoansQuery.graphql";
 import { graphql } from "react-relay";
 import { Routes } from "./Routes";
 import { Spinner } from "components/Spinner";
@@ -25,8 +28,8 @@ export const tokensAndData: {
   refetchUser: () => {},
 };
 
-const RepositoryNameQuery = graphql`
-  query AppQuery {
+const AppUserQuery = graphql`
+  query AppUserQuery {
     user {
       ...Routes_user
     }
@@ -36,27 +39,45 @@ const RepositoryNameQuery = graphql`
   }
 `;
 
-export const preloadedQuery = loadQuery<AppQueryType>(
+const AppLoansQuery = graphql`
+  query AppLoansQuery {
+    ...AddInvestments_query
+  }
+`;
+
+export const preloadedQuery = loadQuery<AppUserQueryType>(
   RelayEnvironment,
-  RepositoryNameQuery,
+  AppUserQuery,
+  {}
+);
+
+export const preloadedLoanQuery = loadQuery<AppLoansQueryType>(
+  RelayEnvironment,
+  AppLoansQuery,
   {}
 );
 
 const AppQueryRoot: FC = () => {
-  const [queryRef, loadQuery] = useQueryLoader<AppQueryType>(
+  const [queryRef, loadQuery] = useQueryLoader<AppUserQueryType>(
     AppQuery,
     preloadedQuery
   );
-  const data = usePreloadedQuery<AppQueryType>(
+  const data = usePreloadedQuery<AppUserQueryType>(
     AppQuery,
     queryRef || preloadedQuery
+  );
+  const dataLoans = usePreloadedQuery<AppLoansQueryType>(
+    AppLoanQuery,
+    preloadedLoanQuery
   );
   const refetchUser = useCallback(() => {
     loadQuery({}, { fetchPolicy: "network-only" });
     subscriptionsClient.restart();
   }, [loadQuery]);
   tokensAndData.refetchUser = refetchUser;
-  return <Routes user={data.user} authUser={data.authUser} />;
+  return (
+    <Routes user={data.user} authUser={data.authUser} dataLoans={dataLoans} />
+  );
 };
 
 export const App: FC = () => {

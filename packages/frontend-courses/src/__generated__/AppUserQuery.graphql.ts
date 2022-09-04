@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a0b211f760b4a657b33601607605e657>>
+ * @generated SignedSource<<d3a1d9e82a4dede374fa48d0cc3b402d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,8 +10,8 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type AppQuery$variables = {};
-export type AppQuery$data = {
+export type AppUserQuery$variables = {};
+export type AppUserQuery$data = {
   readonly authUser: {
     readonly " $fragmentSpreads": FragmentRefs<"Routes_auth_user">;
   };
@@ -19,9 +19,9 @@ export type AppQuery$data = {
     readonly " $fragmentSpreads": FragmentRefs<"Routes_user">;
   };
 };
-export type AppQuery = {
-  response: AppQuery$data;
-  variables: AppQuery$variables;
+export type AppUserQuery = {
+  response: AppUserQuery$data;
+  variables: AppUserQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -173,13 +173,113 @@ v16 = {
 v17 = [
   (v2/*: any*/),
   (v3/*: any*/)
+],
+v18 = [
+  {
+    "alias": null,
+    "args": null,
+    "concreteType": "LoanEdge",
+    "kind": "LinkedField",
+    "name": "edges",
+    "plural": true,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "Loan",
+        "kind": "LinkedField",
+        "name": "node",
+        "plural": false,
+        "selections": [
+          (v0/*: any*/),
+          (v5/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "score",
+            "storageKey": null
+          },
+          (v15/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "goal",
+            "storageKey": null
+          },
+          (v16/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "raised",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "expiry",
+            "storageKey": null
+          },
+          (v14/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "ScheduledPayments",
+            "kind": "LinkedField",
+            "name": "scheduledPayments",
+            "plural": true,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "amortize",
+                "storageKey": null
+              },
+              (v14/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "scheduledDate",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "pending",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "pendingCents",
+            "storageKey": null
+          },
+          (v10/*: any*/)
+        ],
+        "storageKey": null
+      },
+      (v11/*: any*/)
+    ],
+    "storageKey": null
+  },
+  (v12/*: any*/)
 ];
 return {
   "fragment": {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "AppQuery",
+    "name": "AppUserQuery",
     "selections": [
       {
         "alias": null,
@@ -221,7 +321,7 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "AppQuery",
+    "name": "AppUserQuery",
     "selections": [
       {
         "alias": null,
@@ -428,118 +528,38 @@ return {
             "args": (v17/*: any*/),
             "concreteType": "LoanConnection",
             "kind": "LinkedField",
-            "name": "loans",
+            "name": "myLoans",
             "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "LoanEdge",
-                "kind": "LinkedField",
-                "name": "edges",
-                "plural": true,
-                "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Loan",
-                    "kind": "LinkedField",
-                    "name": "node",
-                    "plural": false,
-                    "selections": [
-                      (v0/*: any*/),
-                      (v5/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "score",
-                        "storageKey": null
-                      },
-                      (v15/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "goal",
-                        "storageKey": null
-                      },
-                      (v16/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "raised",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "expiry",
-                        "storageKey": null
-                      },
-                      (v14/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "ScheduledPayments",
-                        "kind": "LinkedField",
-                        "name": "scheduledPayments",
-                        "plural": true,
-                        "selections": [
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "amortize",
-                            "storageKey": null
-                          },
-                          (v14/*: any*/),
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "scheduledDate",
-                            "storageKey": null
-                          }
-                        ],
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "pending",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "pendingCents",
-                        "storageKey": null
-                      },
-                      (v10/*: any*/)
-                    ],
-                    "storageKey": null
-                  },
-                  (v11/*: any*/)
-                ],
-                "storageKey": null
-              },
-              (v12/*: any*/)
-            ],
-            "storageKey": "loans(after:\"\",first:5)"
+            "selections": (v18/*: any*/),
+            "storageKey": "myLoans(after:\"\",first:5)"
           },
           {
             "alias": null,
             "args": (v17/*: any*/),
             "filters": null,
             "handle": "connection",
-            "key": "AddInvestments_user_loans",
+            "key": "MyLoans_user_myLoans",
             "kind": "LinkedHandle",
-            "name": "loans"
+            "name": "myLoans"
+          },
+          {
+            "alias": null,
+            "args": (v17/*: any*/),
+            "concreteType": "LoanConnection",
+            "kind": "LinkedField",
+            "name": "loansToApprove",
+            "plural": false,
+            "selections": (v18/*: any*/),
+            "storageKey": "loansToApprove(after:\"\",first:5)"
+          },
+          {
+            "alias": null,
+            "args": (v17/*: any*/),
+            "filters": null,
+            "handle": "connection",
+            "key": "LoansToApprove_user_loansToApprove",
+            "kind": "LinkedHandle",
+            "name": "loansToApprove"
           }
         ],
         "storageKey": null
@@ -644,16 +664,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e6c7c536c05821352ffeb7b80fad4b8f",
+    "cacheID": "b1c9ea2684cc52694c4c9d590a5decd9",
     "id": null,
     "metadata": {},
-    "name": "AppQuery",
+    "name": "AppUserQuery",
     "operationKind": "query",
-    "text": "query AppQuery {\n  user {\n    ...Routes_user\n    id\n  }\n  authUser {\n    ...Routes_auth_user\n    id\n  }\n}\n\nfragment Account_user on User {\n  accountAvailable\n  accountToBePaid\n  accountTotal\n}\n\nfragment AddInvestments_auth_user on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n  accountId\n}\n\nfragment AddInvestments_user on User {\n  loans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyInvestments_user on User {\n  id\n  investments(first: 2, after: \"\", status: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyTransactions_auth_user on AuthUser {\n  language\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Routes_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  language\n  isBorrower\n  isSupport\n  ...Settings_auth_user\n  ...AddInvestments_auth_user\n  ...MyTransactions_auth_user\n}\n\nfragment Routes_user on User {\n  id\n  accountAvailable\n  accountTotal\n  accountId\n  ...Account_user\n  ...MyTransactions_user\n  ...MyInvestments_user\n  ...AddInvestments_user\n}\n\nfragment Settings_auth_user on AuthUser {\n  id\n  accountId\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  language\n}\n"
+    "text": "query AppUserQuery {\n  user {\n    ...Routes_user\n    id\n  }\n  authUser {\n    ...Routes_auth_user\n    id\n  }\n}\n\nfragment Account_user on User {\n  accountAvailable\n  accountToBePaid\n  accountTotal\n}\n\nfragment AddInvestments_auth_query on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n  accountId\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment LoansToApprove_auth_user on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n  accountId\n}\n\nfragment LoansToApprove_user on User {\n  loansToApprove(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment MyInvestments_user on User {\n  id\n  investments(first: 2, after: \"\", status: [DELAY_PAYMENT, UP_TO_DATE, FINANCING]) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MyLoans_auth_user on AuthUser {\n  isLender\n  isSupport\n  isBorrower\n  language\n  accountId\n}\n\nfragment MyLoans_user on User {\n  myLoans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment MyTransactions_auth_user on AuthUser {\n  language\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Routes_auth_user on AuthUser {\n  id\n  name\n  apellidoPaterno\n  apellidoMaterno\n  language\n  isBorrower\n  isSupport\n  ...Settings_auth_user\n  ...MyLoans_auth_user\n  ...MyTransactions_auth_user\n  ...AddInvestments_auth_query\n  ...LoansToApprove_auth_user\n}\n\nfragment Routes_user on User {\n  id\n  accountAvailable\n  accountTotal\n  accountId\n  ...Account_user\n  ...MyTransactions_user\n  ...MyInvestments_user\n  ...MyLoans_user\n  ...LoansToApprove_user\n}\n\nfragment Settings_auth_user on AuthUser {\n  id\n  accountId\n  name\n  apellidoPaterno\n  apellidoMaterno\n  RFC\n  CURP\n  clabe\n  mobile\n  email\n  language\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d4ae24c85ac1d86f8f0e302f461e2904";
+(node as any).hash = "e779ad96aa00be5d9d511ea190327e10";
 
 export default node;

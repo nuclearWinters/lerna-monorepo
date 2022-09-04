@@ -53,6 +53,8 @@ import { CheckExpiration } from "components/CheckExpiration";
 import { Routes_user$key } from "__generated__/Routes_user.graphql";
 import { Routes_auth_user$key } from "__generated__/Routes_auth_user.graphql";
 import { RoutesInvestmentsUpdateSubscription } from "__generated__/RoutesInvestmentsUpdateSubscription.graphql";
+import { AppLoansQuery$data } from "__generated__/AppLoansQuery.graphql";
+import { MyLoans } from "screens/MyLoans";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -64,7 +66,7 @@ const routesFragment = graphql`
     ...Account_user
     ...MyTransactions_user
     ...MyInvestments_user
-    ...AddInvestments_user
+    ...MyLoans_user
   }
 `;
 
@@ -78,14 +80,16 @@ const routesFragmentAuth = graphql`
     isBorrower
     isSupport
     ...Settings_auth_user
-    ...AddInvestments_auth_user
+    ...MyLoans_auth_user
     ...MyTransactions_auth_user
+    ...AddInvestments_auth_query
   }
 `;
 
 type Props = {
   user: Routes_user$key;
   authUser: Routes_auth_user$key;
+  dataLoans: AppLoansQuery$data;
 };
 
 const subscriptionLoans = graphql`
@@ -477,7 +481,7 @@ export const Routes: FC<Props> = (props) => {
                 <Route path="/addLoan" element={<AddLoan />} />
                 <Route
                   path="/myLoans"
-                  element={<AddInvestments user={user} authUser={authUser} />}
+                  element={<MyLoans user={user} authUser={authUser} />}
                 />
                 <Route path="/addFunds" element={<AddFunds />} />
                 <Route path="/retireFunds" element={<RetireFunds />} />
@@ -492,7 +496,7 @@ export const Routes: FC<Props> = (props) => {
                 <Route path="/register" element={<SignUp />} />
                 <Route
                   path="/approveLoan"
-                  element={<AddInvestments user={user} authUser={authUser} />}
+                  element={<MyLoans user={user} authUser={authUser} />}
                 />
                 <Route
                   path="/settings"
@@ -506,7 +510,12 @@ export const Routes: FC<Props> = (props) => {
                 <Route path="/account" element={<Account user={user} />} />
                 <Route
                   path="/addInvestments"
-                  element={<AddInvestments user={user} authUser={authUser} />}
+                  element={
+                    <AddInvestments
+                      authUser={authUser}
+                      dataLoans={props.dataLoans}
+                    />
+                  }
                 />
                 <Route path="/addFunds" element={<AddFunds />} />
                 <Route path="/retireFunds" element={<RetireFunds />} />

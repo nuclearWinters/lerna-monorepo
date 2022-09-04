@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<46fb607dee447f223626111629e26789>>
+ * @generated SignedSource<<3be2565817318512d897974618f7f5b8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,20 +10,19 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type MyTransactionsPaginationUser$variables = {
+export type LoansToApprovePaginationUser$variables = {
   count?: number | null;
   cursor?: string | null;
-  firstFetch?: boolean | null;
   id: string;
 };
-export type MyTransactionsPaginationUser$data = {
+export type LoansToApprovePaginationUser$data = {
   readonly node: {
-    readonly " $fragmentSpreads": FragmentRefs<"MyTransactions_user">;
+    readonly " $fragmentSpreads": FragmentRefs<"LoansToApprove_user">;
   } | null;
 };
-export type MyTransactionsPaginationUser = {
-  response: MyTransactionsPaginationUser$data;
-  variables: MyTransactionsPaginationUser$variables;
+export type LoansToApprovePaginationUser = {
+  response: LoansToApprovePaginationUser$data;
+  variables: LoansToApprovePaginationUser$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -39,11 +38,6 @@ var v0 = [
     "name": "cursor"
   },
   {
-    "defaultValue": true,
-    "kind": "LocalArgument",
-    "name": "firstFetch"
-  },
-  {
     "defaultValue": null,
     "kind": "LocalArgument",
     "name": "id"
@@ -57,25 +51,20 @@ v1 = [
   }
 ],
 v2 = {
-  "kind": "Variable",
-  "name": "firstFetch",
-  "variableName": "firstFetch"
-},
-v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v4 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v5 = [
+v4 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -85,15 +74,21 @@ v5 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
-  },
-  (v2/*: any*/)
-];
+  }
+],
+v5 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "status",
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "MyTransactionsPaginationUser",
+    "name": "LoansToApprovePaginationUser",
     "selections": [
       {
         "alias": null,
@@ -114,11 +109,10 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
-              },
-              (v2/*: any*/)
+              }
             ],
             "kind": "FragmentSpread",
-            "name": "MyTransactions_user"
+            "name": "LoansToApprove_user"
           }
         ],
         "storageKey": null
@@ -131,7 +125,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "MyTransactionsPaginationUser",
+    "name": "LoansToApprovePaginationUser",
     "selections": [
       {
         "alias": null,
@@ -141,23 +135,23 @@ return {
         "name": "node",
         "plural": false,
         "selections": [
+          (v2/*: any*/),
           (v3/*: any*/),
-          (v4/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v5/*: any*/),
-                "concreteType": "TransactionConnection",
+                "args": (v4/*: any*/),
+                "concreteType": "LoanConnection",
                 "kind": "LinkedField",
-                "name": "transactions",
+                "name": "loansToApprove",
                 "plural": false,
                 "selections": [
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "TransactionEdge",
+                    "concreteType": "LoanEdge",
                     "kind": "LinkedField",
                     "name": "edges",
                     "plural": true,
@@ -165,12 +159,12 @@ return {
                       {
                         "alias": null,
                         "args": null,
-                        "concreteType": "Transaction",
+                        "concreteType": "Loan",
                         "kind": "LinkedField",
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v4/*: any*/),
+                          (v3/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -182,38 +176,86 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "id_borrower",
+                            "name": "score",
                             "storageKey": null
                           },
                           {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "_id_loan",
+                            "name": "ROI",
                             "storageKey": null
                           },
                           {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "type",
+                            "name": "goal",
                             "storageKey": null
                           },
                           {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "quantity",
+                            "name": "term",
                             "storageKey": null
                           },
                           {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "created",
+                            "name": "raised",
                             "storageKey": null
                           },
-                          (v3/*: any*/)
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "expiry",
+                            "storageKey": null
+                          },
+                          (v5/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "ScheduledPayments",
+                            "kind": "LinkedField",
+                            "name": "scheduledPayments",
+                            "plural": true,
+                            "selections": [
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "amortize",
+                                "storageKey": null
+                              },
+                              (v5/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "scheduledDate",
+                                "storageKey": null
+                              }
+                            ],
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "pending",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "pendingCents",
+                            "storageKey": null
+                          },
+                          (v2/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -257,14 +299,12 @@ return {
               },
               {
                 "alias": null,
-                "args": (v5/*: any*/),
-                "filters": [
-                  "firstFetch"
-                ],
+                "args": (v4/*: any*/),
+                "filters": null,
                 "handle": "connection",
-                "key": "MyTransactions_user_transactions",
+                "key": "LoansToApprove_user_loansToApprove",
                 "kind": "LinkedHandle",
-                "name": "transactions"
+                "name": "loansToApprove"
               }
             ],
             "type": "User",
@@ -276,16 +316,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "f9b7ea421438127c78aef142b00c45a3",
+    "cacheID": "9fe1d5c597ff6f25645900157011dd3f",
     "id": null,
     "metadata": {},
-    "name": "MyTransactionsPaginationUser",
+    "name": "LoansToApprovePaginationUser",
     "operationKind": "query",
-    "text": "query MyTransactionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $firstFetch: Boolean = true\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyTransactions_user_aKcJb\n    id\n  }\n}\n\nfragment MyTransactions_user_aKcJb on User {\n  transactions(first: $count, after: $cursor, firstFetch: $firstFetch) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query LoansToApprovePaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...LoansToApprove_user_1G22uz\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment LoansToApprove_user_1G22uz on User {\n  loansToApprove(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "448fc0b1bfa7a008d3c4591eb73816b6";
+(node as any).hash = "fdd2f1519e4b5809819b86b6eae39c2b";
 
 export default node;

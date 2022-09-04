@@ -21,19 +21,20 @@ import { TableColumnName } from "components/TableColumnName";
 import { Table } from "components/Table";
 import { logOut } from "utils";
 import { useTranslation } from "react-i18next";
-import { AddInvestments_auth_user$key } from "./__generated__/AddInvestments_auth_user.graphql";
-import { AddInvestments_user$key } from "./__generated__/AddInvestments_user.graphql";
-import { AddInvestmentsPaginationUser } from "./__generated__/AddInvestmentsPaginationUser.graphql";
+import { AppLoansQuery$data } from "__generated__/AppLoansQuery.graphql";
+import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
+import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
+import { AddInvestments_auth_query$key } from "./__generated__/AddInvestments_auth_query.graphql";
 
 const debtInSaleFragment = graphql`
-  fragment AddInvestments_user on User
+  fragment AddInvestments_query on Query
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
   )
-  @refetchable(queryName: "AddInvestmentsPaginationUser") {
-    loans(first: $count, after: $cursor)
-      @connection(key: "AddInvestments_user_loans") {
+  @refetchable(queryName: "AddInvestmentsPaginationQuery") {
+    loansFinancing(first: $count, after: $cursor)
+      @connection(key: "AddInvestments_query_loansFinancing") {
       edges {
         node {
           id
@@ -45,7 +46,7 @@ const debtInSaleFragment = graphql`
 `;
 
 const debtInSaleFragmentAuthUser = graphql`
-  fragment AddInvestments_auth_user on AuthUser {
+  fragment AddInvestments_auth_query on AuthUser {
     isLender
     isSupport
     isBorrower
@@ -55,8 +56,8 @@ const debtInSaleFragmentAuthUser = graphql`
 `;
 
 type Props = {
-  user: AddInvestments_user$key;
-  authUser: AddInvestments_auth_user$key;
+  authUser: AddInvestments_auth_query$key;
+  dataLoans: AppLoansQuery$data;
 };
 
 interface ILends {
@@ -80,11 +81,11 @@ export const AddInvestments: FC<Props> = (props) => {
   `);
   const navigate = useNavigate();
   const { data, loadNext, refetch } = usePaginationFragment<
-    AddInvestmentsPaginationUser,
-    AddInvestments_user$key
-  >(debtInSaleFragment, props.user);
+    AddInvestmentsPaginationQuery,
+    AddInvestments_query$key
+  >(debtInSaleFragment, props.dataLoans);
 
-  const authUser = useFragment<AddInvestments_auth_user$key>(
+  const authUser = useFragment<AddInvestments_auth_query$key>(
     debtInSaleFragmentAuthUser,
     props.authUser
   );
@@ -100,10 +101,7 @@ export const AddInvestments: FC<Props> = (props) => {
     { key: "term", title: t("Periodo") },
     { key: "pending", title: t("Faltan") },
     { key: "expiry", title: t("Termina") },
-    {
-      key: "lend",
-      title: isLender ? t("Prestar") : t("Estatus"),
-    },
+    { key: "lend", title: t("Prestar") },
     { key: "refetech", title: t("Refrescar") },
   ];
 
@@ -135,9 +133,9 @@ export const AddInvestments: FC<Props> = (props) => {
                 </TableColumnName>
               ))}
             </Columns>
-            {data.loans &&
-              data.loans.edges &&
-              data.loans.edges.map((edge) => {
+            {data.loansFinancing &&
+              data.loansFinancing.edges &&
+              data.loansFinancing.edges.map((edge) => {
                 if (edge && edge.node) {
                   const value = getValue(edge.node.id);
                   return (

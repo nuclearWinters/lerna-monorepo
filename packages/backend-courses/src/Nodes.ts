@@ -9,16 +9,17 @@ import {
   GraphQLFloat,
   GraphQLInt,
   GraphQLList,
+  GraphQLBoolean,
 } from "graphql";
 import {
   fromGlobalId,
   globalIdField,
   nodeDefinitions,
   connectionDefinitions,
-  connectionArgs,
   Connection,
   connectionFromArray,
   ConnectionArguments,
+  forwardConnectionArgs,
 } from "graphql-relay";
 import { Filter } from "mongodb";
 import {
@@ -36,8 +37,11 @@ import {
 import { base64, unbase64 } from "./utils";
 
 interface ArgsInvestments extends ConnectionArguments {
-  user_id?: string | null;
   status?: IInvestmentStatus[];
+}
+
+interface ArgsTransactions extends ConnectionArguments {
+  firstFetch?: boolean;
 }
 
 export const DateScalarType = new GraphQLScalarType({
@@ -403,9 +407,12 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ accountTotal }): number => accountTotal,
     },
+    //isLender loan is not part of user
+    //Only isSupport and isBorrower is
+    //Create two more connections, one for isSupport and one for isBorrower
     loans: {
       type: new GraphQLNonNull(LoanConnection),
-      args: connectionArgs,
+      args: forwardConnectionArgs,
       resolve: async (
         _root: unknown,
         args: unknown,
@@ -459,6 +466,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
         }
       },
     },
+    //If not first or after are null then use first 5 records stored in user?
     investments: {
       type: new GraphQLNonNull(InvestmentConnection),
       args: {
@@ -467,7 +475,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
             new GraphQLList(new GraphQLNonNull(InvestmentStatus))
           ),
         },
-        ...connectionArgs,
+        ...forwardConnectionArgs,
       },
       resolve: async (
         _: unknown,
@@ -519,13 +527,18 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
     },
     transactions: {
       type: new GraphQLNonNull(TransactionConnection),
-      args: connectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        firstFetch: {
+          type: GraphQLBoolean,
+        },
+      },
       resolve: async (
-        _: unknown,
+        { transactions: transactionsUser },
         args: unknown,
         { transactions, id }: Context
       ): Promise<Connection<TransactionMongo>> => {
-        const { first, after } = args as ConnectionArguments;
+        const { first, after, firstFetch } = args as ArgsTransactions;
         try {
           const transaction_id = unbase64(after || "");
           const limit = first ? first + 1 : 0;
@@ -538,11 +551,14 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           if (transaction_id) {
             query._id = { $lt: new ObjectId(transaction_id) };
           }
-          const result = await transactions
-            .find(query)
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray();
+          const result =
+            firstFetch && !after
+              ? transactionsUser
+              : await transactions
+                  .find(query)
+                  .limit(limit)
+                  .sort({ $natural: -1 })
+                  .toArray();
           const edgesMapped = result.map((transaction) => {
             return {
               cursor: base64(transaction._id.toHexString()),
