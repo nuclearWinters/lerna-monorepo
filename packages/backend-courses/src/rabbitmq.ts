@@ -64,6 +64,22 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     { returnDocument: "after" }
   );
   if (resultLoan.value) {
+    await users.updateOne(
+      { "myLoans._id": _id_loan },
+      {
+        $inc: {
+          "myLoans.$[item].raised": quantity,
+          "myLoans.$[item].pending": -quantity,
+        },
+      },
+      {
+        arrayFilters: [
+          {
+            "item._id": _id_loan,
+          },
+        ],
+      }
+    );
     publishLoanUpdate(resultLoan.value);
   }
   //Si NO se realizó la operación: incrementar saldo y no realizar más acciones
@@ -180,6 +196,17 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
         publishInvestmentUpdate(updatedInvestments.value);
       }
     }
+    const scheduledPayments = new Array(doc.term).fill({}).map((_, index) => {
+      const TEM = doc.TEM;
+      return {
+        amortize: Math.floor(
+          doc.goal / ((1 - Math.pow(1 / (1 + TEM), doc.term)) / TEM)
+        ),
+        //Pago cada mismo dia del mes?
+        scheduledDate: startOfMonth(addMonths(now, index + 1)),
+        status: "to be paid" as const,
+      };
+    });
     //Si raised es igual a goal: Actualizar scheduledPayments y status
     const updatedLoan = await loans.findOneAndUpdate(
       {
@@ -187,23 +214,29 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       },
       {
         $set: {
-          scheduledPayments: new Array(doc.term).fill({}).map((_, index) => {
-            const TEM = doc.TEM;
-            return {
-              amortize: Math.floor(
-                doc.goal / ((1 - Math.pow(1 / (1 + TEM), doc.term)) / TEM)
-              ),
-              //Pago cada mismo dia del mes?
-              scheduledDate: startOfMonth(addMonths(now, index + 1)),
-              status: "to be paid",
-            };
-          }),
+          scheduledPayments,
           status: "to be paid",
         },
       },
       { returnDocument: "after" }
     );
     if (updatedLoan.value) {
+      await users.updateOne(
+        { "myLoans._id": _id_loan },
+        {
+          $set: {
+            "myLoans.$[item].scheduledPayments": scheduledPayments,
+            "myLoans.$[item].status": "to be paid",
+          },
+        },
+        {
+          arrayFilters: [
+            {
+              "item._id": _id_loan,
+            },
+          ],
+        }
+      );
       publishLoanUpdate(updatedLoan.value);
     }
     //Si raised es igual a goal: añadir fondos a quien pidio prestado

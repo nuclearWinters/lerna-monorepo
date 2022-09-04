@@ -41,6 +41,7 @@ describe("rabbitMQ tests", () => {
 
   it("sendLend test", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const now = new Date();
     await users.insertMany([
       {
         _id: new ObjectId("000000000000000000000004"),
@@ -59,7 +60,34 @@ describe("rabbitMQ tests", () => {
         accountToBePaid: 0,
         accountTotal: 100000,
         transactions: [],
-        myLoans: [],
+        myLoans: [
+          {
+            _id: new ObjectId("000000000000000000000002"),
+            id_user: "wHHR1SUBT0dspoF4YUO32",
+            score: "AAA",
+            ROI: 10,
+            goal: 50000,
+            term: 2,
+            raised: 0,
+            expiry: now,
+            status: "financing",
+            scheduledPayments: null,
+            pending: 50000,
+          },
+          {
+            _id: new ObjectId("000000000000000000000003"),
+            id_user: "wHHR1SUBT0dspoF4YUO32",
+            score: "AAA",
+            ROI: 10,
+            goal: 50000,
+            term: 2,
+            raised: 0,
+            expiry: now,
+            status: "financing",
+            scheduledPayments: null,
+            pending: 50000,
+          },
+        ],
         myInvestments: [],
       },
     ]);
@@ -73,7 +101,7 @@ describe("rabbitMQ tests", () => {
         goal: 50000,
         term: 2,
         raised: 0,
-        expiry: new Date(),
+        expiry: now,
         status: "financing",
         scheduledPayments: null,
         pending: 50000,
@@ -86,7 +114,7 @@ describe("rabbitMQ tests", () => {
         goal: 50000,
         term: 2,
         raised: 0,
-        expiry: new Date(),
+        expiry: now,
         status: "financing",
         scheduledPayments: null,
         pending: 50000,
@@ -338,6 +366,14 @@ describe("rabbitMQ tests", () => {
         _id: _id_transaction,
         created: date_transaction,
       }));
+      user3.myLoans = user3?.myLoans.map((loan) => ({
+        ...loan,
+        scheduledPayments:
+          loan?.scheduledPayments?.map((pay) => ({
+            ...pay,
+            scheduledDate: now,
+          })) || null,
+      }));
     }
     expect(user3).toEqual({
       _id: new ObjectId("000000000000000000000005"),
@@ -346,7 +382,56 @@ describe("rabbitMQ tests", () => {
       accountToBePaid: 0,
       accountTotal: 200000,
       myInvestments: [],
-      myLoans: [],
+      myLoans: [
+        {
+          ROI: 10,
+          _id: new ObjectId("000000000000000000000002"),
+          expiry: now,
+          goal: 50000,
+          id_user: "wHHR1SUBT0dspoF4YUO32",
+          pending: 0,
+          raised: 50000,
+          scheduledPayments: [
+            {
+              amortize: 25299,
+              scheduledDate: now,
+              status: "to be paid",
+            },
+            {
+              amortize: 25299,
+              scheduledDate: now,
+              status: "to be paid",
+            },
+          ],
+          score: "AAA",
+          status: "to be paid",
+          term: 2,
+        },
+        {
+          ROI: 10,
+          _id: new ObjectId("000000000000000000000003"),
+          expiry: now,
+          goal: 50000,
+          id_user: "wHHR1SUBT0dspoF4YUO32",
+          pending: 0,
+          raised: 50000,
+          scheduledPayments: [
+            {
+              amortize: 25299,
+              scheduledDate: now,
+              status: "to be paid",
+            },
+            {
+              amortize: 25299,
+              scheduledDate: now,
+              status: "to be paid",
+            },
+          ],
+          score: "AAA",
+          status: "to be paid",
+          term: 2,
+        },
+      ],
       transactions: [
         {
           _id: _id_transaction,
@@ -501,6 +586,7 @@ describe("rabbitMQ tests", () => {
 
   it("test AddLends not enough money valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const now = new Date();
     await users.insertMany([
       {
         _id: new ObjectId("400000000000000000000004"),
@@ -533,7 +619,7 @@ describe("rabbitMQ tests", () => {
         goal: 50000,
         term: 2,
         raised: 0,
-        expiry: new Date(),
+        expiry: now,
         status: "financing",
         scheduledPayments: null,
         pending: 50000,
@@ -605,6 +691,7 @@ describe("rabbitMQ tests", () => {
 
   it("test AddLends no investments done valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const now = new Date();
     await users.insertMany([
       {
         _id: new ObjectId("500000000000000000000004"),
@@ -637,7 +724,7 @@ describe("rabbitMQ tests", () => {
         goal: 50000,
         term: 2,
         raised: 50000,
-        expiry: new Date(),
+        expiry: now,
         status: "to be paid",
         scheduledPayments: null,
         pending: 0,
@@ -709,6 +796,7 @@ describe("rabbitMQ tests", () => {
 
   it("test AddLends not all investments are done valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const now = new Date();
     await users.insertMany([
       {
         _id: new ObjectId("600000000000000000000004"),
@@ -741,7 +829,7 @@ describe("rabbitMQ tests", () => {
         goal: 50000,
         term: 2,
         raised: 50000,
-        expiry: new Date(),
+        expiry: now,
         status: "to be paid",
         scheduledPayments: null,
         pending: 0,
@@ -754,7 +842,7 @@ describe("rabbitMQ tests", () => {
         goal: 50000,
         term: 2,
         raised: 0,
-        expiry: new Date(),
+        expiry: now,
         status: "financing",
         scheduledPayments: null,
         pending: 50000,
