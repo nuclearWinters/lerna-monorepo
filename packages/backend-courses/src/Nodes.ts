@@ -426,8 +426,11 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       ): Promise<Connection<LoanMongo>> => {
         const { after, first, firstFetch } = args as ArgsLoans;
         try {
-          if (isLender) {
+          if (isLender || !id) {
             throw new Error("Do not return anything to lenders");
+          }
+          if (!id) {
+            throw new Error("Do not return anything to not registered user");
           }
           const loan_id = unbase64(after || "");
           const limit = first ? first + 1 : 0;
@@ -476,7 +479,6 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
         }
       },
     },
-    //If not first or after are null then use first 5 records stored in user?
     investments: {
       type: new GraphQLNonNull(InvestmentConnection),
       args: {
@@ -494,6 +496,9 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       ): Promise<Connection<InvestmentMongo>> => {
         const { status, first, after } = args as ArgsInvestments;
         try {
+          if (!id) {
+            throw new Error("Do not return anything to not registered user");
+          }
           const investment_id = unbase64(after || "");
           const limit = first ? first + 1 : 0;
           if (limit <= 0) {
@@ -550,6 +555,9 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       ): Promise<Connection<TransactionMongo>> => {
         const { first, after, firstFetch } = args as ArgsTransactions;
         try {
+          if (!id) {
+            throw new Error("Do not return anything to not registered user");
+          }
           const transaction_id = unbase64(after || "");
           const limit = first ? first + 1 : 0;
           if (limit <= 0) {
