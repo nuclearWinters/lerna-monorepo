@@ -84,6 +84,23 @@ export const monthFunction = async (db: Db): Promise<void> => {
           }
         );
         if (updatedLoan.modifiedCount) {
+          await users.updateOne(
+            { "myLoans._id": loan._id },
+            {
+              $set: {
+                [`myLoans.$[item].scheduledPayments.${payment.index}.status`]:
+                  "delayed",
+                ...{},
+              },
+            },
+            {
+              arrayFilters: [
+                {
+                  "item._id": loan._id,
+                },
+              ],
+            }
+          );
           publishLoanUpdate(loan);
         }
         //Si el deudor no tiene suficiente dinero el estatus de las inversiones se vuelve atrasada
@@ -121,6 +138,23 @@ export const monthFunction = async (db: Db): Promise<void> => {
         }
       );
       if (updatedLoan.modifiedCount) {
+        await users.updateOne(
+          { "myLoans._id": loan._id },
+          {
+            $set: {
+              [`myLoans.$[item].scheduledPayments.${payment.index}.status`]:
+                "paid",
+              ...(allPaid ? { "myLoans.$[item].status": "paid" } : {}),
+            },
+          },
+          {
+            arrayFilters: [
+              {
+                "item._id": loan._id,
+              },
+            ],
+          }
+        );
         publishLoanUpdate(loan);
       }
       const setStatus = allPaid ? { status: "paid" as const } : {};

@@ -139,6 +139,23 @@ export const dayFunction = async (db: Db): Promise<void> => {
         }
       );
       if (updatedLoan.modifiedCount) {
+        await users.updateOne(
+          { "myLoans._id": loan._id },
+          {
+            $set: {
+              [`myLoans.$[item].scheduledPayments.${delayedPayment.index}.status`]:
+                "paid",
+              ...(allPaid ? { "myLoans.$[item].status": "paid" } : {}),
+            },
+          },
+          {
+            arrayFilters: [
+              {
+                "item._id": loan._id,
+              },
+            ],
+          }
+        );
         publishLoanUpdate(loan);
       }
       const setStatus =

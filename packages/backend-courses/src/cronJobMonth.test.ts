@@ -46,6 +46,7 @@ describe("cronJobs tests", () => {
       dbInstance.collection<TransactionMongo>("transactions");
     const loans = dbInstance.collection<LoanMongo>("loans");
     const investments = dbInstance.collection<InvestmentMongo>("investments");
+    const now = new Date();
     await users.insertMany([
       {
         _id: new ObjectId("000000000000000000000013"),
@@ -54,7 +55,56 @@ describe("cronJobs tests", () => {
         accountToBePaid: 0,
         accountTotal: 1000000,
         transactions: [],
-        myLoans: [],
+        myLoans: [
+          {
+            _id: new ObjectId("000000000000000000000014"),
+            id_user: "wHHR1SUBT0dspoF4YUOw7",
+            score: "AAA",
+            ROI: 17,
+            goal: 100000,
+            expiry: now,
+            term: 2,
+            raised: 100000,
+            status: "to be paid",
+            scheduledPayments: [
+              {
+                amortize: 50989,
+                scheduledDate: addMonths(startOfDay(now), -1),
+                status: "paid",
+              },
+              {
+                amortize: 50989,
+                scheduledDate: startOfDay(now),
+                status: "to be paid",
+              },
+            ],
+            pending: 0,
+          },
+          {
+            _id: new ObjectId("000000000000000000000015"),
+            id_user: "wHHR1SUBT0dspoF4YUOw7",
+            score: "AAA",
+            ROI: 17,
+            goal: 100000,
+            expiry: now,
+            term: 2,
+            raised: 100000,
+            status: "to be paid",
+            scheduledPayments: [
+              {
+                amortize: 50989,
+                scheduledDate: startOfDay(now),
+                status: "to be paid",
+              },
+              {
+                amortize: 50989,
+                scheduledDate: addMonths(startOfDay(now), -1),
+                status: "to be paid",
+              },
+            ],
+            pending: 0,
+          },
+        ],
         myInvestments: [],
       },
       {
@@ -85,19 +135,19 @@ describe("cronJobs tests", () => {
         score: "AAA",
         ROI: 17,
         goal: 100000,
-        expiry: new Date(),
+        expiry: now,
         term: 2,
         raised: 100000,
         status: "to be paid",
         scheduledPayments: [
           {
             amortize: 50989,
-            scheduledDate: addMonths(startOfDay(new Date()), -1),
+            scheduledDate: addMonths(startOfDay(now), -1),
             status: "paid",
           },
           {
             amortize: 50989,
-            scheduledDate: startOfDay(new Date()),
+            scheduledDate: startOfDay(now),
             status: "to be paid",
           },
         ],
@@ -109,19 +159,19 @@ describe("cronJobs tests", () => {
         score: "AAA",
         ROI: 17,
         goal: 100000,
-        expiry: new Date(),
+        expiry: now,
         term: 2,
         raised: 100000,
         status: "to be paid",
         scheduledPayments: [
           {
             amortize: 50989,
-            scheduledDate: startOfDay(new Date()),
+            scheduledDate: startOfDay(now),
             status: "to be paid",
           },
           {
             amortize: 50989,
-            scheduledDate: addMonths(startOfDay(new Date()), -1),
+            scheduledDate: addMonths(startOfDay(now), -1),
             status: "to be paid",
           },
         ],
@@ -133,7 +183,7 @@ describe("cronJobs tests", () => {
         score: "AAA",
         ROI: 17,
         goal: 100000,
-        expiry: new Date(),
+        expiry: now,
         term: 2,
         raised: 0,
         status: "financing",
@@ -146,26 +196,25 @@ describe("cronJobs tests", () => {
         score: "AAA",
         ROI: 17,
         goal: 100000,
-        expiry: new Date(),
+        expiry: now,
         term: 2,
         raised: 100000,
         status: "to be paid",
         scheduledPayments: [
           {
             amortize: 50989,
-            scheduledDate: addMonths(startOfDay(new Date()), -1),
+            scheduledDate: addMonths(startOfDay(now), -1),
             status: "paid",
           },
           {
             amortize: 50989,
-            scheduledDate: startOfDay(new Date()),
+            scheduledDate: startOfDay(now),
             status: "to be paid",
           },
         ],
         pending: 0,
       },
     ]);
-    const now = new Date();
     await investments.insertMany([
       {
         _id: new ObjectId("000000000000000000000111"),
@@ -242,7 +291,56 @@ describe("cronJobs tests", () => {
       accountToBePaid: 0,
       accountTotal: 898022,
       myInvestments: [],
-      myLoans: [],
+      myLoans: [
+        {
+          _id: new ObjectId("000000000000000000000014"),
+          id_user: "wHHR1SUBT0dspoF4YUOw7",
+          score: "AAA",
+          ROI: 17,
+          goal: 100000,
+          expiry: now,
+          term: 2,
+          raised: 100000,
+          status: "paid",
+          scheduledPayments: [
+            {
+              amortize: 50989,
+              scheduledDate: addMonths(startOfDay(now), -1),
+              status: "paid",
+            },
+            {
+              amortize: 50989,
+              scheduledDate: startOfDay(now),
+              status: "paid",
+            },
+          ],
+          pending: 0,
+        },
+        {
+          _id: new ObjectId("000000000000000000000015"),
+          id_user: "wHHR1SUBT0dspoF4YUOw7",
+          score: "AAA",
+          ROI: 17,
+          goal: 100000,
+          expiry: now,
+          term: 2,
+          raised: 100000,
+          status: "to be paid",
+          scheduledPayments: [
+            {
+              amortize: 50989,
+              scheduledDate: startOfDay(now),
+              status: "paid",
+            },
+            {
+              amortize: 50989,
+              scheduledDate: addMonths(startOfDay(now), -1),
+              status: "to be paid",
+            },
+          ],
+          pending: 0,
+        },
+      ],
       transactions: [
         {
           _id: _id_transaction,
@@ -379,12 +477,12 @@ describe("cronJobs tests", () => {
           {
             amortize: 50989,
             status: "paid",
-            scheduledDate: addMonths(startOfDay(new Date()), -1),
+            scheduledDate: addMonths(startOfDay(now), -1),
           },
           {
             amortize: 50989,
             status: "paid",
-            scheduledDate: startOfDay(new Date()),
+            scheduledDate: startOfDay(now),
           },
         ],
       },
@@ -394,12 +492,12 @@ describe("cronJobs tests", () => {
           {
             amortize: 50989,
             status: "paid",
-            scheduledDate: startOfDay(new Date()),
+            scheduledDate: startOfDay(now),
           },
           {
             amortize: 50989,
             status: "to be paid",
-            scheduledDate: addMonths(startOfDay(new Date()), -1),
+            scheduledDate: addMonths(startOfDay(now), -1),
           },
         ],
       },
@@ -407,12 +505,12 @@ describe("cronJobs tests", () => {
         scheduledPayments: [
           {
             amortize: 50989,
-            scheduledDate: addMonths(startOfDay(new Date()), -1),
+            scheduledDate: addMonths(startOfDay(now), -1),
             status: "paid",
           },
           {
             amortize: 50989,
-            scheduledDate: startOfDay(new Date()),
+            scheduledDate: startOfDay(now),
             status: "delayed",
           },
         ],
