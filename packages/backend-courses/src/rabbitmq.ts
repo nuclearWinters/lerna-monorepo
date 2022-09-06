@@ -1,6 +1,13 @@
 import { Channel, ConsumeMessage } from "amqplib";
 import { addMonths, startOfMonth } from "date-fns";
-import { Db, ObjectId, WithId } from "mongodb";
+import {
+  Db,
+  Filter,
+  FindOneAndUpdateOptions,
+  ObjectId,
+  UpdateFilter,
+  WithId,
+} from "mongodb";
 import {
   publishInvestmentInsert,
   publishInvestmentUpdate,
@@ -85,14 +92,39 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     return;
   }
   const completed = resultLoan.value.raised === resultLoan.value.goal;
-  //Si se realizo la operacion crear o actualizar inversion
-  const updatedInvestment = await investments.findOneAndUpdate(
+  const transactionOperation: WithId<TransactionMongo>[] = [
     {
+      _id: new ObjectId(),
+      id_user: id,
+      type: "invest" as const,
+      quantity: -quantity,
+      created: now,
       _id_loan,
       id_borrower,
+    },
+  ];
+  interface InvestmentsOperations {
+    filter: Filter<InvestmentMongo>;
+    update: UpdateFilter<InvestmentMongo>;
+    options?: FindOneAndUpdateOptions;
+    invest?: WithId<InvestmentMongo>;
+    filterUser: Filter<UserMongo>;
+    updateUser: (
+      upsert: boolean,
+      updatedInvestment: WithId<InvestmentMongo>
+    ) => UpdateFilter<UserMongo>;
+    optionsUser: (
+      upsert: boolean,
+      updatedInvestment: WithId<InvestmentMongo>
+    ) => FindOneAndUpdateOptions;
+  }
+  const investmentsOperations: InvestmentsOperations[] = [];
+  investmentsOperations.push({
+    filter: {
+      _id_loan,
       id_lender: id,
     },
-    {
+    update: {
       $inc: { quantity },
       $setOnInsert: {
         id_lender: id,
@@ -111,68 +143,63 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
         to_be_paid: 0,
       },
     },
-    {
+    options: {
       upsert: true,
       returnDocument: "after",
-    }
-  );
-  const transactionOperation: WithId<TransactionMongo>[] = [
-    {
-      _id: new ObjectId(),
-      id_user: id,
-      type: "invest" as const,
-      quantity: -quantity,
-      created: now,
-      _id_loan,
-      id_borrower,
     },
-  ];
-  if (updatedInvestment.value) {
-    const upsert = !updatedInvestment.lastErrorObject?.updatedExisting;
-    await users.updateOne(
-      { id },
-      {
-        $push: {
-          transactions: {
-            $each: [transactionOperation[0]],
-            $sort: { _id: 1 },
-            $slice: -6,
-          },
-          ...(upsert
-            ? {
-                myInvestments: {
-                  $each: [updatedInvestment.value],
-                  $sort: { _id: 1 },
-                  $slice: -6,
-                },
-              }
-            : {}),
+    filterUser: {
+      id,
+    },
+    updateUser: (upsert, investment) => ({
+      $push: {
+        transactions: {
+          $each: [transactionOperation[0]],
+          $sort: { _id: 1 },
+          $slice: -6,
         },
-        ...(!upsert
+        ...(upsert
           ? {
-              $inc: { "myInvestments.$[item].quantity": quantity },
+              myInvestments: {
+                $each: [investment],
+                $sort: { _id: 1 },
+                $slice: -6,
+              },
             }
           : {}),
       },
-      {
-        ...(!upsert
-          ? {
-              arrayFilters: [
-                {
-                  "item._id": updatedInvestment.value._id,
-                },
-              ],
-            }
-          : {}),
-      }
-    );
-    if (upsert) {
-      publishInvestmentInsert(updatedInvestment.value);
-    } else {
-      publishInvestmentUpdate(updatedInvestment.value);
-    }
-  }
+      ...(!upsert
+        ? {
+            $inc: { "myInvestments.$[item].quantity": quantity },
+          }
+        : {}),
+    }),
+    optionsUser: (upsert, investment) => ({
+      ...(!upsert
+        ? {
+            returnDocument: "after",
+            arrayFilters: [
+              {
+                "item._id": investment._id,
+              },
+            ],
+          }
+        : {}),
+    }),
+  });
   const goalArchived = resultLoan.value.raised === resultLoan.value.goal;
+  const scheduledPayments = goalArchived
+    ? new Array(doc.term).fill({}).map((_, index) => {
+        const TEM = doc.TEM;
+        return {
+          amortize: Math.floor(
+            doc.goal / ((1 - Math.pow(1 / (1 + TEM), doc.term)) / TEM)
+          ),
+          //Pago cada mismo dia del mes?
+          scheduledDate: startOfMonth(addMonths(now, index + 1)),
+          status: "to be paid" as const,
+        };
+      })
+    : null;
   //Si raised es igual a goal: añadir fondos a quien pidio prestado
   const creditBorrowerTransaction = {
     _id: new ObjectId(),
@@ -181,17 +208,6 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     quantity: resultLoan.value.goal,
     created: now,
   };
-  const scheduledPayments = new Array(doc.term).fill({}).map((_, index) => {
-    const TEM = doc.TEM;
-    return {
-      amortize: Math.floor(
-        doc.goal / ((1 - Math.pow(1 / (1 + TEM), doc.term)) / TEM)
-      ),
-      //Pago cada mismo dia del mes?
-      scheduledDate: startOfMonth(addMonths(now, index + 1)),
-      status: "to be paid" as const,
-    };
-  });
   //Actualizar a quien pidio dinero prestado
   const { value } = await users.findOneAndUpdate(
     { id: resultLoan.value.id_user },
@@ -235,67 +251,137 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   if (goalArchived) {
     //Obtener todas las inversiones del prestamo completado
     const investmentsResults = await investments.find({ _id_loan }).toArray();
+    if (investmentsResults.length === 0) {
+      investmentsResults.push({
+        _id: new ObjectId(),
+        quantity: 0,
+        id_lender: id,
+        id_borrower,
+        _id_loan,
+        created: now,
+        updated: now,
+        status: completed ? "up to date" : "financing",
+        payments: 0,
+        term,
+        ROI,
+        moratory: 0,
+        interest_to_earn: 0,
+        amortize: 0,
+        paid_already: 0,
+        to_be_paid: 0,
+      });
+    }
     //Calcular intereses por cada prestamo de cada inversionista
     for (const inv of investmentsResults) {
+      if (id_loan === inv._id_loan.toHexString() && id === inv.id_lender) {
+        inv.quantity += quantity;
+      }
       const TEM = Math.pow(1 + inv.ROI / 100, 1 / 12) - 1;
       const amortize = Math.floor(
         inv.quantity / ((1 - Math.pow(1 / (1 + TEM), inv.term)) / TEM)
       );
       const amortizes = amortize * inv.term;
       const interest_to_earn = amortizes - inv.quantity;
+
       //Añadir intereses a la cuenta de cada usuario que presto dinero
-      const updatedUser = await users.findOneAndUpdate(
-        {
+      const invOperation: InvestmentsOperations = {
+        filter: {
+          _id: inv._id,
+        },
+        update: {
+          $set: {
+            interest_to_earn,
+            amortize,
+            to_be_paid: amortizes,
+            status: "up to date" as const,
+          },
+        },
+        invest: inv,
+        filterUser: {
           id: inv.id_lender,
         },
-        {
+        updateUser: () => ({
           $inc: {
             accountToBePaid: amortizes,
             accountTotal: amortizes,
-          },
-          $push: {
-            transactions: {
-              $each: [transactionOperation[0]],
-              $sort: { _id: 1 },
-              $slice: -6,
-            },
           },
           $set: {
             "myInvestments.$[item].interest_to_earn": interest_to_earn,
             "myInvestments.$[item].amortize": amortize,
             "myInvestments.$[item].to_be_paid": amortizes,
           },
-        },
-        {
+        }),
+        optionsUser: () => ({
           returnDocument: "after",
           arrayFilters: [
             {
               "item._id": inv._id,
             },
           ],
-        }
-      );
-      if (updatedUser.value) {
-        publishUser(updatedUser.value);
-      }
-      //Añadir intereses a cada inversion
-      const updatedInvestments = await investments.updateOne(
-        {
-          _id: inv._id,
-        },
-        {
-          $set: {
-            interest_to_earn,
-            amortize,
-            to_be_paid: amortizes,
+        }),
+      };
+      inv.interest_to_earn = interest_to_earn;
+      inv.amortize = amortize;
+      inv.to_be_paid = amortizes;
+      inv.status = "up to date";
+      if (id_loan === inv._id_loan.toHexString() && id === inv.id_lender) {
+        investmentsOperations[0].update.$set = {
+          interest_to_earn,
+          amortize,
+          to_be_paid: amortizes,
+          status: "up to date",
+        };
+        investmentsOperations[0].update.$setOnInsert = {
+          id_lender: id,
+          id_borrower,
+          _id_loan,
+          created: now,
+          updated: now,
+          payments: 0,
+          term,
+          ROI,
+          moratory: 0,
+          paid_already: 0,
+        };
+        investmentsOperations[0].updateUser = (upsert, investment) => ({
+          ...(!upsert
+            ? {
+                $set: {
+                  "myInvestments.$[item].status": "up to date",
+                  "myInvestments.$[item].interest_to_earn": interest_to_earn,
+                  "myInvestments.$[item].amortize": amortize,
+                  "myInvestments.$[item].to_be_paid": amortizes,
+                },
+              }
+            : {}),
+          $push: {
+            transactions: {
+              $each: [transactionOperation[0]],
+              $sort: { _id: 1 },
+              $slice: -6,
+            },
+            ...(upsert
+              ? {
+                  myInvestments: {
+                    $each: [investment],
+                    $sort: { _id: 1 },
+                    $slice: -6,
+                  },
+                }
+              : {}),
           },
-        }
-      );
-      if (updatedInvestments.modifiedCount) {
-        inv.interest_to_earn = interest_to_earn;
-        inv.amortize = amortize;
-        inv.to_be_paid = amortizes;
-        publishInvestmentUpdate(inv);
+          $inc: {
+            accountToBePaid: amortizes,
+            accountTotal: amortizes,
+            ...(!upsert
+              ? {
+                  "myInvestments.$[item].quantity": quantity,
+                }
+              : {}),
+          },
+        });
+      } else {
+        investmentsOperations.push(invOperation);
       }
     }
     //Si raised es igual a goal: Actualizar scheduledPayments y status
@@ -315,6 +401,50 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       publishLoanUpdate(updatedLoan.value);
     }
     transactionOperation.push(creditBorrowerTransaction);
+  }
+  for (const investment of investmentsOperations) {
+    const inv = investment.invest;
+    const options = investment.options;
+    if (inv) {
+      //Añadir intereses a cada inversion
+      const updatedInvestments = await investments.updateOne(
+        investment.filter,
+        investment.update
+      );
+      if (updatedInvestments.modifiedCount) {
+        publishInvestmentUpdate(inv);
+      }
+      const updatedUser = await users.findOneAndUpdate(
+        investment.filterUser,
+        investment.updateUser(false, inv),
+        investment.optionsUser(false, inv)
+      );
+      if (updatedUser.value) {
+        publishUser(updatedUser.value);
+      }
+    } else if (options) {
+      const updatedInvestment = await investments.findOneAndUpdate(
+        investment.filter,
+        investment.update,
+        options
+      );
+      if (updatedInvestment.value) {
+        const upsert = !updatedInvestment.lastErrorObject?.updatedExisting;
+        if (upsert) {
+          publishInvestmentInsert(updatedInvestment.value);
+        } else {
+          publishInvestmentUpdate(updatedInvestment.value);
+        }
+        const updatedUser = await users.findOneAndUpdate(
+          investment.filterUser,
+          investment.updateUser(upsert, updatedInvestment.value),
+          investment.optionsUser(upsert, updatedInvestment.value)
+        );
+        if (updatedUser.value) {
+          publishUser(updatedUser.value);
+        }
+      }
+    }
   }
   if (value) {
     publishUser(value);

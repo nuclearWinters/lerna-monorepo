@@ -200,9 +200,16 @@ const subscriptionInvestmentsUpdate = graphql`
       id_lender
       _id_loan
       quantity
+      ROI
+      payments
+      term
+      moratory
       created
       updated
       status
+      interest_to_earn
+      paid_already
+      to_be_paid
     }
   }
 `;

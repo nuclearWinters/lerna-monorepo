@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6be9a100c752e3393e47a4e4cc6267b1>>
+ * @generated SignedSource<<b0078bfe47644195dfcd8385a7ffa5d1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,13 +13,20 @@ export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DU
 export type RoutesInvestmentsUpdateSubscription$variables = {};
 export type RoutesInvestmentsUpdateSubscription$data = {
   readonly investments_subscribe_update: {
+    readonly ROI: number;
     readonly _id_loan: string;
     readonly created: Int;
     readonly id: string;
     readonly id_borrower: string;
     readonly id_lender: string;
+    readonly interest_to_earn: string;
+    readonly moratory: string;
+    readonly paid_already: string;
+    readonly payments: number;
     readonly quantity: string;
     readonly status: InvestmentStatus;
+    readonly term: number;
+    readonly to_be_paid: string;
     readonly updated: Int;
   };
 };
@@ -77,6 +84,34 @@ var v0 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
+        "name": "ROI",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "payments",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "term",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "moratory",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
         "name": "created",
         "storageKey": null
       },
@@ -92,6 +127,27 @@ var v0 = [
         "args": null,
         "kind": "ScalarField",
         "name": "status",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "interest_to_earn",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "paid_already",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "to_be_paid",
         "storageKey": null
       }
     ],
@@ -116,16 +172,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "2f20c3941a75f416e2b48affc8d3e91c",
+    "cacheID": "905c8180b226696e906ba1518da14fd7",
     "id": null,
     "metadata": {},
     "name": "RoutesInvestmentsUpdateSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesInvestmentsUpdateSubscription {\n  investments_subscribe_update {\n    id\n    id_borrower\n    id_lender\n    _id_loan\n    quantity\n    created\n    updated\n    status\n  }\n}\n"
+    "text": "subscription RoutesInvestmentsUpdateSubscription {\n  investments_subscribe_update {\n    id\n    id_borrower\n    id_lender\n    _id_loan\n    quantity\n    ROI\n    payments\n    term\n    moratory\n    created\n    updated\n    status\n    interest_to_earn\n    paid_already\n    to_be_paid\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4cb93e2adf3f235634c50c887ee2a3c4";
+(node as any).hash = "a3476be9c8a42cf4d34a1dcdd0ac8d3b";
 
 export default node;
