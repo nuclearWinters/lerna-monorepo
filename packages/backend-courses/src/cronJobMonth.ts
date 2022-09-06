@@ -52,6 +52,12 @@ export const monthFunction = async (db: Db): Promise<void> => {
         created: now,
         id_user: user_id,
       };
+      //Variable que indica que todas los pagos ya se realizaron
+      const allPaid =
+        loan.scheduledPayments?.filter((payment) => payment.status === "paid")
+          .length +
+          1 ===
+        loan.scheduledPayments?.length;
       //Se actualiza el usuario del deudor al mover dinero de cuenta
       const result = await users.findOneAndUpdate(
         {
@@ -59,6 +65,11 @@ export const monthFunction = async (db: Db): Promise<void> => {
           accountAvailable: { $gte: delayedTotal },
         },
         {
+          $set: {
+            [`myLoans.$[item].scheduledPayments.${payment.index}.status`]:
+              "paid",
+            ...(allPaid ? { "myLoans.$[item].status": "paid" } : {}),
+          },
           $inc: {
             accountAvailable: -delayedTotal,
             accountTotal: -delayedTotal,
@@ -73,6 +84,11 @@ export const monthFunction = async (db: Db): Promise<void> => {
         },
         {
           returnDocument: "after",
+          arrayFilters: [
+            {
+              "item._id": loan._id,
+            },
+          ],
         }
       );
       if (result.value) {
@@ -149,12 +165,6 @@ export const monthFunction = async (db: Db): Promise<void> => {
         //No se realizan mas acciones pues el pago no se realizó
         continue;
       }
-      //Variable que indica que todas los pagos ya se realizaron
-      const allPaid =
-        loan.scheduledPayments?.filter((payment) => payment.status === "paid")
-          .length +
-          1 ===
-        loan.scheduledPayments?.length;
       if (allPaid) {
         loan.status = "paid";
       }
@@ -169,23 +179,6 @@ export const monthFunction = async (db: Db): Promise<void> => {
         }
       );
       if (updatedLoan.modifiedCount) {
-        await users.updateOne(
-          { "myLoans._id": loan._id },
-          {
-            $set: {
-              [`myLoans.$[item].scheduledPayments.${payment.index}.status`]:
-                "paid",
-              ...(allPaid ? { "myLoans.$[item].status": "paid" } : {}),
-            },
-          },
-          {
-            arrayFilters: [
-              {
-                "item._id": loan._id,
-              },
-            ],
-          }
-        );
         publishLoanUpdate(loan);
       }
       const setStatus = allPaid ? { status: "paid" as const } : {};

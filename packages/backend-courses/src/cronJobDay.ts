@@ -57,6 +57,17 @@ export const dayFunction = async (db: Db): Promise<void> => {
         quantity: -delayedTotal,
         created: now,
       };
+      count++;
+      const allPaid =
+        loan.scheduledPayments.filter((payment) => payment.status === "paid")
+          .length +
+          count ===
+        loan.scheduledPayments.length;
+      const noDelayed =
+        loan.scheduledPayments.filter((payment) => payment.status === "delayed")
+          .length -
+          count ===
+        0;
       //Se actualiza el usuario del deudor al mover dinero de cuenta
       const result = await users.findOneAndUpdate(
         {
@@ -64,6 +75,11 @@ export const dayFunction = async (db: Db): Promise<void> => {
           accountAvailable: { $gte: delayedTotal },
         },
         {
+          $set: {
+            [`myLoans.$[item].scheduledPayments.${delayedPayment.index}.status`]:
+              "paid",
+            ...(allPaid ? { "myLoans.$[item].status": "paid" } : {}),
+          },
           $inc: {
             accountAvailable: -delayedTotal,
             accountTotal: -delayedTotal,
@@ -76,7 +92,14 @@ export const dayFunction = async (db: Db): Promise<void> => {
             },
           },
         },
-        { returnDocument: "after" }
+        {
+          returnDocument: "after",
+          arrayFilters: [
+            {
+              "item._id": loan._id,
+            },
+          ],
+        }
       );
       if (result.value) {
         publishUser(result.value);
@@ -126,17 +149,6 @@ export const dayFunction = async (db: Db): Promise<void> => {
         }
         continue;
       }
-      count++;
-      const allPaid =
-        loan.scheduledPayments.filter((payment) => payment.status === "paid")
-          .length +
-          count ===
-        loan.scheduledPayments.length;
-      const noDelayed =
-        loan.scheduledPayments.filter((payment) => payment.status === "delayed")
-          .length -
-          count ===
-        0;
       //El pago SI se realizó, por lo tanto se actualiza la deuda y el estatus del pago correspondiente se vuelve pagada
       loan.scheduledPayments[delayedPayment.index].status = "paid" as const;
       if (allPaid) {
@@ -152,23 +164,6 @@ export const dayFunction = async (db: Db): Promise<void> => {
         }
       );
       if (updatedLoan.modifiedCount) {
-        await users.updateOne(
-          { "myLoans._id": loan._id },
-          {
-            $set: {
-              [`myLoans.$[item].scheduledPayments.${delayedPayment.index}.status`]:
-                "paid",
-              ...(allPaid ? { "myLoans.$[item].status": "paid" } : {}),
-            },
-          },
-          {
-            arrayFilters: [
-              {
-                "item._id": loan._id,
-              },
-            ],
-          }
-        );
         publishLoanUpdate(loan);
       }
       const setStatus =
