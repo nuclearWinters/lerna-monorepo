@@ -4,7 +4,7 @@ import { Context } from "../types";
 import { ObjectId } from "mongodb";
 import { add } from "date-fns";
 import { MXNScalarType } from "../Nodes";
-import { publishLoanInsert } from "../subscriptions/subscriptionsUtils";
+import { publishMyLoanInsert } from "../subscriptions/subscriptionsUtils";
 
 interface Input {
   goal: number;
@@ -69,7 +69,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
           },
         }
       );
-      publishLoanInsert({
+      publishMyLoanInsert({
         _id: _id_loan,
         id_user: id,
         score: "AAA",

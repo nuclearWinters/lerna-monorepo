@@ -17,7 +17,7 @@ jest.mock("ioredis", () =>
 );
 
 jest.mock("../subscriptions/subscriptionsUtils", () => ({
-  publishLoanInsert: jest.fn,
+  publishMyLoanInsert: jest.fn,
 }));
 
 const request = supertest(app);

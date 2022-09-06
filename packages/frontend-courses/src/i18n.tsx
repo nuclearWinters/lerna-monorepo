@@ -84,6 +84,7 @@ const resources: Record<"EN", Record<"translation", Record<string, string>>> = {
       "La sesión expirara en": "Session will expire in",
       segundos: "seconds",
       "Extender sesión 1 hora": "Extend session 1 hour",
+      "Selecciona...": "Select...",
     },
   },
 };

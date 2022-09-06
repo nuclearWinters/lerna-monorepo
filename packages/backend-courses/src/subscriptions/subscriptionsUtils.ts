@@ -13,6 +13,7 @@ import {
   LOAN_INSERT,
   INVESTMENT_UPDATE,
   LOAN_UPDATE,
+  MY_LOAN_INSERT,
 } from "./subscriptions";
 
 export const publishUser = (user: UserMongo) => {
@@ -33,6 +34,15 @@ export const publishTransactionInsert = (transaction: TransactionMongo) => {
 export const publishLoanInsert = (loan: LoanMongo) => {
   pubsub.publish(LOAN_INSERT, {
     loans_subscribe_insert: {
+      node: loan,
+      cursor: base64(loan._id?.toHexString() || ""),
+    },
+  });
+};
+
+export const publishMyLoanInsert = (loan: LoanMongo) => {
+  pubsub.publish(MY_LOAN_INSERT, {
+    my_loans_subscribe_insert: {
       node: loan,
       cursor: base64(loan._id?.toHexString() || ""),
     },

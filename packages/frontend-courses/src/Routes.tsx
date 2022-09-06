@@ -55,6 +55,7 @@ import { Routes_auth_user$key } from "__generated__/Routes_auth_user.graphql";
 import { RoutesInvestmentsUpdateSubscription } from "__generated__/RoutesInvestmentsUpdateSubscription.graphql";
 import { AppLoansQuery$data } from "__generated__/AppLoansQuery.graphql";
 import { MyLoans } from "screens/MyLoans";
+import { RoutesMyLoansSubscription } from "__generated__/RoutesMyLoansSubscription.graphql";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -90,6 +91,7 @@ type Props = {
   user: Routes_user$key;
   authUser: Routes_auth_user$key;
   dataLoans: AppLoansQuery$data;
+  connectionID: string;
 };
 
 const subscriptionLoans = graphql`
@@ -110,6 +112,34 @@ const subscriptionLoans = graphql`
           status
           scheduledDate
         }
+        pending
+        pendingCents
+      }
+      cursor
+    }
+  }
+`;
+
+const subscriptionMyLoans = graphql`
+  subscription RoutesMyLoansSubscription($connections: [ID!]!) {
+    my_loans_subscribe_insert @prependEdge(connections: $connections) {
+      node {
+        id
+        id_user
+        score
+        ROI
+        goal
+        term
+        raised
+        expiry
+        status
+        scheduledPayments {
+          amortize
+          status
+          scheduledDate
+        }
+        pending
+        pendingCents
       }
       cursor
     }
@@ -207,11 +237,9 @@ export const Routes: FC<Props> = (props) => {
   }, [i18n, isLogged, user, authUser]);
 
   const connectionLoanID = ConnectionHandler.getConnectionID(
-    user.id,
+    props.connectionID,
     "AddInvestments_query_loansFinancing",
-    {
-      firstFetch: true,
-    }
+    {}
   );
   const configLoans = useMemo<
     GraphQLSubscriptionConfig<RoutesLoansSubscription>
@@ -228,6 +256,24 @@ export const Routes: FC<Props> = (props) => {
     const status = statusLocal ? statusLocal : null;
     return status;
   }, [statusLocal]);
+  const connectionMyLoansID = ConnectionHandler.getConnectionID(
+    user.id,
+    "MyLoans_user_myLoans",
+    {
+      firstFetch: true,
+    }
+  );
+  const configMyLoans = useMemo<
+    GraphQLSubscriptionConfig<RoutesMyLoansSubscription>
+  >(
+    () => ({
+      variables: {
+        connections: [connectionMyLoansID],
+      },
+      subscription: subscriptionMyLoans,
+    }),
+    [connectionMyLoansID]
+  );
   const connectionInvestmentID = ConnectionHandler.getConnectionID(
     user.id,
     "MyInvestments_user_investments",
@@ -285,6 +331,7 @@ export const Routes: FC<Props> = (props) => {
   useSubscription<RoutesInvestmentsUpdateSubscription>(configInvestmentsUpdate);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   useSubscription<RoutesUserSubscription>(configUser);
+  useSubscription<RoutesMyLoansSubscription>(configMyLoans);
   return (
     <Router>
       <CheckExpiration />

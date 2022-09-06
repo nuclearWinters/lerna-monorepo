@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e6efb6725976ec0045ebc3dd1f92d1f7>>
+ * @generated SignedSource<<ba6938350e72cc6b44f0b7e795b6d375>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,7 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type AppLoansQuery$variables = {};
 export type AppLoansQuery$data = {
+  readonly __id: string;
   readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_query">;
 };
 export type AppLoansQuery = {
@@ -20,7 +21,19 @@ export type AppLoansQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
+var v0 = {
+  "kind": "ClientExtension",
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "__id",
+      "storageKey": null
+    }
+  ]
+},
+v1 = [
   {
     "kind": "Literal",
     "name": "after",
@@ -32,7 +45,7 @@ var v0 = [
     "value": 5
   }
 ],
-v1 = {
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -50,7 +63,8 @@ return {
         "args": null,
         "kind": "FragmentSpread",
         "name": "AddInvestments_query"
-      }
+      },
+      (v0/*: any*/)
     ],
     "type": "Query",
     "abstractKey": null
@@ -63,7 +77,7 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v0/*: any*/),
+        "args": (v1/*: any*/),
         "concreteType": "LoanConnection",
         "kind": "LinkedField",
         "name": "loansFinancing",
@@ -141,7 +155,7 @@ return {
                     "name": "expiry",
                     "storageKey": null
                   },
-                  (v1/*: any*/),
+                  (v2/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -157,7 +171,7 @@ return {
                         "name": "amortize",
                         "storageKey": null
                       },
-                      (v1/*: any*/),
+                      (v2/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -232,13 +246,14 @@ return {
       },
       {
         "alias": null,
-        "args": (v0/*: any*/),
+        "args": (v1/*: any*/),
         "filters": null,
         "handle": "connection",
         "key": "AddInvestments_query_loansFinancing",
         "kind": "LinkedHandle",
         "name": "loansFinancing"
-      }
+      },
+      (v0/*: any*/)
     ]
   },
   "params": {
@@ -252,6 +267,6 @@ return {
 };
 })();
 
-(node as any).hash = "02f581ede97f13d14b6ed95fe03d0d22";
+(node as any).hash = "9444f7ab1bf96f018451d4b5c4969ab4";
 
 export default node;

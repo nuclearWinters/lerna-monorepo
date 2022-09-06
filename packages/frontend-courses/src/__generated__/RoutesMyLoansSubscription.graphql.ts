@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0174755cb190608f82a4606a2f36eb54>>
+ * @generated SignedSource<<77d9138a1b5dc36e64817a8d1d828af8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,11 +11,11 @@
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type LoanScheduledPaymentStatus = "DELAYED" | "PAID" | "TO_BE_PAID" | "%future added value";
 export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
-export type RoutesLoansSubscription$variables = {
+export type RoutesMyLoansSubscription$variables = {
   connections: ReadonlyArray<string>;
 };
-export type RoutesLoansSubscription$data = {
-  readonly loans_subscribe_insert: {
+export type RoutesMyLoansSubscription$data = {
+  readonly my_loans_subscribe_insert: {
     readonly cursor: string;
     readonly node: {
       readonly ROI: number;
@@ -37,9 +37,9 @@ export type RoutesLoansSubscription$data = {
     } | null;
   };
 };
-export type RoutesLoansSubscription = {
-  response: RoutesLoansSubscription$data;
-  variables: RoutesLoansSubscription$variables;
+export type RoutesMyLoansSubscription = {
+  response: RoutesMyLoansSubscription$data;
+  variables: RoutesMyLoansSubscription$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -62,7 +62,7 @@ v2 = {
   "args": null,
   "concreteType": "LoanEdge",
   "kind": "LinkedField",
-  "name": "loans_subscribe_insert",
+  "name": "my_loans_subscribe_insert",
   "plural": false,
   "selections": [
     {
@@ -188,7 +188,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "RoutesLoansSubscription",
+    "name": "RoutesMyLoansSubscription",
     "selections": [
       (v2/*: any*/)
     ],
@@ -199,7 +199,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "RoutesLoansSubscription",
+    "name": "RoutesMyLoansSubscription",
     "selections": [
       (v2/*: any*/),
       {
@@ -209,7 +209,7 @@ return {
         "handle": "prependEdge",
         "key": "",
         "kind": "LinkedHandle",
-        "name": "loans_subscribe_insert",
+        "name": "my_loans_subscribe_insert",
         "handleArgs": [
           {
             "kind": "Variable",
@@ -221,16 +221,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "ac4081f69797db81f3c69a13a61d739d",
+    "cacheID": "bbc49824e26a65e7d6ba0a86e636f529",
     "id": null,
     "metadata": {},
-    "name": "RoutesLoansSubscription",
+    "name": "RoutesMyLoansSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesLoansSubscription {\n  loans_subscribe_insert {\n    node {\n      id\n      id_user\n      score\n      ROI\n      goal\n      term\n      raised\n      expiry\n      status\n      scheduledPayments {\n        amortize\n        status\n        scheduledDate\n      }\n      pending\n      pendingCents\n    }\n    cursor\n  }\n}\n"
+    "text": "subscription RoutesMyLoansSubscription {\n  my_loans_subscribe_insert {\n    node {\n      id\n      id_user\n      score\n      ROI\n      goal\n      term\n      raised\n      expiry\n      status\n      scheduledPayments {\n        amortize\n        status\n        scheduledDate\n      }\n      pending\n      pendingCents\n    }\n    cursor\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "988b412628f3af4803bd8efcaee208be";
+(node as any).hash = "dd1673271aeeda7bfe33b776c19b44c1";
 
 export default node;

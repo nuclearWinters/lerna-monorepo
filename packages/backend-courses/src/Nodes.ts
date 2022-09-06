@@ -424,7 +424,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       resolve: async (
         { myLoans },
         args: unknown,
-        { loans, isBorrower, id, isLender }: Context
+        { loans, isBorrower, id, isLender, isSupport }: Context
       ): Promise<Connection<LoanMongo>> => {
         const { after, first, firstFetch } = args as ArgsLoans;
         try {
@@ -439,13 +439,12 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           if (limit <= 0) {
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
-          const query: Filter<LoanMongo> = {
-            status: {
-              $in: isBorrower
-                ? ["financing", "to be paid", "waiting for approval"]
-                : ["waiting for approval"],
-            },
-          };
+          const query: Filter<LoanMongo> = {};
+          if (isSupport) {
+            query.status = {
+              $in: ["waiting for approval"],
+            };
+          }
           if (loan_id) {
             query._id = { $lt: new ObjectId(loan_id) };
           }

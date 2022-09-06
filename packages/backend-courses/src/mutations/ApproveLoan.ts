@@ -3,7 +3,10 @@ import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
 import { Context, LoanMongo } from "../types";
 import { ObjectId } from "mongodb";
 import { GraphQLLoan } from "../Nodes";
-import { publishLoanUpdate } from "../subscriptions/subscriptionsUtils";
+import {
+  publishLoanInsert,
+  publishLoanUpdate,
+} from "../subscriptions/subscriptionsUtils";
 
 interface Input {
   loan_gid: string;
@@ -68,6 +71,7 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
         }
       );
       publishLoanUpdate(loan);
+      publishLoanInsert(loan);
       return { validAccessToken, error: "", loan };
     } catch (e) {
       return {

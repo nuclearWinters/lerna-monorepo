@@ -41,6 +41,7 @@ const AppUserQuery = graphql`
 
 const AppLoansQuery = graphql`
   query AppLoansQuery {
+    __id
     ...AddInvestments_query
   }
 `;
@@ -76,7 +77,12 @@ const AppQueryRoot: FC = () => {
   }, [loadQuery]);
   tokensAndData.refetchUser = refetchUser;
   return (
-    <Routes user={data.user} authUser={data.authUser} dataLoans={dataLoans} />
+    <Routes
+      user={data.user}
+      authUser={data.authUser}
+      dataLoans={dataLoans}
+      connectionID={dataLoans.__id}
+    />
   );
 };
 

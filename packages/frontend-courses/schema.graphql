@@ -140,6 +140,7 @@ type Query {
 type Subscription {
   user_subscribe: User!
   loans_subscribe_insert: LoanEdge!
+  my_loans_subscribe_insert: LoanEdge!
   investments_subscribe_insert(status: [InvestmentStatus!]): InvestmentsEdge!
   transactions_subscribe_insert: TransactionEdge!
   loans_subscribe_update(gid: ID!): Loan!

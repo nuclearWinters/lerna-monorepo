@@ -37,11 +37,35 @@ export const pubsub = new RedisPubSub({
 });
 
 export const LOAN_INSERT = "LOAN_INSERT";
+export const MY_LOAN_INSERT = "MY_LOAN_INSERT";
 export const TRANSACTION_INSERT = "TRANSACTION_INSERT";
 export const INVESTMENT_INSERT = "INVESTMENT_INSERT";
 export const USER = "USER";
 export const INVESTMENT_UPDATE = "INVESTMENT_UPDATE";
 export const LOAN_UPDATE = "LOAN_UPDATE";
+
+interface PayloadMyLoansInsert {
+  my_loans_subscribe_insert: ILoanEdge;
+}
+
+export const my_loans_subscribe_insert = {
+  type: new GraphQLNonNull(GraphQLLoanEdge),
+  description: "New my loans",
+  args: {},
+  subscribe: withFilter(
+    () => pubsub.asyncIterator(MY_LOAN_INSERT),
+    (payload: PayloadMyLoansInsert, _, { isSupport, id }: Context) => {
+      return isSupport
+        ? payload.my_loans_subscribe_insert.node.status ===
+            "waiting for approval"
+        : id === payload.my_loans_subscribe_insert.node.id_user;
+    }
+  ),
+};
+
+interface PayloadLoansInsert {
+  loans_subscribe_insert: ILoanEdge;
+}
 
 export const loans_subscribe_insert = {
   type: new GraphQLNonNull(GraphQLLoanEdge),
@@ -49,8 +73,8 @@ export const loans_subscribe_insert = {
   args: {},
   subscribe: withFilter(
     () => pubsub.asyncIterator(LOAN_INSERT),
-    (payload: { loans_subscribe: ILoanEdge }, variables) => {
-      return variables.status.includes(payload.loans_subscribe.node.status);
+    (payload: PayloadLoansInsert) => {
+      return payload.loans_subscribe_insert.node.status === "financing";
     }
   ),
 };

@@ -14,6 +14,7 @@ import {
   user_subscribe,
   investments_subscribe_update,
   loans_subscribe_update,
+  my_loans_subscribe_insert,
 } from "./subscriptions/subscriptions";
 import { ApproveLoanMutation } from "./mutations/ApproveLoan";
 import {
@@ -54,6 +55,7 @@ const Subscription = new GraphQLObjectType({
     user_subscribe,
     investments_subscribe_update,
     loans_subscribe_update,
+    my_loans_subscribe_insert,
   }),
 });
 
