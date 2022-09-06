@@ -174,9 +174,9 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
         : {}),
     }),
     optionsUser: (upsert, investment) => ({
+      returnDocument: "after",
       ...(!upsert
         ? {
-            returnDocument: "after",
             arrayFilters: [
               {
                 "item._id": investment._id,
