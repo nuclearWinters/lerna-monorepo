@@ -1,49 +1,37 @@
-import React, { FC, CSSProperties } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import React, { FC, ReactNode } from "react";
+import { cx, LinariaClassName } from "@linaria/core";
+import { css } from "@linaria/atomic";
 
 interface IProps {
-  style: CSSProperties;
+  className?: LinariaClassName;
   onClick: () => void;
   text: string;
-  iconLeft?: IconDefinition;
-  iconRight?: IconDefinition;
+  iconLeft?: ReactNode;
+  iconRight?: ReactNode;
 }
+
+const container = css`
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 30px;
+  box-shadow: 1px 2px 5px #888888;
+  letter-spacing: 1px;
+  width: 220px;
+  border: none;
+`;
 
 export const Button: FC<IProps> = ({
   text,
-  style,
+  className,
   onClick,
   iconLeft,
   iconRight,
 }) => {
   return (
-    <div style={style} onClick={onClick}>
-      {iconLeft && (
-        <FontAwesomeIcon
-          icon={iconLeft}
-          size="sm"
-          color={"rgba(0,0,0,0.4)"}
-          style={{
-            fontSize: 16,
-            cursor: "pointer",
-            paddingRight: 8,
-          }}
-        />
-      )}
+    <button className={cx(container, className)} onClick={onClick}>
+      {iconLeft ? iconLeft : null}
       {!!text && text}
-      {iconRight && (
-        <FontAwesomeIcon
-          icon={iconRight}
-          size="sm"
-          color={"rgba(0,0,0,0.4)"}
-          style={{
-            fontSize: 16,
-            cursor: "pointer",
-            paddingRight: 8,
-          }}
-        />
-      )}
-    </div>
+      {iconRight ? iconRight : null}
+    </button>
   );
 };

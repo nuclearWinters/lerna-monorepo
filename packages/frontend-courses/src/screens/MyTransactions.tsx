@@ -1,25 +1,23 @@
 import React, { FC } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
-import { TransactionType } from "./__generated__/MyTransactions_query.graphql";
-import { format } from "date-fns";
-import es from "date-fns/locale/es";
-import en from "date-fns/locale/en-US";
 import { CustomButton } from "components/CustomButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFileContract,
-  faUserCircle,
-} from "@fortawesome/free-solid-svg-icons";
 import { Main } from "components/Main";
 import { WrapperSmall } from "components/WrapperSmall";
 import { Title } from "components/Title";
 import { Rows } from "components/Rows";
 import { Space } from "components/Space";
 import { Columns } from "components/Colums";
-import { useTranslation } from "react-i18next";
 import { MyTransactionsPaginationUser } from "./__generated__/MyTransactionsPaginationUser.graphql";
 import { MyTransactions_auth_user$key } from "./__generated__/MyTransactions_auth_user.graphql";
-import { MyTransactions_user$key } from "./__generated__/MyTransactions_user.graphql";
+import {
+  MyTransactions_user$key,
+  TransactionType,
+} from "./__generated__/MyTransactions_user.graphql";
+import es from "dayjs/locale/es";
+import en from "dayjs/locale/en";
+import dayjs from "dayjs";
+import { useTranslation } from "utils";
+import { FaFileContract, FaUserCircle } from "react-icons/fa";
 
 const transactionsFragment = graphql`
   fragment MyTransactions_user on User
@@ -132,42 +130,37 @@ export const MyTransactions: FC<Props> = (props) => {
                           }}
                         >
                           {t("Prestado a")}{" "}
-                          <FontAwesomeIcon
+                          <FaUserCircle
                             onClick={() => {
                               navigator.clipboard.writeText(id_borrower);
                             }}
-                            icon={faUserCircle}
-                            size={"1x"}
+                            size={18}
                             color={"rgba(255,90,96,0.5)"}
                             style={{ margin: "0px 4px", cursor: "pointer" }}
                           />{" "}
                           {t("al fondo")}:{" "}
-                          <FontAwesomeIcon
+                          <FaFileContract
                             onClick={() => {
                               navigator.clipboard.writeText(_id_loan);
                             }}
-                            icon={faFileContract}
-                            size={"1x"}
+                            size={18}
                             color={"rgba(255,90,96,0.5)"}
                             style={{ margin: "0px 4px", cursor: "pointer" }}
                           />
                         </div>
                       ) : null}
                       <div style={{ letterSpacing: 1 }}>
-                        {format(
-                          edge.node.created,
-                          "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
-                          {
-                            locale:
-                              authUser.language === "DEFAULT"
-                                ? navigator.language.includes("es")
-                                  ? es
-                                  : en
-                                : authUser.language === "ES"
+                        {dayjs(edge.node.created)
+                          .locale(
+                            authUser.language === "DEFAULT"
+                              ? navigator.language.includes("es")
                                 ? es
-                                : en,
-                          }
-                        )}
+                                : en
+                              : authUser.language === "ES"
+                              ? es
+                              : en
+                          )
+                          .format("d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss")}
                       </div>
                     </div>
                     <div

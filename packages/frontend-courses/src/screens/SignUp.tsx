@@ -13,9 +13,8 @@ import { WrapperSmall } from "components/WrapperSmall";
 import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
-import { useTranslation } from "react-i18next";
-import { expireSessionTime, logOut } from "utils";
-import { addMinutes } from "date-fns";
+import { expireSessionTime, logOut, useTranslation } from "utils";
+import dayjs from "dayjs";
 
 export const SignUp: FC = () => {
   const { t } = useTranslation();
@@ -101,9 +100,9 @@ export const SignUp: FC = () => {
                         return window.alert(response.signUp.error);
                       }
                       tokensAndData.accessToken = response.signUp.accessToken;
-                      tokensAndData.exp = addMinutes(
-                        new Date(),
-                        expireSessionTime
+                      tokensAndData.exp = dayjs().add(
+                        expireSessionTime,
+                        "minutes"
                       );
                       tokensAndData.refetchUser();
                     },

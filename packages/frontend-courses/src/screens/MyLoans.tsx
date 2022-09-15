@@ -10,10 +10,10 @@ import { Space } from "components/Space";
 import { Columns } from "components/Colums";
 import { TableColumnName } from "components/TableColumnName";
 import { Table } from "components/Table";
-import { useTranslation } from "react-i18next";
 import { MyLoans_user$key } from "./__generated__/MyLoans_user.graphql";
 import { MyLoans_auth_user$key } from "./__generated__/MyLoans_auth_user.graphql";
 import { MyLoansPaginationUser } from "./__generated__/MyLoansPaginationUser.graphql";
+import { useTranslation } from "utils";
 
 const debtInSaleFragment = graphql`
   fragment MyLoans_user on User

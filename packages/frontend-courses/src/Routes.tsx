@@ -31,24 +31,9 @@ import { RoutesUserSubscription } from "__generated__/RoutesUserSubscription.gra
 import { Icon } from "components/Icon";
 import { AccountInfo } from "components/AccountInfo";
 import { AccountLink } from "components/AccountLink";
-import {
-  faCartPlus,
-  faFileAlt,
-  faFunnelDollar,
-  faHandHoldingUsd,
-  faExchangeAlt,
-  faFolderOpen,
-  faUserAlt,
-  faUserCircle,
-  faSignOutAlt,
-  faFileContract,
-  faMoneyCheck,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthButton } from "components/AuthButton";
 import { Rows } from "components/Rows";
-import { logOut } from "utils";
-import { useTranslation } from "react-i18next";
+import { logOut, useTranslation } from "utils";
 import { CheckExpiration } from "components/CheckExpiration";
 import { Routes_user$key } from "__generated__/Routes_user.graphql";
 import { Routes_auth_user$key } from "__generated__/Routes_auth_user.graphql";
@@ -56,6 +41,20 @@ import { RoutesInvestmentsUpdateSubscription } from "__generated__/RoutesInvestm
 import { AppLoansQuery$data } from "__generated__/AppLoansQuery.graphql";
 import { MyLoans } from "screens/MyLoans";
 import { RoutesMyLoansSubscription } from "__generated__/RoutesMyLoansSubscription.graphql";
+import {
+  FaUserCircle,
+  FaSignOutAlt,
+  FaFileAlt,
+  FaCartPlus,
+  FaFunnelDollar,
+  FaMoneyCheck,
+  FaFileContract,
+  FaUserAlt,
+  FaHandHolding,
+  FaFolder,
+  FaExchangeAlt,
+} from "react-icons/fa";
+import { css } from "@linaria/atomic";
 
 const routesFragment = graphql`
   fragment Routes_user on User {
@@ -225,8 +224,16 @@ const subscriptionUser = graphql`
   }
 `;
 
+const logInStyle = css`
+  background-color: #1bbc9b;
+`;
+
+const signUpStyle = css`
+  background-color: #2c92db;
+`;
+
 export const Routes: FC<Props> = (props) => {
-  const { t, i18n } = useTranslation();
+  const { t, changeLanguage } = useTranslation();
   const user = useFragment<Routes_user$key>(routesFragment, props.user);
   const { statusLocal } = user;
   const authUser = useFragment<Routes_auth_user$key>(
@@ -237,11 +244,11 @@ export const Routes: FC<Props> = (props) => {
   const isLogged = !!user.accountId;
   useEffect(() => {
     if (isLogged) {
-      i18n.changeLanguage(authUser.language);
+      changeLanguage(authUser.language);
     } else {
-      i18n.changeLanguage(navigator.language.includes("es") ? "es" : "en");
+      changeLanguage(navigator.language.includes("es") ? "ES" : "EN");
     }
-  }, [i18n, isLogged, user, authUser]);
+  }, [isLogged, user, authUser, changeLanguage]);
 
   const connectionLoanID = ConnectionHandler.getConnectionID(
     props.connectionID,
@@ -369,31 +376,35 @@ export const Routes: FC<Props> = (props) => {
                 colorValue="rgb(58,179,152)"
               />
               <AccountLink
-                icon={faFileAlt}
+                icon={<FaFileAlt size={28} />}
                 title={t("Mi cuenta")}
                 path="/account"
               />
               <AccountLink
-                icon={faMoneyCheck}
+                icon={<FaMoneyCheck size={28} />}
                 title={t("Pedir prestamo")}
                 path="/addLoan"
               />
               <AccountLink
-                icon={faFileContract}
+                icon={<FaFileContract size={28} />}
                 title={t("Mis prestamos")}
                 path="/myLoans"
               />
               <AccountLink
-                icon={faFunnelDollar}
+                icon={<FaFunnelDollar size={28} />}
                 title={t("Agregar fondos")}
                 path="/addFunds"
               />
               <AccountLink
-                icon={faHandHoldingUsd}
+                icon={<FaHandHolding size={28} />}
                 title={t("Retirar fondos")}
                 path="/retireFunds"
               />
-              <AccountLink icon={faUserAlt} title="Settings" path="/settings" />
+              <AccountLink
+                icon={<FaUserAlt size={28} />}
+                title="Settings"
+                path="/settings"
+              />
             </>
           ) : isSupport ? (
             <>
@@ -403,11 +414,15 @@ export const Routes: FC<Props> = (props) => {
                 isSupport={isSupport}
               />
               <AccountLink
-                icon={faFileContract}
+                icon={<FaFileContract size={28} />}
                 title={t("Aprobar prestamo")}
                 path="/approveLoan"
               />
-              <AccountLink icon={faUserAlt} title="Settings" path="/settings" />
+              <AccountLink
+                icon={<FaUserAlt size={28} />}
+                title="Settings"
+                path="/settings"
+              />
             </>
           ) : (
             <>
@@ -428,43 +443,43 @@ export const Routes: FC<Props> = (props) => {
               />
               <AccountLink
                 isLogged={isLogged}
-                icon={faFileAlt}
+                icon={<FaFileAlt size={28} />}
                 title={t("Mi cuenta")}
                 path="/account"
               />
               <AccountLink
-                icon={faCartPlus}
+                icon={<FaCartPlus size={28} />}
                 title={t("Comprar")}
                 path="/addInvestments"
               />
               <AccountLink
                 isLogged={isLogged}
-                icon={faFunnelDollar}
+                icon={<FaFunnelDollar size={28} />}
                 title={t("Agregar fondos")}
                 path="/addFunds"
               />
               <AccountLink
                 isLogged={isLogged}
-                icon={faHandHoldingUsd}
+                icon={<FaHandHolding size={28} />}
                 title={t("Retirar fondos")}
                 path="/retireFunds"
               />
               <AccountLink
                 isLogged={isLogged}
-                icon={faFolderOpen}
-                title={t("Mis Inversiones")}
+                icon={<FaFolder size={28} />}
+                title={t("Mis inversiones")}
                 path="/myInvestments"
               />
               <AccountLink
                 isLogged={isLogged}
-                icon={faExchangeAlt}
+                icon={<FaExchangeAlt size={28} />}
                 title={t("Mis movimientos")}
                 path="/myTransactions"
               />
               <AccountLink
                 isLogged={isLogged}
-                icon={faUserAlt}
-                title={t("Settings")}
+                icon={<FaUserAlt size={28} />}
+                title={t("Configuración")}
                 path="/settings"
               />
             </>
@@ -483,9 +498,8 @@ export const Routes: FC<Props> = (props) => {
                 justifyContent: "flex-end",
               }}
             >
-              <FontAwesomeIcon
-                icon={faUserCircle}
-                size={"2x"}
+              <FaUserCircle
+                size={28}
                 color={"rgba(255,90,96,0.5)"}
                 style={{ margin: "12px 0px 12px 0px" }}
               />
@@ -502,10 +516,9 @@ export const Routes: FC<Props> = (props) => {
                   authUser.apellidoMaterno || ""
                 }`.toUpperCase()}
               </Link>
-              <FontAwesomeIcon
+              <FaSignOutAlt
                 onClick={logOut}
-                icon={faSignOutAlt}
-                size={"2x"}
+                size={28}
                 color={"rgba(62,62,62)"}
                 style={{ margin: "0px 10px", cursor: "pointer" }}
               />
@@ -518,20 +531,19 @@ export const Routes: FC<Props> = (props) => {
                 justifyContent: "center",
               }}
             >
-              <FontAwesomeIcon
-                icon={faUserCircle}
+              <FaUserCircle
                 color={"rgb(140,140,140)"}
-                size={"2x"}
+                size={28}
                 style={{ margin: "12px 0px 12px 0px" }}
               />
               <AuthButton
                 text={t("Iniciar sesión")}
-                style={{ backgroundColor: "#1bbc9b" }}
+                className={logInStyle}
                 path="/login"
               />
               <AuthButton
                 text={t("Crear cuenta")}
-                style={{ backgroundColor: "#2c92db" }}
+                className={signUpStyle}
                 path="/register"
               />
             </div>

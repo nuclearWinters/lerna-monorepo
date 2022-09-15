@@ -11,9 +11,8 @@ import { FormSmall } from "components/FormSmall";
 import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
-import { useTranslation } from "react-i18next";
-import { expireSessionTime, logOut } from "utils";
-import { addMinutes } from "date-fns";
+import { expireSessionTime, logOut, useTranslation } from "utils";
+import dayjs from "dayjs";
 
 export const LogIn: FC = () => {
   const { t } = useTranslation();
@@ -74,9 +73,9 @@ export const LogIn: FC = () => {
                       return window.alert(response.signIn.error);
                     }
                     tokensAndData.accessToken = response.signIn.accessToken;
-                    tokensAndData.exp = addMinutes(
-                      new Date(),
-                      expireSessionTime
+                    tokensAndData.exp = dayjs().add(
+                      expireSessionTime,
+                      "minutes"
                     );
                     tokensAndData.refetchUser();
                   },

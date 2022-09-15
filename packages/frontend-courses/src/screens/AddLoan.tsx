@@ -12,8 +12,7 @@ import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Select } from "components/Select";
 import { Space } from "components/Space";
-import { useTranslation } from "react-i18next";
-import { logOut } from "utils";
+import { logOut, useTranslation } from "utils";
 
 export const AddLoan: FC = () => {
   const { t } = useTranslation();

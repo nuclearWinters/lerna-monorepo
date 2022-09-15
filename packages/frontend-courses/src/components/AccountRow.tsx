@@ -1,6 +1,5 @@
 import React, { CSSProperties, FC } from "react";
-import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FaPlusCircle } from "react-icons/fa";
 
 interface Props {
   text: string;
@@ -17,8 +16,7 @@ export const AccountRow: FC<Props> = ({ text, value, color }) => {
       >
         {value}
       </div>
-      <FontAwesomeIcon
-        icon={faPlusCircle}
+      <FaPlusCircle
         color="rgb(203,203,203)"
         style={{
           position: "absolute",
@@ -26,7 +24,7 @@ export const AccountRow: FC<Props> = ({ text, value, color }) => {
           right: 10,
           backgroundColor: "white",
         }}
-        size="1x"
+        size={18}
       />
     </div>
   );

@@ -5,7 +5,6 @@ import {
   useRefetchableFragment,
   useSubscription,
 } from "react-relay";
-import { differenceInMonths, differenceInDays } from "date-fns";
 import { tokensAndData } from "App";
 import { LoanRowMutation } from "./__generated__/LoanRowMutation.graphql";
 import { LoanRowRefetchQuery } from "./__generated__/LoanRowRefetchQuery.graphql";
@@ -13,25 +12,23 @@ import {
   LoanRow_loan$key,
   LoanScheduledPaymentStatus,
 } from "./__generated__/LoanRow_loan.graphql";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSyncAlt,
-  faClipboard,
-  faThumbsUp,
-  faPlusSquare,
-} from "@fortawesome/free-solid-svg-icons";
-import { logOut } from "utils";
-import { useTranslation } from "react-i18next";
+import { logOut, useTranslation } from "utils";
 import { Rows } from "./Rows";
 import { Columns } from "./Colums";
 import { TableColumnName } from "./TableColumnName";
-import { format } from "date-fns";
-import es from "date-fns/locale/es";
-import en from "date-fns/locale/en-US";
 import { Space } from "./Space";
 import { Languages } from "__generated__/Routes_query.graphql";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { LoanRowUpdateSubscription } from "./__generated__/LoanRowUpdateSubscription.graphql";
+import dayjs from "dayjs";
+import es from "dayjs/locale/es";
+import en from "dayjs/locale/en";
+import {
+  FaPlusSquare,
+  FaClipboard,
+  FaSyncAlt,
+  FaThumbsUp,
+} from "react-icons/fa";
 
 const loanRowRefetchableFragment = graphql`
   fragment LoanRow_loan on Loan @refetchable(queryName: "LoanRowRefetchQuery") {
@@ -190,6 +187,9 @@ export const LoanRow: FC<Props> = ({
 
   useSubscription<LoanRowUpdateSubscription>(configLoansUpdate);
 
+  const now = dayjs();
+  const expiry = dayjs(data.expiry);
+
   return (
     <>
       <div style={style.container}>
@@ -203,12 +203,11 @@ export const LoanRow: FC<Props> = ({
             }}
           >
             {data.scheduledPayments && (
-              <FontAwesomeIcon
+              <FaPlusSquare
                 onClick={() => {
                   setShowSubTable((state) => !state);
                 }}
-                icon={faPlusSquare}
-                size={"1x"}
+                size={18}
                 color={"rgb(62,62,62)"}
                 style={{
                   cursor: "pointer",
@@ -219,22 +218,20 @@ export const LoanRow: FC<Props> = ({
           </div>
         )}
         <div style={style.clipboard}>
-          <FontAwesomeIcon
+          <FaClipboard
             onClick={() => {
               navigator.clipboard.writeText(data.id);
             }}
-            icon={faClipboard}
-            size={"1x"}
+            size={18}
             color={"rgb(255,90,96)"}
           />
         </div>
         <div style={style.clipboard}>
-          <FontAwesomeIcon
+          <FaClipboard
             onClick={() => {
               navigator.clipboard.writeText(data.id_user);
             }}
-            icon={faClipboard}
-            size={"1x"}
+            size={18}
             color={"rgb(255,90,96)"}
           />
         </div>
@@ -248,9 +245,7 @@ export const LoanRow: FC<Props> = ({
         </div>
         <div style={style.cell}>{data.pending}</div>
         <div style={style.cell}>
-          {differenceInMonths(data.expiry, new Date()) ??
-            differenceInDays(data.expiry, new Date())}{" "}
-          {t("meses")}
+          {expiry.diff(now, "months") || expiry.diff(now, "days")} {t("meses")}
         </div>
         {isLender ? (
           <div style={style.inputBox}>
@@ -333,11 +328,7 @@ export const LoanRow: FC<Props> = ({
               });
             }}
           >
-            <FontAwesomeIcon
-              icon={faThumbsUp}
-              size={"1x"}
-              color={"rgb(255,90,96)"}
-            />
+            <FaThumbsUp size={18} color={"rgb(255,90,96)"} />
           </div>
         ) : (
           <div style={style.status}>
@@ -358,11 +349,7 @@ export const LoanRow: FC<Props> = ({
             refetch({}, { fetchPolicy: "network-only" });
           }}
         >
-          <FontAwesomeIcon
-            icon={faSyncAlt}
-            size={"1x"}
-            color={"rgb(255,90,96)"}
-          />
+          <FaSyncAlt size={18} color={"rgb(255,90,96)"} />
         </div>
       </div>
       {showSubTable && (
@@ -393,20 +380,17 @@ export const LoanRow: FC<Props> = ({
                   </div>
                 </div>
                 <div style={style.cell}>
-                  {format(
-                    payment.scheduledDate,
-                    "d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss",
-                    {
-                      locale:
-                        language === "DEFAULT"
-                          ? navigator.language.includes("es")
-                            ? es
-                            : en
-                          : language === "ES"
+                  {dayjs(payment.scheduledDate)
+                    .locale(
+                      language === "DEFAULT"
+                        ? navigator.language.includes("es")
                           ? es
-                          : en,
-                    }
-                  )}
+                          : en
+                        : language === "ES"
+                        ? es
+                        : en
+                    )
+                    .format("d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss")}
                 </div>
               </Columns>
             );

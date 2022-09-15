@@ -14,9 +14,8 @@ import { Input } from "components/Input";
 import { Space } from "components/Space";
 import { Rows } from "components/Rows";
 import { Columns } from "components/Colums";
-import { useTranslation } from "react-i18next";
 import { Select } from "components/Select";
-import { logOut } from "utils";
+import { logOut, useTranslation } from "utils";
 
 const settingsFragment = graphql`
   fragment Settings_auth_user on AuthUser {
@@ -39,7 +38,7 @@ type Props = {
 };
 
 export const Settings: FC<Props> = (props) => {
-  const { t, i18n } = useTranslation();
+  const { t, changeLanguage } = useTranslation();
   const [commitBlacklist, isInFlightBlacklist] =
     useMutation<SettingsBlacklistUserMutation>(graphql`
       mutation SettingsBlacklistUserMutation($input: BlacklistUserInput!) {
@@ -87,12 +86,12 @@ export const Settings: FC<Props> = (props) => {
   };
   const isChanged = useRef(false);
   const handleSelectUser = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
+    const value = e.target.value as "EN" | "ES";
     const name = e.target.name;
     if (!isChanged.current) {
       isChanged.current = true;
     }
-    i18n.changeLanguage(value);
+    changeLanguage(value);
     setFormUser((state) => {
       return { ...state, [name]: value };
     });
@@ -224,7 +223,7 @@ export const Settings: FC<Props> = (props) => {
                 text={t("Restaurar")}
                 color="secondary"
                 onClick={() => {
-                  i18n.changeLanguage(originLang);
+                  changeLanguage(originLang);
                   isChanged.current = false;
                   setFormUser({
                     user_gid: user.id,

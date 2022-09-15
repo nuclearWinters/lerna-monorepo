@@ -1,11 +1,9 @@
 import React, { FC, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 interface Props {
   title: string;
-  icon: IconDefinition;
+  icon: JSX.Element;
   path: string;
   isLogged?: boolean;
 }
@@ -51,7 +49,7 @@ export const AccountLink: FC<Props> = ({ title, icon, path, isLogged }) => {
           }}
         />
       )}
-      <FontAwesomeIcon icon={icon} size={"2x"} />
+      {icon}
       <div
         style={{
           fontSize: 16,

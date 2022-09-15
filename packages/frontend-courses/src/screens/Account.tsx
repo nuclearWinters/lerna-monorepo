@@ -8,7 +8,7 @@ import { Account_user$key } from "./__generated__/Account_user.graphql";
 import { useFragment } from "react-relay";
 import { TitleAccount } from "components/TitleAccount";
 import { Space } from "components/Space";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "utils";
 
 const accountFragment = graphql`
   fragment Account_user on User {

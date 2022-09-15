@@ -1,10 +1,10 @@
 import { tokensAndData } from "App";
-import { addMinutes, differenceInSeconds } from "date-fns";
 import { FC, useEffect, useRef, useState } from "react";
 import { graphql, useMutation } from "react-relay";
 import { expireSessionTime, logOut } from "utils";
 import { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
 import { useIdleTimer } from "react-idle-timer";
+import dayjs from "dayjs";
 
 export const CheckExpiration: FC = () => {
   const [commit] = useMutation<CheckExpirationMutation>(graphql`
@@ -14,16 +14,16 @@ export const CheckExpiration: FC = () => {
       }
     }
   `);
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState(dayjs());
   const difference = tokensAndData.exp
-    ? differenceInSeconds(tokensAndData.exp, time)
+    ? tokensAndData.exp.diff(time, "seconds")
     : 0;
   const { isIdle } = useIdleTimer({
     timeout: 1000 * 60 * 3,
   });
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime(new Date());
+      setTime(dayjs());
     }, 1000);
     return () => {
       clearInterval(interval);
@@ -46,7 +46,7 @@ export const CheckExpiration: FC = () => {
           input: {},
         },
         onCompleted: () => {
-          tokensAndData.exp = addMinutes(new Date(), expireSessionTime);
+          tokensAndData.exp = dayjs().add(expireSessionTime, "minutes");
           isFetching.current = false;
         },
       });

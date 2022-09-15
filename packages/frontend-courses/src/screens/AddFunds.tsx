@@ -11,8 +11,7 @@ import { FormSmall } from "components/FormSmall";
 import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
-import { useTranslation } from "react-i18next";
-import { logOut } from "utils";
+import { logOut, useTranslation } from "utils";
 
 export const AddFunds: FC = () => {
   const { t } = useTranslation();

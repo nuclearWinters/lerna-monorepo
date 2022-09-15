@@ -2,10 +2,9 @@ import React, { CSSProperties, FC } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
 import { InvestmentRowRefetchQuery } from "./__generated__/InvestmentRowRefetchQuery.graphql";
 import { InvestmentRow_investment$key } from "./__generated__/InvestmentRow_investment.graphql";
-import { format } from "date-fns";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSyncAlt, faClipboard } from "@fortawesome/free-solid-svg-icons";
-import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
+import { useTranslation } from "utils";
+import { FaClipboard, FaSyncAlt } from "react-icons/fa";
 
 const investmentRowRefetchableFragment = graphql`
   fragment InvestmentRow_investment on Investment
@@ -72,32 +71,29 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
   return (
     <div style={style.container}>
       <div style={style.clipboard}>
-        <FontAwesomeIcon
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(data.id);
           }}
-          icon={faClipboard}
-          size={"1x"}
+          size={18}
           color={"rgba(90,96,255)"}
         />
       </div>
       <div style={style.clipboard}>
-        <FontAwesomeIcon
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(data.id_borrower);
           }}
-          icon={faClipboard}
-          size={"1x"}
+          size={18}
           color={"rgba(90,96,255)"}
         />
       </div>
       <div style={style.clipboard}>
-        <FontAwesomeIcon
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(data._id_loan);
           }}
-          icon={faClipboard}
-          size={"1x"}
+          size={18}
           color={"rgba(90,96,255)"}
         />
       </div>
@@ -121,19 +117,15 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
       <div style={style.cell}>{data.to_be_paid}</div>
       <div style={style.cell}>{data.interest_to_earn}</div>
       <div style={style.cell}>{data.moratory}</div>
-      <div style={style.cell}>{format(data.updated, "dd/mm/yyyy")}</div>
-      <div style={style.cell}>{format(data.created, "dd/MM/yyyy")}</div>
+      <div style={style.cell}>{dayjs(data.updated).format("dd/mm/yyyy")}</div>
+      <div style={style.cell}>{dayjs(data.created).format("dd/MM/yyyy")}</div>
       <div
         style={style.clipboard}
         onClick={() => {
           refetch({}, { fetchPolicy: "network-only" });
         }}
       >
-        <FontAwesomeIcon
-          icon={faSyncAlt}
-          size={"1x"}
-          color={"rgb(90,96,255)"}
-        />
+        <FaSyncAlt size={18} color={"rgb(90,96,255)"} />
       </div>
     </div>
   );

@@ -16,10 +16,10 @@ import { Columns } from "components/Colums";
 import { Table } from "components/Table";
 import { Rows } from "components/Rows";
 import { TableColumnName } from "components/TableColumnName";
-import { useTranslation } from "react-i18next";
 import { MyInvestmentsPaginationUser } from "./__generated__/MyInvestmentsPaginationUser.graphql";
 import { MyInvestments_user$key } from "./__generated__/MyInvestments_user.graphql";
 import { RelayEnvironment } from "RelayEnvironment";
+import { useTranslation } from "utils";
 
 export const commitCommentCreateLocally = (
   environment: Environment,

@@ -1,7 +1,7 @@
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-
-const resources: Record<"EN", Record<"translation", Record<string, string>>> = {
+export const resources: Record<
+  "EN",
+  Record<"translation", Record<string, string>>
+> = {
   EN: {
     translation: {
       "Falta por recibir": "To be paid",
@@ -85,17 +85,7 @@ const resources: Record<"EN", Record<"translation", Record<string, string>>> = {
       segundos: "seconds",
       "Extender sesión 1 hora": "Extend session 1 hour",
       "Selecciona...": "Select...",
+      Configuración: "Settings",
     },
   },
 };
-
-i18n.use(initReactI18next).init({
-  resources,
-  lng: navigator.language.includes("es") ? "ES" : "EN",
-
-  interpolation: {
-    escapeValue: false,
-  },
-});
-
-export default i18n;

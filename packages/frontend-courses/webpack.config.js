@@ -1,6 +1,9 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -17,9 +20,27 @@ module.exports = {
       {
         test: /\.(js|ts)x?$/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-        },
+        use: [
+          {
+            loader: "babel-loader",
+          },
+          {
+            loader: "@linaria/webpack-loader",
+            options: { sourceMap: isDevelopment },
+          },
+        ],
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+          },
+          {
+            loader: "css-loader",
+            options: { sourceMap: isDevelopment },
+          },
+        ],
       },
       {
         test: /\.png/,
@@ -36,10 +57,12 @@ module.exports = {
       API_GATEWAY: null,
       REALTIME_GATEWAY: null,
     }),
+    new MiniCssExtractPlugin({ filename: "styles.css" }),
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: path.resolve(__dirname, "public", "index.html"),
     }),
+    new BundleAnalyzerPlugin(),
   ],
   devServer: {
     port: 8000,

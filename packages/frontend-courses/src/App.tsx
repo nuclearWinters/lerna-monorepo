@@ -15,13 +15,14 @@ import AppLoanQuery, {
 import { graphql } from "react-relay";
 import { Routes } from "./Routes";
 import { Spinner } from "components/Spinner";
+import { Dayjs } from "dayjs";
 
 const { Suspense } = React;
 
 export const tokensAndData: {
   refetchUser: () => void;
   accessToken: string;
-  exp?: Date;
+  exp?: Dayjs;
 } = {
   accessToken: "",
   exp: undefined,
