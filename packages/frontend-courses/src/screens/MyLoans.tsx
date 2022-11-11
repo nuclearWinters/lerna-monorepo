@@ -19,6 +19,7 @@ import { MyLoans_user$key } from "./__generated__/MyLoans_user.graphql";
 import { MyLoansPaginationUser } from "./__generated__/MyLoansPaginationUser.graphql";
 import { useTranslation } from "utils";
 import { MyLoansQuery } from "./__generated__/MyLoansQuery.graphql";
+import { customColumn } from "components/Column.css";
 
 const myLoansFragment = graphql`
   query MyLoansQuery {
@@ -143,11 +144,7 @@ export const MyLoans: FC<Props> = (props) => {
           </Rows>
         </Table>
         <Space h={20} />
-        <Columns
-          style={{
-            justifyContent: "center",
-          }}
-        >
+        <Columns className={customColumn["columnJustifyCenter"]}>
           <CustomButton
             color="secondary"
             text={t("Cargar más")}

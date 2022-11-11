@@ -1,4 +1,5 @@
-import React, { CSSProperties, FC } from "react";
+import React, { FC } from "react";
+import { baseInput } from "./Input.css";
 
 interface Props {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -24,19 +25,8 @@ export const Input: FC<Props> = ({
       name={name}
       onChange={onChange}
       onBlur={onBlur}
-      style={container}
+      className={baseInput}
       disabled={disabled}
     />
   );
-};
-
-const { container }: Record<"container", CSSProperties> = {
-  container: {
-    borderColor: "rgba(118,118,118,0.3)",
-    borderWidth: 1,
-    borderRadius: 8,
-    fontSize: 20,
-    color: "rgb(62,62,62)",
-    padding: "6px 6px",
-  },
 };

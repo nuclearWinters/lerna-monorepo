@@ -24,6 +24,7 @@ import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPag
 import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
 import { AddInvestmentsQuery } from "./__generated__/AddInvestmentsQuery.graphql";
 import { useNavigation } from "yarr";
+import { customColumn } from "components/Column.css";
 
 const addInvestmentFragment = graphql`
   query AddInvestmentsQuery {
@@ -207,11 +208,7 @@ export const AddInvestments: FC<Props> = (props) => {
           )}
         </Table>
         <Space h={20} />
-        <Columns
-          style={{
-            justifyContent: "center",
-          }}
-        >
+        <Columns className={customColumn["columnJustifyCenter"]}>
           <CustomButton
             color="secondary"
             text={t("Cargar más")}

@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import { useTranslation } from "utils";
 import { FaFileContract, FaUserCircle } from "react-icons/fa";
 import { MyTransactionsQuery } from "./__generated__/MyTransactionsQuery.graphql";
+import { customColumn } from "components/Column.css";
 
 const transactionsFragment = graphql`
   query MyTransactionsQuery {
@@ -192,11 +193,7 @@ export const MyTransactions: FC<Props> = (props) => {
             })}
         </Rows>
         <Space h={20} />
-        <Columns
-          style={{
-            justifyContent: "center",
-          }}
-        >
+        <Columns className={customColumn["columnJustifyCenter"]}>
           <CustomButton
             text={t("Cargar más")}
             color="secondary"

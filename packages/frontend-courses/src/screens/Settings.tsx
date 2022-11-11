@@ -21,6 +21,7 @@ import { Rows } from "components/Rows";
 import { Columns } from "components/Colums";
 import { Select } from "components/Select";
 import { logOut, useTranslation } from "utils";
+import { customColumn } from "components/Column.css";
 
 const settingsFragment = graphql`
   query SettingsAuthUserQuery {
@@ -201,7 +202,7 @@ export const Settings: FC<Props> = (props) => {
             onChange={handleSelectUser}
           />
           <Space h={30} />
-          <Columns style={{ justifyContent: "center" }}>
+          <Columns className={customColumn["columnJustifyCenter"]}>
             {isInFlight ? (
               <Spinner />
             ) : (

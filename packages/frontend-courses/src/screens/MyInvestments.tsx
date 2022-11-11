@@ -23,6 +23,7 @@ import { MyInvestments_user$key } from "./__generated__/MyInvestments_user.graph
 import { RelayEnvironment } from "RelayEnvironment";
 import { useTranslation } from "utils";
 import { MyInvestmentsUserQuery } from "./__generated__/MyInvestmentsUserQuery.graphql";
+import { customColumn } from "components/Column.css";
 
 export const commitCommentCreateLocally = (
   environment: Environment,
@@ -172,11 +173,7 @@ export const MyInvestments: FC<Props> = (props) => {
           </Rows>
         </Table>
         <Space h={20} />
-        <Columns
-          style={{
-            justifyContent: "center",
-          }}
-        >
+        <Columns className={customColumn["columnJustifyCenter"]}>
           <CustomButton
             text={t("Cargar más")}
             color="secondary"

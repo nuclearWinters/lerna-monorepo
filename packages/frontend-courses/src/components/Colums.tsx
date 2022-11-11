@@ -1,16 +1,11 @@
-import React, { CSSProperties, FC, ReactNode } from "react";
+import React, { FC, ReactNode } from "react";
+import { baseColumn } from "./Column.css";
 
 interface Props {
-  style?: CSSProperties;
+  className?: string;
   children: ReactNode;
 }
 
-export const Columns: FC<Props> = ({ style, children }) => {
-  return <div style={{ ...container, ...style }}>{children}</div>;
-};
-
-const { container }: Record<"container", CSSProperties> = {
-  container: {
-    display: "flex",
-  },
+export const Columns: FC<Props> = ({ className, children }) => {
+  return <div className={className || baseColumn}>{children}</div>;
 };

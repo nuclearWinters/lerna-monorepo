@@ -29,6 +29,7 @@ import {
   FaSyncAlt,
   FaThumbsUp,
 } from "react-icons/fa";
+import { customColumn } from "./Column.css";
 
 const loanRowRefetchableFragment = graphql`
   fragment LoanRow_loan on Loan @refetchable(queryName: "LoanRowRefetchQuery") {
@@ -364,7 +365,7 @@ export const LoanRow: FC<Props> = ({
             return (
               <Columns
                 key={String(payment.scheduledDate)}
-                style={{ marginBottom: 6 }}
+                className={customColumn["columnLoanRow"]}
               >
                 <Space w={50} />
                 <div style={style.cell}>{payment.amortize}</div>
