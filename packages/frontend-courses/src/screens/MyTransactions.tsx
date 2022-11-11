@@ -1,5 +1,10 @@
 import React, { FC } from "react";
-import { graphql, useFragment, usePaginationFragment } from "react-relay";
+import {
+  graphql,
+  PreloadedQuery,
+  usePaginationFragment,
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { CustomButton } from "components/CustomButton";
 import { Main } from "components/Main";
 import { WrapperSmall } from "components/WrapperSmall";
@@ -8,7 +13,6 @@ import { Rows } from "components/Rows";
 import { Space } from "components/Space";
 import { Columns } from "components/Colums";
 import { MyTransactionsPaginationUser } from "./__generated__/MyTransactionsPaginationUser.graphql";
-import { MyTransactions_auth_user$key } from "./__generated__/MyTransactions_auth_user.graphql";
 import {
   MyTransactions_user$key,
   TransactionType,
@@ -18,8 +22,20 @@ import en from "dayjs/locale/en";
 import dayjs from "dayjs";
 import { useTranslation } from "utils";
 import { FaFileContract, FaUserCircle } from "react-icons/fa";
+import { MyTransactionsQuery } from "./__generated__/MyTransactionsQuery.graphql";
 
 const transactionsFragment = graphql`
+  query MyTransactionsQuery {
+    user {
+      ...MyTransactions_user
+    }
+    authUser {
+      language
+    }
+  }
+`;
+
+const transactionsPaginationFragment = graphql`
   fragment MyTransactions_user on User
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
@@ -44,28 +60,22 @@ const transactionsFragment = graphql`
   }
 `;
 
-const transactionsFragmentAuthUser = graphql`
-  fragment MyTransactions_auth_user on AuthUser {
-    language
-  }
-`;
-
 type Props = {
-  user: MyTransactions_user$key;
-  authUser: MyTransactions_auth_user$key;
+  preloaded: {
+    query: PreloadedQuery<MyTransactionsQuery, {}>;
+  };
 };
 
 export const MyTransactions: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const { user, authUser } = usePreloadedQuery(
+    transactionsFragment,
+    props.preloaded.query
+  );
   const { data, loadNext, refetch } = usePaginationFragment<
     MyTransactionsPaginationUser,
     MyTransactions_user$key
-  >(transactionsFragment, props.user);
-
-  const authUser = useFragment<MyTransactions_auth_user$key>(
-    transactionsFragmentAuthUser,
-    props.authUser
-  );
+  >(transactionsPaginationFragment, user);
 
   const getStatus = (type: TransactionType) => {
     switch (type) {

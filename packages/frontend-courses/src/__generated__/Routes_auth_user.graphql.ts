@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d385170c47e1609379a0b1a57862fa1a>>
+ * @generated SignedSource<<ce565a727bf4833af2149ce0c85c179a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,6 @@ export type Routes_auth_user$data = {
   readonly isSupport: boolean;
   readonly language: Languages;
   readonly name: string;
-  readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_auth_query" | "MyLoans_auth_user" | "MyTransactions_auth_user" | "Settings_auth_user">;
   readonly " $fragmentType": "Routes_auth_user";
 };
 export type Routes_auth_user$key = {
@@ -81,32 +80,12 @@ const node: ReaderFragment = {
       "kind": "ScalarField",
       "name": "isSupport",
       "storageKey": null
-    },
-    {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "Settings_auth_user"
-    },
-    {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "MyLoans_auth_user"
-    },
-    {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "MyTransactions_auth_user"
-    },
-    {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "AddInvestments_auth_query"
     }
   ],
   "type": "AuthUser",
   "abstractKey": null
 };
 
-(node as any).hash = "3935c73728acdf4bc4b4418acaafb3f3";
+(node as any).hash = "08ee99f2cf062f6c77f171612f9dd707";
 
 export default node;

@@ -4,7 +4,7 @@ import {
   useMutation,
   useRefetchableFragment,
   useSubscription,
-} from "react-relay";
+} from "react-relay/hooks";
 import { tokensAndData } from "App";
 import { LoanRowMutation } from "./__generated__/LoanRowMutation.graphql";
 import { LoanRowRefetchQuery } from "./__generated__/LoanRowRefetchQuery.graphql";

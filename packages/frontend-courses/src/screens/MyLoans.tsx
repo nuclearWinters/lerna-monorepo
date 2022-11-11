@@ -1,5 +1,10 @@
 import React, { FC, useState } from "react";
-import { graphql, useFragment, usePaginationFragment } from "react-relay";
+import {
+  graphql,
+  PreloadedQuery,
+  usePaginationFragment,
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { LoanRow } from "components/LoanRow";
 import { CustomButton } from "components/CustomButton";
 import { Main } from "components/Main";
@@ -11,11 +16,26 @@ import { Columns } from "components/Colums";
 import { TableColumnName } from "components/TableColumnName";
 import { Table } from "components/Table";
 import { MyLoans_user$key } from "./__generated__/MyLoans_user.graphql";
-import { MyLoans_auth_user$key } from "./__generated__/MyLoans_auth_user.graphql";
 import { MyLoansPaginationUser } from "./__generated__/MyLoansPaginationUser.graphql";
 import { useTranslation } from "utils";
+import { MyLoansQuery } from "./__generated__/MyLoansQuery.graphql";
 
-const debtInSaleFragment = graphql`
+const myLoansFragment = graphql`
+  query MyLoansQuery {
+    user {
+      ...MyLoans_user
+    }
+    authUser {
+      isLender
+      isSupport
+      isBorrower
+      language
+      accountId
+    }
+  }
+`;
+
+const myLoansPaginationFragment = graphql`
   fragment MyLoans_user on User
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
@@ -35,19 +55,10 @@ const debtInSaleFragment = graphql`
   }
 `;
 
-const debtInSaleFragmentAuthUser = graphql`
-  fragment MyLoans_auth_user on AuthUser {
-    isLender
-    isSupport
-    isBorrower
-    language
-    accountId
-  }
-`;
-
 type Props = {
-  user: MyLoans_user$key;
-  authUser: MyLoans_auth_user$key;
+  preloaded: {
+    query: PreloadedQuery<MyLoansQuery, {}>;
+  };
 };
 
 interface ILends {
@@ -61,15 +72,14 @@ interface ILends {
 
 export const MyLoans: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const { user, authUser } = usePreloadedQuery(
+    myLoansFragment,
+    props.preloaded.query
+  );
   const { data, loadNext, refetch } = usePaginationFragment<
     MyLoansPaginationUser,
     MyLoans_user$key
-  >(debtInSaleFragment, props.user);
-
-  const authUser = useFragment<MyLoans_auth_user$key>(
-    debtInSaleFragmentAuthUser,
-    props.authUser
-  );
+  >(myLoansPaginationFragment, user);
 
   const { isLender, isSupport, isBorrower, language } = authUser;
 

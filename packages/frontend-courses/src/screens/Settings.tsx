@@ -1,9 +1,14 @@
 import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import React, { CSSProperties, FC, useRef, useState } from "react";
-import { graphql, useFragment, useMutation } from "react-relay";
+import {
+  graphql,
+  PreloadedQuery,
+  useMutation,
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { SettingsMutation } from "./__generated__/SettingsMutation.graphql";
-import { Settings_auth_user$key } from "./__generated__/Settings_auth_user.graphql";
+import { SettingsAuthUserQuery } from "./__generated__/SettingsAuthUserQuery.graphql";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
 import { SettingsBlacklistUserMutation } from "./__generated__/SettingsBlacklistUserMutation.graphql";
@@ -18,23 +23,27 @@ import { Select } from "components/Select";
 import { logOut, useTranslation } from "utils";
 
 const settingsFragment = graphql`
-  fragment Settings_auth_user on AuthUser {
-    id
-    accountId
-    name
-    apellidoPaterno
-    apellidoMaterno
-    RFC
-    CURP
-    clabe
-    mobile
-    email
-    language
+  query SettingsAuthUserQuery {
+    authUser {
+      id
+      accountId
+      name
+      apellidoPaterno
+      apellidoMaterno
+      RFC
+      CURP
+      clabe
+      mobile
+      email
+      language
+    }
   }
 `;
 
 type Props = {
-  user: Settings_auth_user$key;
+  preloaded: {
+    query: PreloadedQuery<SettingsAuthUserQuery, {}>;
+  };
 };
 
 export const Settings: FC<Props> = (props) => {
@@ -55,7 +64,10 @@ export const Settings: FC<Props> = (props) => {
       }
     }
   `);
-  const user = useFragment(settingsFragment, props.user);
+  const { authUser: user } = usePreloadedQuery(
+    settingsFragment,
+    props.preloaded.query
+  );
   const originLang =
     user.language === "DEFAULT"
       ? navigator.language.includes("es")

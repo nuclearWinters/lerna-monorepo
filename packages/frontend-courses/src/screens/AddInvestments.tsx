@@ -1,11 +1,11 @@
 import React, { CSSProperties, FC, useState } from "react";
 import {
   graphql,
-  useFragment,
+  PreloadedQuery,
   useMutation,
   usePaginationFragment,
-} from "react-relay";
-import { useNavigate } from "react-router";
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
 import { tokensAndData } from "App";
 import { LoanRow } from "components/LoanRow";
@@ -20,12 +20,25 @@ import { Columns } from "components/Colums";
 import { TableColumnName } from "components/TableColumnName";
 import { Table } from "components/Table";
 import { logOut, useTranslation } from "utils";
-import { AppLoansQuery$data } from "__generated__/AppLoansQuery.graphql";
 import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
 import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
-import { AddInvestments_auth_query$key } from "./__generated__/AddInvestments_auth_query.graphql";
+import { AddInvestmentsQuery } from "./__generated__/AddInvestmentsQuery.graphql";
+import { useNavigation } from "yarr";
 
-const debtInSaleFragment = graphql`
+const addInvestmentFragment = graphql`
+  query AddInvestmentsQuery {
+    ...AddInvestments_query
+    authUser {
+      isLender
+      isSupport
+      isBorrower
+      language
+      accountId
+    }
+  }
+`;
+
+const addInvestmentPaginationFragment = graphql`
   fragment AddInvestments_query on Query
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
@@ -44,19 +57,10 @@ const debtInSaleFragment = graphql`
   }
 `;
 
-const debtInSaleFragmentAuthUser = graphql`
-  fragment AddInvestments_auth_query on AuthUser {
-    isLender
-    isSupport
-    isBorrower
-    language
-    accountId
-  }
-`;
-
 type Props = {
-  authUser: AddInvestments_auth_query$key;
-  dataLoans: AppLoansQuery$data;
+  preloaded: {
+    query: PreloadedQuery<AddInvestmentsQuery, {}>;
+  };
 };
 
 interface ILends {
@@ -70,6 +74,11 @@ interface ILends {
 
 export const AddInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const preloadData = usePreloadedQuery(
+    addInvestmentFragment,
+    props.preloaded.query
+  );
+  const { authUser } = preloadData;
   const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {
@@ -78,16 +87,11 @@ export const AddInvestments: FC<Props> = (props) => {
       }
     }
   `);
-  const navigate = useNavigate();
+  const navigate = useNavigation();
   const { data, loadNext, refetch } = usePaginationFragment<
     AddInvestmentsPaginationQuery,
     AddInvestments_query$key
-  >(debtInSaleFragment, props.dataLoans);
-
-  const authUser = useFragment<AddInvestments_auth_query$key>(
-    debtInSaleFragmentAuthUser,
-    props.authUser
-  );
+  >(addInvestmentPaginationFragment, preloadData);
 
   const { isLender, isSupport, isBorrower, language } = authUser;
 
@@ -164,7 +168,7 @@ export const AddInvestments: FC<Props> = (props) => {
                     text={t("Prestar")}
                     onClick={() => {
                       if (!authUser.accountId) {
-                        return navigate("/login");
+                        return navigate.push("/login");
                       }
                       commit({
                         variables: {

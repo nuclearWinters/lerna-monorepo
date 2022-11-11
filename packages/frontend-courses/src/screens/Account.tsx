@@ -4,27 +4,31 @@ import { WrapperSmall } from "components/WrapperSmall";
 import { AccountRow } from "components/AccountRow";
 import React, { FC } from "react";
 import { graphql } from "relay-runtime";
-import { Account_user$key } from "./__generated__/Account_user.graphql";
-import { useFragment } from "react-relay";
+import { AccountUserQuery } from "./__generated__/AccountUserQuery.graphql";
+import { PreloadedQuery, usePreloadedQuery } from "react-relay/hooks";
 import { TitleAccount } from "components/TitleAccount";
 import { Space } from "components/Space";
 import { useTranslation } from "utils";
 
 const accountFragment = graphql`
-  fragment Account_user on User {
-    accountAvailable
-    accountToBePaid
-    accountTotal
+  query AccountUserQuery {
+    user {
+      accountAvailable
+      accountToBePaid
+      accountTotal
+    }
   }
 `;
 
-interface Props {
-  user: Account_user$key;
-}
+type Props = {
+  preloaded: {
+    query: PreloadedQuery<AccountUserQuery, {}>;
+  };
+};
 
 export const Account: FC<Props> = (props) => {
   const { t } = useTranslation();
-  const user = useFragment(accountFragment, props.user);
+  const { user } = usePreloadedQuery(accountFragment, props.preloaded.query);
   return (
     <Main>
       <WrapperSmall>

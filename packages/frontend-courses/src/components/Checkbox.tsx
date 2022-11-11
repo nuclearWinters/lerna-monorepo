@@ -1,24 +1,21 @@
-import React, { CSSProperties, FC } from "react";
+import React, { FC } from "react";
+import { checkboxStyle } from "./Checkbox.css";
 
-interface Props {
-  value?: boolean;
+interface Props
+  extends React.DetailedHTMLProps<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name: string;
   label: string;
 }
 
-export const Checkbox: FC<Props> = ({ onChange, value, label, name }) => {
+export const Checkbox: FC<Props> = ({ label, name, ...props }) => {
   return (
-    <label style={container}>
+    <label className={checkboxStyle}>
       {label}
-      <input name={name} type="checkbox" checked={value} onChange={onChange} />
+      <input name={name} type="checkbox" {...props} />
     </label>
   );
-};
-
-const { container }: Record<"container", CSSProperties> = {
-  container: {
-    fontSize: 20,
-    color: "rgb(62,62,62)",
-  },
 };

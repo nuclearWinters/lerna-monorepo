@@ -7,8 +7,7 @@
       }
     ],
     "@babel/preset-typescript",
-    "@babel/preset-react",
-    "@linaria"
+    "@babel/preset-react"
   ],
-  "plugins": ["relay", "macros"]
+  "plugins": ["relay", "@vanilla-extract/babel-plugin"]
 }

@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { graphql, useMutation } from "react-relay";
+import { graphql, useMutation } from "react-relay/hooks";
 import { AddFundsMutation } from "./__generated__/AddFundsMutation.graphql";
 import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";

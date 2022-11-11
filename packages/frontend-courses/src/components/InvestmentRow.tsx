@@ -1,5 +1,5 @@
 import React, { CSSProperties, FC } from "react";
-import { graphql, useRefetchableFragment } from "react-relay";
+import { graphql, useRefetchableFragment } from "react-relay/hooks";
 import { InvestmentRowRefetchQuery } from "./__generated__/InvestmentRowRefetchQuery.graphql";
 import { InvestmentRow_investment$key } from "./__generated__/InvestmentRow_investment.graphql";
 import dayjs from "dayjs";

@@ -4,7 +4,9 @@ import {
   graphql,
   usePaginationFragment,
   commitLocalUpdate,
-} from "react-relay";
+  usePreloadedQuery,
+  PreloadedQuery,
+} from "react-relay/hooks";
 import { InvestmentRow } from "../components/InvestmentRow";
 import { CustomButton } from "components/CustomButton";
 import { Title } from "components/Title";
@@ -20,6 +22,7 @@ import { MyInvestmentsPaginationUser } from "./__generated__/MyInvestmentsPagina
 import { MyInvestments_user$key } from "./__generated__/MyInvestments_user.graphql";
 import { RelayEnvironment } from "RelayEnvironment";
 import { useTranslation } from "utils";
+import { MyInvestmentsUserQuery } from "./__generated__/MyInvestmentsUserQuery.graphql";
 
 export const commitCommentCreateLocally = (
   environment: Environment,
@@ -40,6 +43,14 @@ export const commitCommentCreateLocally = (
 };
 
 const myInvestmentsFragment = graphql`
+  query MyInvestmentsUserQuery {
+    user {
+      ...MyInvestments_user
+    }
+  }
+`;
+
+const myInvestmentsPaginationFragment = graphql`
   fragment MyInvestments_user on User
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
@@ -48,7 +59,6 @@ const myInvestmentsFragment = graphql`
     firstFetch: { type: "Boolean", defaultValue: true }
   )
   @refetchable(queryName: "MyInvestmentsPaginationUser") {
-    statusLocal
     investments(
       first: $count
       after: $cursor
@@ -62,19 +72,26 @@ const myInvestmentsFragment = graphql`
         }
       }
     }
+    statusLocal
   }
 `;
 
 type Props = {
-  user: MyInvestments_user$key;
+  preloaded: {
+    query: PreloadedQuery<MyInvestmentsUserQuery, {}>;
+  };
 };
 
 export const MyInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const { user } = usePreloadedQuery(
+    myInvestmentsFragment,
+    props.preloaded.query
+  );
   const { data, loadNext, refetch } = usePaginationFragment<
     MyInvestmentsPaginationUser,
     MyInvestments_user$key
-  >(myInvestmentsFragment, props.user);
+  >(myInvestmentsPaginationFragment, user);
 
   const columns = [
     { key: "id", title: t("ID") },

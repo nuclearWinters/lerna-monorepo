@@ -1,46 +1,15 @@
-import React, { FC, useEffect, useMemo } from "react";
 import {
-  BrowserRouter as Router,
-  Routes as BrowserRoutes,
-  Route,
-  Link,
-} from "react-router-dom";
-import {
-  graphql,
-  useFragment,
-  useSubscription,
-  ConnectionHandler,
-} from "react-relay";
-import {
-  Account,
-  AddInvestments,
-  LogIn,
-  SignUp,
-  AddFunds,
-  RetireFunds,
-  AddLoan,
-  MyTransactions,
-  MyInvestments,
-  Settings,
-} from "./screens";
-import { GraphQLSubscriptionConfig } from "relay-runtime";
-import { RoutesLoansSubscription } from "__generated__/RoutesLoansSubscription.graphql";
-import { RoutesInvestmentsSubscription } from "__generated__/RoutesInvestmentsSubscription.graphql";
-import { RoutesTransactionsSubscription } from "__generated__/RoutesTransactionsSubscription.graphql";
-import { RoutesUserSubscription } from "__generated__/RoutesUserSubscription.graphql";
+  loadQuery,
+  PreloadedQuery,
+  useQueryLoader,
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { Icon } from "components/Icon";
 import { AccountInfo } from "components/AccountInfo";
 import { AccountLink } from "components/AccountLink";
-import { AuthButton } from "components/AuthButton";
 import { Rows } from "components/Rows";
 import { logOut, useTranslation } from "utils";
 import { CheckExpiration } from "components/CheckExpiration";
-import { Routes_user$key } from "__generated__/Routes_user.graphql";
-import { Routes_auth_user$key } from "__generated__/Routes_auth_user.graphql";
-import { RoutesInvestmentsUpdateSubscription } from "__generated__/RoutesInvestmentsUpdateSubscription.graphql";
-import { AppLoansQuery$data } from "__generated__/AppLoansQuery.graphql";
-import { MyLoans } from "screens/MyLoans";
-import { RoutesMyLoansSubscription } from "__generated__/RoutesMyLoansSubscription.graphql";
 import {
   FaUserCircle,
   FaSignOutAlt,
@@ -54,46 +23,24 @@ import {
   FaFolder,
   FaExchangeAlt,
 } from "react-icons/fa";
-import { css } from "@linaria/atomic";
+import { CustomButton } from "components/CustomButton";
+import { RelayEnvironment, subscriptionsClient } from "RelayEnvironment";
+import SettingsAuthUserQuery from "./screens/__generated__/SettingsAuthUserQuery.graphql";
+import AccountUserQuery from "./screens/__generated__/AccountUserQuery.graphql";
+import MyInvestmentsUserQuery from "./screens/__generated__/MyInvestmentsUserQuery.graphql";
+import MyTransactionsQuery from "./screens/__generated__/MyTransactionsQuery.graphql";
+import AddInvestmentsQuery from "./screens/__generated__/AddInvestmentsQuery.graphql";
+import MyLoansQuery from "./screens/__generated__/MyLoansQuery.graphql";
+import AppUserQuery, {
+  AppUserQuery as AppUserQueryType,
+} from "./__generated__/AppUserQuery.graphql";
+import { Link, RouteConfig, useNavigation } from "yarr";
+import React, { FC, useEffect, ReactNode, useCallback } from "react";
+import { preloadQuery, tokensAndData } from "App";
+import { Decode } from "./screens/LogIn";
+import decode from "jwt-decode";
 
-const routesFragment = graphql`
-  fragment Routes_user on User {
-    id
-    statusLocal
-    accountAvailable
-    accountTotal
-    accountId
-    ...Account_user
-    ...MyTransactions_user
-    ...MyInvestments_user
-    ...MyLoans_user
-  }
-`;
-
-const routesFragmentAuth = graphql`
-  fragment Routes_auth_user on AuthUser {
-    id
-    name
-    apellidoPaterno
-    apellidoMaterno
-    language
-    isBorrower
-    isSupport
-    ...Settings_auth_user
-    ...MyLoans_auth_user
-    ...MyTransactions_auth_user
-    ...AddInvestments_auth_query
-  }
-`;
-
-type Props = {
-  user: Routes_user$key;
-  authUser: Routes_auth_user$key;
-  dataLoans: AppLoansQuery$data;
-  connectionID: string;
-};
-
-const subscriptionLoans = graphql`
+/*const subscriptionLoans = graphql`
   subscription RoutesLoansSubscription($connections: [ID!]!) {
     loans_subscribe_insert @prependEdge(connections: $connections) {
       node {
@@ -222,24 +169,27 @@ const subscriptionUser = graphql`
       accountTotal
     }
   }
-`;
+`;*/
 
-const logInStyle = css`
-  background-color: #1bbc9b;
-`;
+type Props = {
+  children: ReactNode;
+};
 
-const signUpStyle = css`
-  background-color: #2c92db;
-`;
-
-export const Routes: FC<Props> = (props) => {
+export const Header: FC<Props> = (props) => {
   const { t, changeLanguage } = useTranslation();
-  const user = useFragment<Routes_user$key>(routesFragment, props.user);
-  const { statusLocal } = user;
-  const authUser = useFragment<Routes_auth_user$key>(
-    routesFragmentAuth,
-    props.authUser
+  const [queryRef, loadQuery] = useQueryLoader<AppUserQueryType>(
+    AppUserQuery,
+    preloadQuery
   );
+  const { user, authUser } = usePreloadedQuery<AppUserQueryType>(
+    AppUserQuery,
+    queryRef || preloadQuery
+  );
+  const refetchUser = useCallback(() => {
+    loadQuery({}, { fetchPolicy: "network-only" });
+    subscriptionsClient.restart();
+  }, [loadQuery]);
+  tokensAndData.refetchUser = refetchUser;
   const { isBorrower, isSupport } = authUser;
   const isLogged = !!user.accountId;
   useEffect(() => {
@@ -248,9 +198,9 @@ export const Routes: FC<Props> = (props) => {
     } else {
       changeLanguage(navigator.language.includes("es") ? "ES" : "EN");
     }
-  }, [isLogged, user, authUser, changeLanguage]);
+  }, [isLogged, authUser.language, changeLanguage]);
 
-  const connectionLoanID = ConnectionHandler.getConnectionID(
+  /*const connectionLoanID = ConnectionHandler.getConnectionID(
     props.connectionID,
     "AddInvestments_query_loansFinancing",
     {}
@@ -345,9 +295,13 @@ export const Routes: FC<Props> = (props) => {
   useSubscription<RoutesInvestmentsUpdateSubscription>(configInvestmentsUpdate);
   useSubscription<RoutesTransactionsSubscription>(configTransactions);
   useSubscription<RoutesUserSubscription>(configUser);
-  useSubscription<RoutesMyLoansSubscription>(configMyLoans);
+  useSubscription<RoutesMyLoansSubscription>(configMyLoans);*/
+  const navigate = useNavigation();
+  const navigateTo = (path: string) => () => {
+    navigate.push(path);
+  };
   return (
-    <Router>
+    <>
       <CheckExpiration />
       <div
         style={{
@@ -360,11 +314,7 @@ export const Routes: FC<Props> = (props) => {
         <Rows>
           {isBorrower ? (
             <>
-              <Icon
-                isLogged={isLogged}
-                isBorrower={isBorrower}
-                isSupport={isSupport}
-              />
+              <Icon />
               <AccountInfo
                 value={user.accountTotal}
                 title={t("Valor de la cuenta")}
@@ -408,11 +358,7 @@ export const Routes: FC<Props> = (props) => {
             </>
           ) : isSupport ? (
             <>
-              <Icon
-                isLogged={isLogged}
-                isBorrower={isBorrower}
-                isSupport={isSupport}
-              />
+              <Icon />
               <AccountLink
                 icon={<FaFileContract size={28} />}
                 title={t("Aprobar prestamo")}
@@ -426,11 +372,7 @@ export const Routes: FC<Props> = (props) => {
             </>
           ) : (
             <>
-              <Icon
-                isLogged={isLogged}
-                isBorrower={isBorrower}
-                isSupport={isSupport}
-              />
+              <Icon />
               <AccountInfo
                 value={user.accountTotal}
                 title={t("Valor de la cuenta")}
@@ -442,7 +384,6 @@ export const Routes: FC<Props> = (props) => {
                 colorValue="rgb(58,179,152)"
               />
               <AccountLink
-                isLogged={isLogged}
                 icon={<FaFileAlt size={28} />}
                 title={t("Mi cuenta")}
                 path="/account"
@@ -453,31 +394,26 @@ export const Routes: FC<Props> = (props) => {
                 path="/addInvestments"
               />
               <AccountLink
-                isLogged={isLogged}
                 icon={<FaFunnelDollar size={28} />}
                 title={t("Agregar fondos")}
                 path="/addFunds"
               />
               <AccountLink
-                isLogged={isLogged}
                 icon={<FaHandHolding size={28} />}
                 title={t("Retirar fondos")}
                 path="/retireFunds"
               />
               <AccountLink
-                isLogged={isLogged}
                 icon={<FaFolder size={28} />}
                 title={t("Mis inversiones")}
                 path="/myInvestments"
               />
               <AccountLink
-                isLogged={isLogged}
                 icon={<FaExchangeAlt size={28} />}
                 title={t("Mis movimientos")}
                 path="/myTransactions"
               />
               <AccountLink
-                isLogged={isLogged}
                 icon={<FaUserAlt size={28} />}
                 title={t("Configuración")}
                 path="/settings"
@@ -536,82 +472,251 @@ export const Routes: FC<Props> = (props) => {
                 size={28}
                 style={{ margin: "12px 0px 12px 0px" }}
               />
-              <AuthButton
+              <CustomButton
                 text={t("Iniciar sesión")}
-                className={logInStyle}
-                path="/login"
+                color="logIn"
+                onClick={navigateTo("/login")}
               />
-              <AuthButton
+              <CustomButton
                 text={t("Crear cuenta")}
-                className={signUpStyle}
-                path="/register"
+                color="signUp"
+                onClick={navigateTo("/register")}
               />
             </div>
           )}
-          <div style={{ flex: 1, display: "flex" }}>
-            {isBorrower ? (
-              <BrowserRoutes>
-                <Route path="/login" element={<LogIn />} />
-                <Route path="/register" element={<SignUp />} />
-                <Route path="/account" element={<Account user={user} />} />
-                <Route path="/addLoan" element={<AddLoan />} />
-                <Route
-                  path="/myLoans"
-                  element={<MyLoans user={user} authUser={authUser} />}
-                />
-                <Route path="/addFunds" element={<AddFunds />} />
-                <Route path="/retireFunds" element={<RetireFunds />} />
-                <Route
-                  path="/settings"
-                  element={<Settings user={authUser} />}
-                />
-              </BrowserRoutes>
-            ) : isSupport ? (
-              <BrowserRoutes>
-                <Route path="/login" element={<LogIn />} />
-                <Route path="/register" element={<SignUp />} />
-                <Route
-                  path="/approveLoan"
-                  element={<MyLoans user={user} authUser={authUser} />}
-                />
-                <Route
-                  path="/settings"
-                  element={<Settings user={authUser} />}
-                />
-              </BrowserRoutes>
-            ) : (
-              <BrowserRoutes>
-                <Route path="/login" element={<LogIn />} />
-                <Route path="/register" element={<SignUp />} />
-                <Route path="/account" element={<Account user={user} />} />
-                <Route
-                  path="/addInvestments"
-                  element={
-                    <AddInvestments
-                      authUser={authUser}
-                      dataLoans={props.dataLoans}
-                    />
-                  }
-                />
-                <Route path="/addFunds" element={<AddFunds />} />
-                <Route path="/retireFunds" element={<RetireFunds />} />
-                <Route
-                  path="/myTransactions"
-                  element={<MyTransactions user={user} authUser={authUser} />}
-                />
-                <Route
-                  path="/myInvestments"
-                  element={<MyInvestments user={user} />}
-                />
-                <Route
-                  path="/settings"
-                  element={<Settings user={authUser} />}
-                />
-              </BrowserRoutes>
-            )}
-          </div>
+          <div style={{ flex: 1, display: "flex" }}>{props.children}</div>
         </Rows>
       </div>
-    </Router>
+    </>
   );
 };
+
+export type IRouteConfig = RouteConfig<
+  string,
+  string,
+  { params: {}; search: {}; preloaded: { query: PreloadedQuery<any> } }
+>[];
+
+export const routes: IRouteConfig = [
+  {
+    component: async () => {
+      const module = await import("./screens/LogIn");
+      return module.LogIn;
+    },
+    path: "/login",
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/SignUp");
+      return module.SignUp;
+    },
+    path: "/register",
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/Account");
+      return module.Account;
+    },
+    path: "/account",
+    preload: () => ({
+      query: loadQuery(RelayEnvironment, AccountUserQuery, {}),
+    }),
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (data?.isSupport) {
+          return "/login";
+        }
+        return null;
+      }
+      return "/login";
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/Settings");
+      return module.Settings;
+    },
+    path: "/settings",
+    preload: () => ({
+      query: loadQuery(RelayEnvironment, SettingsAuthUserQuery, {}),
+    }),
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        return null;
+      }
+      return "/login";
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/MyInvestments");
+      return module.MyInvestments;
+    },
+    path: "/myInvestments",
+    preload: () => ({
+      query: loadQuery(RelayEnvironment, MyInvestmentsUserQuery, {}),
+    }),
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (!data?.isLender) {
+          return "/login";
+        }
+        return null;
+      }
+      return "/login";
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/MyTransactions");
+      return module.MyTransactions;
+    },
+    path: "/myTransactions",
+    preload: () => ({
+      query: loadQuery(RelayEnvironment, MyTransactionsQuery, {}),
+    }),
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (!(data?.isLender || data.isBorrower)) {
+          return "/login";
+        }
+        return null;
+      }
+      return "/login";
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/AddFunds");
+      return module.AddFunds;
+    },
+    path: "/addFunds",
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (data?.isSupport) {
+          return "/login";
+        }
+        return null;
+      }
+      return "/login";
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/RetireFunds");
+      return module.RetireFunds;
+    },
+    path: "/retireFunds",
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (data?.isSupport) {
+          return "/login";
+        }
+        return null;
+      }
+      return "/login";
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/AddInvestments");
+      return module.AddInvestments;
+    },
+    path: "/addInvestments",
+    preload: () => ({
+      query: loadQuery(RelayEnvironment, AddInvestmentsQuery, {}),
+    }),
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (!(data?.isSupport || data?.isBorrower)) {
+          return "/login";
+        }
+        return null;
+      }
+      return null;
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/MyLoans");
+      return module.MyLoans;
+    },
+    path: "/approveLoan",
+    preload: () => ({
+      query: loadQuery(RelayEnvironment, MyLoansQuery, {}),
+    }),
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (!data?.isSupport) {
+          return "/login";
+        }
+        return null;
+      }
+      return "/login";
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/MyLoans");
+      return module.MyLoans;
+    },
+    path: "/myLoans",
+    preload: () => ({
+      query: loadQuery(RelayEnvironment, MyLoansQuery, {}),
+    }),
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (!data?.isBorrower) {
+          return "/login";
+        }
+        return null;
+      }
+      return "/login";
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/AddLoan");
+      return module.AddLoan;
+    },
+    path: "/addLoan",
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (!data?.isBorrower) {
+          return "/login";
+        }
+        return null;
+      }
+      return "/login";
+    },
+  },
+  {
+    component: async () => {
+      const module = await import("./screens/LogIn");
+      return module.LogIn;
+    },
+    path: "/",
+    redirectRules: () => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (data?.isBorrower) {
+          return "/myLoans";
+        } else if (data?.isLender) {
+          return "/addInvestments";
+        } else {
+          return "/myLoans";
+        }
+      }
+      return "/login";
+    },
+  },
+];

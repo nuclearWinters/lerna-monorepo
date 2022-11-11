@@ -1,6 +1,6 @@
 import { tokensAndData } from "App";
 import { FC, useEffect, useRef, useState } from "react";
-import { graphql, useMutation } from "react-relay";
+import { graphql, useMutation } from "react-relay/hooks";
 import { expireSessionTime, logOut } from "utils";
 import { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
 import { useIdleTimer } from "react-idle-timer";

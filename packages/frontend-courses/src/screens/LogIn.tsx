@@ -1,7 +1,7 @@
 import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import React, { FC, useState } from "react";
-import { useMutation, graphql } from "react-relay";
+import { useMutation, graphql } from "react-relay/hooks";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
@@ -13,9 +13,18 @@ import { Input } from "components/Input";
 import { Space } from "components/Space";
 import { expireSessionTime, logOut, useTranslation } from "utils";
 import dayjs from "dayjs";
+import decode from "jwt-decode";
+import { useNavigation } from "yarr";
+
+export interface Decode {
+  isBorrower?: boolean;
+  isLender?: boolean;
+  isSupport?: boolean;
+}
 
 export const LogIn: FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigation();
   const [commit, isInFlight] = useMutation<LogInMutation>(graphql`
     mutation LogInMutation($input: SignInInput!) {
       signIn(input: $input) {
@@ -78,6 +87,14 @@ export const LogIn: FC = () => {
                       "minutes"
                     );
                     tokensAndData.refetchUser();
+                    const data = decode<Decode>(response.signIn.accessToken);
+                    if (data.isBorrower) {
+                      navigate.push("/myLoans");
+                    } else if (data.isSupport) {
+                      navigate.push("/approveLoan");
+                    } else {
+                      navigate.push("/addInvestments");
+                    }
                   },
                 });
               }}

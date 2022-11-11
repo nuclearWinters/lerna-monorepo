@@ -1,27 +1,18 @@
-import React, { FC, useCallback, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { FC } from "react";
+import { Link, useRouter } from "yarr";
 
 interface Props {
   title: string;
   icon: JSX.Element;
   path: string;
-  isLogged?: boolean;
 }
 
-export const AccountLink: FC<Props> = ({ title, icon, path, isLogged }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const navigateRef = useRef(navigate);
-
-  const navigateTo = useCallback(() => {
-    navigateRef.current(isLogged === undefined || isLogged ? path : "/login");
-  }, [navigateRef, path, isLogged]);
-
-  const selected = location.pathname === path;
-
+export const AccountLink: FC<Props> = ({ title, icon, path }) => {
+  const { isActive } = useRouter();
+  const selected = isActive(path);
   return (
-    <div
-      onClick={navigateTo}
+    <Link
+      to={path}
       style={{
         height: 80,
         display: "flex",
@@ -58,6 +49,6 @@ export const AccountLink: FC<Props> = ({ title, icon, path, isLogged }) => {
       >
         {title}
       </div>
-    </div>
+    </Link>
   );
 };

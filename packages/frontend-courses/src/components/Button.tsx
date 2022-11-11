@@ -1,34 +1,25 @@
 import React, { FC, ReactNode } from "react";
-import { cx, LinariaClassName } from "@linaria/core";
-import { css } from "@linaria/atomic";
+import { baseButton } from "./Button.css";
 
-interface IProps {
-  className?: LinariaClassName;
-  onClick: () => void;
+interface IProps
+  extends React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  > {
   text: string;
   iconLeft?: ReactNode;
   iconRight?: ReactNode;
 }
 
-const container = css`
-  cursor: pointer;
-  text-decoration: none;
-  border-radius: 30px;
-  box-shadow: 1px 2px 5px #888888;
-  letter-spacing: 1px;
-  width: 220px;
-  border: none;
-`;
-
 export const Button: FC<IProps> = ({
   text,
-  className,
-  onClick,
   iconLeft,
   iconRight,
+  className,
+  ...props
 }) => {
   return (
-    <button className={cx(container, className)} onClick={onClick}>
+    <button {...props} className={className || baseButton}>
       {iconLeft ? iconLeft : null}
       {!!text && text}
       {iconRight ? iconRight : null}
