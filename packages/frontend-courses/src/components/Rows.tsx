@@ -1,17 +1,11 @@
-import React, { CSSProperties, FC, ReactNode } from "react";
+import React, { FC, ReactNode } from "react";
+import { baseRows } from "./Rows.css";
 
 interface Props {
-  style?: CSSProperties;
+  className?: string;
   children: ReactNode;
 }
 
-export const Rows: FC<Props> = ({ style, children }) => {
-  return <div style={{ ...container, ...style }}>{children}</div>;
-};
-
-const { container }: Record<"container", CSSProperties> = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-  },
+export const Rows: FC<Props> = ({ className, children }) => {
+  return <div className={className || baseRows}>{children}</div>;
 };

@@ -15,6 +15,7 @@ import { expireSessionTime, logOut, useTranslation } from "utils";
 import dayjs from "dayjs";
 import decode from "jwt-decode";
 import { useNavigation } from "yarr";
+import { customSpace } from "components/Space.css";
 
 export interface Decode {
   isBorrower?: boolean;
@@ -60,7 +61,7 @@ export const LogIn: FC = () => {
             value={password}
             onChange={handlePassword}
           />
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
           {isInFlight ? (
             <Spinner />
           ) : (
@@ -100,7 +101,7 @@ export const LogIn: FC = () => {
               }}
             />
           )}
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
         </FormSmall>
       </WrapperSmall>
     </Main>

@@ -1,10 +1,12 @@
-import React, { CSSProperties, FC, useState } from "react";
+import React, { CSSProperties, FC, useMemo, useState } from "react";
 import {
+  ConnectionHandler,
   graphql,
   PreloadedQuery,
   useMutation,
   usePaginationFragment,
   usePreloadedQuery,
+  useSubscription,
 } from "react-relay/hooks";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
 import { tokensAndData } from "App";
@@ -25,9 +27,40 @@ import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.g
 import { AddInvestmentsQuery } from "./__generated__/AddInvestmentsQuery.graphql";
 import { useNavigation } from "yarr";
 import { customColumn } from "components/Column.css";
+import { customRows } from "components/Rows.css";
+import { customSpace } from "components/Space.css";
+import { GraphQLSubscriptionConfig } from "relay-runtime";
+import { AddInvestmentsLoansSubscription } from "./__generated__/AddInvestmentsLoansSubscription.graphql";
+
+const subscriptionLoans = graphql`
+  subscription AddInvestmentsLoansSubscription($connections: [ID!]!) {
+    loans_subscribe_insert @prependEdge(connections: $connections) {
+      node {
+        id
+        id_user
+        score
+        ROI
+        goal
+        term
+        raised
+        expiry
+        status
+        scheduledPayments {
+          amortize
+          status
+          scheduledDate
+        }
+        pending
+        pendingCents
+      }
+      cursor
+    }
+  }
+`;
 
 const addInvestmentFragment = graphql`
   query AddInvestmentsQuery {
+    __id
     ...AddInvestments_query
     authUser {
       isLender
@@ -48,6 +81,7 @@ const addInvestmentPaginationFragment = graphql`
   @refetchable(queryName: "AddInvestmentsPaginationQuery") {
     loansFinancing(first: $count, after: $cursor)
       @connection(key: "AddInvestments_query_loansFinancing") {
+      __id
       edges {
         node {
           id
@@ -123,14 +157,32 @@ export const AddInvestments: FC<Props> = (props) => {
     return acc + Number(item.quantity);
   }, 0);
 
+  const connectionLoanID = ConnectionHandler.getConnectionID(
+    preloadData.__id,
+    "AddInvestments_query_loansFinancing",
+    {}
+  );
+  const configLoans = useMemo<
+    GraphQLSubscriptionConfig<AddInvestmentsLoansSubscription>
+  >(
+    () => ({
+      variables: {
+        connections: [connectionLoanID],
+      },
+      subscription: subscriptionLoans,
+    }),
+    [connectionLoanID]
+  );
+  useSubscription<AddInvestmentsLoansSubscription>(configLoans);
+
   return (
     <Main>
       <WrapperBig>
         <Title text={t("Solicitudes")} />
         <Table color="primary">
-          <Rows style={{ flex: 1 }}>
+          <Rows className={customRows["flex1"]}>
             <Columns>
-              {isBorrower ? <div style={{ width: 30 }} /> : null}
+              {isBorrower ? <Space className={customSpace["w30"]} /> : null}
               {columns.map((column) => (
                 <TableColumnName key={column.key}>
                   {column.title}
@@ -159,12 +211,12 @@ export const AddInvestments: FC<Props> = (props) => {
               })}
           </Rows>
           {isLender && (
-            <Rows style={{ width: 300 }}>
+            <Rows className={customRows["lender"]}>
               {isInFlight ? (
                 <Spinner />
               ) : (
                 <div style={styles.prestarWrapper}>
-                  <Space h={30} />
+                  <Space className={customSpace["h30"]} />
                   <CustomButton
                     text={t("Prestar")}
                     onClick={() => {
@@ -201,20 +253,20 @@ export const AddInvestments: FC<Props> = (props) => {
                   <div style={{ marginTop: 14, fontWeight: "bold" }}>
                     {t("Inversiones")}: {lends.length}
                   </div>
-                  <Space h={30} />
+                  <Space className={customSpace["h30"]} />
                 </div>
               )}
             </Rows>
           )}
         </Table>
-        <Space h={20} />
+        <Space className={customSpace["h20"]} />
         <Columns className={customColumn["columnJustifyCenter"]}>
           <CustomButton
             color="secondary"
             text={t("Cargar más")}
             onClick={() => loadNext(5)}
           />
-          <Space w={20} />
+          <Space className={customSpace["w20"]} />
           <CustomButton
             text={t("Refrescar lista")}
             color="secondary"
@@ -229,7 +281,7 @@ export const AddInvestments: FC<Props> = (props) => {
             }
           />
         </Columns>
-        <Space h={20} />
+        <Space className={customSpace["h20"]} />
       </WrapperBig>
     </Main>
   );

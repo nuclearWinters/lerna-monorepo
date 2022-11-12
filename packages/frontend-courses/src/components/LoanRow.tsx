@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useMemo, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 import {
   graphql,
   useMutation,
@@ -30,6 +30,22 @@ import {
   FaThumbsUp,
 } from "react-icons/fa";
 import { customColumn } from "./Column.css";
+import {
+  baseLoanRowBorrowerIcon,
+  baseLoanRowBorrowerIconBox,
+  baseLoanRowCell,
+  baseLoanRowClipboard,
+  baseLoanRowContainer,
+  baseLoanRowIcon,
+  baseLoanRowInput,
+  baseLoanRowInputBox,
+  baseLoanRowScore,
+  baseLoanRowScoreCircle,
+  baseLoanRowStatus,
+  customLoanRowStatusBox,
+} from "./LoanRow.css";
+import { customRows } from "./Rows.css";
+import { customSpace } from "./Space.css";
 
 const loanRowRefetchableFragment = graphql`
   fragment LoanRow_loan on Loan @refetchable(queryName: "LoanRowRefetchQuery") {
@@ -143,13 +159,13 @@ export const LoanRow: FC<Props> = ({
   const statuPaymentsColor = (status: LoanScheduledPaymentStatus) => {
     switch (status) {
       case "DELAYED":
-        return "#FF9FF00";
+        return customLoanRowStatusBox["scheduledPaymentsDelayed"];
       case "PAID":
-        return "#44d43b";
+        return customLoanRowStatusBox["scheduledPaymentsPaid"];
       case "TO_BE_PAID":
-        return "#046307";
+        return customLoanRowStatusBox["scheduledPaymentsToBePaid"];
       default:
-        return "white";
+        return customLoanRowStatusBox["default"];
     }
   };
 
@@ -193,68 +209,54 @@ export const LoanRow: FC<Props> = ({
 
   return (
     <>
-      <div style={style.container}>
+      <div className={baseLoanRowContainer}>
         {isBorrower && (
-          <div
-            style={{
-              width: 30,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <div className={baseLoanRowBorrowerIconBox}>
             {data.scheduledPayments && (
               <FaPlusSquare
                 onClick={() => {
                   setShowSubTable((state) => !state);
                 }}
-                size={18}
-                color={"rgb(62,62,62)"}
-                style={{
-                  cursor: "pointer",
-                  backgroundColor: "rgb(245,245,245)",
-                }}
+                className={baseLoanRowBorrowerIcon}
               />
             )}
           </div>
         )}
-        <div style={style.clipboard}>
+        <div className={baseLoanRowClipboard}>
           <FaClipboard
             onClick={() => {
               navigator.clipboard.writeText(data.id);
             }}
-            size={18}
-            color={"rgb(255,90,96)"}
+            className={baseLoanRowIcon}
           />
         </div>
-        <div style={style.clipboard}>
+        <div className={baseLoanRowClipboard}>
           <FaClipboard
             onClick={() => {
               navigator.clipboard.writeText(data.id_user);
             }}
-            size={18}
-            color={"rgb(255,90,96)"}
+            className={baseLoanRowIcon}
           />
         </div>
-        <div style={style.score}>
-          <div style={style.scoreCircle}>{data.score}</div>
+        <div className={baseLoanRowScore}>
+          <div className={baseLoanRowScoreCircle}>{data.score}</div>
         </div>
-        <div style={style.cell}>{data.ROI}%</div>
-        <div style={style.cell}>{data.goal}</div>
-        <div style={style.cell}>
+        <div className={baseLoanRowCell}>{data.ROI}%</div>
+        <div className={baseLoanRowCell}>{data.goal}</div>
+        <div className={baseLoanRowCell}>
           {data.term} {t("meses")}
         </div>
-        <div style={style.cell}>{data.pending}</div>
-        <div style={style.cell}>
+        <div className={baseLoanRowCell}>{data.pending}</div>
+        <div className={baseLoanRowCell}>
           {expiry.diff(now, "months") || expiry.diff(now, "days")} {t("meses")}
         </div>
         {isLender ? (
-          <div style={style.inputBox}>
+          <div className={baseLoanRowInputBox}>
             $
             <input
               type="text"
               name={data.id}
-              style={style.input}
+              className={baseLoanRowInput}
               value={value}
               onChange={(e) => {
                 const val = e.target.value.replace("e", "");
@@ -308,7 +310,7 @@ export const LoanRow: FC<Props> = ({
           </div>
         ) : isSupport && data.status === "WAITING_FOR_APPROVAL" ? (
           <div
-            style={style.clipboard}
+            className={baseLoanRowClipboard}
             onClick={() => {
               commitApproveLoan({
                 variables: {
@@ -329,34 +331,34 @@ export const LoanRow: FC<Props> = ({
               });
             }}
           >
-            <FaThumbsUp size={18} color={"rgb(255,90,96)"} />
+            <FaThumbsUp className={baseLoanRowIcon} />
           </div>
         ) : (
-          <div style={style.status}>
+          <div className={baseLoanRowStatus}>
             <div
-              style={{
-                ...style.statusBox,
-                backgroundColor:
-                  data.status === "FINANCING" ? "#4F7942" : "#FF9F00",
-              }}
+              className={
+                data.status === "FINANCING"
+                  ? customLoanRowStatusBox["financing"]
+                  : customLoanRowStatusBox["default"]
+              }
             >
               {getStatus()}
             </div>
           </div>
         )}
         <div
-          style={style.clipboard}
+          className={baseLoanRowClipboard}
           onClick={() => {
             refetch({}, { fetchPolicy: "network-only" });
           }}
         >
-          <FaSyncAlt size={18} color={"rgb(255,90,96)"} />
+          <FaSyncAlt className={baseLoanRowIcon} />
         </div>
       </div>
       {showSubTable && (
-        <Rows style={{ flex: 1 }}>
+        <Rows className={customRows["flex1"]}>
           <Columns>
-            <Space w={50} />
+            <Space className={customSpace["w50"]} />
             {columns.map((column) => (
               <TableColumnName key={column.key}>{column.title}</TableColumnName>
             ))}
@@ -367,20 +369,14 @@ export const LoanRow: FC<Props> = ({
                 key={String(payment.scheduledDate)}
                 className={customColumn["columnLoanRow"]}
               >
-                <Space w={50} />
-                <div style={style.cell}>{payment.amortize}</div>
-                <div style={style.status}>
-                  <div
-                    style={{
-                      ...style.statusBox,
-                      backgroundColor: statuPaymentsColor(payment.status),
-                      maxWidth: 200,
-                    }}
-                  >
+                <Space className={customSpace["w50"]} />
+                <div className={baseLoanRowCell}>{payment.amortize}</div>
+                <div className={baseLoanRowStatus}>
+                  <div className={statuPaymentsColor(payment.status)}>
                     {getStatusPayment(payment.status)}
                   </div>
                 </div>
-                <div style={style.cell}>
+                <div className={baseLoanRowCell}>
                   {dayjs(payment.scheduledDate)
                     .locale(
                       language === "DEFAULT"
@@ -396,104 +392,9 @@ export const LoanRow: FC<Props> = ({
               </Columns>
             );
           })}
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
         </Rows>
       )}
     </>
   );
-};
-
-const style: Record<
-  | "cell"
-  | "inputBox"
-  | "input"
-  | "clipboard"
-  | "score"
-  | "scoreCircle"
-  | "container"
-  | "status"
-  | "statusBox",
-  CSSProperties
-> = {
-  cell: {
-    flex: 1,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
-    padding: "10px 0px",
-    textAlign: "center",
-    color: "#333",
-  },
-  inputBox: {
-    flex: 1,
-    backgroundColor: "white",
-    alignItems: "center",
-    color: "#333",
-    display: "flex",
-  },
-  input: {
-    margin: "4px",
-    border: "1px solid #999",
-    borderRadius: 4,
-    padding: "4px",
-    width: "100%",
-  },
-  clipboard: {
-    flex: 1,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
-    padding: "10px 0px",
-    textAlign: "center",
-    color: "#333",
-    cursor: "pointer",
-  },
-  score: {
-    flex: 1,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
-    textAlign: "center",
-    color: "#333",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scoreCircle: {
-    borderRadius: "100%",
-    backgroundColor: "rgb(102,141,78)",
-    width: 30,
-    height: 30,
-    fontSize: 10,
-    fontWeight: "bold",
-    color: "white",
-    textAlign: "center",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  container: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: 8,
-  },
-  status: {
-    flex: 1,
-    backgroundColor: "white",
-    color: "#333",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  statusBox: {
-    margin: "4px",
-    borderRadius: 4,
-    textAlign: "center",
-    flex: 1,
-    padding: "3px 0px",
-    color: "white",
-  },
 };

@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import {
   Environment,
   graphql,
@@ -6,6 +6,7 @@ import {
   commitLocalUpdate,
   usePreloadedQuery,
   PreloadedQuery,
+  useSubscription,
 } from "react-relay/hooks";
 import { InvestmentRow } from "../components/InvestmentRow";
 import { CustomButton } from "components/CustomButton";
@@ -24,6 +25,62 @@ import { RelayEnvironment } from "RelayEnvironment";
 import { useTranslation } from "utils";
 import { MyInvestmentsUserQuery } from "./__generated__/MyInvestmentsUserQuery.graphql";
 import { customColumn } from "components/Column.css";
+import { customRows } from "components/Rows.css";
+import { customSpace } from "components/Space.css";
+import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
+import { MyInvestmentsInvestmentsSubscription } from "./__generated__/MyInvestmentsInvestmentsSubscription.graphql";
+import { MyInvestmentsInvestmentsUpdateSubscription } from "./__generated__/MyInvestmentsInvestmentsUpdateSubscription.graphql";
+
+const subscriptionInvestments = graphql`
+  subscription MyInvestmentsInvestmentsSubscription(
+    $connections: [ID!]!
+    $status: [InvestmentStatus!]
+  ) {
+    investments_subscribe_insert(status: $status)
+      @prependEdge(connections: $connections) {
+      node {
+        id
+        id_borrower
+        id_lender
+        _id_loan
+        quantity
+        ROI
+        payments
+        term
+        moratory
+        created
+        updated
+        status
+        interest_to_earn
+        paid_already
+        to_be_paid
+      }
+      cursor
+    }
+  }
+`;
+
+const subscriptionInvestmentsUpdate = graphql`
+  subscription MyInvestmentsInvestmentsUpdateSubscription {
+    investments_subscribe_update {
+      id
+      id_borrower
+      id_lender
+      _id_loan
+      quantity
+      ROI
+      payments
+      term
+      moratory
+      created
+      updated
+      status
+      interest_to_earn
+      paid_already
+      to_be_paid
+    }
+  }
+`;
 
 export const commitCommentCreateLocally = (
   environment: Environment,
@@ -46,6 +103,7 @@ export const commitCommentCreateLocally = (
 const myInvestmentsFragment = graphql`
   query MyInvestmentsUserQuery {
     user {
+      id
       ...MyInvestments_user
     }
   }
@@ -115,6 +173,45 @@ export const MyInvestments: FC<Props> = (props) => {
     ? "on_going"
     : "over";
 
+  const status = useMemo(() => {
+    const status = data.statusLocal ? data.statusLocal : null;
+    return status;
+  }, [data.statusLocal]);
+
+  const connectionInvestmentID = ConnectionHandler.getConnectionID(
+    user.id,
+    "MyInvestments_user_investments",
+    {
+      status,
+      firstFetch: true,
+    }
+  );
+  const configInvestments = useMemo<
+    GraphQLSubscriptionConfig<MyInvestmentsInvestmentsSubscription>
+  >(
+    () => ({
+      variables: {
+        status,
+        connections: [connectionInvestmentID],
+      },
+      subscription: subscriptionInvestments,
+    }),
+    [status, connectionInvestmentID]
+  );
+  const configInvestmentsUpdate = useMemo<
+    GraphQLSubscriptionConfig<MyInvestmentsInvestmentsUpdateSubscription>
+  >(
+    () => ({
+      variables: {},
+      subscription: subscriptionInvestmentsUpdate,
+    }),
+    []
+  );
+  useSubscription<MyInvestmentsInvestmentsSubscription>(configInvestments);
+  useSubscription<MyInvestmentsInvestmentsUpdateSubscription>(
+    configInvestmentsUpdate
+  );
+
   return (
     <Main>
       <WrapperBig>
@@ -152,7 +249,7 @@ export const MyInvestments: FC<Props> = (props) => {
           ]}
         />
         <Table color="secondary">
-          <Rows style={{ flex: 1 }}>
+          <Rows className={customRows["flex1"]}>
             <Columns>
               {columns.map((column) => (
                 <TableColumnName key={column.key}>
@@ -172,21 +269,21 @@ export const MyInvestments: FC<Props> = (props) => {
               })}
           </Rows>
         </Table>
-        <Space h={20} />
+        <Space className={customSpace["h20"]} />
         <Columns className={customColumn["columnJustifyCenter"]}>
           <CustomButton
             text={t("Cargar más")}
             color="secondary"
             onClick={() => loadNext(5)}
           />
-          <Space w={20} />
+          <Space className={customSpace["w20"]} />
           <CustomButton
             text={t("Refrescar lista")}
             color="secondary"
             onClick={() => refetch({}, { fetchPolicy: "network-only" })}
           />
         </Columns>
-        <Space h={20} />
+        <Space className={customSpace["h20"]} />
       </WrapperBig>
     </Main>
   );

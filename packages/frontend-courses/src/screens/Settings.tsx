@@ -22,6 +22,9 @@ import { Columns } from "components/Colums";
 import { Select } from "components/Select";
 import { logOut, useTranslation } from "utils";
 import { customColumn } from "components/Column.css";
+import { customRows } from "components/Rows.css";
+import { customSpace } from "components/Space.css";
+import { customWrapperBig } from "components/WrapperBig.css";
 
 const settingsFragment = graphql`
   query SettingsAuthUserQuery {
@@ -111,7 +114,7 @@ export const Settings: FC<Props> = (props) => {
   };
   return (
     <Main>
-      <WrapperBig style={{ margin: "30px 60px" }}>
+      <WrapperBig className={customWrapperBig["settings"]}>
         <Title text={t("Datos generales")} />
         <div style={styles.form}>
           <Label label={t("Nombre(s)")} />
@@ -122,7 +125,7 @@ export const Settings: FC<Props> = (props) => {
             onChange={handleFormUser}
           />
           <Columns>
-            <Rows style={styles.flex}>
+            <Rows className={customRows["flex1"]}>
               <Label label={t("Apellido paterno")} />
               <Input
                 placeholder={t("Apellido paterno")}
@@ -131,8 +134,8 @@ export const Settings: FC<Props> = (props) => {
                 onChange={handleFormUser}
               />
             </Rows>
-            <Space w={20} />
-            <Rows style={styles.flex}>
+            <Space className={customSpace["w20"]} />
+            <Rows className={customRows["flex1"]}>
               <Label label={t("Apellido materno")} />
               <Input
                 placeholder={t("Apellido materno")}
@@ -150,7 +153,7 @@ export const Settings: FC<Props> = (props) => {
             onChange={handleFormUser}
           />
           <Columns>
-            <Rows style={styles.flex}>
+            <Rows className={customRows["flex1"]}>
               <Label label={t("CURP")} />
               <Input
                 placeholder={t("CURP")}
@@ -159,8 +162,8 @@ export const Settings: FC<Props> = (props) => {
                 onChange={handleFormUser}
               />
             </Rows>
-            <Space w={20} />
-            <Rows style={styles.flex}>
+            <Space className={customSpace["w20"]} />
+            <Rows className={customRows["flex1"]}>
               <Label label={t("Clabe")} />
               <Input
                 placeholder={t("Clabe")}
@@ -171,7 +174,7 @@ export const Settings: FC<Props> = (props) => {
             </Rows>
           </Columns>
           <Columns>
-            <Rows style={styles.flex}>
+            <Rows className={customRows["flex1"]}>
               <Label label={t("Celular")} />
               <Input
                 placeholder={t("Celular")}
@@ -180,8 +183,8 @@ export const Settings: FC<Props> = (props) => {
                 onChange={handleFormUser}
               />
             </Rows>
-            <Space w={20} />
-            <Rows style={styles.flex}>
+            <Space className={customSpace["w20"]} />
+            <Rows className={customRows["flex1"]}>
               <Label label={t("Email")} />
               <Input
                 placeholder={t("Email")}
@@ -191,7 +194,7 @@ export const Settings: FC<Props> = (props) => {
               />
             </Rows>
           </Columns>
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
           <Select
             value={formUser.language}
             name="language"
@@ -201,7 +204,7 @@ export const Settings: FC<Props> = (props) => {
             ]}
             onChange={handleSelectUser}
           />
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
           <Columns className={customColumn["columnJustifyCenter"]}>
             {isInFlight ? (
               <Spinner />
@@ -230,7 +233,7 @@ export const Settings: FC<Props> = (props) => {
                 }}
               />
             )}
-            <Space w={30} />
+            <Space className={customSpace["w30"]} />
             {isChanged.current && (
               <CustomButton
                 text={t("Restaurar")}
@@ -253,7 +256,7 @@ export const Settings: FC<Props> = (props) => {
                 }}
               />
             )}
-            <Space w={30} />
+            <Space className={customSpace["w30"]} />
             {user.accountId ? (
               isInFlightBlacklist ? (
                 <Spinner />
@@ -283,7 +286,7 @@ export const Settings: FC<Props> = (props) => {
               )
             ) : null}
           </Columns>
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
         </div>
       </WrapperBig>
     </Main>

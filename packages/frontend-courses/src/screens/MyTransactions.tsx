@@ -1,9 +1,10 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import {
   graphql,
   PreloadedQuery,
   usePaginationFragment,
   usePreloadedQuery,
+  useSubscription,
 } from "react-relay/hooks";
 import { CustomButton } from "components/CustomButton";
 import { Main } from "components/Main";
@@ -24,14 +25,36 @@ import { useTranslation } from "utils";
 import { FaFileContract, FaUserCircle } from "react-icons/fa";
 import { MyTransactionsQuery } from "./__generated__/MyTransactionsQuery.graphql";
 import { customColumn } from "components/Column.css";
+import { customRows } from "components/Rows.css";
+import { customSpace } from "components/Space.css";
+import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
+import { MyTransactionsTransactionsSubscription } from "./__generated__/MyTransactionsTransactionsSubscription.graphql";
 
 const transactionsFragment = graphql`
   query MyTransactionsQuery {
     user {
+      id
       ...MyTransactions_user
     }
     authUser {
       language
+    }
+  }
+`;
+
+const subscriptionTransactions = graphql`
+  subscription MyTransactionsTransactionsSubscription($connections: [ID!]!) {
+    transactions_subscribe_insert @prependEdge(connections: $connections) {
+      node {
+        id
+        id_user
+        id_borrower
+        _id_loan
+        type
+        quantity
+        created
+      }
+      cursor
     }
   }
 `;
@@ -93,16 +116,30 @@ export const MyTransactions: FC<Props> = (props) => {
     }
   };
 
+  const connectionTransactionID = ConnectionHandler.getConnectionID(
+    user.id,
+    "MyTransactions_user_transactions",
+    {
+      firstFetch: true,
+    }
+  );
+
+  const configTransactions = useMemo<
+    GraphQLSubscriptionConfig<MyTransactionsTransactionsSubscription>
+  >(
+    () => ({
+      variables: { connections: [connectionTransactionID] },
+      subscription: subscriptionTransactions,
+    }),
+    [connectionTransactionID]
+  );
+  useSubscription<MyTransactionsTransactionsSubscription>(configTransactions);
+
   return (
     <Main>
       <WrapperSmall>
         <Title text={t("Mis movimientos")} />
-        <Rows
-          style={{
-            flex: 1,
-            margin: "0px 12px",
-          }}
-        >
+        <Rows className={customRows["transactions"]}>
           {data.transactions &&
             data.transactions.edges &&
             data.transactions.edges.map((edge) => {
@@ -192,14 +229,14 @@ export const MyTransactions: FC<Props> = (props) => {
               return null;
             })}
         </Rows>
-        <Space h={20} />
+        <Space className={customSpace["h20"]} />
         <Columns className={customColumn["columnJustifyCenter"]}>
           <CustomButton
             text={t("Cargar más")}
             color="secondary"
             onClick={() => loadNext(5)}
           />
-          <Space w={20} />
+          <Space className={customSpace["w20"]} />
           <CustomButton
             text={t("Refrescar lista")}
             color="secondary"
@@ -214,7 +251,7 @@ export const MyTransactions: FC<Props> = (props) => {
             }
           />
         </Columns>
-        <Space h={20} />
+        <Space className={customSpace["h20"]} />
       </WrapperSmall>
     </Main>
   );

@@ -1,9 +1,10 @@
-import React, { FC, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 import {
   graphql,
   PreloadedQuery,
   usePaginationFragment,
   usePreloadedQuery,
+  useSubscription,
 } from "react-relay/hooks";
 import { LoanRow } from "components/LoanRow";
 import { CustomButton } from "components/CustomButton";
@@ -20,10 +21,15 @@ import { MyLoansPaginationUser } from "./__generated__/MyLoansPaginationUser.gra
 import { useTranslation } from "utils";
 import { MyLoansQuery } from "./__generated__/MyLoansQuery.graphql";
 import { customColumn } from "components/Column.css";
+import { customRows } from "components/Rows.css";
+import { customSpace } from "components/Space.css";
+import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
+import { MyLoansMyLoansSubscription } from "./__generated__/MyLoansMyLoansSubscription.graphql";
 
 const myLoansFragment = graphql`
   query MyLoansQuery {
     user {
+      id
       ...MyLoans_user
     }
     authUser {
@@ -32,6 +38,32 @@ const myLoansFragment = graphql`
       isBorrower
       language
       accountId
+    }
+  }
+`;
+
+const subscriptionMyLoans = graphql`
+  subscription MyLoansMyLoansSubscription($connections: [ID!]!) {
+    my_loans_subscribe_insert @prependEdge(connections: $connections) {
+      node {
+        id
+        id_user
+        score
+        ROI
+        goal
+        term
+        raised
+        expiry
+        status
+        scheduledPayments {
+          amortize
+          status
+          scheduledDate
+        }
+        pending
+        pendingCents
+      }
+      cursor
     }
   }
 `;
@@ -84,6 +116,27 @@ export const MyLoans: FC<Props> = (props) => {
 
   const { isLender, isSupport, isBorrower, language } = authUser;
 
+  const connectionMyLoansID = ConnectionHandler.getConnectionID(
+    user.id,
+    "MyLoans_user_myLoans",
+    {
+      firstFetch: true,
+    }
+  );
+
+  const configMyLoans = useMemo<
+    GraphQLSubscriptionConfig<MyLoansMyLoansSubscription>
+  >(
+    () => ({
+      variables: {
+        connections: [connectionMyLoansID],
+      },
+      subscription: subscriptionMyLoans,
+    }),
+    [connectionMyLoansID]
+  );
+  useSubscription<MyLoansMyLoansSubscription>(configMyLoans);
+
   const columns = [
     { key: "id", title: t("ID") },
     { key: "id_user", title: t("Solicitante") },
@@ -112,7 +165,7 @@ export const MyLoans: FC<Props> = (props) => {
       <WrapperBig>
         <Title text={t("Solicitudes")} />
         <Table color="primary">
-          <Rows style={{ flex: 1 }}>
+          <Rows className={customRows["flex1"]}>
             <Columns>
               {isBorrower ? <div style={{ width: 30 }} /> : null}
               {columns.map((column) => (
@@ -143,14 +196,14 @@ export const MyLoans: FC<Props> = (props) => {
               })}
           </Rows>
         </Table>
-        <Space h={20} />
+        <Space className={customSpace["h20"]} />
         <Columns className={customColumn["columnJustifyCenter"]}>
           <CustomButton
             color="secondary"
             text={t("Cargar más")}
             onClick={() => loadNext(5)}
           />
-          <Space w={20} />
+          <Space className={customSpace["w20"]} />
           <CustomButton
             text={t("Refrescar lista")}
             color="secondary"
@@ -165,7 +218,7 @@ export const MyLoans: FC<Props> = (props) => {
             }
           />
         </Columns>
-        <Space h={20} />
+        <Space className={customSpace["h20"]} />
       </WrapperBig>
     </Main>
   );

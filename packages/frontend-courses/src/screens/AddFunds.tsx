@@ -12,6 +12,7 @@ import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
 import { logOut, useTranslation } from "utils";
+import { customSpace } from "components/Space.css";
 
 export const AddFunds: FC = () => {
   const { t } = useTranslation();
@@ -52,7 +53,7 @@ export const AddFunds: FC = () => {
             onChange={handleQuantityOnChange}
             onBlur={handleQuantityOnBlur}
           />
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
           {isInFlight ? (
             <Spinner />
           ) : (
@@ -80,7 +81,7 @@ export const AddFunds: FC = () => {
                 }}
               />
 
-              <Space h={30} />
+              <Space className={customSpace["h30"]} />
             </>
           )}
         </FormSmall>

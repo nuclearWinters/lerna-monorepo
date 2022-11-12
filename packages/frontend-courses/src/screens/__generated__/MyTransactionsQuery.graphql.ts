@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1bb10369ee54d4a0589b43790c1bbc9a>>
+ * @generated SignedSource<<28ec4c6a52b30951976936d00ba72223>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,7 @@ export type MyTransactionsQuery$data = {
     readonly language: Languages;
   };
   readonly user: {
+    readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"MyTransactions_user">;
   };
 };
@@ -30,10 +31,17 @@ var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "language",
   "storageKey": null
 },
-v1 = [
+v2 = [
   {
     "kind": "Literal",
     "name": "after",
@@ -49,14 +57,7 @@ v1 = [
     "name": "firstFetch",
     "value": true
   }
-],
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -72,6 +73,7 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
+          (v0/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
@@ -88,7 +90,7 @@ return {
         "name": "authUser",
         "plural": false,
         "selections": [
-          (v0/*: any*/)
+          (v1/*: any*/)
         ],
         "storageKey": null
       }
@@ -110,9 +112,10 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
+          (v0/*: any*/),
           {
             "alias": null,
-            "args": (v1/*: any*/),
+            "args": (v2/*: any*/),
             "concreteType": "TransactionConnection",
             "kind": "LinkedField",
             "name": "transactions",
@@ -134,7 +137,7 @@ return {
                     "name": "node",
                     "plural": false,
                     "selections": [
-                      (v2/*: any*/),
+                      (v0/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -227,7 +230,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v1/*: any*/),
+            "args": (v2/*: any*/),
             "filters": [
               "firstFetch"
             ],
@@ -235,8 +238,7 @@ return {
             "key": "MyTransactions_user_transactions",
             "kind": "LinkedHandle",
             "name": "transactions"
-          },
-          (v2/*: any*/)
+          }
         ],
         "storageKey": null
       },
@@ -248,24 +250,24 @@ return {
         "name": "authUser",
         "plural": false,
         "selections": [
-          (v0/*: any*/),
-          (v2/*: any*/)
+          (v1/*: any*/),
+          (v0/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "e8e0542c68c1df43dc054313a411d63b",
+    "cacheID": "3f4f654e2e6552b7577c8499aa6b9951",
     "id": null,
     "metadata": {},
     "name": "MyTransactionsQuery",
     "operationKind": "query",
-    "text": "query MyTransactionsQuery {\n  user {\n    ...MyTransactions_user\n    id\n  }\n  authUser {\n    language\n    id\n  }\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyTransactionsQuery {\n  user {\n    id\n    ...MyTransactions_user\n  }\n  authUser {\n    language\n    id\n  }\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f3cbead03963aca956b9cc456229dd9d";
+(node as any).hash = "ccc5712dba60d5bea650c79079579e70";
 
 export default node;

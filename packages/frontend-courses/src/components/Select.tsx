@@ -1,9 +1,9 @@
-import React, { CSSProperties, FC } from "react";
+import React, { FC } from "react";
+import { baseSelect } from "./Select.css";
 
 interface Props {
   name?: string;
   value?: string;
-  style?: CSSProperties;
   options: {
     value: string;
     label: string;
@@ -11,19 +11,13 @@ interface Props {
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-export const Select: FC<Props> = ({
-  name,
-  value,
-  onChange,
-  options,
-  style,
-}) => {
+export const Select: FC<Props> = ({ name, value, onChange, options }) => {
   return (
     <select
       name={name}
       value={value}
       onChange={onChange}
-      style={{ ...container, ...style }}
+      className={baseSelect}
     >
       {options.map(({ value, label }) => (
         <option key={value} value={value}>
@@ -32,15 +26,4 @@ export const Select: FC<Props> = ({
       ))}
     </select>
   );
-};
-
-const { container }: Record<"container", CSSProperties> = {
-  container: {
-    borderColor: "rgba(118,118,118,0.3)",
-    borderWidth: 1,
-    borderRadius: 8,
-    fontSize: 20,
-    color: "rgb(62,62,62)",
-    padding: "6px 6px",
-  },
 };

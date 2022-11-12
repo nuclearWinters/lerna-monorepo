@@ -1,22 +1,11 @@
-import React, { CSSProperties, FC, ReactNode } from "react";
+import React, { FC, ReactNode } from "react";
+import { baseWrapperBig } from "./WrapperBig.css";
 
 interface Props {
-  style?: CSSProperties;
+  className?: string;
   children: ReactNode;
 }
 
-export const WrapperBig: FC<Props> = ({ children, style }) => {
-  return <div style={{ ...container, ...style }}>{children}</div>;
-};
-
-const { container }: Record<"container", CSSProperties> = {
-  container: {
-    backgroundColor: "rgb(255,255,255)",
-    margin: "30px 20px",
-    borderRadius: 8,
-    border: "1px solid rgb(203,203,203)",
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-  },
+export const WrapperBig: FC<Props> = ({ children, className }) => {
+  return <div className={className || baseWrapperBig}>{children}</div>;
 };

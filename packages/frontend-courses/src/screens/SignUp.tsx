@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import { Decode } from "./LogIn";
 import { useNavigation } from "yarr";
 import decode from "jwt-decode";
+import { customSpace } from "components/Space.css";
 
 export const SignUp: FC = () => {
   const { t } = useTranslation();
@@ -61,7 +62,7 @@ export const SignUp: FC = () => {
             value={password}
             onChange={handlePassword}
           />
-          <Space h={10} />
+          <Space className={customSpace["h10"]} />
           <Columns>
             <Checkbox
               name="lender"
@@ -69,7 +70,7 @@ export const SignUp: FC = () => {
               onChange={handleIsLender}
               label={t("Prestar") + ":"}
             />
-            <Space w={30} />
+            <Space className={customSpace["w30"]} />
             <Checkbox
               name="borrower"
               checked={!isLender}
@@ -77,7 +78,7 @@ export const SignUp: FC = () => {
               label={t("Pedir prestado") + ":"}
             />
           </Columns>
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
           {isInFlight ? (
             <Spinner />
           ) : (
@@ -121,7 +122,7 @@ export const SignUp: FC = () => {
                   });
                 }}
               />
-              <Space h={30} />
+              <Space className={customSpace["h30"]} />
             </>
           )}
         </FormSmall>

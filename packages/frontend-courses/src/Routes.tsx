@@ -3,6 +3,8 @@ import {
   PreloadedQuery,
   useQueryLoader,
   usePreloadedQuery,
+  graphql,
+  useSubscription,
 } from "react-relay/hooks";
 import { Icon } from "components/Icon";
 import { AccountInfo } from "components/AccountInfo";
@@ -35,131 +37,14 @@ import AppUserQuery, {
   AppUserQuery as AppUserQueryType,
 } from "./__generated__/AppUserQuery.graphql";
 import { Link, RouteConfig, useNavigation } from "yarr";
-import React, { FC, useEffect, ReactNode, useCallback } from "react";
+import React, { FC, useEffect, ReactNode, useCallback, useMemo } from "react";
 import { preloadQuery, tokensAndData } from "App";
 import { Decode } from "./screens/LogIn";
 import decode from "jwt-decode";
 import { customAccountInfo } from "components/AccountInfo.css";
-
-/*const subscriptionLoans = graphql`
-  subscription RoutesLoansSubscription($connections: [ID!]!) {
-    loans_subscribe_insert @prependEdge(connections: $connections) {
-      node {
-        id
-        id_user
-        score
-        ROI
-        goal
-        term
-        raised
-        expiry
-        status
-        scheduledPayments {
-          amortize
-          status
-          scheduledDate
-        }
-        pending
-        pendingCents
-      }
-      cursor
-    }
-  }
-`;
-
-const subscriptionMyLoans = graphql`
-  subscription RoutesMyLoansSubscription($connections: [ID!]!) {
-    my_loans_subscribe_insert @prependEdge(connections: $connections) {
-      node {
-        id
-        id_user
-        score
-        ROI
-        goal
-        term
-        raised
-        expiry
-        status
-        scheduledPayments {
-          amortize
-          status
-          scheduledDate
-        }
-        pending
-        pendingCents
-      }
-      cursor
-    }
-  }
-`;
-
-const subscriptionTransactions = graphql`
-  subscription RoutesTransactionsSubscription($connections: [ID!]!) {
-    transactions_subscribe_insert @prependEdge(connections: $connections) {
-      node {
-        id
-        id_user
-        id_borrower
-        _id_loan
-        type
-        quantity
-        created
-      }
-      cursor
-    }
-  }
-`;
-
-const subscriptionInvestments = graphql`
-  subscription RoutesInvestmentsSubscription(
-    $connections: [ID!]!
-    $status: [InvestmentStatus!]
-  ) {
-    investments_subscribe_insert(status: $status)
-      @prependEdge(connections: $connections) {
-      node {
-        id
-        id_borrower
-        id_lender
-        _id_loan
-        quantity
-        ROI
-        payments
-        term
-        moratory
-        created
-        updated
-        status
-        interest_to_earn
-        paid_already
-        to_be_paid
-      }
-      cursor
-    }
-  }
-`;
-
-const subscriptionInvestmentsUpdate = graphql`
-  subscription RoutesInvestmentsUpdateSubscription {
-    investments_subscribe_update {
-      id
-      id_borrower
-      id_lender
-      _id_loan
-      quantity
-      ROI
-      payments
-      term
-      moratory
-      created
-      updated
-      status
-      interest_to_earn
-      paid_already
-      to_be_paid
-    }
-  }
-`;
+import { customRows } from "components/Rows.css";
+import { RoutesUserSubscription } from "__generated__/RoutesUserSubscription.graphql";
+import { GraphQLSubscriptionConfig } from "relay-runtime";
 
 const subscriptionUser = graphql`
   subscription RoutesUserSubscription {
@@ -170,7 +55,7 @@ const subscriptionUser = graphql`
       accountTotal
     }
   }
-`;*/
+`;
 
 type Props = {
   children: ReactNode;
@@ -201,80 +86,6 @@ export const Header: FC<Props> = (props) => {
     }
   }, [isLogged, authUser.language, changeLanguage]);
 
-  /*const connectionLoanID = ConnectionHandler.getConnectionID(
-    props.connectionID,
-    "AddInvestments_query_loansFinancing",
-    {}
-  );
-  const configLoans = useMemo<
-    GraphQLSubscriptionConfig<RoutesLoansSubscription>
-  >(
-    () => ({
-      variables: {
-        connections: [connectionLoanID],
-      },
-      subscription: subscriptionLoans,
-    }),
-    [connectionLoanID]
-  );
-  const status = useMemo(() => {
-    const status = statusLocal ? statusLocal : null;
-    return status;
-  }, [statusLocal]);
-  const connectionMyLoansID = ConnectionHandler.getConnectionID(
-    user.id,
-    "MyLoans_user_myLoans",
-    {
-      firstFetch: true,
-    }
-  );
-  const configMyLoans = useMemo<
-    GraphQLSubscriptionConfig<RoutesMyLoansSubscription>
-  >(
-    () => ({
-      variables: {
-        connections: [connectionMyLoansID],
-      },
-      subscription: subscriptionMyLoans,
-    }),
-    [connectionMyLoansID]
-  );
-  const connectionInvestmentID = ConnectionHandler.getConnectionID(
-    user.id,
-    "MyInvestments_user_investments",
-    {
-      status,
-      firstFetch: true,
-    }
-  );
-  const configInvestments = useMemo<
-    GraphQLSubscriptionConfig<RoutesInvestmentsSubscription>
-  >(
-    () => ({
-      variables: {
-        status,
-        connections: [connectionInvestmentID],
-      },
-      subscription: subscriptionInvestments,
-    }),
-    [status, connectionInvestmentID]
-  );
-  const configInvestmentsUpdate = useMemo<
-    GraphQLSubscriptionConfig<RoutesInvestmentsUpdateSubscription>
-  >(
-    () => ({
-      variables: {},
-      subscription: subscriptionInvestmentsUpdate,
-    }),
-    []
-  );
-  const connectionTransactionID = ConnectionHandler.getConnectionID(
-    user.id,
-    "MyTransactions_user_transactions",
-    {
-      firstFetch: true,
-    }
-  );
   const configUser = useMemo<GraphQLSubscriptionConfig<RoutesUserSubscription>>(
     () => ({
       variables: {},
@@ -282,21 +93,8 @@ export const Header: FC<Props> = (props) => {
     }),
     [user.id]
   );
-  const configTransactions = useMemo<
-    GraphQLSubscriptionConfig<RoutesTransactionsSubscription>
-  >(
-    () => ({
-      variables: { connections: [connectionTransactionID] },
-      subscription: subscriptionTransactions,
-    }),
-    [connectionTransactionID]
-  );
-  useSubscription<RoutesLoansSubscription>(configLoans);
-  useSubscription<RoutesInvestmentsSubscription>(configInvestments);
-  useSubscription<RoutesInvestmentsUpdateSubscription>(configInvestmentsUpdate);
-  useSubscription<RoutesTransactionsSubscription>(configTransactions);
+
   useSubscription<RoutesUserSubscription>(configUser);
-  useSubscription<RoutesMyLoansSubscription>(configMyLoans);*/
   const navigate = useNavigation();
   const navigateTo = (path: string) => () => {
     navigate.push(path);
@@ -422,11 +220,7 @@ export const Header: FC<Props> = (props) => {
             </>
           )}
         </Rows>
-        <Rows
-          style={{
-            flex: 1,
-          }}
-        >
+        <Rows className={customRows["flex1"]}>
           {isLogged ? (
             <div
               style={{

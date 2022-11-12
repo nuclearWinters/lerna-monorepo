@@ -13,6 +13,7 @@ import { Input } from "components/Input";
 import { Select } from "components/Select";
 import { Space } from "components/Space";
 import { logOut, useTranslation } from "utils";
+import { customSpace } from "components/Space.css";
 
 export const AddLoan: FC = () => {
   const { t } = useTranslation();
@@ -94,7 +95,7 @@ export const AddLoan: FC = () => {
               },
             ]}
           />
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
           {isInFlight ? (
             <Spinner />
           ) : (
@@ -122,7 +123,7 @@ export const AddLoan: FC = () => {
               }}
             />
           )}
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
         </FormSmall>
       </WrapperSmall>
     </Main>

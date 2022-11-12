@@ -10,6 +10,7 @@ import { TitleAccount } from "components/TitleAccount";
 import { Space } from "components/Space";
 import { useTranslation } from "utils";
 import { baseAccountRowValue } from "components/AccountRow.css";
+import { customSpace } from "components/Space.css";
 
 const accountFragment = graphql`
   query AccountUserQuery {
@@ -47,9 +48,9 @@ export const Account: FC<Props> = (props) => {
             value={user.accountAvailable}
             className={baseAccountRowValue}
           />
-          <Space h={30} />
+          <Space className={customSpace["h30"]} />
         </FormSmall>
-        <Space h={30} />
+        <Space className={customSpace["h30"]} />
       </WrapperSmall>
     </Main>
   );

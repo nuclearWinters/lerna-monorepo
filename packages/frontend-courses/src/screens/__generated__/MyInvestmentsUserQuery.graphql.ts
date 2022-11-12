@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<475ea0747e609a79fe147907ac9ef74e>>
+ * @generated SignedSource<<c9defb327f3a23cdcc02a603182b0831>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,6 +13,7 @@ import { FragmentRefs } from "relay-runtime";
 export type MyInvestmentsUserQuery$variables = {};
 export type MyInvestmentsUserQuery$data = {
   readonly user: {
+    readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"MyInvestments_user">;
   };
 };
@@ -22,7 +23,14 @@ export type MyInvestmentsUserQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v1 = [
   {
     "kind": "Literal",
     "name": "after",
@@ -38,14 +46,7 @@ var v0 = [
     "name": "firstFetch",
     "value": true
   }
-],
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -61,6 +62,7 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
+          (v0/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
@@ -87,9 +89,10 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
+          (v0/*: any*/),
           {
             "alias": null,
-            "args": (v0/*: any*/),
+            "args": (v1/*: any*/),
             "concreteType": "InvestmentsConnection",
             "kind": "LinkedField",
             "name": "investments",
@@ -111,7 +114,7 @@ return {
                     "name": "node",
                     "plural": false,
                     "selections": [
-                      (v1/*: any*/),
+                      (v0/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -253,7 +256,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v0/*: any*/),
+            "args": (v1/*: any*/),
             "filters": [
               "status",
               "firstFetch"
@@ -263,7 +266,6 @@ return {
             "kind": "LinkedHandle",
             "name": "investments"
           },
-          (v1/*: any*/),
           {
             "kind": "ClientExtension",
             "selections": [
@@ -282,16 +284,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "daa30082ef2c8cc4e7a2ea056a34129a",
+    "cacheID": "670b3c8c6a49199aef42a1c298c78418",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsUserQuery",
     "operationKind": "query",
-    "text": "query MyInvestmentsUserQuery {\n  user {\n    ...MyInvestments_user\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsUserQuery {\n  user {\n    id\n    ...MyInvestments_user\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "6141206185500b3e096917ad6a587a6f";
+(node as any).hash = "e623dd8ad010fee6479895161e8e1c93";
 
 export default node;

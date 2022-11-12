@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9288e71af5108f2b252e1d792cd2fa61>>
+ * @generated SignedSource<<731e68ddb4b97976f0d265b9841c6dc5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,6 +13,7 @@ import { FragmentRefs } from "relay-runtime";
 export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 export type AddInvestmentsQuery$variables = {};
 export type AddInvestmentsQuery$data = {
+  readonly __id: string;
   readonly authUser: {
     readonly accountId: string;
     readonly isBorrower: boolean;
@@ -63,7 +64,19 @@ v4 = {
   "name": "accountId",
   "storageKey": null
 },
-v5 = [
+v5 = {
+  "kind": "ClientExtension",
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "__id",
+      "storageKey": null
+    }
+  ]
+},
+v6 = [
   {
     "kind": "Literal",
     "name": "after",
@@ -75,14 +88,14 @@ v5 = [
     "value": 5
   }
 ],
-v6 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v7 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -116,7 +129,8 @@ return {
           (v4/*: any*/)
         ],
         "storageKey": null
-      }
+      },
+      (v5/*: any*/)
     ],
     "type": "Query",
     "abstractKey": null
@@ -129,7 +143,7 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v5/*: any*/),
+        "args": (v6/*: any*/),
         "concreteType": "LoanConnection",
         "kind": "LinkedField",
         "name": "loansFinancing",
@@ -151,7 +165,7 @@ return {
                 "name": "node",
                 "plural": false,
                 "selections": [
-                  (v6/*: any*/),
+                  (v7/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -201,7 +215,7 @@ return {
                     "name": "expiry",
                     "storageKey": null
                   },
-                  (v7/*: any*/),
+                  (v8/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -217,7 +231,7 @@ return {
                         "name": "amortize",
                         "storageKey": null
                       },
-                      (v7/*: any*/),
+                      (v8/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -286,13 +300,14 @@ return {
               }
             ],
             "storageKey": null
-          }
+          },
+          (v5/*: any*/)
         ],
         "storageKey": "loansFinancing(after:\"\",first:5)"
       },
       {
         "alias": null,
-        "args": (v5/*: any*/),
+        "args": (v6/*: any*/),
         "filters": null,
         "handle": "connection",
         "key": "AddInvestments_query_loansFinancing",
@@ -312,10 +327,11 @@ return {
           (v2/*: any*/),
           (v3/*: any*/),
           (v4/*: any*/),
-          (v6/*: any*/)
+          (v7/*: any*/)
         ],
         "storageKey": null
-      }
+      },
+      (v5/*: any*/)
     ]
   },
   "params": {
@@ -329,6 +345,6 @@ return {
 };
 })();
 
-(node as any).hash = "1be2262043e560a0abea9995ee591589";
+(node as any).hash = "ceffb8125df48948325ef1c5299b8962";
 
 export default node;

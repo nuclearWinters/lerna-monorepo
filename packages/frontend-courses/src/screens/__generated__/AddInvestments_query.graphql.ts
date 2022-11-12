@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d5573bd70e7b312b0c9ac428dcf283a9>>
+ * @generated SignedSource<<7572cc2540e79c1bf52023941bd1b6e3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,7 @@ import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestments_query$data = {
   readonly loansFinancing: {
+    readonly __id: string;
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
@@ -148,6 +149,18 @@ return {
             }
           ],
           "storageKey": null
+        },
+        {
+          "kind": "ClientExtension",
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "__id",
+              "storageKey": null
+            }
+          ]
         }
       ],
       "storageKey": null
@@ -158,6 +171,6 @@ return {
 };
 })();
 
-(node as any).hash = "8876165637b4be866ff48ff9d1cfc802";
+(node as any).hash = "c7901c1f897ccaf2863cffadb9518428";
 
 export default node;

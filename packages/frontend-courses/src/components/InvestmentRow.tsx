@@ -1,10 +1,18 @@
-import React, { CSSProperties, FC } from "react";
+import React, { FC } from "react";
 import { graphql, useRefetchableFragment } from "react-relay/hooks";
 import { InvestmentRowRefetchQuery } from "./__generated__/InvestmentRowRefetchQuery.graphql";
 import { InvestmentRow_investment$key } from "./__generated__/InvestmentRow_investment.graphql";
 import dayjs from "dayjs";
 import { useTranslation } from "utils";
 import { FaClipboard, FaSyncAlt } from "react-icons/fa";
+import {
+  baseInvestmentRowBox,
+  baseInvestmentRowCell,
+  baseInvestmentRowClipboard,
+  baseInvestmentRowIcon,
+  baseInvestmentRowStatus,
+  customInvestmentRowStatusBar,
+} from "./InvestmentRow.css";
 
 const investmentRowRefetchableFragment = graphql`
   fragment InvestmentRow_investment on Investment
@@ -52,121 +60,70 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
         return "";
     }
   };
-  const statusColor = () => {
+  const statusStyle = () => {
     switch (data.status) {
       case "DELAY_PAYMENT":
-        return "#FF9FF00";
+        return customInvestmentRowStatusBar["delayPayment"];
       case "FINANCING":
-        return "#4F7942";
+        return customInvestmentRowStatusBar["financing"];
       case "PAID":
-        return "#046307";
+        return customInvestmentRowStatusBar["paid"];
       case "PAST_DUE":
-        return "#CA3435";
+        return customInvestmentRowStatusBar["pastDue"];
       case "UP_TO_DATE":
-        return "#44d43b";
+        return customInvestmentRowStatusBar["upToDate"];
       default:
-        return "white";
+        return customInvestmentRowStatusBar["default"];
     }
   };
   return (
-    <div style={style.container}>
-      <div style={style.clipboard}>
+    <div className={baseInvestmentRowBox}>
+      <div className={baseInvestmentRowClipboard}>
         <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(data.id);
           }}
-          size={18}
-          color={"rgba(90,96,255)"}
+          className={baseInvestmentRowIcon}
         />
       </div>
-      <div style={style.clipboard}>
+      <div className={baseInvestmentRowClipboard}>
         <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(data.id_borrower);
           }}
-          size={18}
-          color={"rgba(90,96,255)"}
+          className={baseInvestmentRowIcon}
         />
       </div>
-      <div style={style.clipboard}>
+      <div className={baseInvestmentRowClipboard}>
         <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(data._id_loan);
           }}
-          size={18}
-          color={"rgba(90,96,255)"}
+          className={baseInvestmentRowIcon}
         />
       </div>
-      <div style={style.cell}>{data.quantity}</div>
-      <div style={style.status}>
-        <div
-          style={{
-            margin: "4px",
-            backgroundColor: statusColor(),
-            borderRadius: 4,
-            textAlign: "center",
-            flex: 1,
-            padding: "3px 0px",
-            color: "white",
-          }}
-        >
-          {status()}
-        </div>
+      <div className={baseInvestmentRowCell}>{data.quantity}</div>
+      <div className={baseInvestmentRowStatus}>
+        <div className={statusStyle()}>{status()}</div>
       </div>
-      <div style={style.cell}>{data.paid_already}</div>
-      <div style={style.cell}>{data.to_be_paid}</div>
-      <div style={style.cell}>{data.interest_to_earn}</div>
-      <div style={style.cell}>{data.moratory}</div>
-      <div style={style.cell}>{dayjs(data.updated).format("dd/mm/yyyy")}</div>
-      <div style={style.cell}>{dayjs(data.created).format("dd/MM/yyyy")}</div>
+      <div className={baseInvestmentRowCell}>{data.paid_already}</div>
+      <div className={baseInvestmentRowCell}>{data.to_be_paid}</div>
+      <div className={baseInvestmentRowCell}>{data.interest_to_earn}</div>
+      <div className={baseInvestmentRowCell}>{data.moratory}</div>
+      <div className={baseInvestmentRowCell}>
+        {dayjs(data.updated).format("dd/mm/yyyy")}
+      </div>
+      <div className={baseInvestmentRowCell}>
+        {dayjs(data.created).format("dd/MM/yyyy")}
+      </div>
       <div
-        style={style.clipboard}
+        className={baseInvestmentRowClipboard}
         onClick={() => {
           refetch({}, { fetchPolicy: "network-only" });
         }}
       >
-        <FaSyncAlt size={18} color={"rgb(90,96,255)"} />
+        <FaSyncAlt className={baseInvestmentRowIcon} />
       </div>
     </div>
   );
-};
-
-const style: Record<
-  "cell" | "clipboard" | "container" | "status",
-  CSSProperties
-> = {
-  cell: {
-    flex: 1,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
-    padding: "10px 0px",
-    textAlign: "center",
-    color: "#333",
-  },
-  status: {
-    flex: 1,
-    backgroundColor: "white",
-    color: "#333",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  clipboard: {
-    flex: 1,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
-    padding: "10px 0px",
-    textAlign: "center",
-    color: "#333",
-    cursor: "pointer",
-  },
-  container: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: 8,
-  },
 };
