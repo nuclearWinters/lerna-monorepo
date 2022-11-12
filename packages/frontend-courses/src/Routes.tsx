@@ -39,6 +39,7 @@ import React, { FC, useEffect, ReactNode, useCallback } from "react";
 import { preloadQuery, tokensAndData } from "App";
 import { Decode } from "./screens/LogIn";
 import decode from "jwt-decode";
+import { customAccountInfo } from "components/AccountInfo.css";
 
 /*const subscriptionLoans = graphql`
   subscription RoutesLoansSubscription($connections: [ID!]!) {
@@ -318,12 +319,12 @@ export const Header: FC<Props> = (props) => {
               <AccountInfo
                 value={user.accountTotal}
                 title={t("Valor de la cuenta")}
-                colorValue="rgb(1,120,221)"
+                className={customAccountInfo["total"]}
               />
               <AccountInfo
                 value={user.accountAvailable}
                 title={t("Saldo disponible")}
-                colorValue="rgb(58,179,152)"
+                className={customAccountInfo["available"]}
               />
               <AccountLink
                 icon={<FaFileAlt size={28} />}
@@ -376,12 +377,12 @@ export const Header: FC<Props> = (props) => {
               <AccountInfo
                 value={user.accountTotal}
                 title={t("Valor de la cuenta")}
-                colorValue="rgb(1,120,221)"
+                className={customAccountInfo["total"]}
               />
               <AccountInfo
                 value={user.accountAvailable}
                 title={t("Saldo disponible")}
-                colorValue="rgb(58,179,152)"
+                className={customAccountInfo["available"]}
               />
               <AccountLink
                 icon={<FaFileAlt size={28} />}

@@ -1,43 +1,23 @@
-import React, { CSSProperties, FC } from "react";
+import React, { FC } from "react";
 import { FaPlusCircle } from "react-icons/fa";
+import {
+  baseAccountRowBox,
+  baseAccountRowIcon,
+  baseAccountRowValue,
+} from "./AccountRow.css";
 
 interface Props {
   text: string;
   value: string;
-  color?: string;
+  className?: string;
 }
 
-export const AccountRow: FC<Props> = ({ text, value, color }) => {
+export const AccountRow: FC<Props> = ({ text, value, className }) => {
   return (
-    <div style={container}>
+    <div className={baseAccountRowBox}>
       <div>{text}</div>
-      <div
-        style={{ color: color ?? "black", fontWeight: "bold", fontSize: 18 }}
-      >
-        {value}
-      </div>
-      <FaPlusCircle
-        color="rgb(203,203,203)"
-        style={{
-          position: "absolute",
-          bottom: -10,
-          right: 10,
-          backgroundColor: "white",
-        }}
-        size={18}
-      />
+      <div className={className || baseAccountRowValue}>{value}</div>
+      <FaPlusCircle className={baseAccountRowIcon} />
     </div>
   );
-};
-
-const { container }: Record<"container", CSSProperties> = {
-  container: {
-    display: "flex",
-    borderBottom: "1px solid rgb(203,203,203)",
-    fontSize: 20,
-    padding: "14px 0px",
-    justifyContent: "space-between",
-    flex: 1,
-    position: "relative",
-  },
 };

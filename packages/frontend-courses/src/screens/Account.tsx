@@ -9,6 +9,7 @@ import { PreloadedQuery, usePreloadedQuery } from "react-relay/hooks";
 import { TitleAccount } from "components/TitleAccount";
 import { Space } from "components/Space";
 import { useTranslation } from "utils";
+import { baseAccountRowValue } from "components/AccountRow.css";
 
 const accountFragment = graphql`
   query AccountUserQuery {
@@ -44,7 +45,7 @@ export const Account: FC<Props> = (props) => {
           <AccountRow
             text={t("Disponible")}
             value={user.accountAvailable}
-            color="rgb(58,179,152)"
+            className={baseAccountRowValue}
           />
           <Space h={30} />
         </FormSmall>
