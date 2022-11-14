@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<46fb607dee447f223626111629e26789>>
+ * @generated SignedSource<<8c600345624c759d4c5dea086a119673>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,6 @@ import { FragmentRefs } from "relay-runtime";
 export type MyTransactionsPaginationUser$variables = {
   count?: number | null;
   cursor?: string | null;
-  firstFetch?: boolean | null;
   id: string;
 };
 export type MyTransactionsPaginationUser$data = {
@@ -39,11 +38,6 @@ var v0 = [
     "name": "cursor"
   },
   {
-    "defaultValue": true,
-    "kind": "LocalArgument",
-    "name": "firstFetch"
-  },
-  {
     "defaultValue": null,
     "kind": "LocalArgument",
     "name": "id"
@@ -57,25 +51,20 @@ v1 = [
   }
 ],
 v2 = {
-  "kind": "Variable",
-  "name": "firstFetch",
-  "variableName": "firstFetch"
-},
-v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v4 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v5 = [
+v4 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -85,8 +74,7 @@ v5 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
-  },
-  (v2/*: any*/)
+  }
 ];
 return {
   "fragment": {
@@ -114,8 +102,7 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
-              },
-              (v2/*: any*/)
+              }
             ],
             "kind": "FragmentSpread",
             "name": "MyTransactions_user"
@@ -141,14 +128,14 @@ return {
         "name": "node",
         "plural": false,
         "selections": [
+          (v2/*: any*/),
           (v3/*: any*/),
-          (v4/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v5/*: any*/),
+                "args": (v4/*: any*/),
                 "concreteType": "TransactionConnection",
                 "kind": "LinkedField",
                 "name": "transactions",
@@ -170,7 +157,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v4/*: any*/),
+                          (v3/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -213,7 +200,7 @@ return {
                             "name": "created",
                             "storageKey": null
                           },
-                          (v3/*: any*/)
+                          (v2/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -257,10 +244,8 @@ return {
               },
               {
                 "alias": null,
-                "args": (v5/*: any*/),
-                "filters": [
-                  "firstFetch"
-                ],
+                "args": (v4/*: any*/),
+                "filters": null,
                 "handle": "connection",
                 "key": "MyTransactions_user_transactions",
                 "kind": "LinkedHandle",
@@ -276,16 +261,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "f9b7ea421438127c78aef142b00c45a3",
+    "cacheID": "5257e9bd9ee88f0eb6b87449da8a4217",
     "id": null,
     "metadata": {},
     "name": "MyTransactionsPaginationUser",
     "operationKind": "query",
-    "text": "query MyTransactionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $firstFetch: Boolean = true\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyTransactions_user_aKcJb\n    id\n  }\n}\n\nfragment MyTransactions_user_aKcJb on User {\n  transactions(first: $count, after: $cursor, firstFetch: $firstFetch) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyTransactionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyTransactions_user_1G22uz\n    id\n  }\n}\n\nfragment MyTransactions_user_1G22uz on User {\n  transactions(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "448fc0b1bfa7a008d3c4591eb73816b6";
+(node as any).hash = "3167f487899935e3a47f82b92e6c81bd";
 
 export default node;

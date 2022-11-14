@@ -50,9 +50,6 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 100000,
         accountToBePaid: 0,
         accountTotal: 100000,
-        transactions: [],
-        myLoans: [],
-        myInvestments: [],
       },
       {
         _id: new ObjectId("000000000000000000000005"),
@@ -60,36 +57,6 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 100000,
         accountToBePaid: 0,
         accountTotal: 100000,
-        transactions: [],
-        myLoans: [
-          {
-            _id: new ObjectId("000000000000000000000002"),
-            id_user: "wHHR1SUBT0dspoF4YUO32",
-            score: "AAA",
-            ROI: 10,
-            goal: 50000,
-            term: 2,
-            raised: 0,
-            expiry: now,
-            status: "financing",
-            scheduledPayments: null,
-            pending: 50000,
-          },
-          {
-            _id: new ObjectId("000000000000000000000003"),
-            id_user: "wHHR1SUBT0dspoF4YUO32",
-            score: "AAA",
-            ROI: 10,
-            goal: 50000,
-            term: 2,
-            raised: 0,
-            expiry: now,
-            status: "financing",
-            scheduledPayments: null,
-            pending: 50000,
-          },
-        ],
-        myInvestments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -168,86 +135,12 @@ describe("rabbitMQ tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO31",
     });
-    const date = new Date();
-    const _id = new ObjectId();
-    if (user) {
-      user.myInvestments = user.myInvestments.map((inv) => ({
-        ...inv,
-        created: date,
-        updated: date,
-        _id,
-      }));
-      user.transactions = user.transactions.map((transaction) => ({
-        ...transaction,
-        _id,
-        created: date,
-      }));
-    }
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO31",
       accountAvailable: 85000,
       accountToBePaid: 0,
       accountTotal: 85000,
-      myInvestments: [
-        {
-          ROI: 10,
-          _id,
-          _id_loan: new ObjectId("000000000000000000000002"),
-          amortize: 0,
-          created: date,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_lender: "wHHR1SUBT0dspoF4YUO31",
-          interest_to_earn: 0,
-          moratory: 0,
-          paid_already: 0,
-          payments: 0,
-          quantity: 10000,
-          status: "financing",
-          term: 2,
-          to_be_paid: 0,
-          updated: date,
-        },
-        {
-          ROI: 10,
-          _id,
-          _id_loan: new ObjectId("000000000000000000000003"),
-          amortize: 0,
-          created: date,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_lender: "wHHR1SUBT0dspoF4YUO31",
-          interest_to_earn: 0,
-          moratory: 0,
-          paid_already: 0,
-          payments: 0,
-          quantity: 5000,
-          status: "financing",
-          term: 2,
-          to_be_paid: 0,
-          updated: date,
-        },
-      ],
-      myLoans: [],
-      transactions: [
-        {
-          _id,
-          _id_loan: new ObjectId("000000000000000000000002"),
-          created: date,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_user: "wHHR1SUBT0dspoF4YUO31",
-          quantity: -10000,
-          type: "invest",
-        },
-        {
-          _id,
-          _id_loan: new ObjectId("000000000000000000000003"),
-          created: date,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_user: "wHHR1SUBT0dspoF4YUO31",
-          quantity: -5000,
-          type: "invest",
-        },
-      ],
     });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
@@ -391,196 +284,22 @@ describe("rabbitMQ tests", () => {
     const user2 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO31",
     });
-    const _id_transaction = new ObjectId();
-    const date_transaction = new Date();
-    if (user2) {
-      user2.transactions = user2?.transactions.map((tr) => ({
-        ...tr,
-        _id: _id_transaction,
-        created: date_transaction,
-      }));
-      user2.myInvestments = user2?.myInvestments.map((tr) => ({
-        ...tr,
-        _id: _id_transaction,
-        created: date_transaction,
-        updated: date_transaction,
-      }));
-    }
     expect(user2).toEqual({
       _id: new ObjectId("000000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO31",
       accountAvailable: 0,
       accountToBePaid: 101196,
       accountTotal: 101196,
-      myInvestments: [
-        {
-          ROI: 10,
-          _id: _id_transaction,
-          _id_loan: new ObjectId("000000000000000000000002"),
-          amortize: 25299,
-          created: date_transaction,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_lender: "wHHR1SUBT0dspoF4YUO31",
-          interest_to_earn: 598,
-          moratory: 0,
-          paid_already: 0,
-          payments: 0,
-          quantity: 50000,
-          status: "up to date",
-          term: 2,
-          to_be_paid: 50598,
-          updated: date_transaction,
-        },
-        {
-          ROI: 10,
-          _id: _id_transaction,
-          _id_loan: new ObjectId("000000000000000000000003"),
-          amortize: 25299,
-          created: date_transaction,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_lender: "wHHR1SUBT0dspoF4YUO31",
-          interest_to_earn: 598,
-          moratory: 0,
-          paid_already: 0,
-          payments: 0,
-          quantity: 50000,
-          status: "up to date",
-          term: 2,
-          to_be_paid: 50598,
-          updated: date_transaction,
-        },
-      ],
-      myLoans: [],
-      transactions: [
-        {
-          _id: _id_transaction,
-          _id_loan: new ObjectId("000000000000000000000002"),
-          created: date_transaction,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_user: "wHHR1SUBT0dspoF4YUO31",
-          quantity: -10000,
-          type: "invest",
-        },
-        {
-          _id: _id_transaction,
-          _id_loan: new ObjectId("000000000000000000000003"),
-          created: date_transaction,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_user: "wHHR1SUBT0dspoF4YUO31",
-          quantity: -5000,
-          type: "invest",
-        },
-        {
-          _id: _id_transaction,
-          _id_loan: new ObjectId("000000000000000000000002"),
-          created: date_transaction,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_user: "wHHR1SUBT0dspoF4YUO31",
-          quantity: -40000,
-          type: "invest",
-        },
-        {
-          _id: _id_transaction,
-          _id_loan: new ObjectId("000000000000000000000003"),
-          created: date_transaction,
-          id_borrower: "wHHR1SUBT0dspoF4YUO32",
-          id_user: "wHHR1SUBT0dspoF4YUO31",
-          quantity: -45000,
-          type: "invest",
-        },
-      ],
     });
     const user3 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO32",
     });
-    if (user3) {
-      user3.transactions = user3?.transactions.map((tr) => ({
-        ...tr,
-        _id: _id_transaction,
-        created: date_transaction,
-      }));
-      user3.myLoans = user3?.myLoans.map((loan) => ({
-        ...loan,
-        scheduledPayments:
-          loan?.scheduledPayments?.map((pay) => ({
-            ...pay,
-            scheduledDate: now,
-          })) || null,
-      }));
-    }
     expect(user3).toEqual({
       _id: new ObjectId("000000000000000000000005"),
       id: "wHHR1SUBT0dspoF4YUO32",
       accountAvailable: 200000,
       accountToBePaid: 0,
       accountTotal: 200000,
-      myInvestments: [],
-      myLoans: [
-        {
-          ROI: 10,
-          _id: new ObjectId("000000000000000000000002"),
-          expiry: now,
-          goal: 50000,
-          id_user: "wHHR1SUBT0dspoF4YUO32",
-          pending: 0,
-          raised: 50000,
-          scheduledPayments: [
-            {
-              amortize: 25299,
-              scheduledDate: now,
-              status: "to be paid",
-            },
-            {
-              amortize: 25299,
-              scheduledDate: now,
-              status: "to be paid",
-            },
-          ],
-          score: "AAA",
-          status: "to be paid",
-          term: 2,
-        },
-        {
-          ROI: 10,
-          _id: new ObjectId("000000000000000000000003"),
-          expiry: now,
-          goal: 50000,
-          id_user: "wHHR1SUBT0dspoF4YUO32",
-          pending: 0,
-          raised: 50000,
-          scheduledPayments: [
-            {
-              amortize: 25299,
-              scheduledDate: now,
-              status: "to be paid",
-            },
-            {
-              amortize: 25299,
-              scheduledDate: now,
-              status: "to be paid",
-            },
-          ],
-          score: "AAA",
-          status: "to be paid",
-          term: 2,
-        },
-      ],
-      transactions: [
-        {
-          _id: _id_transaction,
-          created: date_transaction,
-          id_user: "wHHR1SUBT0dspoF4YUO32",
-          quantity: 50000,
-          type: "credit",
-        },
-        {
-          _id: _id_transaction,
-          created: date_transaction,
-          id_user: "wHHR1SUBT0dspoF4YUO32",
-          quantity: 50000,
-          type: "credit",
-        },
-      ],
     });
     const allTransactions2 = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
@@ -727,9 +446,6 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
-        transactions: [],
-        myLoans: [],
-        myInvestments: [],
       },
       {
         _id: new ObjectId("400000000000000000000005"),
@@ -737,9 +453,6 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
-        transactions: [],
-        myLoans: [],
-        myInvestments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -790,9 +503,6 @@ describe("rabbitMQ tests", () => {
       accountAvailable: 10000,
       accountToBePaid: 0,
       accountTotal: 10000,
-      myInvestments: [],
-      myLoans: [],
-      transactions: [],
     });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO33" })
@@ -832,9 +542,6 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
-        transactions: [],
-        myLoans: [],
-        myInvestments: [],
       },
       {
         _id: new ObjectId("500000000000000000000005"),
@@ -842,9 +549,6 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
-        transactions: [],
-        myLoans: [],
-        myInvestments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -895,9 +599,6 @@ describe("rabbitMQ tests", () => {
       accountAvailable: 10000,
       accountToBePaid: 0,
       accountTotal: 10000,
-      myInvestments: [],
-      myLoans: [],
-      transactions: [],
     });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO35" })
@@ -937,9 +638,6 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
-        transactions: [],
-        myLoans: [],
-        myInvestments: [],
       },
       {
         _id: new ObjectId("600000000000000000000005"),
@@ -947,9 +645,6 @@ describe("rabbitMQ tests", () => {
         accountAvailable: 10000,
         accountToBePaid: 0,
         accountTotal: 10000,
-        transactions: [],
-        myLoans: [],
-        myInvestments: [],
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -1028,59 +723,12 @@ describe("rabbitMQ tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO37",
     });
-    const date = new Date();
-    const _id = new ObjectId();
-    if (user) {
-      user.myInvestments = user.myInvestments.map((inv) => ({
-        ...inv,
-        created: date,
-        updated: date,
-        _id,
-      }));
-      user.transactions = user.transactions.map((transaction) => ({
-        ...transaction,
-        _id,
-        created: date,
-      }));
-    }
     expect(user).toEqual({
       _id: new ObjectId("600000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO37",
       accountAvailable: 5000,
       accountToBePaid: 0,
       accountTotal: 5000,
-      myInvestments: [
-        {
-          ROI: 10,
-          _id,
-          _id_loan: new ObjectId("600000000000000000000003"),
-          amortize: 0,
-          created: date,
-          id_borrower: "wHHR1SUBT0dspoF4YUO38",
-          id_lender: "wHHR1SUBT0dspoF4YUO37",
-          interest_to_earn: 0,
-          moratory: 0,
-          paid_already: 0,
-          payments: 0,
-          quantity: 5000,
-          status: "financing",
-          term: 2,
-          to_be_paid: 0,
-          updated: date,
-        },
-      ],
-      myLoans: [],
-      transactions: [
-        {
-          _id,
-          _id_loan: new ObjectId("600000000000000000000003"),
-          created: date,
-          id_borrower: "wHHR1SUBT0dspoF4YUO38",
-          id_user: "wHHR1SUBT0dspoF4YUO37",
-          quantity: -5000,
-          type: "invest",
-        },
-      ],
     });
     const allTransactions = await transactions
       .find({ id_user: "wHHR1SUBT0dspoF4YUO37" })

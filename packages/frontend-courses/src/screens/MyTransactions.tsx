@@ -64,10 +64,9 @@ const transactionsPaginationFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
-    firstFetch: { type: "Boolean", defaultValue: true }
   )
   @refetchable(queryName: "MyTransactionsPaginationUser") {
-    transactions(first: $count, after: $cursor, firstFetch: $firstFetch)
+    transactions(first: $count, after: $cursor)
       @connection(key: "MyTransactions_user_transactions") {
       edges {
         node {
@@ -119,9 +118,7 @@ export const MyTransactions: FC<Props> = (props) => {
   const connectionTransactionID = ConnectionHandler.getConnectionID(
     user.id,
     "MyTransactions_user_transactions",
-    {
-      firstFetch: true,
-    }
+    {}
   );
 
   const configTransactions = useMemo<

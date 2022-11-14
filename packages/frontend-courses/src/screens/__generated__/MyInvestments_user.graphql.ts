@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d81f6686327522a6d24549a661c9c8c9>>
+ * @generated SignedSource<<2cfa5e9a9f0bd581531d8859c5bec8e6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -53,11 +53,6 @@ return {
       "name": "cursor"
     },
     {
-      "defaultValue": true,
-      "kind": "LocalArgument",
-      "name": "firstFetch"
-    },
-    {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "status"
@@ -94,11 +89,6 @@ return {
     {
       "alias": "investments",
       "args": [
-        {
-          "kind": "Variable",
-          "name": "firstFetch",
-          "variableName": "firstFetch"
-        },
         {
           "kind": "Variable",
           "name": "status",
@@ -199,6 +189,6 @@ return {
 };
 })();
 
-(node as any).hash = "cac940a09f563c80b67f96126e8e1c56";
+(node as any).hash = "81c96034e97c77965d0e4e439487baec";
 
 export default node;

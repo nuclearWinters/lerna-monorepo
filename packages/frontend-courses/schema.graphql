@@ -284,17 +284,12 @@ type User implements Node {
   accountAvailable: MXN!
   accountToBePaid: MXN!
   accountTotal: MXN!
-  myLoans(after: String, first: Int, firstFetch: Boolean): LoanConnection
-  transactions(
-    after: String
-    first: Int
-    firstFetch: Boolean
-  ): TransactionConnection
+  myLoans(after: String, first: Int): LoanConnection
+  transactions(after: String, first: Int): TransactionConnection
   investments(
     after: String
     first: Int
     status: [InvestmentStatus!]
-    firstFetch: Boolean
   ): InvestmentsConnection
 }
 

@@ -45,9 +45,6 @@ export const AuthServer: IAuthServer = {
         accountAvailable: 0,
         id: nanoId,
         accountTotal: 0,
-        transactions: [],
-        myInvestments: [],
-        myLoans: [],
       });
       const payload = new CreateUserPayload();
       payload.setDone("");

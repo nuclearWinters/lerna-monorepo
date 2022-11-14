@@ -65,30 +65,13 @@ export const monthFunction = async (db: Db): Promise<void> => {
           accountAvailable: { $gte: delayedTotal },
         },
         {
-          $set: {
-            [`myLoans.$[item].scheduledPayments.${payment.index}.status`]:
-              "paid",
-            ...(allPaid ? { "myLoans.$[item].status": "paid" } : {}),
-          },
           $inc: {
             accountAvailable: -delayedTotal,
             accountTotal: -delayedTotal,
           },
-          $push: {
-            transactions: {
-              $each: [transactionUpdateOne],
-              $sort: { _id: 1 },
-              $slice: -6,
-            },
-          },
         },
         {
           returnDocument: "after",
-          arrayFilters: [
-            {
-              "item._id": loan._id,
-            },
-          ],
         }
       );
       if (result.value) {
@@ -107,23 +90,6 @@ export const monthFunction = async (db: Db): Promise<void> => {
           }
         );
         if (updatedLoan.modifiedCount) {
-          await users.updateOne(
-            { "myLoans._id": loan._id },
-            {
-              $set: {
-                [`myLoans.$[item].scheduledPayments.${payment.index}.status`]:
-                  "delayed",
-                ...{},
-              },
-            },
-            {
-              arrayFilters: [
-                {
-                  "item._id": loan._id,
-                },
-              ],
-            }
-          );
           publishLoanUpdate(loan);
         }
         //Si el deudor no tiene suficiente dinero el estatus de las inversiones se vuelve atrasada
@@ -140,19 +106,6 @@ export const monthFunction = async (db: Db): Promise<void> => {
             return curr;
           },
           { usersIds: [], investmentIds: [] }
-        );
-        await users.updateMany(
-          { id: { $in: ids.usersIds } },
-          { $set: { "myInvestments.$[item].status": "delay payment" } },
-          {
-            arrayFilters: [
-              {
-                "item._id": {
-                  $in: ids.investmentIds,
-                },
-              },
-            ],
-          }
         );
         await investments.updateMany(
           { _id: { $in: ids.investmentIds } },
@@ -224,32 +177,10 @@ export const monthFunction = async (db: Db): Promise<void> => {
             $inc: {
               accountAvailable: amortize,
               accountToBePaid: -amortize,
-              "myInvestments.$[item].payments": 1,
-            },
-            $push: {
-              transactions: {
-                $each: [newTransaction],
-                $sort: { _id: 1 },
-                $slice: -6,
-              },
-            },
-            $set: {
-              "myInvestments.$[item].to_be_paid": to_be_paid,
-              "myInvestments.$[item].paid_already": paid_already,
-              ...(allPaid
-                ? {
-                    "myInvestments.$[item].status": "paid",
-                  }
-                : {}),
             },
           },
           userOptions: {
             returnDocument: "after",
-            arrayFilters: [
-              {
-                "item._id": investment._id,
-              },
-            ],
           },
           investmentFilter: {
             _id,

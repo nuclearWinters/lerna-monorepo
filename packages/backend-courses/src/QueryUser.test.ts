@@ -41,9 +41,6 @@ describe("QueryUser tests", () => {
         accountAvailable: 50000,
         accountToBePaid: 0,
         accountTotal: 50000,
-        transactions: [],
-        myLoans: [],
-        myInvestments: [],
       },
     ]);
     const response = await request

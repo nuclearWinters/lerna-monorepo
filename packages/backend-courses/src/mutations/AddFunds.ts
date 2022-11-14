@@ -60,13 +60,6 @@ export const AddFundsMutation = mutationWithClientMutationId({
             accountAvailable: quantity,
             accountTotal: quantity,
           },
-          $push: {
-            transactions: {
-              $each: [newTransaction],
-              $sort: { _id: 1 },
-              $slice: -6,
-            },
-          },
         },
         { returnDocument: "after" }
       );

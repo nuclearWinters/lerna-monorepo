@@ -44,9 +44,6 @@ describe("AddLoan tests", () => {
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      transactions: [],
-      myLoans: [],
-      myInvestments: [],
     });
     const response = await request
       .post("/graphql")
@@ -99,38 +96,12 @@ describe("AddLoan tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO20",
     });
-    const _id_loan = new ObjectId("000000000000000000000000");
-    const date_loan = new Date("2001-01-01");
-    if (user) {
-      user.myLoans = user?.myLoans.map((loan) => ({
-        ...loan,
-        _id: _id_loan,
-        expiry: date_loan,
-      }));
-    }
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000006"),
       id: "wHHR1SUBT0dspoF4YUO20",
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      myInvestments: [],
-      myLoans: [
-        {
-          ROI: 17,
-          _id: _id_loan,
-          expiry: date_loan,
-          goal: 100000,
-          id_user: "wHHR1SUBT0dspoF4YUO20",
-          pending: 100000,
-          raised: 0,
-          scheduledPayments: null,
-          score: "AAA",
-          status: "waiting for approval",
-          term: 2,
-        },
-      ],
-      transactions: [],
     });
     const loans = dbInstance.collection<LoanMongo>("loans");
     const allLoans = await loans

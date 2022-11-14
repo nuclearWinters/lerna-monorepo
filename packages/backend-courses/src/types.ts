@@ -1,5 +1,5 @@
 import { Channel } from "amqplib";
-import { ObjectId, Collection, WithId } from "mongodb";
+import { ObjectId, Collection } from "mongodb";
 
 export interface Context {
   users: Collection<UserMongo>;
@@ -22,9 +22,6 @@ export interface UserMongo {
   accountToBePaid: number;
   accountTotal: number;
   id: string;
-  transactions: WithId<TransactionMongo>[];
-  myLoans: WithId<LoanMongo>[];
-  myInvestments: WithId<InvestmentMongo>[];
 }
 
 export interface ILoanEdge {

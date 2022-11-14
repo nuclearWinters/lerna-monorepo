@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fd57891c879fb8876c39dc8c24c714df>>
+ * @generated SignedSource<<ca2e1f48664acdfc8ac5c93e3695d734>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -83,11 +83,6 @@ v6 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
-  },
-  {
-    "kind": "Literal",
-    "name": "firstFetch",
-    "value": true
   }
 ],
 v7 = {
@@ -317,14 +312,12 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": "myLoans(after:\"\",first:5,firstFetch:true)"
+            "storageKey": "myLoans(after:\"\",first:5)"
           },
           {
             "alias": null,
             "args": (v6/*: any*/),
-            "filters": [
-              "firstFetch"
-            ],
+            "filters": null,
             "handle": "connection",
             "key": "MyLoans_user_myLoans",
             "kind": "LinkedHandle",
@@ -353,12 +346,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "0e758a3ee96ccf7a5658c5f52b28f4b9",
+    "cacheID": "45534a3635d1189392253c9f18c8454d",
     "id": null,
     "metadata": {},
     "name": "MyLoansQuery",
     "operationKind": "query",
-    "text": "query MyLoansQuery {\n  user {\n    id\n    ...MyLoans_user\n  }\n  authUser {\n    isLender\n    isSupport\n    isBorrower\n    language\n    accountId\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user on User {\n  myLoans(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyLoansQuery {\n  user {\n    id\n    ...MyLoans_user\n  }\n  authUser {\n    isLender\n    isSupport\n    isBorrower\n    language\n    accountId\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user on User {\n  myLoans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

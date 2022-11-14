@@ -25,9 +25,6 @@ const QueryUser = {
         accountToBePaid: 0,
         id: "",
         accountTotal: 0,
-        transactions: [],
-        myLoans: [],
-        myInvestments: [],
       };
     }
   },

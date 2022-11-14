@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<07d9302cf8d99283a860e34b11ae1876>>
+ * @generated SignedSource<<fa562258905d8d6db42a2eebfd9247d4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,6 @@ export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DU
 export type MyInvestmentsPaginationUser$variables = {
   count?: number | null;
   cursor?: string | null;
-  firstFetch?: boolean | null;
   id: string;
   status?: ReadonlyArray<InvestmentStatus> | null;
 };
@@ -40,52 +39,42 @@ v1 = {
   "name": "cursor"
 },
 v2 = {
-  "defaultValue": true,
-  "kind": "LocalArgument",
-  "name": "firstFetch"
-},
-v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
   "name": "id"
 },
-v4 = {
+v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
   "name": "status"
 },
-v5 = [
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v6 = {
-  "kind": "Variable",
-  "name": "firstFetch",
-  "variableName": "firstFetch"
-},
-v7 = {
+v5 = {
   "kind": "Variable",
   "name": "status",
   "variableName": "status"
 },
-v8 = {
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v9 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v10 = [
+v8 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -96,8 +85,7 @@ v10 = [
     "name": "first",
     "variableName": "count"
   },
-  (v6/*: any*/),
-  (v7/*: any*/)
+  (v5/*: any*/)
 ];
 return {
   "fragment": {
@@ -105,8 +93,7 @@ return {
       (v0/*: any*/),
       (v1/*: any*/),
       (v2/*: any*/),
-      (v3/*: any*/),
-      (v4/*: any*/)
+      (v3/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
@@ -114,7 +101,7 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v5/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -132,8 +119,7 @@ return {
                 "name": "cursor",
                 "variableName": "cursor"
               },
-              (v6/*: any*/),
-              (v7/*: any*/)
+              (v5/*: any*/)
             ],
             "kind": "FragmentSpread",
             "name": "MyInvestments_user"
@@ -150,29 +136,28 @@ return {
     "argumentDefinitions": [
       (v0/*: any*/),
       (v1/*: any*/),
-      (v2/*: any*/),
-      (v4/*: any*/),
-      (v3/*: any*/)
+      (v3/*: any*/),
+      (v2/*: any*/)
     ],
     "kind": "Operation",
     "name": "MyInvestmentsPaginationUser",
     "selections": [
       {
         "alias": null,
-        "args": (v5/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v8/*: any*/),
-          (v9/*: any*/),
+          (v6/*: any*/),
+          (v7/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v10/*: any*/),
+                "args": (v8/*: any*/),
                 "concreteType": "InvestmentsConnection",
                 "kind": "LinkedField",
                 "name": "investments",
@@ -194,7 +179,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v9/*: any*/),
+                          (v7/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -286,7 +271,7 @@ return {
                             "name": "to_be_paid",
                             "storageKey": null
                           },
-                          (v8/*: any*/)
+                          (v6/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -330,10 +315,9 @@ return {
               },
               {
                 "alias": null,
-                "args": (v10/*: any*/),
+                "args": (v8/*: any*/),
                 "filters": [
-                  "status",
-                  "firstFetch"
+                  "status"
                 ],
                 "handle": "connection",
                 "key": "MyInvestments_user_investments",
@@ -362,16 +346,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "5b24635a871092af185a5ced2935d982",
+    "cacheID": "1636a7665361a8a77a8cac9d66c4bf81",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsPaginationUser",
     "operationKind": "query",
-    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $firstFetch: Boolean = true\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_3XLn7l\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_3XLn7l on User {\n  investments(first: $count, after: $cursor, status: $status, firstFetch: $firstFetch) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_4qXjrI\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_4qXjrI on User {\n  investments(first: $count, after: $cursor, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "cac940a09f563c80b67f96126e8e1c56";
+(node as any).hash = "81c96034e97c77965d0e4e439487baec";
 
 export default node;

@@ -9,7 +9,6 @@ import {
   GraphQLFloat,
   GraphQLInt,
   GraphQLList,
-  GraphQLBoolean,
 } from "graphql";
 import {
   fromGlobalId,
@@ -38,15 +37,6 @@ import { base64, unbase64 } from "./utils";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatus[];
-  firstFetch?: boolean;
-}
-
-interface ArgsTransactions extends ConnectionArguments {
-  firstFetch?: boolean;
-}
-
-interface ArgsLoans extends ConnectionArguments {
-  firstFetch?: boolean;
 }
 
 export const DateScalarType = new GraphQLScalarType({
@@ -415,18 +405,13 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
     },
     myLoans: {
       type: new GraphQLNonNull(LoanConnection),
-      args: {
-        ...forwardConnectionArgs,
-        firstFetch: {
-          type: GraphQLBoolean,
-        },
-      },
+      args: forwardConnectionArgs,
       resolve: async (
-        { myLoans },
+        _root: unknown,
         args: unknown,
         { loans, isBorrower, id, isLender, isSupport }: Context
       ): Promise<Connection<LoanMongo>> => {
-        const { after, first, firstFetch } = args as ArgsLoans;
+        const { after, first } = args as ConnectionArguments;
         try {
           if (isLender || !id) {
             throw new Error("Do not return anything to lenders");
@@ -451,14 +436,11 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           if (isBorrower) {
             query.id_user = id;
           }
-          const result =
-            firstFetch && !after && isBorrower
-              ? myLoans.reverse()
-              : await loans
-                  .find(query)
-                  .limit(limit)
-                  .sort({ $natural: -1 })
-                  .toArray();
+          const result = await loans
+            .find(query)
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray();
           const edgesMapped = result.map((loan) => {
             return {
               cursor: base64(loan._id.toHexString()),
@@ -486,17 +468,14 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
         status: {
           type: new GraphQLList(new GraphQLNonNull(InvestmentStatus)),
         },
-        firstFetch: {
-          type: GraphQLBoolean,
-        },
         ...forwardConnectionArgs,
       },
       resolve: async (
-        { myInvestments },
+        _root: unknown,
         args: unknown,
         { investments, id }: Context
       ): Promise<Connection<InvestmentMongo>> => {
-        const { status, first, after, firstFetch } = args as ArgsInvestments;
+        const { status, first, after } = args as ArgsInvestments;
         try {
           if (!id) {
             throw new Error("Do not return anything to not registered user");
@@ -515,14 +494,11 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           if (status) {
             query.status = { $in: status };
           }
-          const result =
-            firstFetch && !after && !status
-              ? myInvestments.reverse()
-              : await investments
-                  .find(query)
-                  .limit(limit)
-                  .sort({ $natural: -1 })
-                  .toArray();
+          const result = await investments
+            .find(query)
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray();
           const edgesMapped = result.map((investment) => {
             return {
               cursor: base64(investment._id.toHexString()),
@@ -546,18 +522,13 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
     },
     transactions: {
       type: new GraphQLNonNull(TransactionConnection),
-      args: {
-        ...forwardConnectionArgs,
-        firstFetch: {
-          type: GraphQLBoolean,
-        },
-      },
+      args: forwardConnectionArgs,
       resolve: async (
-        { transactions: transactionsUser },
+        _root: unknown,
         args: unknown,
         { transactions, id }: Context
       ): Promise<Connection<TransactionMongo>> => {
-        const { first, after, firstFetch } = args as ArgsTransactions;
+        const { first, after } = args as ConnectionArguments;
         try {
           if (!id) {
             throw new Error("Do not return anything to not registered user");
@@ -573,14 +544,11 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
           if (transaction_id) {
             query._id = { $lt: new ObjectId(transaction_id) };
           }
-          const result =
-            firstFetch && !after
-              ? transactionsUser.reverse()
-              : await transactions
-                  .find(query)
-                  .limit(limit)
-                  .sort({ $natural: -1 })
-                  .toArray();
+          const result = await transactions
+            .find(query)
+            .limit(limit)
+            .sort({ $natural: -1 })
+            .toArray();
           const edgesMapped = result.map((transaction) => {
             return {
               cursor: base64(transaction._id.toHexString()),

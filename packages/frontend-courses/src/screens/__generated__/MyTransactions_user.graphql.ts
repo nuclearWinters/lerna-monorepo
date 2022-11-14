@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3673b310531d0c3907d2591dc7294f19>>
+ * @generated SignedSource<<45e8e309f7c7d5000eca8e856dd44dd2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -55,11 +55,6 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
-    },
-    {
-      "defaultValue": true,
-      "kind": "LocalArgument",
-      "name": "firstFetch"
     }
   ],
   "kind": "Fragment",
@@ -92,13 +87,7 @@ return {
   "selections": [
     {
       "alias": "transactions",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "firstFetch",
-          "variableName": "firstFetch"
-        }
-      ],
+      "args": null,
       "concreteType": "TransactionConnection",
       "kind": "LinkedField",
       "name": "__MyTransactions_user_transactions_connection",
@@ -218,6 +207,6 @@ return {
 };
 })();
 
-(node as any).hash = "448fc0b1bfa7a008d3c4591eb73816b6";
+(node as any).hash = "3167f487899935e3a47f82b92e6c81bd";
 
 export default node;

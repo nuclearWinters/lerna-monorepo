@@ -36,7 +36,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     loan: Input,
-    { loans, id, validAccessToken, users }: Context
+    { loans, id, validAccessToken }: Context
   ): Promise<Payload> => {
     try {
       if (!validAccessToken || !id) {
@@ -57,18 +57,6 @@ export const AddLoanMutation = mutationWithClientMutationId({
         ...loan,
       };
       await loans.insertOne(docLoan);
-      await users.updateOne(
-        { id },
-        {
-          $push: {
-            myLoans: {
-              $each: [docLoan],
-              $sort: { _id: 1 },
-              $slice: -6,
-            },
-          },
-        }
-      );
       publishMyLoanInsert({
         _id: _id_loan,
         id_user: id,

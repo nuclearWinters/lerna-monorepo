@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<28ec4c6a52b30951976936d00ba72223>>
+ * @generated SignedSource<<11aa125dc8f8ec3e64e31f62f0b81aa1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -51,11 +51,6 @@ v2 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
-  },
-  {
-    "kind": "Literal",
-    "name": "firstFetch",
-    "value": true
   }
 ];
 return {
@@ -226,14 +221,12 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": "transactions(after:\"\",first:5,firstFetch:true)"
+            "storageKey": "transactions(after:\"\",first:5)"
           },
           {
             "alias": null,
             "args": (v2/*: any*/),
-            "filters": [
-              "firstFetch"
-            ],
+            "filters": null,
             "handle": "connection",
             "key": "MyTransactions_user_transactions",
             "kind": "LinkedHandle",
@@ -258,12 +251,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3f4f654e2e6552b7577c8499aa6b9951",
+    "cacheID": "365fd1979b97800ffdaa093754239776",
     "id": null,
     "metadata": {},
     "name": "MyTransactionsQuery",
     "operationKind": "query",
-    "text": "query MyTransactionsQuery {\n  user {\n    id\n    ...MyTransactions_user\n  }\n  authUser {\n    language\n    id\n  }\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyTransactionsQuery {\n  user {\n    id\n    ...MyTransactions_user\n  }\n  authUser {\n    language\n    id\n  }\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

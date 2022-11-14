@@ -73,10 +73,9 @@ const myLoansPaginationFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
-    firstFetch: { type: "Boolean", defaultValue: true }
   )
   @refetchable(queryName: "MyLoansPaginationUser") {
-    myLoans(first: $count, after: $cursor, firstFetch: $firstFetch)
+    myLoans(first: $count, after: $cursor)
       @connection(key: "MyLoans_user_myLoans") {
       edges {
         node {
@@ -119,9 +118,7 @@ export const MyLoans: FC<Props> = (props) => {
   const connectionMyLoansID = ConnectionHandler.getConnectionID(
     user.id,
     "MyLoans_user_myLoans",
-    {
-      firstFetch: true,
-    }
+    {}
   );
 
   const configMyLoans = useMemo<

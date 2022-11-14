@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cc688cf9d1bbd7ecee5da4cef127ce9d>>
+ * @generated SignedSource<<01120350ce1efda5b7a4e44cd1c21a9c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -49,11 +49,6 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
-    },
-    {
-      "defaultValue": true,
-      "kind": "LocalArgument",
-      "name": "firstFetch"
     }
   ],
   "kind": "Fragment",
@@ -86,13 +81,7 @@ return {
   "selections": [
     {
       "alias": "myLoans",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "firstFetch",
-          "variableName": "firstFetch"
-        }
-      ],
+      "args": null,
       "concreteType": "LoanConnection",
       "kind": "LinkedField",
       "name": "__MyLoans_user_myLoans_connection",
@@ -175,6 +164,6 @@ return {
 };
 })();
 
-(node as any).hash = "ee1cfc1a513e936b4363d61403a09475";
+(node as any).hash = "0496e983a808c4ec507cad7a71ed3d49";
 
 export default node;

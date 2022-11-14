@@ -48,9 +48,6 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      transactions: [],
-      myLoans: [],
-      myInvestments: [],
     });
     const response = await request
       .post("/graphql")
@@ -100,32 +97,12 @@ describe("AddFunds tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO25",
     });
-    const _id_transaction = new ObjectId("000000000000000000000000");
-    const date_transaction = new Date("2001-01-01");
-    if (user) {
-      user.transactions = user?.transactions.map((tr) => ({
-        ...tr,
-        _id: _id_transaction,
-        created: date_transaction,
-      }));
-    }
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000000"),
       id: "wHHR1SUBT0dspoF4YUO25",
       accountAvailable: 150000,
       accountToBePaid: 0,
       accountTotal: 150000,
-      myInvestments: [],
-      myLoans: [],
-      transactions: [
-        {
-          _id: _id_transaction,
-          created: date_transaction,
-          id_user: "wHHR1SUBT0dspoF4YUO25",
-          quantity: 50000,
-          type: "credit",
-        },
-      ],
     });
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
@@ -155,9 +132,6 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      transactions: [],
-      myLoans: [],
-      myInvestments: [],
     });
     const response = await request
       .post("/graphql")
@@ -209,32 +183,12 @@ describe("AddFunds tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO26",
     });
-    const _id_transaction = new ObjectId("000000000000000000000000");
-    const date_transaction = new Date("2001-01-01");
-    if (user) {
-      user.transactions = user?.transactions.map((tr) => ({
-        ...tr,
-        _id: _id_transaction,
-        created: date_transaction,
-      }));
-    }
     expect(user).toEqual({
       _id: new ObjectId("020000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO26",
       accountAvailable: 50000,
       accountToBePaid: 0,
       accountTotal: 50000,
-      myInvestments: [],
-      myLoans: [],
-      transactions: [
-        {
-          _id: _id_transaction,
-          created: date_transaction,
-          id_user: "wHHR1SUBT0dspoF4YUO26",
-          quantity: -50000,
-          type: "withdrawal",
-        },
-      ],
     });
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
@@ -264,9 +218,6 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      transactions: [],
-      myLoans: [],
-      myInvestments: [],
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
@@ -340,32 +291,12 @@ describe("AddFunds tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO27",
     });
-    const _id_transaction = new ObjectId("000000000000000000000000");
-    const date_transaction = new Date("2001-01-01");
-    if (user) {
-      user.transactions = user?.transactions.map((tr) => ({
-        ...tr,
-        _id: _id_transaction,
-        created: date_transaction,
-      }));
-    }
     expect(user).toEqual({
       _id: new ObjectId("000000000000000000000001"),
       id: "wHHR1SUBT0dspoF4YUO27",
       accountAvailable: 150000,
       accountToBePaid: 0,
       accountTotal: 150000,
-      myInvestments: [],
-      myLoans: [],
-      transactions: [
-        {
-          _id: _id_transaction,
-          created: date_transaction,
-          id_user: "wHHR1SUBT0dspoF4YUO27",
-          quantity: 50000,
-          type: "credit",
-        },
-      ],
     });
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
@@ -395,9 +326,6 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      transactions: [],
-      myLoans: [],
-      myInvestments: [],
     });
     jest
       .spyOn(grpcClient, "renewAccessToken")
@@ -460,9 +388,6 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      myInvestments: [],
-      myLoans: [],
-      transactions: [],
     });
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
@@ -480,9 +405,6 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      transactions: [],
-      myLoans: [],
-      myInvestments: [],
     });
     const response = await request
       .post("/graphql")
@@ -540,9 +462,6 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      myInvestments: [],
-      myLoans: [],
-      transactions: [],
     });
 
     const transactions =
@@ -561,9 +480,6 @@ describe("AddFunds tests", () => {
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      transactions: [],
-      myLoans: [],
-      myInvestments: [],
     });
     const response = await request
       .post("/graphql")
@@ -615,24 +531,12 @@ describe("AddFunds tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO30",
     });
-    const _id_transaction = new ObjectId("000000000000000000000000");
-    const date_transaction = new Date("2001-01-01");
-    if (user) {
-      user.transactions = user?.transactions.map((tr) => ({
-        ...tr,
-        _id: _id_transaction,
-        created: date_transaction,
-      }));
-    }
     expect(user).toEqual({
       _id: new ObjectId("100000000000000000000003"),
       id: "wHHR1SUBT0dspoF4YUO30",
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
-      myInvestments: [],
-      myLoans: [],
-      transactions: [],
     });
 
     const transactions =

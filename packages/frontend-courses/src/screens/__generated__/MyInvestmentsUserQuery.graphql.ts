@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c9defb327f3a23cdcc02a603182b0831>>
+ * @generated SignedSource<<2f9ce9487aa707e04428d3527111cdf7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -40,11 +40,6 @@ v1 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
-  },
-  {
-    "kind": "Literal",
-    "name": "firstFetch",
-    "value": true
   }
 ];
 return {
@@ -252,14 +247,13 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": "investments(after:\"\",first:5,firstFetch:true)"
+            "storageKey": "investments(after:\"\",first:5)"
           },
           {
             "alias": null,
             "args": (v1/*: any*/),
             "filters": [
-              "status",
-              "firstFetch"
+              "status"
             ],
             "handle": "connection",
             "key": "MyInvestments_user_investments",
@@ -284,12 +278,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "670b3c8c6a49199aef42a1c298c78418",
+    "cacheID": "cc4420c98e7368e0a219b2588e8fe6b3",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsUserQuery",
     "operationKind": "query",
-    "text": "query MyInvestmentsUserQuery {\n  user {\n    id\n    ...MyInvestments_user\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 5, after: \"\", firstFetch: true) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsUserQuery {\n  user {\n    id\n    ...MyInvestments_user\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

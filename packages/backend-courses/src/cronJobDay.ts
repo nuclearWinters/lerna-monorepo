@@ -75,30 +75,13 @@ export const dayFunction = async (db: Db): Promise<void> => {
           accountAvailable: { $gte: delayedTotal },
         },
         {
-          $set: {
-            [`myLoans.$[item].scheduledPayments.${delayedPayment.index}.status`]:
-              "paid",
-            ...(allPaid ? { "myLoans.$[item].status": "paid" } : {}),
-          },
           $inc: {
             accountAvailable: -delayedTotal,
             accountTotal: -delayedTotal,
           },
-          $push: {
-            transactions: {
-              $each: [transactionUpdateOne],
-              $sort: { _id: 1 },
-              $slice: -6,
-            },
-          },
         },
         {
           returnDocument: "after",
-          arrayFilters: [
-            {
-              "item._id": loan._id,
-            },
-          ],
         }
       );
       if (result.value) {
@@ -131,16 +114,10 @@ export const dayFunction = async (db: Db): Promise<void> => {
               $inc: {
                 accountToBePaid: moratory,
                 accountTotal: moratory,
-                "myInvestments.$[item].moratory": moratory,
               },
             },
             {
               returnDocument: "after",
-              arrayFilters: [
-                {
-                  "item._id": invest._id,
-                },
-              ],
             }
           );
           if (result.value) {
@@ -215,34 +192,10 @@ export const dayFunction = async (db: Db): Promise<void> => {
             $inc: {
               accountAvailable: amortize + moratory,
               accountToBePaid: -(amortize + moratory),
-              "myInvestments.$[item].payments": 1,
-            },
-            $push: {
-              transactions: {
-                $each: [newTransaction],
-                $sort: { _id: 1 },
-                $slice: -6,
-              },
-            },
-            $set: {
-              "myInvestments.$[item].to_be_paid": to_be_paid,
-              "myInvestments.$[item].paid_already": paid_already,
-              ...(noDelayed || allPaid
-                ? {
-                    "myInvestments.$[item].status": allPaid
-                      ? "paid"
-                      : "up to date",
-                  }
-                : {}),
             },
           },
           userOptions: {
             returnDocument: "after",
-            arrayFilters: [
-              {
-                "item._id": investment._id,
-              },
-            ],
           },
           investmentsFilter: {
             _id,

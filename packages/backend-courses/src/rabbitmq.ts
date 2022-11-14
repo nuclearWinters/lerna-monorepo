@@ -108,15 +108,9 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     update: UpdateFilter<InvestmentMongo>;
     options?: FindOneAndUpdateOptions;
     invest?: WithId<InvestmentMongo>;
-    filterUser: Filter<UserMongo>;
-    updateUser: (
-      upsert: boolean,
-      updatedInvestment: WithId<InvestmentMongo>
-    ) => UpdateFilter<UserMongo>;
-    optionsUser: (
-      upsert: boolean,
-      updatedInvestment: WithId<InvestmentMongo>
-    ) => FindOneAndUpdateOptions;
+    filterUser?: Filter<UserMongo>;
+    updateUser?: () => UpdateFilter<UserMongo>;
+    optionsUser?: () => FindOneAndUpdateOptions;
   }
   const investmentsOperations: InvestmentsOperations[] = [];
   investmentsOperations.push({
@@ -150,40 +144,8 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     filterUser: {
       id,
     },
-    updateUser: (upsert, investment) => ({
-      $push: {
-        transactions: {
-          $each: [transactionOperation[0]],
-          $sort: { _id: 1 },
-          $slice: -6,
-        },
-        ...(upsert
-          ? {
-              myInvestments: {
-                $each: [investment],
-                $sort: { _id: 1 },
-                $slice: -6,
-              },
-            }
-          : {}),
-      },
-      ...(!upsert
-        ? {
-            $inc: { "myInvestments.$[item].quantity": quantity },
-          }
-        : {}),
-    }),
-    optionsUser: (upsert, investment) => ({
+    optionsUser: () => ({
       returnDocument: "after",
-      ...(!upsert
-        ? {
-            arrayFilters: [
-              {
-                "item._id": investment._id,
-              },
-            ],
-          }
-        : {}),
     }),
   });
   const goalArchived = resultLoan.value.raised === resultLoan.value.goal;
@@ -208,47 +170,24 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     quantity: resultLoan.value.goal,
     created: now,
   };
-  //Actualizar a quien pidio dinero prestado
-  const { value } = await users.findOneAndUpdate(
-    { id: resultLoan.value.id_user },
-    {
-      $inc: {
-        "myLoans.$[item].raised": quantity,
-        "myLoans.$[item].pending": -quantity,
-        ...(goalArchived
-          ? {
-              accountAvailable: resultLoan.value.goal,
-              accountTotal: resultLoan.value.goal,
-            }
-          : {}),
-      },
-      ...(goalArchived
-        ? {
-            $push: {
-              transactions: {
-                $each: [creditBorrowerTransaction],
-                $sort: { _id: 1 },
-                $slice: -6,
-              },
-            },
-            $set: {
-              "myLoans.$[item].scheduledPayments": scheduledPayments,
-              "myLoans.$[item].status": "to be paid",
-            },
-          }
-        : {}),
-    },
-    {
-      returnDocument: "after",
-      arrayFilters: [
-        {
-          "item._id": _id_loan,
-        },
-      ],
-    }
-  );
   //Si raised es igual a goal: actualizar inversiones y prestamo
   if (goalArchived) {
+    //Actualizar a quien pidio dinero prestado
+    const { value } = await users.findOneAndUpdate(
+      { id: resultLoan.value.id_user },
+      {
+        $inc: {
+          accountAvailable: resultLoan.value.goal,
+          accountTotal: resultLoan.value.goal,
+        },
+      },
+      {
+        returnDocument: "after",
+      }
+    );
+    if (value) {
+      publishUser(value);
+    }
     //Obtener todas las inversiones del prestamo completado
     const investmentsResults = await investments.find({ _id_loan }).toArray();
     if (investmentsResults.length === 0) {
@@ -305,19 +244,9 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
             accountToBePaid: amortizes,
             accountTotal: amortizes,
           },
-          $set: {
-            "myInvestments.$[item].interest_to_earn": interest_to_earn,
-            "myInvestments.$[item].amortize": amortize,
-            "myInvestments.$[item].to_be_paid": amortizes,
-          },
         }),
         optionsUser: () => ({
           returnDocument: "after",
-          arrayFilters: [
-            {
-              "item._id": inv._id,
-            },
-          ],
         }),
       };
       inv.interest_to_earn = interest_to_earn;
@@ -343,41 +272,10 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
           moratory: 0,
           paid_already: 0,
         };
-        investmentsOperations[0].updateUser = (upsert, investment) => ({
-          ...(!upsert
-            ? {
-                $set: {
-                  "myInvestments.$[item].status": "up to date",
-                  "myInvestments.$[item].interest_to_earn": interest_to_earn,
-                  "myInvestments.$[item].amortize": amortize,
-                  "myInvestments.$[item].to_be_paid": amortizes,
-                },
-              }
-            : {}),
-          $push: {
-            transactions: {
-              $each: [transactionOperation[0]],
-              $sort: { _id: 1 },
-              $slice: -6,
-            },
-            ...(upsert
-              ? {
-                  myInvestments: {
-                    $each: [investment],
-                    $sort: { _id: 1 },
-                    $slice: -6,
-                  },
-                }
-              : {}),
-          },
+        investmentsOperations[0].updateUser = () => ({
           $inc: {
             accountToBePaid: amortizes,
             accountTotal: amortizes,
-            ...(!upsert
-              ? {
-                  "myInvestments.$[item].quantity": quantity,
-                }
-              : {}),
           },
         });
       } else {
@@ -414,13 +312,19 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       if (updatedInvestments.modifiedCount) {
         publishInvestmentUpdate(inv);
       }
-      const updatedUser = await users.findOneAndUpdate(
-        investment.filterUser,
-        investment.updateUser(false, inv),
-        investment.optionsUser(false, inv)
-      );
-      if (updatedUser.value) {
-        publishUser(updatedUser.value);
+      if (
+        investment.filterUser &&
+        investment.updateUser &&
+        investment.optionsUser
+      ) {
+        const updatedUser = await users.findOneAndUpdate(
+          investment.filterUser,
+          investment.updateUser(),
+          investment.optionsUser()
+        );
+        if (updatedUser.value) {
+          publishUser(updatedUser.value);
+        }
       }
     } else if (options) {
       const updatedInvestment = await investments.findOneAndUpdate(
@@ -435,19 +339,22 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
         } else {
           publishInvestmentUpdate(updatedInvestment.value);
         }
-        const updatedUser = await users.findOneAndUpdate(
-          investment.filterUser,
-          investment.updateUser(upsert, updatedInvestment.value),
-          investment.optionsUser(upsert, updatedInvestment.value)
-        );
-        if (updatedUser.value) {
-          publishUser(updatedUser.value);
+        if (
+          investment.filterUser &&
+          investment.updateUser &&
+          investment.optionsUser
+        ) {
+          const updatedUser = await users.findOneAndUpdate(
+            investment.filterUser,
+            investment.updateUser(),
+            investment.optionsUser()
+          );
+          if (updatedUser.value) {
+            publishUser(updatedUser.value);
+          }
         }
       }
     }
-  }
-  if (value) {
-    publishUser(value);
   }
   //Insertar transaccion
   await transactions.insertMany(transactionOperation);

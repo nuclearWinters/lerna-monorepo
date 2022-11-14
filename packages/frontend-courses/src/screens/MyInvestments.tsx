@@ -115,15 +115,10 @@ const myInvestmentsPaginationFragment = graphql`
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
     status: { type: "[InvestmentStatus!]", defaultValue: null }
-    firstFetch: { type: "Boolean", defaultValue: true }
   )
   @refetchable(queryName: "MyInvestmentsPaginationUser") {
-    investments(
-      first: $count
-      after: $cursor
-      status: $status
-      firstFetch: $firstFetch
-    ) @connection(key: "MyInvestments_user_investments") {
+    investments(first: $count, after: $cursor, status: $status)
+      @connection(key: "MyInvestments_user_investments") {
       edges {
         node {
           id
@@ -183,7 +178,6 @@ export const MyInvestments: FC<Props> = (props) => {
     "MyInvestments_user_investments",
     {
       status,
-      firstFetch: true,
     }
   );
   const configInvestments = useMemo<
