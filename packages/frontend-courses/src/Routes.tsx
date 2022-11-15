@@ -45,6 +45,16 @@ import { customAccountInfo } from "components/AccountInfo.css";
 import { customRows } from "components/Rows.css";
 import { RoutesUserSubscription } from "__generated__/RoutesUserSubscription.graphql";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
+import {
+  baseRoutes,
+  baseRoutesContent,
+  baseRoutesHeaderLogged,
+  baseRoutesHeaderNotLogged,
+  baseRoutesIcon,
+  baseRoutesIconLogout,
+  baseRoutesLink,
+  customRoutesIconUser,
+} from "Routes.css";
 
 const subscriptionUser = graphql`
   subscription RoutesUserSubscription {
@@ -102,14 +112,7 @@ export const Header: FC<Props> = (props) => {
   return (
     <>
       <CheckExpiration />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          height: "100vh",
-          width: "100vw",
-        }}
-      >
+      <div className={baseRoutes}>
         <Rows>
           {isBorrower ? (
             <>
@@ -125,32 +128,32 @@ export const Header: FC<Props> = (props) => {
                 className={customAccountInfo["available"]}
               />
               <AccountLink
-                icon={<FaFileAlt size={28} />}
+                icon={<FaFileAlt className={baseRoutesIcon} />}
                 title={t("Mi cuenta")}
                 path="/account"
               />
               <AccountLink
-                icon={<FaMoneyCheck size={28} />}
+                icon={<FaMoneyCheck className={baseRoutesIcon} />}
                 title={t("Pedir prestamo")}
                 path="/addLoan"
               />
               <AccountLink
-                icon={<FaFileContract size={28} />}
+                icon={<FaFileContract className={baseRoutesIcon} />}
                 title={t("Mis prestamos")}
                 path="/myLoans"
               />
               <AccountLink
-                icon={<FaFunnelDollar size={28} />}
+                icon={<FaFunnelDollar className={baseRoutesIcon} />}
                 title={t("Agregar fondos")}
                 path="/addFunds"
               />
               <AccountLink
-                icon={<FaHandHolding size={28} />}
+                icon={<FaHandHolding className={baseRoutesIcon} />}
                 title={t("Retirar fondos")}
                 path="/retireFunds"
               />
               <AccountLink
-                icon={<FaUserAlt size={28} />}
+                icon={<FaUserAlt className={baseRoutesIcon} />}
                 title="Settings"
                 path="/settings"
               />
@@ -159,12 +162,12 @@ export const Header: FC<Props> = (props) => {
             <>
               <Icon />
               <AccountLink
-                icon={<FaFileContract size={28} />}
+                icon={<FaFileContract className={baseRoutesIcon} />}
                 title={t("Aprobar prestamo")}
                 path="/approveLoan"
               />
               <AccountLink
-                icon={<FaUserAlt size={28} />}
+                icon={<FaUserAlt className={baseRoutesIcon} />}
                 title="Settings"
                 path="/settings"
               />
@@ -183,37 +186,37 @@ export const Header: FC<Props> = (props) => {
                 className={customAccountInfo["available"]}
               />
               <AccountLink
-                icon={<FaFileAlt size={28} />}
+                icon={<FaFileAlt className={baseRoutesIcon} />}
                 title={t("Mi cuenta")}
                 path="/account"
               />
               <AccountLink
-                icon={<FaCartPlus size={28} />}
+                icon={<FaCartPlus className={baseRoutesIcon} />}
                 title={t("Comprar")}
                 path="/addInvestments"
               />
               <AccountLink
-                icon={<FaFunnelDollar size={28} />}
+                icon={<FaFunnelDollar className={baseRoutesIcon} />}
                 title={t("Agregar fondos")}
                 path="/addFunds"
               />
               <AccountLink
-                icon={<FaHandHolding size={28} />}
+                icon={<FaHandHolding className={baseRoutesIcon} />}
                 title={t("Retirar fondos")}
                 path="/retireFunds"
               />
               <AccountLink
-                icon={<FaFolder size={28} />}
+                icon={<FaFolder className={baseRoutesIcon} />}
                 title={t("Mis inversiones")}
                 path="/myInvestments"
               />
               <AccountLink
-                icon={<FaExchangeAlt size={28} />}
+                icon={<FaExchangeAlt className={baseRoutesIcon} />}
                 title={t("Mis movimientos")}
                 path="/myTransactions"
               />
               <AccountLink
-                icon={<FaUserAlt size={28} />}
+                icon={<FaUserAlt className={baseRoutesIcon} />}
                 title={t("Configuración")}
                 path="/settings"
               />
@@ -222,51 +225,18 @@ export const Header: FC<Props> = (props) => {
         </Rows>
         <Rows className={customRows["flex1"]}>
           {isLogged ? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-end",
-              }}
-            >
-              <FaUserCircle
-                size={28}
-                color={"rgba(255,90,96,0.5)"}
-                style={{ margin: "12px 0px 12px 0px" }}
-              />
-              <Link
-                to="/settings"
-                style={{
-                  textAlign: "end",
-                  textDecoration: "none",
-                  color: "black",
-                  marginLeft: 10,
-                }}
-              >
+            <div className={baseRoutesHeaderLogged}>
+              <FaUserCircle className={customRoutesIconUser["logged"]} />
+              <Link to="/settings" className={baseRoutesLink}>
                 {`${authUser.name || ""} ${authUser.apellidoPaterno || ""} ${
                   authUser.apellidoMaterno || ""
                 }`.toUpperCase()}
               </Link>
-              <FaSignOutAlt
-                onClick={logOut}
-                size={28}
-                color={"rgba(62,62,62)"}
-                style={{ margin: "0px 10px", cursor: "pointer" }}
-              />
+              <FaSignOutAlt onClick={logOut} className={baseRoutesIconLogout} />
             </div>
           ) : (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <FaUserCircle
-                color={"rgb(140,140,140)"}
-                size={28}
-                style={{ margin: "12px 0px 12px 0px" }}
-              />
+            <div className={baseRoutesHeaderNotLogged}>
+              <FaUserCircle className={customRoutesIconUser["notLogged"]} />
               <CustomButton
                 text={t("Iniciar sesión")}
                 color="logIn"
@@ -279,7 +249,7 @@ export const Header: FC<Props> = (props) => {
               />
             </div>
           )}
-          <div style={{ flex: 1, display: "flex" }}>{props.children}</div>
+          <div className={baseRoutesContent}>{props.children}</div>
         </Rows>
       </div>
     </>

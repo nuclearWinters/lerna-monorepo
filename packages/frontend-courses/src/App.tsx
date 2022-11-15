@@ -15,6 +15,7 @@ import {
   RouteRenderer,
   RouterProvider,
 } from "yarr";
+import { baseApp } from "App.css";
 
 const { Suspense } = React;
 
@@ -64,15 +65,7 @@ export const App: FC = () => {
     <RelayEnvironmentProvider environment={RelayEnvironment}>
       <Suspense
         fallback={
-          <div
-            style={{
-              height: "100vh",
-              width: "100vw",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+          <div className={baseApp}>
             <Spinner />
           </div>
         }

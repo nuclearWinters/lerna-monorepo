@@ -1,6 +1,6 @@
 import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
-import React, { CSSProperties, FC, useRef, useState } from "react";
+import React, { FC, useRef, useState } from "react";
 import {
   graphql,
   PreloadedQuery,
@@ -25,6 +25,7 @@ import { customColumn } from "components/Column.css";
 import { customRows } from "components/Rows.css";
 import { customSpace } from "components/Space.css";
 import { customWrapperBig } from "components/WrapperBig.css";
+import { baseSettingsForm } from "./Settings.css";
 
 const settingsFragment = graphql`
   query SettingsAuthUserQuery {
@@ -116,7 +117,7 @@ export const Settings: FC<Props> = (props) => {
     <Main>
       <WrapperBig className={customWrapperBig["settings"]}>
         <Title text={t("Datos generales")} />
-        <div style={styles.form}>
+        <div className={baseSettingsForm}>
           <Label label={t("Nombre(s)")} />
           <Input
             placeholder={t("Nombre(s)")}
@@ -291,17 +292,4 @@ export const Settings: FC<Props> = (props) => {
       </WrapperBig>
     </Main>
   );
-};
-
-const styles: Record<"form" | "flex", CSSProperties> = {
-  form: {
-    flex: 1,
-    display: "flex",
-    alignSelf: "center",
-    width: "70%",
-    flexDirection: "column",
-  },
-  flex: {
-    flex: 1,
-  },
 };

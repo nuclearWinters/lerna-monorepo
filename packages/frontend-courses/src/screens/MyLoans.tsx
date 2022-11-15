@@ -164,7 +164,7 @@ export const MyLoans: FC<Props> = (props) => {
         <Table color="primary">
           <Rows className={customRows["flex1"]}>
             <Columns>
-              {isBorrower ? <div style={{ width: 30 }} /> : null}
+              {isBorrower ? <Space className={customSpace["w30"]} /> : null}
               {columns.map((column) => (
                 <TableColumnName key={column.key}>
                   {column.title}

@@ -29,6 +29,15 @@ import { customRows } from "components/Rows.css";
 import { customSpace } from "components/Space.css";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import { MyTransactionsTransactionsSubscription } from "./__generated__/MyTransactionsTransactionsSubscription.graphql";
+import {
+  baseMyTransactionsBar,
+  baseMyTransactionsBox,
+  baseMyTransactionsDate,
+  baseMyTransactionsDescription,
+  baseMyTransactionsIcon,
+  customMyTransactionsQuantity,
+  customMyTransactionsStatus,
+} from "./MyTransactions.css";
 
 const transactionsFragment = graphql`
   query MyTransactionsQuery {
@@ -142,59 +151,40 @@ export const MyTransactions: FC<Props> = (props) => {
             data.transactions.edges.map((edge) => {
               if (edge && edge.node) {
                 const { id_borrower, _id_loan } = edge.node;
-                const color = edge.node.quantity.includes("-")
+                const substraction = edge.node.quantity.includes("-")
                   ? "#CD5C5C"
                   : "#50C878";
                 return (
-                  <div
-                    style={{
-                      display: "flex",
-                      flex: 1,
-                      flexDirection: "row",
-                      borderBottom: "1px solid rgb(203,203,203)",
-                    }}
-                    key={edge.node.id}
-                  >
-                    <div
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                        margin: "12px 0px",
-                      }}
-                    >
-                      <div style={{ fontSize: 18, color }}>
+                  <div className={baseMyTransactionsBox} key={edge.node.id}>
+                    <div className={baseMyTransactionsBar}>
+                      <div
+                        className={
+                          substraction
+                            ? customMyTransactionsStatus["substraction"]
+                            : customMyTransactionsStatus["addition"]
+                        }
+                      >
                         {getStatus(edge.node.type)}
                       </div>
                       {id_borrower && _id_loan ? (
-                        <div
-                          style={{
-                            fontSize: 16,
-                            padding: "4px 0px",
-                          }}
-                        >
+                        <div className={baseMyTransactionsDescription}>
                           {t("Prestado a")}{" "}
                           <FaUserCircle
                             onClick={() => {
                               navigator.clipboard.writeText(id_borrower);
                             }}
-                            size={18}
-                            color={"rgba(255,90,96,0.5)"}
-                            style={{ margin: "0px 4px", cursor: "pointer" }}
+                            className={baseMyTransactionsIcon}
                           />{" "}
                           {t("al fondo")}:{" "}
                           <FaFileContract
                             onClick={() => {
                               navigator.clipboard.writeText(_id_loan);
                             }}
-                            size={18}
-                            color={"rgba(255,90,96,0.5)"}
-                            style={{ margin: "0px 4px", cursor: "pointer" }}
+                            className={baseMyTransactionsIcon}
                           />
                         </div>
                       ) : null}
-                      <div style={{ letterSpacing: 1 }}>
+                      <div className={baseMyTransactionsDate}>
                         {dayjs(edge.node.created)
                           .locale(
                             authUser.language === "DEFAULT"
@@ -209,14 +199,11 @@ export const MyTransactions: FC<Props> = (props) => {
                       </div>
                     </div>
                     <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        color,
-                      }}
+                      className={
+                        substraction
+                          ? customMyTransactionsQuantity["substraction"]
+                          : customMyTransactionsQuantity["addition"]
+                      }
                     >
                       {edge.node.quantity}
                     </div>

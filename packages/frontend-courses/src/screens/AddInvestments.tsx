@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useMemo, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 import {
   ConnectionHandler,
   graphql,
@@ -31,6 +31,10 @@ import { customRows } from "components/Rows.css";
 import { customSpace } from "components/Space.css";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { AddInvestmentsLoansSubscription } from "./__generated__/AddInvestmentsLoansSubscription.graphql";
+import {
+  baseAddInvestmentsTotal,
+  basePrestarWrapper,
+} from "./AddInvestments.css";
 
 const subscriptionLoans = graphql`
   subscription AddInvestmentsLoansSubscription($connections: [ID!]!) {
@@ -215,7 +219,7 @@ export const AddInvestments: FC<Props> = (props) => {
               {isInFlight ? (
                 <Spinner />
               ) : (
-                <div style={styles.prestarWrapper}>
+                <div className={basePrestarWrapper}>
                   <Space className={customSpace["h30"]} />
                   <CustomButton
                     text={t("Prestar")}
@@ -246,11 +250,11 @@ export const AddInvestments: FC<Props> = (props) => {
                       setLends([]);
                     }}
                   />
-                  <div style={{ marginTop: 14, fontWeight: "bold" }}>
+                  <div className={baseAddInvestmentsTotal}>
                     {t("Total")}
                     {`: $${total}`}
                   </div>
-                  <div style={{ marginTop: 14, fontWeight: "bold" }}>
+                  <div className={baseAddInvestmentsTotal}>
                     {t("Inversiones")}: {lends.length}
                   </div>
                   <Space className={customSpace["h30"]} />
@@ -285,16 +289,4 @@ export const AddInvestments: FC<Props> = (props) => {
       </WrapperBig>
     </Main>
   );
-};
-
-const styles: Record<"prestarWrapper", CSSProperties> = {
-  prestarWrapper: {
-    backgroundColor: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "16px",
-    padding: "30px 0px",
-  },
 };
