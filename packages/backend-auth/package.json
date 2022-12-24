@@ -59,7 +59,7 @@
     "**/!(*_pb).{js,ts}": [
       "eslint --cache --fix",
       "prettier --write",
-      "jest --findRelatedTests --bail"
+      "jest --findRelatedTests --bail --passWithNoTests"
     ]
   }
 }
