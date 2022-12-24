@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<11aa125dc8f8ec3e64e31f62f0b81aa1>>
+ * @generated SignedSource<<9af64874da0a8cf5f28e71b0d5371f09>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,9 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
-export type MyTransactionsQuery$variables = {};
+export type MyTransactionsQuery$variables = {
+  identifier?: string | null;
+};
 export type MyTransactionsQuery$data = {
   readonly authUser: {
     readonly language: Languages;
@@ -27,21 +29,33 @@ export type MyTransactionsQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = {
+var v0 = [
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "identifier"
+  }
+],
+v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v1 = {
+v2 = {
+  "kind": "Variable",
+  "name": "identifier",
+  "variableName": "identifier"
+},
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "language",
   "storageKey": null
 },
-v2 = [
+v4 = [
   {
     "kind": "Literal",
     "name": "after",
@@ -51,11 +65,12 @@ v2 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
-  }
+  },
+  (v2/*: any*/)
 ];
 return {
   "fragment": {
-    "argumentDefinitions": [],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "MyTransactionsQuery",
@@ -68,9 +83,11 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
-          (v0/*: any*/),
+          (v1/*: any*/),
           {
-            "args": null,
+            "args": [
+              (v2/*: any*/)
+            ],
             "kind": "FragmentSpread",
             "name": "MyTransactions_user"
           }
@@ -85,7 +102,7 @@ return {
         "name": "authUser",
         "plural": false,
         "selections": [
-          (v1/*: any*/)
+          (v3/*: any*/)
         ],
         "storageKey": null
       }
@@ -95,7 +112,7 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": [],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "MyTransactionsQuery",
     "selections": [
@@ -107,10 +124,10 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
-          (v0/*: any*/),
+          (v1/*: any*/),
           {
             "alias": null,
-            "args": (v2/*: any*/),
+            "args": (v4/*: any*/),
             "concreteType": "TransactionConnection",
             "kind": "LinkedField",
             "name": "transactions",
@@ -132,7 +149,7 @@ return {
                     "name": "node",
                     "plural": false,
                     "selections": [
-                      (v0/*: any*/),
+                      (v1/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -221,12 +238,14 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": "transactions(after:\"\",first:5)"
+            "storageKey": null
           },
           {
             "alias": null,
-            "args": (v2/*: any*/),
-            "filters": null,
+            "args": (v4/*: any*/),
+            "filters": [
+              "identifier"
+            ],
             "handle": "connection",
             "key": "MyTransactions_user_transactions",
             "kind": "LinkedHandle",
@@ -243,24 +262,24 @@ return {
         "name": "authUser",
         "plural": false,
         "selections": [
-          (v1/*: any*/),
-          (v0/*: any*/)
+          (v3/*: any*/),
+          (v1/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "365fd1979b97800ffdaa093754239776",
+    "cacheID": "dc8873aae54cc53cffaa578a7fb058c1",
     "id": null,
     "metadata": {},
     "name": "MyTransactionsQuery",
     "operationKind": "query",
-    "text": "query MyTransactionsQuery {\n  user {\n    id\n    ...MyTransactions_user\n  }\n  authUser {\n    language\n    id\n  }\n}\n\nfragment MyTransactions_user on User {\n  transactions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyTransactionsQuery(\n  $identifier: String\n) {\n  user {\n    id\n    ...MyTransactions_user_2s2ebf\n  }\n  authUser {\n    language\n    id\n  }\n}\n\nfragment MyTransactions_user_2s2ebf on User {\n  transactions(first: 5, after: \"\", identifier: $identifier) {\n    edges {\n      node {\n        id\n        id_user\n        id_borrower\n        _id_loan\n        type\n        quantity\n        created\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ccc5712dba60d5bea650c79079579e70";
+(node as any).hash = "3f85b54fdc474b2ee19b54fb4f7dd595";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2cfa5e9a9f0bd581531d8859c5bec8e6>>
+ * @generated SignedSource<<1e592007e139d213528a10488d2623a3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,6 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
-export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type MyInvestments_user$data = {
   readonly id: string;
@@ -21,7 +20,6 @@ export type MyInvestments_user$data = {
       } | null;
     } | null> | null;
   } | null;
-  readonly statusLocal: ReadonlyArray<InvestmentStatus> | null;
   readonly " $fragmentType": "MyInvestments_user";
 };
 export type MyInvestments_user$key = {
@@ -51,6 +49,11 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "identifier"
     },
     {
       "defaultValue": null,
@@ -89,6 +92,11 @@ return {
     {
       "alias": "investments",
       "args": [
+        {
+          "kind": "Variable",
+          "name": "identifier",
+          "variableName": "identifier"
+        },
         {
           "kind": "Variable",
           "name": "status",
@@ -170,25 +178,13 @@ return {
       ],
       "storageKey": null
     },
-    (v1/*: any*/),
-    {
-      "kind": "ClientExtension",
-      "selections": [
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "statusLocal",
-          "storageKey": null
-        }
-      ]
-    }
+    (v1/*: any*/)
   ],
   "type": "User",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "81c96034e97c77965d0e4e439487baec";
+(node as any).hash = "e9b82e3a7abd0461252ec1ece40f0983";
 
 export default node;

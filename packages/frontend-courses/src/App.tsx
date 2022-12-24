@@ -35,7 +35,6 @@ const AppUserQuery = graphql`
   query AppUserQuery {
     user {
       id
-      statusLocal
       accountAvailable
       accountTotal
       accountId

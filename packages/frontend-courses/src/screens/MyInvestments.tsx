@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useMemo, useState } from "react";
 import {
   graphql,
   usePaginationFragment,
@@ -27,6 +27,8 @@ import { customSpace } from "components/Space.css";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import { MyInvestmentsInvestmentsSubscription } from "./__generated__/MyInvestmentsInvestmentsSubscription.graphql";
 import { MyInvestmentsInvestmentsUpdateSubscription } from "./__generated__/MyInvestmentsInvestmentsUpdateSubscription.graphql";
+import { nanoid } from "nanoid";
+import { InvestmentStatus } from "__generated__/Routes_user.graphql";
 
 const subscriptionInvestments = graphql`
   subscription MyInvestmentsInvestmentsSubscription(
@@ -80,10 +82,10 @@ const subscriptionInvestmentsUpdate = graphql`
 `;
 
 const myInvestmentsFragment = graphql`
-  query MyInvestmentsUserQuery {
+  query MyInvestmentsUserQuery($identifier: String) {
     user {
       id
-      ...MyInvestments_user
+      ...MyInvestments_user @arguments(identifier: $identifier)
     }
   }
 `;
@@ -94,10 +96,15 @@ const myInvestmentsPaginationFragment = graphql`
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
     status: { type: "[InvestmentStatus!]", defaultValue: null }
+    identifier: { type: "String" }
   )
   @refetchable(queryName: "MyInvestmentsPaginationUser") {
-    investments(first: $count, after: $cursor, status: $status)
-      @connection(key: "MyInvestments_user_investments") {
+    investments(
+      first: $count
+      after: $cursor
+      status: $status
+      identifier: $identifier
+    ) @connection(key: "MyInvestments_user_investments") {
       edges {
         node {
           id
@@ -105,18 +112,19 @@ const myInvestmentsPaginationFragment = graphql`
         }
       }
     }
-    statusLocal
   }
 `;
 
 type Props = {
   preloaded: {
+    id?: string;
     query: PreloadedQuery<MyInvestmentsUserQuery, {}>;
   };
 };
 
 export const MyInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const [identifier, setIdentifier] = useState(props.preloaded.id || nanoid());
   const { user } = usePreloadedQuery(
     myInvestmentsFragment,
     props.preloaded.query
@@ -141,22 +149,24 @@ export const MyInvestments: FC<Props> = (props) => {
     { key: "refetch", title: t("Refrescar") },
   ];
 
-  const investmentStatus = !data.statusLocal
-    ? "none"
-    : data.statusLocal.includes("UP_TO_DATE")
-    ? "on_going"
-    : "over";
+  const [investmentStatus, setInvestmentStatus] = useState<
+    "none" | "on_going" | "over"
+  >("none");
 
-  const status = useMemo(() => {
-    const status = data.statusLocal ? data.statusLocal : null;
-    return status;
-  }, [data.statusLocal]);
+  const status: InvestmentStatus[] | null = useMemo(() => {
+    return investmentStatus === "on_going"
+      ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
+      : investmentStatus === "over"
+      ? ["PAID", "PAST_DUE"]
+      : null;
+  }, [investmentStatus]);
 
   const connectionInvestmentID = ConnectionHandler.getConnectionID(
     user.id,
     "MyInvestments_user_investments",
     {
       status,
+      identifier,
     }
   );
   const configInvestments = useMemo<
@@ -192,15 +202,21 @@ export const MyInvestments: FC<Props> = (props) => {
         <Select
           value={investmentStatus}
           onChange={(e) => {
-            const status = e.target.value as "on_going" | "over" | "none";
+            const investmentStatus = e.target.value as
+              | "on_going"
+              | "over"
+              | "none";
+            setInvestmentStatus(investmentStatus);
+            const status: InvestmentStatus[] | null =
+              investmentStatus === "on_going"
+                ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
+                : investmentStatus === "over"
+                ? ["PAID", "PAST_DUE"]
+                : null;
             refetch(
               {
-                status:
-                  status === "on_going"
-                    ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
-                    : status === "over"
-                    ? ["PAID", "PAST_DUE"]
-                    : null,
+                status,
+                identifier,
               },
               { fetchPolicy: "network-only" }
             );
@@ -252,7 +268,18 @@ export const MyInvestments: FC<Props> = (props) => {
           <CustomButton
             text={t("Refrescar lista")}
             color="secondary"
-            onClick={() => refetch({}, { fetchPolicy: "network-only" })}
+            onClick={() => {
+              const newId = nanoid();
+              refetch(
+                { identifier: newId },
+                {
+                  fetchPolicy: "network-only",
+                  onComplete: () => {
+                    setIdentifier(newId);
+                  },
+                }
+              );
+            }}
           />
         </Columns>
         <Space className={customSpace["h20"]} />

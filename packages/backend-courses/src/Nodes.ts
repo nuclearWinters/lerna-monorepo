@@ -468,6 +468,9 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
         status: {
           type: new GraphQLList(new GraphQLNonNull(InvestmentStatus)),
         },
+        identifier: {
+          type: GraphQLString,
+        },
         ...forwardConnectionArgs,
       },
       resolve: async (
@@ -522,7 +525,12 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
     },
     transactions: {
       type: new GraphQLNonNull(TransactionConnection),
-      args: forwardConnectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        identifier: {
+          type: GraphQLString,
+        },
+      },
       resolve: async (
         _root: unknown,
         args: unknown,

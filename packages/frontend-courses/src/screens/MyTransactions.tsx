@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useMemo, useState } from "react";
 import {
   graphql,
   PreloadedQuery,
@@ -38,12 +38,13 @@ import {
   customMyTransactionsQuantity,
   customMyTransactionsStatus,
 } from "./MyTransactions.css";
+import { nanoid } from "nanoid";
 
 const transactionsFragment = graphql`
-  query MyTransactionsQuery {
+  query MyTransactionsQuery($identifier: String) {
     user {
       id
-      ...MyTransactions_user
+      ...MyTransactions_user @arguments(identifier: $identifier)
     }
     authUser {
       language
@@ -73,9 +74,10 @@ const transactionsPaginationFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
+    identifier: { type: "String" }
   )
   @refetchable(queryName: "MyTransactionsPaginationUser") {
-    transactions(first: $count, after: $cursor)
+    transactions(first: $count, after: $cursor, identifier: $identifier)
       @connection(key: "MyTransactions_user_transactions") {
       edges {
         node {
@@ -94,12 +96,14 @@ const transactionsPaginationFragment = graphql`
 
 type Props = {
   preloaded: {
+    id?: string;
     query: PreloadedQuery<MyTransactionsQuery, {}>;
   };
 };
 
 export const MyTransactions: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const [identifier, setIdentifier] = useState(props.preloaded.id || nanoid());
   const { user, authUser } = usePreloadedQuery(
     transactionsFragment,
     props.preloaded.query
@@ -127,7 +131,7 @@ export const MyTransactions: FC<Props> = (props) => {
   const connectionTransactionID = ConnectionHandler.getConnectionID(
     user.id,
     "MyTransactions_user_transactions",
-    {}
+    { identifier }
   );
 
   const configTransactions = useMemo<
@@ -229,7 +233,18 @@ export const MyTransactions: FC<Props> = (props) => {
           <CustomButton
             text={t("Refrescar lista")}
             color="secondary"
-            onClick={() => refetch({}, { fetchPolicy: "network-only" })}
+            onClick={() => {
+              const newId = nanoid();
+              refetch(
+                { identifier: newId },
+                {
+                  fetchPolicy: "network-only",
+                  onComplete: () => {
+                    setIdentifier(newId);
+                  },
+                }
+              );
+            }}
           />
         </Columns>
         <Space className={customSpace["h20"]} />

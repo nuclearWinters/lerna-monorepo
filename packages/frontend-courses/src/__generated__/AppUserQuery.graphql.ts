@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9eb74287606593952b317c3e8ee99c26>>
+ * @generated SignedSource<<2d76ffe6051960843d0d2d3096156424>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,6 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 export type AppUserQuery$variables = {};
 export type AppUserQuery$data = {
@@ -27,7 +26,6 @@ export type AppUserQuery$data = {
     readonly accountId: string;
     readonly accountTotal: string;
     readonly id: string;
-    readonly statusLocal: ReadonlyArray<InvestmentStatus> | null;
   };
 };
 export type AppUserQuery = {
@@ -73,18 +71,6 @@ v1 = [
         "kind": "ScalarField",
         "name": "accountId",
         "storageKey": null
-      },
-      {
-        "kind": "ClientExtension",
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "statusLocal",
-            "storageKey": null
-          }
-        ]
       }
     ],
     "storageKey": null
@@ -172,6 +158,6 @@ return {
 };
 })();
 
-(node as any).hash = "d9dc807443b4d226cc116e4e59d34fb4";
+(node as any).hash = "1fb195b0609e053f1035276d17e57837";
 
 export default node;

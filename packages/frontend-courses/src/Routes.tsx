@@ -57,6 +57,7 @@ import {
   customRoutesIconUser,
 } from "Routes.css";
 import { RoutesLogOutMutation } from "__generated__/RoutesLogOutMutation.graphql";
+import { nanoid } from "nanoid";
 
 const subscriptionUser = graphql`
   subscription RoutesUserSubscription {
@@ -282,7 +283,11 @@ export const Header: FC<Props> = (props) => {
 export type IRouteConfig = RouteConfig<
   string,
   string,
-  { params: {}; search: {}; preloaded: { query: PreloadedQuery<any> } }
+  {
+    params: {};
+    search: {};
+    preloaded: { query: PreloadedQuery<any>; id?: string };
+  }
 >[];
 
 export const routes: IRouteConfig = [
@@ -342,9 +347,20 @@ export const routes: IRouteConfig = [
       return module.MyInvestments;
     },
     path: "/myInvestments",
-    preload: () => ({
-      query: loadQuery(RelayEnvironment, MyInvestmentsUserQuery, {}),
-    }),
+    preload: () => {
+      const id = nanoid();
+      return {
+        id,
+        query: loadQuery(
+          RelayEnvironment,
+          MyInvestmentsUserQuery,
+          {
+            identifier: id,
+          },
+          { fetchPolicy: "network-only" }
+        ),
+      };
+    },
     redirectRules: () => {
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
@@ -362,14 +378,18 @@ export const routes: IRouteConfig = [
       return module.MyTransactions;
     },
     path: "/myTransactions",
-    preload: () => ({
-      query: loadQuery(
-        RelayEnvironment,
-        MyTransactionsQuery,
-        {},
-        { fetchPolicy: "network-only" }
-      ),
-    }),
+    preload: () => {
+      const id = nanoid();
+      return {
+        id,
+        query: loadQuery(
+          RelayEnvironment,
+          MyTransactionsQuery,
+          { identifier: id },
+          { fetchPolicy: "network-only" }
+        ),
+      };
+    },
     redirectRules: () => {
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);

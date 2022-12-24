@@ -287,11 +287,16 @@ type User implements Node {
   accountToBePaid: MXN!
   accountTotal: MXN!
   myLoans(after: String, first: Int): LoanConnection
-  transactions(after: String, first: Int): TransactionConnection
+  transactions(
+    after: String
+    first: Int
+    identifier: String
+  ): TransactionConnection
   investments(
     after: String
     first: Int
     status: [InvestmentStatus!]
+    identifier: String
   ): InvestmentsConnection
 }
 
@@ -314,7 +319,3 @@ type AuthUser {
 
 scalar Date
 scalar MXN
-
-extend type User {
-  statusLocal: [InvestmentStatus!]
-}
