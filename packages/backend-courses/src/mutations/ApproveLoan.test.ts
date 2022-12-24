@@ -75,7 +75,6 @@ describe("ApproveLoan tests", () => {
         query: `mutation ApproveLoanMutation($input: ApproveLoanInput!) {
           approveLoan(input: $input) {
             error
-            validAccessToken
             loan {
               id
             }
@@ -118,7 +117,6 @@ describe("ApproveLoan tests", () => {
         )}`
       );
     expect(response.body.data.approveLoan.error).toBeFalsy();
-    expect(response.body.data.approveLoan.validAccessToken).toBeTruthy();
     expect(response.body.data.approveLoan.loan).toBeTruthy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO22",

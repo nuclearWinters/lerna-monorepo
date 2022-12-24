@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { createContext, FC, useState } from "react";
 import {
   graphql,
   RelayEnvironmentProvider,
@@ -8,7 +8,6 @@ import { RelayEnvironment } from "./RelayEnvironment";
 import { AppUserQuery as AppUserQueryType } from "./__generated__/AppUserQuery.graphql";
 import { Header, routes } from "./Routes";
 import { Spinner } from "components/Spinner";
-import { Dayjs } from "dayjs";
 import {
   createBrowserRouter,
   RouteConfig,
@@ -16,17 +15,20 @@ import {
   RouterProvider,
 } from "yarr";
 import { baseApp } from "App.css";
+import { Languages } from "__generated__/Routes_query.graphql";
 
 const { Suspense } = React;
 
 export const tokensAndData: {
   refetchUser: () => void;
   accessToken: string;
-  exp?: Dayjs;
+  exp?: number;
+  logOut: (callback?: () => void) => void;
 } = {
   accessToken: "",
   exp: undefined,
   refetchUser: () => {},
+  logOut: () => {},
 };
 
 const AppUserQuery = graphql`
@@ -60,22 +62,29 @@ const router = createBrowserRouter<RouteConfig<string, string, any>[]>({
   routes,
 });
 
+export const LanguageContext = createContext<
+  [Languages, React.Dispatch<React.SetStateAction<Languages>>]
+>(["EN", () => {}]);
+
 export const App: FC = () => {
+  const [language, setLanguage] = useState<Languages>("EN");
   return (
-    <RelayEnvironmentProvider environment={RelayEnvironment}>
-      <Suspense
-        fallback={
-          <div className={baseApp}>
-            <Spinner />
-          </div>
-        }
-      >
-        <RouterProvider router={router}>
-          <RouteRenderer
-            routeWrapper={({ Route }) => <Header>{Route}</Header>}
-          />
-        </RouterProvider>
-      </Suspense>
-    </RelayEnvironmentProvider>
+    <LanguageContext.Provider value={[language, setLanguage]}>
+      <RelayEnvironmentProvider environment={RelayEnvironment}>
+        <Suspense
+          fallback={
+            <div className={baseApp}>
+              <Spinner />
+            </div>
+          }
+        >
+          <RouterProvider router={router}>
+            <RouteRenderer
+              routeWrapper={({ Route }) => <Header>{Route}</Header>}
+            />
+          </RouterProvider>
+        </Suspense>
+      </RelayEnvironmentProvider>
+    </LanguageContext.Provider>
   );
 };

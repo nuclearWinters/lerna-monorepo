@@ -4,6 +4,7 @@ export interface IContextResult {
   accessToken: string;
   cookies?: string;
   refreshToken: string;
+  accessTokenHeader?: string;
 }
 
 export const getContext = (ctx: unknown): IContextResult => {
@@ -20,5 +21,14 @@ export const setCookieContext = (
 ): IContextResult => {
   const ctxTyped = ctx as IContextResult;
   ctxTyped.cookies = cookies;
+  return ctxTyped;
+};
+
+export const setTokenContext = (
+  ctx: unknown,
+  accessTokenHeader: string
+): IContextResult => {
+  const ctxTyped = ctx as IContextResult;
+  ctxTyped.accessTokenHeader = accessTokenHeader;
   return ctxTyped;
 };

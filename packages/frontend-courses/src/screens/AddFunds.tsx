@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
 import { AddFundsMutation } from "./__generated__/AddFundsMutation.graphql";
-import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
@@ -11,7 +10,7 @@ import { FormSmall } from "components/FormSmall";
 import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
-import { logOut, useTranslation } from "utils";
+import { useTranslation } from "utils";
 import { customSpace } from "components/Space.css";
 
 export const AddFunds: FC = () => {
@@ -20,7 +19,6 @@ export const AddFunds: FC = () => {
     mutation AddFundsMutation($input: AddFundsInput!) {
       addFunds(input: $input) {
         error
-        validAccessToken
       }
     }
   `);
@@ -66,16 +64,6 @@ export const AddFunds: FC = () => {
                       input: {
                         quantity,
                       },
-                    },
-                    onCompleted: (response) => {
-                      if (response.addFunds.error) {
-                        if (response.addFunds.error === "jwt expired") {
-                          logOut();
-                        }
-                        return window.alert(response.addFunds.error);
-                      }
-                      tokensAndData.accessToken =
-                        response.addFunds.validAccessToken;
                     },
                   });
                 }}

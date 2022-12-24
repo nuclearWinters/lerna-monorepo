@@ -1,3 +1,4 @@
+import { keyframes, style } from "@vanilla-extract/css";
 import { sprinkles } from "sprinkles.css";
 
 export const baseSpinnerBox = sprinkles({
@@ -14,7 +15,18 @@ export const baseSpinner = sprinkles({
   top: "50%",
   transform: "translateX(-50%) translateY(-50%)",
   zIndex: "1",
-  backgroundColor: "forestgreen",
+  color: "forestgreen",
   fontSize: "18px",
-  color: "rgb(203,203,203)",
 });
+
+export const rotate = keyframes({
+  "0%": { transform: "rotate(0deg)" },
+  "100%": { transform: "rotate(360deg)" },
+});
+
+export const baseSpinnerSpin = style([
+  baseSpinner,
+  {
+    animation: `${rotate} 2s ease infinite`,
+  },
+]);

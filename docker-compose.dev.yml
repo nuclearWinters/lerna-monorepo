@@ -2,7 +2,7 @@ version: "3"
 services:
   relay-gateway:
     container_name: relay-gateway
-    image: node:16
+    image: node:18
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/relay-gateway
@@ -15,7 +15,7 @@ services:
       - backend-auth
   backend-courses:
     container_name: backend-courses
-    image: node:16
+    image: node:18
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/backend-courses
@@ -28,7 +28,7 @@ services:
       - rabbitmq
   backend-auth:
     container_name: backend-auth
-    image: node:16
+    image: node:18
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/backend-auth
@@ -42,7 +42,7 @@ services:
       - rabbitmq
   frontend-courses:
     container_name: frontend-courses
-    image: node:16
+    image: node:18
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/frontend-courses

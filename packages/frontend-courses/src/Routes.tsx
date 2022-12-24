@@ -5,6 +5,7 @@ import {
   usePreloadedQuery,
   graphql,
   useSubscription,
+  useMutation,
 } from "react-relay/hooks";
 import { Icon } from "components/Icon";
 import { AccountInfo } from "components/AccountInfo";
@@ -55,6 +56,7 @@ import {
   baseRoutesLink,
   customRoutesIconUser,
 } from "Routes.css";
+import { RoutesLogOutMutation } from "__generated__/RoutesLogOutMutation.graphql";
 
 const subscriptionUser = graphql`
   subscription RoutesUserSubscription {
@@ -81,6 +83,27 @@ export const Header: FC<Props> = (props) => {
     AppUserQuery,
     queryRef || preloadQuery
   );
+  const [commit] = useMutation<RoutesLogOutMutation>(graphql`
+    mutation RoutesLogOutMutation($input: LogOutInput!) {
+      logOut(input: $input) {
+        error
+      }
+    }
+  `);
+  const logOutCallback = useCallback(
+    (callback?: () => void) => {
+      commit({
+        variables: {
+          input: {},
+        },
+        onCompleted: () => {
+          callback && callback();
+        },
+      });
+    },
+    [commit]
+  );
+  tokensAndData.logOut = logOutCallback;
   const refetchUser = useCallback(() => {
     loadQuery({}, { fetchPolicy: "network-only" });
     subscriptionsClient.restart();
@@ -340,7 +363,12 @@ export const routes: IRouteConfig = [
     },
     path: "/myTransactions",
     preload: () => ({
-      query: loadQuery(RelayEnvironment, MyTransactionsQuery, {}),
+      query: loadQuery(
+        RelayEnvironment,
+        MyTransactionsQuery,
+        {},
+        { fetchPolicy: "network-only" }
+      ),
     }),
     redirectRules: () => {
       if (tokensAndData.accessToken) {
@@ -399,7 +427,7 @@ export const routes: IRouteConfig = [
     redirectRules: () => {
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
-        if (!(data?.isSupport || data?.isBorrower)) {
+        if (data?.isSupport || data?.isBorrower) {
           return "/login";
         }
         return null;

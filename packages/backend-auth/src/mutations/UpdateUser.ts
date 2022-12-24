@@ -17,7 +17,6 @@ interface Input {
 }
 
 type Payload = {
-  validAccessToken: string;
   error: string;
   authUser: UserMongo | null;
 };
@@ -42,13 +41,9 @@ export const UpdateUserMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ error }: Payload): string => error,
     },
-    validAccessToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ validAccessToken }: Payload): string => validAccessToken,
-    },
     authUser: {
       type: new GraphQLNonNull(GraphQLAuthUser),
-      resolve: ({ validAccessToken }: Payload): string => validAccessToken,
+      resolve: ({ authUser }: Payload): UserMongo | null => authUser,
     },
   },
   mutateAndGetPayload: async (
@@ -64,7 +59,6 @@ export const UpdateUserMutation = mutationWithClientMutationId({
         throw new Error("No user found.");
       }
       return {
-        validAccessToken,
         error: "",
         authUser: {
           ...user,
@@ -77,7 +71,6 @@ export const UpdateUserMutation = mutationWithClientMutationId({
       };
     } catch (e) {
       return {
-        validAccessToken: "",
         error: e instanceof Error ? e.message : "",
         authUser: null,
       };

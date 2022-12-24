@@ -32,8 +32,8 @@ const options: RedisOptions = {
 };
 
 export const pubsub = new RedisPubSub({
-  publisher: new Redis(options),
-  subscriber: new Redis(options),
+  publisher: new (Redis as any)(options),
+  subscriber: new (Redis as any)(options),
 });
 
 export const LOAN_INSERT = "LOAN_INSERT";

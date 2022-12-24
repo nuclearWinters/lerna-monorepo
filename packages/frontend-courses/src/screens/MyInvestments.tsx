@@ -1,9 +1,7 @@
 import React, { FC, useMemo } from "react";
 import {
-  Environment,
   graphql,
   usePaginationFragment,
-  commitLocalUpdate,
   usePreloadedQuery,
   PreloadedQuery,
   useSubscription,
@@ -21,7 +19,6 @@ import { Rows } from "components/Rows";
 import { TableColumnName } from "components/TableColumnName";
 import { MyInvestmentsPaginationUser } from "./__generated__/MyInvestmentsPaginationUser.graphql";
 import { MyInvestments_user$key } from "./__generated__/MyInvestments_user.graphql";
-import { RelayEnvironment } from "RelayEnvironment";
 import { useTranslation } from "utils";
 import { MyInvestmentsUserQuery } from "./__generated__/MyInvestmentsUserQuery.graphql";
 import { customColumn } from "components/Column.css";
@@ -81,24 +78,6 @@ const subscriptionInvestmentsUpdate = graphql`
     }
   }
 `;
-
-export const commitCommentCreateLocally = (
-  environment: Environment,
-  status: "on_going" | "over" | "none"
-) => {
-  return commitLocalUpdate(environment, (store) => {
-    const root = store.getRoot();
-    const user = root.getLinkedRecord("user");
-    user?.setValue(
-      status === "on_going"
-        ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
-        : status === "over"
-        ? ["PAID", "PAST_DUE"]
-        : null,
-      "statusLocal"
-    );
-  });
-};
 
 const myInvestmentsFragment = graphql`
   query MyInvestmentsUserQuery {
@@ -214,7 +193,6 @@ export const MyInvestments: FC<Props> = (props) => {
           value={investmentStatus}
           onChange={(e) => {
             const status = e.target.value as "on_going" | "over" | "none";
-            commitCommentCreateLocally(RelayEnvironment, status);
             refetch(
               {
                 status:

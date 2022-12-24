@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4aa94191eee969004e606d4f9387efc1>>
+ * @generated SignedSource<<92ab8f0839aaa1935d6849c07737d1d3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,6 @@ export type RetireFundsMutation$variables = {
 export type RetireFundsMutation$data = {
   readonly addFunds: {
     readonly error: string;
-    readonly validAccessToken: string;
   };
 };
 export type RetireFundsMutation = {
@@ -56,13 +55,6 @@ v1 = [
         "kind": "ScalarField",
         "name": "error",
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "validAccessToken",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -86,16 +78,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "c9cf9ad9437d6066c128b952ee3e8617",
+    "cacheID": "29f47c163bbe2cc824eedc8befb30674",
     "id": null,
     "metadata": {},
     "name": "RetireFundsMutation",
     "operationKind": "mutation",
-    "text": "mutation RetireFundsMutation(\n  $input: AddFundsInput!\n) {\n  addFunds(input: $input) {\n    error\n    validAccessToken\n  }\n}\n"
+    "text": "mutation RetireFundsMutation(\n  $input: AddFundsInput!\n) {\n  addFunds(input: $input) {\n    error\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "94db9d4b4b3d89a14ae3dc2cc190b7fe";
+(node as any).hash = "acbbccd284dc6ea659f787c91e05969c";
 
 export default node;

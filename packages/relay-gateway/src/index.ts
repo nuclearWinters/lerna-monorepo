@@ -4,7 +4,12 @@ import { stitchSchemas } from "@graphql-tools/stitch";
 import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
 import { getOperationAST, OperationTypeNode, print } from "graphql";
 import { createClient } from "graphql-ws";
-import { getContext, IContextResult, setCookieContext } from "./utils";
+import {
+  getContext,
+  IContextResult,
+  setCookieContext,
+  setTokenContext,
+} from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import {
   getGraphQLParameters,
@@ -12,7 +17,6 @@ import {
   renderGraphiQL,
   shouldRenderGraphiQL,
 } from "graphql-helix";
-import { fetch } from "cross-undici-fetch";
 import ws, { WebSocketServer, CloseEvent } from "ws";
 
 const httpExecutor = (url: string): AsyncExecutor => {
@@ -34,8 +38,12 @@ const httpExecutor = (url: string): AsyncExecutor => {
       body: JSON.stringify({ query, variables }),
     });
     const cookiesResponse = fetchResult.headers.get("set-cookie");
+    const accessTokenHeader = fetchResult.headers.get("accessToken");
     if (cookiesResponse) {
       setCookieContext(context, cookiesResponse);
+    }
+    if (accessTokenHeader) {
+      setTokenContext(context, accessTokenHeader);
     }
     return fetchResult.json();
   };
@@ -44,13 +52,10 @@ const httpExecutor = (url: string): AsyncExecutor => {
 const executorBoth =
   (url: string, streamUrl: string): AsyncExecutor =>
   async (args) => {
-    // get the operation node of from the document that should be executed
     const operation = getOperationAST(args.document, args.operationName);
-    // subscription operations should be handled by the wsExecutor
     if (operation?.operation === OperationTypeNode.SUBSCRIPTION) {
       return wsExecutor(streamUrl)(args);
     }
-    // all other operations should be handles by the httpExecutor
     return httpExecutor(url)(args);
   };
 
@@ -82,7 +87,7 @@ const wsExecutor = (url: string): AsyncExecutor => {
           },
           {
             next: (data) => {
-              observer.next && observer.next(data as unknown);
+              observer.next && observer.next(data as any);
             },
             error: (err) => {
               if (!observer.error) return;
@@ -95,7 +100,6 @@ const wsExecutor = (url: string): AsyncExecutor => {
                   )
                 );
               } else if (Array.isArray(err)) {
-                // GraphQLError[]
                 observer.error(
                   new Error(err.map(({ message }) => message).join(", "))
                 );
@@ -154,8 +158,13 @@ makeGatewaySchema().then((schema) => {
       });
       if (result.type === "RESPONSE") {
         const cookies = (result.context as IContextResult | undefined)?.cookies;
+        const accessTokenHeader = (result.context as IContextResult | undefined)
+          ?.accessTokenHeader;
         if (cookies) {
           res.setHeader("Set-Cookie", cookies);
+        }
+        if (accessTokenHeader) {
+          res.setHeader("accessToken", accessTokenHeader);
         }
         result.headers.forEach(({ name, value }) => res.setHeader(name, value));
         res.status(result.status);

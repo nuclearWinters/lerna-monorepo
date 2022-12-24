@@ -1,10 +1,9 @@
 import { tokensAndData } from "App";
 import { FC, useEffect, useRef, useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
-import { expireSessionTime, logOut } from "utils";
+import { logOut } from "utils";
 import { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
 import { useIdleTimer } from "react-idle-timer";
-import dayjs from "dayjs";
 
 export const CheckExpiration: FC = () => {
   const [commit] = useMutation<CheckExpirationMutation>(graphql`
@@ -14,16 +13,14 @@ export const CheckExpiration: FC = () => {
       }
     }
   `);
-  const [time, setTime] = useState(dayjs());
-  const difference = tokensAndData.exp
-    ? tokensAndData.exp.diff(time, "seconds")
-    : 0;
+  const [time, setTime] = useState(Math.floor(new Date().getTime() / 1000));
+  const difference = tokensAndData.exp ? tokensAndData.exp - time : 0;
   const { isIdle } = useIdleTimer({
-    timeout: 1000 * 60 * 3,
+    timeout: 1000 * 60 * 5,
   });
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime(dayjs());
+      setTime(Math.floor(new Date().getTime() / 1000));
     }, 1000);
     return () => {
       clearInterval(interval);
@@ -34,7 +31,7 @@ export const CheckExpiration: FC = () => {
     if (difference < 0 && isIdle() && tokensAndData.accessToken) {
       logOut();
     } else if (
-      difference < 100 &&
+      difference < 30 &&
       difference > 0 &&
       !isIdle() &&
       !isFetching.current &&
@@ -46,7 +43,6 @@ export const CheckExpiration: FC = () => {
           input: {},
         },
         onCompleted: () => {
-          tokensAndData.exp = dayjs().add(expireSessionTime, "minutes");
           isFetching.current = false;
         },
       });

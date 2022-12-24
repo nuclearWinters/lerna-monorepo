@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
 import { AddLoanMutation } from "./__generated__/AddLoanMutation.graphql";
-import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import { Label } from "components/Label";
 import { CustomButton } from "components/CustomButton";
@@ -12,7 +11,7 @@ import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Select } from "components/Select";
 import { Space } from "components/Space";
-import { logOut, useTranslation } from "utils";
+import { useTranslation } from "utils";
 import { customSpace } from "components/Space.css";
 
 export const AddLoan: FC = () => {
@@ -21,7 +20,6 @@ export const AddLoan: FC = () => {
     mutation AddLoanMutation($input: AddLoanInput!) {
       addLoan(input: $input) {
         error
-        validAccessToken
       }
     }
   `);
@@ -108,16 +106,6 @@ export const AddLoan: FC = () => {
                       goal: form.goal,
                       term: Number(form.term),
                     },
-                  },
-                  onCompleted: (response) => {
-                    if (response.addLoan.error) {
-                      if (response.addLoan.error === "jwt expired") {
-                        logOut();
-                      }
-                      return window.alert(response.addLoan.error);
-                    }
-                    tokensAndData.accessToken =
-                      response.addLoan.validAccessToken;
                   },
                 });
               }}

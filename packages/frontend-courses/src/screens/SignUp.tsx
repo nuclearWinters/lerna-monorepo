@@ -13,8 +13,7 @@ import { WrapperSmall } from "components/WrapperSmall";
 import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay/hooks";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
-import { expireSessionTime, logOut, useTranslation } from "utils";
-import dayjs from "dayjs";
+import { useTranslation } from "utils";
 import { Decode } from "./LogIn";
 import { useNavigation } from "yarr";
 import decode from "jwt-decode";
@@ -27,7 +26,6 @@ export const SignUp: FC = () => {
     mutation SignUpMutation($input: SignUpInput!) {
       signUp(input: $input) {
         error
-        accessToken
       }
     }
   `);
@@ -50,6 +48,7 @@ export const SignUp: FC = () => {
         <FormSmall>
           <Label label={t("Email")} />
           <Input
+            type="email"
             name="email"
             placeholder={t("Email")}
             value={email}
@@ -57,6 +56,7 @@ export const SignUp: FC = () => {
           />
           <Label label={t("Password")} />
           <Input
+            type="password"
             name="password"
             placeholder={t("Password")}
             value={password}
@@ -85,6 +85,7 @@ export const SignUp: FC = () => {
             <>
               <CustomButton
                 text={t("Crear cuenta")}
+                type="submit"
                 onClick={() => {
                   commit({
                     variables: {
@@ -97,20 +98,9 @@ export const SignUp: FC = () => {
                           : "EN",
                       },
                     },
-                    onCompleted: (response) => {
-                      if (response.signUp.error) {
-                        if (response.signUp.error === "jwt expired") {
-                          logOut();
-                        }
-                        return window.alert(response.signUp.error);
-                      }
-                      tokensAndData.accessToken = response.signUp.accessToken;
-                      tokensAndData.exp = dayjs().add(
-                        expireSessionTime,
-                        "minutes"
-                      );
+                    onCompleted: () => {
                       tokensAndData.refetchUser();
-                      const data = decode<Decode>(response.signUp.accessToken);
+                      const data = decode<Decode>(tokensAndData.accessToken);
                       if (data.isBorrower) {
                         navigate.push("/myLoans");
                       } else if (data.isSupport) {

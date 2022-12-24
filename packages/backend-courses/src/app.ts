@@ -93,7 +93,7 @@ app.use("/graphql", async (req, res) => {
     res.send(renderGraphiQL());
   } else {
     const { operationName, query, variables } = getGraphQLParameters(request);
-    const context = await getContext(req);
+    const context = await getContext(req, res);
     const result = await processRequest({
       operationName,
       query,

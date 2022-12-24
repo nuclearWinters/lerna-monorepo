@@ -141,6 +141,15 @@ export const MyTransactions: FC<Props> = (props) => {
   );
   useSubscription<MyTransactionsTransactionsSubscription>(configTransactions);
 
+  const language =
+    authUser.language === "DEFAULT"
+      ? navigator.language.includes("es")
+        ? "ES"
+        : "EN"
+      : authUser.language === "ES"
+      ? "ES"
+      : "EN";
+
   return (
     <Main>
       <WrapperSmall>
@@ -186,16 +195,12 @@ export const MyTransactions: FC<Props> = (props) => {
                       ) : null}
                       <div className={baseMyTransactionsDate}>
                         {dayjs(edge.node.created)
-                          .locale(
-                            authUser.language === "DEFAULT"
-                              ? navigator.language.includes("es")
-                                ? es
-                                : en
-                              : authUser.language === "ES"
-                              ? es
-                              : en
-                          )
-                          .format("d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss")}
+                          .locale(language === "ES" ? es : en)
+                          .format(
+                            authUser.language === "ES"
+                              ? "D [de] MMMM [del] YYYY [a las] h:mm a"
+                              : "D MMMM[,] YYYY [at] h:mm a"
+                          )}
                       </div>
                     </div>
                     <div
@@ -224,15 +229,7 @@ export const MyTransactions: FC<Props> = (props) => {
           <CustomButton
             text={t("Refrescar lista")}
             color="secondary"
-            onClick={() =>
-              refetch(
-                {
-                  count: 2,
-                  cursor: "",
-                },
-                { fetchPolicy: "network-only" }
-              )
-            }
+            onClick={() => refetch({}, { fetchPolicy: "network-only" })}
           />
         </Columns>
         <Space className={customSpace["h20"]} />

@@ -69,6 +69,7 @@ describe("ExtendSessionMutation tests", () => {
             isBorrower: false,
             isLender: true,
             isSupport: false,
+            refreshTokenExpireTime: 0,
           },
           "REFRESHSECRET",
           { expiresIn: "15m" }
@@ -82,6 +83,7 @@ describe("ExtendSessionMutation tests", () => {
             isBorrower: false,
             isLender: true,
             isSupport: false,
+            refreshTokenExpireTime: 0,
           },
           "ACCESSSECRET",
           { expiresIn: "3m" }

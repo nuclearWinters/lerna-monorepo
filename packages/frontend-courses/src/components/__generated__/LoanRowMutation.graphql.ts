@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<88c6a60370e58be2b9c480c739c5cea1>>
+ * @generated SignedSource<<0089c57a87d106a3100a82e021e93b95>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -24,7 +24,6 @@ export type LoanRowMutation$data = {
       readonly id: string;
       readonly status: LoanStatus;
     } | null;
-    readonly validAccessToken: string;
   };
 };
 export type LoanRowMutation = {
@@ -60,13 +59,6 @@ v1 = [
         "args": null,
         "kind": "ScalarField",
         "name": "error",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "validAccessToken",
         "storageKey": null
       },
       {
@@ -116,16 +108,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "acbd1401be5a5550bb912f536b34d47b",
+    "cacheID": "6e5ef895faf8652d89ec6f5667e1a505",
     "id": null,
     "metadata": {},
     "name": "LoanRowMutation",
     "operationKind": "mutation",
-    "text": "mutation LoanRowMutation(\n  $input: ApproveLoanInput!\n) {\n  approveLoan(input: $input) {\n    error\n    validAccessToken\n    loan {\n      id\n      status\n    }\n  }\n}\n"
+    "text": "mutation LoanRowMutation(\n  $input: ApproveLoanInput!\n) {\n  approveLoan(input: $input) {\n    error\n    loan {\n      id\n      status\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "52597eb7141c6fbeada50a4e67f6a6ed";
+(node as any).hash = "15e8c9fc1464ad304c9bcd7248aeb348";
 
 export default node;

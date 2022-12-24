@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7a5b74f7eeab154f118fbda9b596f926>>
+ * @generated SignedSource<<0f3151f635c98ac25f5a90f16db99931>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -29,7 +29,6 @@ export type SettingsMutation$variables = {
 export type SettingsMutation$data = {
   readonly updateUser: {
     readonly error: string;
-    readonly validAccessToken: string;
   };
 };
 export type SettingsMutation = {
@@ -66,13 +65,6 @@ v1 = [
         "kind": "ScalarField",
         "name": "error",
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "validAccessToken",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -96,16 +88,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "2f59602b39989d38c8915828d03ed896",
+    "cacheID": "c86a74eef0f0dcb0e098328bbfe7f9d5",
     "id": null,
     "metadata": {},
     "name": "SettingsMutation",
     "operationKind": "mutation",
-    "text": "mutation SettingsMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n    validAccessToken\n  }\n}\n"
+    "text": "mutation SettingsMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e8a6824be5ad701e4f26e139156c3567";
+(node as any).hash = "584c5301466a7a63d7f26505ab173137";
 
 export default node;

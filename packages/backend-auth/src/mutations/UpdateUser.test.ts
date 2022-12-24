@@ -49,7 +49,6 @@ describe("UpdateUser tests", () => {
         query: `mutation UpdateUserMutation($input: UpdateUserInput!) {
           updateUser(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -76,6 +75,7 @@ describe("UpdateUser tests", () => {
             isBorrower: false,
             isLender: true,
             isSupport: false,
+            refreshTokenExpireTime: 0,
           },
           "REFRESHSECRET",
           { expiresIn: "15m" }
@@ -89,13 +89,13 @@ describe("UpdateUser tests", () => {
             isBorrower: false,
             isLender: true,
             isSupport: false,
+            refreshTokenExpireTime: 0,
           },
           "ACCESSSECRET",
           { expiresIn: "3m" }
         )
       );
     expect(response.body.data.updateUser.error).toBeFalsy();
-    expect(response.body.data.updateUser.validAccessToken).toBeTruthy();
     const user = await users.findOne({
       _id: new ObjectId("000000000000000000000007"),
     });

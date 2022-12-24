@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<31dcf496e9d72893af9ed3a3df76cdf2>>
+ * @generated SignedSource<<647d809680a2dd6f0b1859ab94571b3e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,7 +22,6 @@ export type SignUpMutation$variables = {
 };
 export type SignUpMutation$data = {
   readonly signUp: {
-    readonly accessToken: string;
     readonly error: string;
   };
 };
@@ -60,13 +59,6 @@ v1 = [
         "kind": "ScalarField",
         "name": "error",
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "accessToken",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -90,16 +82,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "c038cae93e0906e9f30c33caca7fee1c",
+    "cacheID": "0780cb2c2df8b07a96bc5e98037d56fa",
     "id": null,
     "metadata": {},
     "name": "SignUpMutation",
     "operationKind": "mutation",
-    "text": "mutation SignUpMutation(\n  $input: SignUpInput!\n) {\n  signUp(input: $input) {\n    error\n    accessToken\n  }\n}\n"
+    "text": "mutation SignUpMutation(\n  $input: SignUpInput!\n) {\n  signUp(input: $input) {\n    error\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0dea7eab86f740ea1a4ae131f0b770fc";
+(node as any).hash = "30bd129965416672bff3baea64f7707e";
 
 export default node;

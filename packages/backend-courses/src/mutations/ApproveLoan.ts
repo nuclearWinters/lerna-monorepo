@@ -13,7 +13,6 @@ interface Input {
 }
 
 type Payload = {
-  validAccessToken: string;
   error: string;
   loan: LoanMongo | null;
 };
@@ -28,10 +27,6 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
     error: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ error }: Payload): string => error,
-    },
-    validAccessToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ validAccessToken }: Payload): string => validAccessToken,
     },
     loan: {
       type: GraphQLLoan,
@@ -57,10 +52,9 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
       }
       publishLoanUpdate(loan);
       publishLoanInsert(loan);
-      return { validAccessToken, error: "", loan };
+      return { error: "", loan };
     } catch (e) {
       return {
-        validAccessToken: "",
         error: e instanceof Error ? e.message : "",
         loan: null,
       };

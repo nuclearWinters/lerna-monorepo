@@ -13,7 +13,6 @@ interface Input {
 }
 
 type Payload = {
-  validAccessToken: string;
   error: string;
 };
 
@@ -28,10 +27,6 @@ export const AddFundsMutation = mutationWithClientMutationId({
     error: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ error }: Payload): string => error,
-    },
-    validAccessToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ validAccessToken }: Payload): string => validAccessToken,
     },
   },
   mutateAndGetPayload: async (
@@ -71,10 +66,9 @@ export const AddFundsMutation = mutationWithClientMutationId({
       }
       await transactions.insertOne(newTransaction);
       publishTransactionInsert(newTransaction);
-      return { validAccessToken, error: "" };
+      return { error: "" };
     } catch (e) {
       return {
-        validAccessToken: "",
         error: e instanceof Error ? e.message : "",
       };
     }

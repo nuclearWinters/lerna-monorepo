@@ -30,7 +30,6 @@ interface Input {
 }
 
 type Payload = {
-  accessToken: string;
   error: string;
 };
 
@@ -58,10 +57,6 @@ export const SignUpMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ error }: Payload): string => error,
     },
-    accessToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ accessToken }: Payload): string => accessToken,
-    },
   },
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
@@ -88,20 +83,23 @@ export const SignUpMutation = mutationWithClientMutationId({
         mobile: "",
         id,
       });
-      const refreshTokenExpireTime = addMinutes(
-        new Date(),
-        REFRESH_TOKEN_EXP_NUMBER
-      );
+      const now = new Date();
+      const refreshTokenExpireTime = addMinutes(now, REFRESH_TOKEN_EXP_NUMBER);
+      now.setMilliseconds(0);
       refreshTokenExpireTime.setMilliseconds(0);
+      const refreshTokenExpireTimeInt = refreshTokenExpireTime.getTime() / 1000;
+      const nowTime = now.getTime() / 1000;
+      const refreshTokenExpiresIn = refreshTokenExpireTimeInt - nowTime;
       const refreshToken = jwt.sign(
         {
           id,
           isBorrower: !isLender,
           isLender: isLender,
           isSupport: false,
+          refreshTokenExpireTime: refreshTokenExpireTimeInt,
         },
         REFRESHSECRET,
-        { expiresIn: refreshTokenExpireTime.getTime() / 1000 }
+        { expiresIn: refreshTokenExpiresIn }
       );
       const accessToken = jwt.sign(
         {
@@ -109,6 +107,7 @@ export const SignUpMutation = mutationWithClientMutationId({
           isBorrower: !isLender,
           isLender: isLender,
           isSupport: false,
+          refreshTokenExpireTime: refreshTokenExpireTimeInt,
         },
         ACCESSSECRET,
         { expiresIn: ACCESS_TOKEN_EXP_STRING }
@@ -120,6 +119,7 @@ export const SignUpMutation = mutationWithClientMutationId({
         sameSite: "strict",
         //secure: true,
       });
+      res?.setHeader("accessToken", accessToken);
       await createUser(id);
       //const msg = {
       //  to: email,
@@ -129,10 +129,9 @@ export const SignUpMutation = mutationWithClientMutationId({
       //  html: "<strong>and easy to do anywhere, even with Node.js</strong>",
       //};
       //sgMail.send(msg);
-      return { accessToken, error: "" };
+      return { error: "" };
     } catch (e) {
       return {
-        accessToken: "",
         error: e instanceof Error ? e.message : "",
       };
     }

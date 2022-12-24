@@ -51,7 +51,6 @@ describe("SignInMutation tests", () => {
         query: `mutation signInMutation($input: SignInInput!) {
           signIn(input: $input) {
             error
-            accessToken
           }
         }`,
         variables: {
@@ -65,7 +64,6 @@ describe("SignInMutation tests", () => {
       .set("Accept", "application/json");
     expect(response.body.data.signIn.error).toBeFalsy();
     expect(response.headers["set-cookie"]).toBeTruthy();
-    expect(response.body.data.signIn.accessToken).toBeTruthy();
   });
 
   it("SignInMutation: user NOT exists", async () => {
@@ -75,7 +73,6 @@ describe("SignInMutation tests", () => {
         query: `mutation signInMutation($input: SignInInput!) {
           signIn(input: $input) {
             error
-            accessToken
           }
         }`,
         variables: {
@@ -89,7 +86,6 @@ describe("SignInMutation tests", () => {
       .set("Accept", "application/json");
     expect(response.body.data.signIn.error).toBe("El usuario no existe.");
     expect(response.headers["set-cookie"]).toBeFalsy();
-    expect(response.body.data.signIn.accessToken).toBeFalsy();
   });
 
   it("SignInMutation: password is NOT correct", async () => {
@@ -99,7 +95,6 @@ describe("SignInMutation tests", () => {
         query: `mutation signInMutation($input: SignInInput!) {
           signIn(input: $input) {
             error
-            accessToken
           }
         }`,
         variables: {

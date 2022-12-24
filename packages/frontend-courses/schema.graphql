@@ -6,7 +6,6 @@ input SignInInput {
 
 type SignInPayload {
   error: String
-  accessToken: String!
   clientMutationId: String
 }
 
@@ -20,7 +19,6 @@ input SignUpInput {
 
 type SignUpPayload {
   error: String!
-  accessToken: String!
   clientMutationId: String
 }
 
@@ -29,6 +27,15 @@ input BlacklistUserInput {
 }
 
 type BlacklistUserPayload {
+  error: String!
+  clientMutationId: String
+}
+
+input LogOutInput {
+  clientMutationId: String
+}
+
+type LogOutPayload {
   error: String!
   clientMutationId: String
 }
@@ -57,7 +64,6 @@ input UpdateUserInput {
 }
 
 type UpdateUserPayload {
-  validAccessToken: String!
   error: String!
   clientMutationId: String
   authUser: AuthUser!
@@ -78,7 +84,6 @@ input AddLendsInput {
 }
 
 type AddLendsPayload {
-  validAccessToken: String!
   error: String!
   clientMutationId: String
 }
@@ -90,7 +95,6 @@ input AddLoanInput {
 }
 
 type AddLoanPayload {
-  validAccessToken: String!
   error: String!
   clientMutationId: String
 }
@@ -101,7 +105,6 @@ input AddFundsInput {
 }
 
 type AddFundsPayload {
-  validAccessToken: String!
   error: String!
   clientMutationId: String
 }
@@ -112,7 +115,6 @@ input ApproveLoanInput {
 }
 
 type ApproveLoanPayload {
-  validAccessToken: String!
   error: String!
   clientMutationId: String
   loan: Loan
@@ -128,6 +130,7 @@ type Mutation {
   addFunds(input: AddFundsInput!): AddFundsPayload!
   approveLoan(input: ApproveLoanInput!): ApproveLoanPayload!
   extendSession(input: ExtendSessionInput!): ExtendSessionPayload!
+  logOut(input: LogOutInput!): LogOutPayload!
 }
 
 type Query {

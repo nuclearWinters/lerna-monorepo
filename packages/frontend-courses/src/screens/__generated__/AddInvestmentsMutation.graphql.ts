@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f0fe52a9487a2fb29d7580aa8950485a>>
+ * @generated SignedSource<<b3aa3837fcb049f58f7131b961c705b8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -27,7 +27,6 @@ export type AddInvestmentsMutation$variables = {
 export type AddInvestmentsMutation$data = {
   readonly addLends: {
     readonly error: string;
-    readonly validAccessToken: string;
   };
 };
 export type AddInvestmentsMutation = {
@@ -64,13 +63,6 @@ v1 = [
         "kind": "ScalarField",
         "name": "error",
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "validAccessToken",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -94,16 +86,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "9aa08a809975ca556933bb1478d3013e",
+    "cacheID": "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
     "id": null,
     "metadata": {},
     "name": "AddInvestmentsMutation",
     "operationKind": "mutation",
-    "text": "mutation AddInvestmentsMutation(\n  $input: AddLendsInput!\n) {\n  addLends(input: $input) {\n    error\n    validAccessToken\n  }\n}\n"
+    "text": "mutation AddInvestmentsMutation(\n  $input: AddLendsInput!\n) {\n  addLends(input: $input) {\n    error\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4e5cf9b355984b680017055078259249";
+(node as any).hash = "cb835c1d772c479baaed457025935b0c";
 
 export default node;

@@ -12,6 +12,7 @@ export interface Context {
   res: {
     cookie: (name: string, val: string, options: CookieOptions) => void;
     clearCookie: (name: string, options?: CookieOptions | undefined) => void;
+    setHeader: (key: string, value: string) => void;
   };
   validAccessToken?: string;
   id?: string;
@@ -42,4 +43,5 @@ export interface DecodeJWT {
   isSupport: boolean;
   iat: number;
   exp: number;
+  refreshTokenExpireTime: number;
 }

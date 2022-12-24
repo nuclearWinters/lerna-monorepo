@@ -71,6 +71,7 @@ const colorProperties = defineProperties({
       "rgb(140,140,140)",
       "#CD5C5C",
       "#50C878",
+      "forestgreen",
     ],
     padding: [
       "10px 10px",
@@ -131,5 +132,4 @@ const colorProperties = defineProperties({
 
 export const sprinkles = createSprinkles(colorProperties);
 
-// It's a good idea to export the Sprinkles type too
 export type Sprinkles = Parameters<typeof sprinkles>[0];

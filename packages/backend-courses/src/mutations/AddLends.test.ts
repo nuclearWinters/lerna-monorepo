@@ -47,7 +47,6 @@ describe("AddLends tests", () => {
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -104,7 +103,6 @@ describe("AddLends tests", () => {
         )}`
       );
     expect(response.body.data.addLends.error).toBeFalsy();
-    expect(response.body.data.addLends.validAccessToken).toBeTruthy();
     expect(ch.sendToQueue).toBeCalledTimes(2);
     const response2 = await request
       .post("/graphql")
@@ -112,7 +110,6 @@ describe("AddLends tests", () => {
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -169,7 +166,6 @@ describe("AddLends tests", () => {
         )}`
       );
     expect(response2.body.data.addLends.error).toBeFalsy();
-    expect(response2.body.data.addLends.validAccessToken).toBeTruthy();
     expect(ch.sendToQueue).toBeCalledTimes(4);
   });
 
@@ -180,7 +176,6 @@ describe("AddLends tests", () => {
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -227,7 +222,6 @@ describe("AddLends tests", () => {
         )}`
       );
     expect(response.body.data.addLends.error).toBe("");
-    expect(response.body.data.addLends.validAccessToken).toBeTruthy();
     expect(ch.sendToQueue).toBeCalledTimes(5);
   });
 
@@ -238,7 +232,6 @@ describe("AddLends tests", () => {
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -285,7 +278,6 @@ describe("AddLends tests", () => {
         )}`
       );
     expect(response.body.data.addLends.error).toBe("");
-    expect(response.body.data.addLends.validAccessToken).toBeTruthy();
     expect(ch.sendToQueue).toBeCalledTimes(6);
   });
 
@@ -296,7 +288,6 @@ describe("AddLends tests", () => {
         query: `mutation addLendsMutation($input: AddLendsInput!) {
           addLends(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -351,7 +342,6 @@ describe("AddLends tests", () => {
         )}`
       );
     expect(response.body.data.addLends.error).toBeFalsy();
-    expect(response.body.data.addLends.validAccessToken).toBeTruthy();
     expect(ch.sendToQueue).toBeCalledTimes(8);
   });
 });

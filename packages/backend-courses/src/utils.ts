@@ -14,7 +14,7 @@ import {
 } from "./proto/auth_pb";
 import { AuthClient } from "./proto/auth_grpc_pb";
 import { credentials } from "@grpc/grpc-js";
-import { Request } from "express";
+import { Request, Response } from "express";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -40,13 +40,17 @@ export const jwt = {
   },
 };
 
-export const getContext = async (req: Request): Promise<Context> => {
+export const getContext = async (
+  req: Request,
+  res: Response
+): Promise<Context> => {
   const db = req.app.locals.db as Db;
   const ch = req.app.locals.ch;
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies?.refreshToken || "";
   const { id, validAccessToken, isBorrower, isLender, isSupport } =
     await refreshTokenMiddleware(accessToken, refreshToken);
+  res?.setHeader("accessToken", validAccessToken || "");
   return {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
@@ -98,7 +102,7 @@ export const refreshTokenMiddleware = async (
   accessToken: string | undefined,
   refreshToken: string | undefined
 ): Promise<IResolve> => {
-  if (!accessToken || !refreshToken) {
+  if (!refreshToken) {
     return {
       validAccessToken: undefined,
       id: undefined,
@@ -108,6 +112,9 @@ export const refreshTokenMiddleware = async (
     };
   }
   try {
+    if (!accessToken) {
+      throw new Error("jwt expired");
+    }
     const user = jwt.verify(accessToken, ACCESSSECRET);
     if (!user) throw new Error("El token esta corrompido.");
     const { id, isLender, isBorrower, isSupport } = user;

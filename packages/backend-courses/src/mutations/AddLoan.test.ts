@@ -51,7 +51,6 @@ describe("AddLoan tests", () => {
         query: `mutation AddLoanMutation($input: AddLoanInput!) {
           addLoan(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -92,7 +91,6 @@ describe("AddLoan tests", () => {
         )}`
       );
     expect(response.body.data.addLoan.error).toBeFalsy();
-    expect(response.body.data.addLoan.validAccessToken).toBeTruthy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO20",
     });

@@ -55,7 +55,6 @@ describe("AddFunds tests", () => {
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -93,7 +92,6 @@ describe("AddFunds tests", () => {
         )}`
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
-    expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO25",
     });
@@ -139,7 +137,6 @@ describe("AddFunds tests", () => {
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -179,7 +176,6 @@ describe("AddFunds tests", () => {
         )}`
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
-    expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO26",
     });
@@ -249,7 +245,6 @@ describe("AddFunds tests", () => {
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -287,7 +282,6 @@ describe("AddFunds tests", () => {
         )}`
       );
     expect(response.body.data.addFunds.error).toBeFalsy();
-    expect(response.body.data.addFunds.validAccessToken).toBeTruthy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO27",
     });
@@ -352,7 +346,6 @@ describe("AddFunds tests", () => {
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -378,7 +371,6 @@ describe("AddFunds tests", () => {
       )
       .set("Cookie", `refreshToken=invalid`);
     expect(response.body.data.addFunds.error).toBe("No valid access token.");
-    expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO28",
     });
@@ -412,7 +404,6 @@ describe("AddFunds tests", () => {
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -452,7 +443,6 @@ describe("AddFunds tests", () => {
     expect(response.body.data.addFunds.error).toBe(
       "No cuentas con fondos suficientes."
     );
-    expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO29",
     });
@@ -487,7 +477,6 @@ describe("AddFunds tests", () => {
         query: `mutation addFundsMutation($input: AddFundsInput!) {
           addFunds(input: $input) {
             error
-            validAccessToken
           }
         }`,
         variables: {
@@ -527,7 +516,6 @@ describe("AddFunds tests", () => {
     expect(response.body.data.addFunds.error).toBe(
       "La cantidad no puede ser cero."
     );
-    expect(response.body.data.addFunds.validAccessToken).toBeFalsy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO30",
     });

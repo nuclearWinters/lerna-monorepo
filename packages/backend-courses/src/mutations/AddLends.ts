@@ -23,7 +23,6 @@ interface Input {
 }
 
 type Payload = {
-  validAccessToken: string;
   error: string;
 };
 
@@ -67,10 +66,6 @@ export const AddLendsMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ error }: Payload): string => error,
     },
-    validAccessToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ validAccessToken }: Payload): string => validAccessToken,
-    },
   },
   mutateAndGetPayload: async (
     { lends: newLends }: Input,
@@ -102,10 +97,9 @@ export const AddLendsMutation = mutationWithClientMutationId({
       for (const lend of docs) {
         ch.sendToQueue(ADD_LEND, Buffer.from(JSON.stringify(lend)));
       }
-      return { validAccessToken, error: "" };
+      return { error: "" };
     } catch (e) {
       return {
-        validAccessToken: "",
         error: e instanceof Error ? e.message : "",
       };
     }

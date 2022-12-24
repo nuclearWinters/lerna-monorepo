@@ -16,6 +16,7 @@ app.use(
       "https://amigoprogramador.com",
       "https://www.amigoprogramador.com",
     ],
+    exposedHeaders: ["accessToken"],
     credentials: true,
   })
 );

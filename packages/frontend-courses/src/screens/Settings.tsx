@@ -1,4 +1,3 @@
-import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
 import React, { FC, useRef, useState } from "react";
 import {
@@ -20,7 +19,7 @@ import { Space } from "components/Space";
 import { Rows } from "components/Rows";
 import { Columns } from "components/Colums";
 import { Select } from "components/Select";
-import { logOut, useTranslation } from "utils";
+import { useTranslation } from "utils";
 import { customColumn } from "components/Column.css";
 import { customRows } from "components/Rows.css";
 import { customSpace } from "components/Space.css";
@@ -65,7 +64,6 @@ export const Settings: FC<Props> = (props) => {
     mutation SettingsMutation($input: UpdateUserInput!) {
       updateUser(input: $input) {
         error
-        validAccessToken
       }
     }
   `);
@@ -220,16 +218,6 @@ export const Settings: FC<Props> = (props) => {
                         language: formUser.language,
                       },
                     },
-                    onCompleted: (response) => {
-                      if (response.updateUser.error) {
-                        if (response.updateUser.error === "jwt expired") {
-                          logOut();
-                        }
-                        return window.alert(response.updateUser.error);
-                      }
-                      tokensAndData.accessToken =
-                        response.updateUser.validAccessToken;
-                    },
                   });
                 }}
               />
@@ -269,17 +257,6 @@ export const Settings: FC<Props> = (props) => {
                     commitBlacklist({
                       variables: {
                         input: {},
-                      },
-                      onCompleted: (response) => {
-                        if (response.blacklistUser.error) {
-                          if (response.blacklistUser.error === "jwt expired") {
-                            logOut();
-                          }
-                          return window.alert(response.blacklistUser.error);
-                        }
-                        tokensAndData.accessToken = "";
-                        tokensAndData.exp = undefined;
-                        tokensAndData.refetchUser();
                       },
                     });
                   }}

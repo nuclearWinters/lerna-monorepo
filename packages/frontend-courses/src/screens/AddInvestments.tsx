@@ -9,7 +9,6 @@ import {
   useSubscription,
 } from "react-relay/hooks";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
-import { tokensAndData } from "App";
 import { LoanRow } from "components/LoanRow";
 import { Spinner } from "components/Spinner";
 import { CustomButton } from "components/CustomButton";
@@ -21,7 +20,7 @@ import { Space } from "components/Space";
 import { Columns } from "components/Colums";
 import { TableColumnName } from "components/TableColumnName";
 import { Table } from "components/Table";
-import { logOut, useTranslation } from "utils";
+import { useTranslation } from "utils";
 import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
 import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
 import { AddInvestmentsQuery } from "./__generated__/AddInvestmentsQuery.graphql";
@@ -122,7 +121,6 @@ export const AddInvestments: FC<Props> = (props) => {
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {
         error
-        validAccessToken
       }
     }
   `);
@@ -235,16 +233,6 @@ export const AddInvestments: FC<Props> = (props) => {
                               quantity: lend.quantity,
                             })),
                           },
-                        },
-                        onCompleted: (response) => {
-                          if (response.addLends.error) {
-                            if (response.addLends.error === "jwt expired") {
-                              logOut();
-                            }
-                            return window.alert(response.addLends.error);
-                          }
-                          tokensAndData.accessToken =
-                            response.addLends.validAccessToken;
                         },
                       });
                       setLends([]);

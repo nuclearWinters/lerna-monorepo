@@ -11,6 +11,7 @@ import {
 import { tokensAndData } from "App";
 import { API_GATEWAY, REALTIME_GATEWAY } from "utils";
 import { Client, ClientOptions, createClient, Sink } from "graphql-ws";
+import jwtDecode from "jwt-decode";
 
 interface RestartableClient extends Client {
   restart(): void;
@@ -26,21 +27,16 @@ const createRestartableClient = (options: ClientOptions): RestartableClient => {
     ...options,
     on: {
       ...options.on,
-      opened: (socket) => {
+      opened: (socket: any) => {
         options.on?.opened?.(socket);
 
         restart = () => {
           if (socket.readyState === WebSocket.OPEN) {
-            // if the socket is still open for the restart, do the restart
             socket.close(4205, "Client Restart");
           } else {
-            // otherwise the socket might've closed, indicate that you want
-            // a restart on the next opened event
             restartRequested = true;
           }
         };
-
-        // just in case you were eager to restart
         if (restartRequested) {
           restartRequested = false;
           restart();
@@ -77,7 +73,15 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
       variables,
     }),
   });
-  return await response.json();
+  const data = await response.json();
+  const accesstoken = response.headers.get("accessToken");
+  if (accesstoken && tokensAndData.accessToken !== accesstoken) {
+    tokensAndData.accessToken = accesstoken;
+    const decoded = jwtDecode<{ refreshTokenExpireTime: number }>(accesstoken);
+    tokensAndData.exp = decoded.refreshTokenExpireTime;
+  }
+
+  return data;
 };
 
 const subscribeRelay = (operation: RequestParameters, variables: Variables) => {

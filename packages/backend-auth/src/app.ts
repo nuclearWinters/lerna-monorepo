@@ -15,6 +15,7 @@ import {
 } from "graphql-helix";
 import cookieParser from "cookie-parser";
 import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation";
+import { LogOutMutation } from "./mutations/LogOutMutation";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -24,6 +25,7 @@ const Mutation = new GraphQLObjectType({
     blacklistUser: BlacklistUserMutation,
     updateUser: UpdateUserMutation,
     extendSession: ExtendSessionMutation,
+    logOut: LogOutMutation,
   },
 });
 

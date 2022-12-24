@@ -35,7 +35,13 @@ export const AuthServer: IAuthServer = {
       }
       const { isBorrower, isLender, isSupport, id } = user;
       const validAccessToken = jwt.sign(
-        { isBorrower, isLender, isSupport, id },
+        {
+          isBorrower,
+          isLender,
+          isSupport,
+          id,
+          refreshTokenExpireTime: user.exp,
+        },
         ACCESSSECRET,
         {
           expiresIn: ACCESS_TOKEN_EXP_STRING,

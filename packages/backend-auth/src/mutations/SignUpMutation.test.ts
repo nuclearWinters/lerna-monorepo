@@ -47,7 +47,6 @@ describe("SignUpMutation tests", () => {
         query: `mutation signUpMutation($input: SignUpInput!) {
           signUp(input: $input) {
             error
-            accessToken
           }
         }`,
         variables: {
@@ -62,7 +61,6 @@ describe("SignUpMutation tests", () => {
       })
       .set("Accept", "application/json");
     expect(response.body.data.signUp.error).toBeFalsy();
-    expect(response.body.data.signUp.accessToken).toBeTruthy();
     const user = await users.findOne({ email: "anrp1@gmail.com" });
     expect({ ...user, _id: "", password: "" }).toEqual({
       _id: "",
@@ -91,7 +89,6 @@ describe("SignUpMutation tests", () => {
         query: `mutation signUpMutation($input: SignUpInput!) {
           signUp(input: $input) {
             error
-            accessToken
           }
         }`,
         variables: {
@@ -109,7 +106,6 @@ describe("SignUpMutation tests", () => {
       "El email ya esta siendo usado."
     );
     expect(response.body.data.signUp.refreshToken).toBeFalsy();
-    expect(response.body.data.signUp.accessToken).toBeFalsy();
     const user = await users.findOne({ email: "anrp1@gmail.com" });
     expect({ ...user, _id: "", password: "" }).toEqual({
       _id: "",
@@ -150,7 +146,6 @@ describe("SignUpMutation tests", () => {
         query: `mutation signUpMutation($input: SignUpInput!) {
           signUp(input: $input) {
             error
-            accessToken
           }
         }`,
         variables: {
@@ -165,7 +160,6 @@ describe("SignUpMutation tests", () => {
       })
       .set("Accept", "application/json");
     expect(response.body.data.signUp.error).toBeFalsy();
-    expect(response.body.data.signUp.accessToken).toBeTruthy();
     const user = await users.findOne({ email: "anrp2@gmail.com" });
     expect({ ...user, _id: "", password: "" }).toEqual({
       _id: "",

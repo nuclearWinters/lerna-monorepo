@@ -111,10 +111,10 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
       <div className={baseInvestmentRowCell}>{data.interest_to_earn}</div>
       <div className={baseInvestmentRowCell}>{data.moratory}</div>
       <div className={baseInvestmentRowCell}>
-        {dayjs(data.updated).format("dd/mm/yyyy")}
+        {dayjs(data.updated).format("DD/MM/YYYY")}
       </div>
       <div className={baseInvestmentRowCell}>
-        {dayjs(data.created).format("dd/MM/yyyy")}
+        {dayjs(data.created).format("DD/MM/YYYY")}
       </div>
       <div
         className={baseInvestmentRowClipboard}

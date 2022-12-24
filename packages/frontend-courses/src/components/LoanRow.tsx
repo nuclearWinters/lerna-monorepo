@@ -5,14 +5,13 @@ import {
   useRefetchableFragment,
   useSubscription,
 } from "react-relay/hooks";
-import { tokensAndData } from "App";
 import { LoanRowMutation } from "./__generated__/LoanRowMutation.graphql";
 import { LoanRowRefetchQuery } from "./__generated__/LoanRowRefetchQuery.graphql";
 import {
   LoanRow_loan$key,
   LoanScheduledPaymentStatus,
 } from "./__generated__/LoanRow_loan.graphql";
-import { logOut, useTranslation } from "utils";
+import { useTranslation } from "utils";
 import { Rows } from "./Rows";
 import { Columns } from "./Colums";
 import { TableColumnName } from "./TableColumnName";
@@ -130,7 +129,6 @@ export const LoanRow: FC<Props> = ({
     mutation LoanRowMutation($input: ApproveLoanInput!) {
       approveLoan(input: $input) {
         error
-        validAccessToken
         loan {
           id
           status
@@ -206,6 +204,15 @@ export const LoanRow: FC<Props> = ({
 
   const now = dayjs();
   const expiry = dayjs(data.expiry);
+
+  const languageEnum =
+    language === "DEFAULT"
+      ? navigator.language.includes("es")
+        ? "ES"
+        : "EN"
+      : language === "ES"
+      ? "ES"
+      : "EN";
 
   return (
     <>
@@ -318,16 +325,6 @@ export const LoanRow: FC<Props> = ({
                     loan_gid: data.id,
                   },
                 },
-                onCompleted: (response) => {
-                  if (response.approveLoan.error) {
-                    if (response.approveLoan.error === "jwt expired") {
-                      logOut();
-                    }
-                    return window.alert(response.approveLoan.error);
-                  }
-                  tokensAndData.accessToken =
-                    response.approveLoan.validAccessToken;
-                },
               });
             }}
           >
@@ -378,16 +375,12 @@ export const LoanRow: FC<Props> = ({
                 </div>
                 <div className={baseLoanRowCell}>
                   {dayjs(payment.scheduledDate)
-                    .locale(
-                      language === "DEFAULT"
-                        ? navigator.language.includes("es")
-                          ? es
-                          : en
-                        : language === "ES"
-                        ? es
-                        : en
-                    )
-                    .format("d 'de' MMMM 'del' yyyy 'a las' HH:mm:ss")}
+                    .locale(languageEnum === "ES" ? es : en)
+                    .format(
+                      languageEnum === "ES"
+                        ? "D [de] MMMM [del] YYYY [a las] h:mm a"
+                        : "D MMMM[,] YYYY [at] h:mm a"
+                    )}
                 </div>
               </Columns>
             );

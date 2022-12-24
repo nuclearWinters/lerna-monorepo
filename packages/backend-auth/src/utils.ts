@@ -23,6 +23,7 @@ export const jwt = {
       isBorrower: boolean;
       isLender: boolean;
       isSupport: boolean;
+      refreshTokenExpireTime: number;
     },
     secret: string,
     options: SignOptions
@@ -59,7 +60,13 @@ export const refreshTokenMiddleware = async (
       }
       const { id, isBorrower, isLender, isSupport } = user;
       const validAccessToken = jwt.sign(
-        { id, isBorrower, isLender, isSupport },
+        {
+          id,
+          isBorrower,
+          isLender,
+          isSupport,
+          refreshTokenExpireTime: user.exp,
+        },
         ACCESSSECRET,
         {
           expiresIn: ACCESS_TOKEN_EXP_STRING,
@@ -86,6 +93,7 @@ export const getContext = async (
     accessToken,
     refreshToken
   );
+  res?.setHeader("accessToken", validAccessToken || "");
   return {
     users: db.collection<UserMongo>("users"),
     rdb,

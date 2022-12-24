@@ -11,8 +11,7 @@ import { FormSmall } from "components/FormSmall";
 import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
-import { expireSessionTime, logOut, useTranslation } from "utils";
-import dayjs from "dayjs";
+import { useTranslation } from "utils";
 import decode from "jwt-decode";
 import { useNavigation } from "yarr";
 import { customSpace } from "components/Space.css";
@@ -30,7 +29,6 @@ export const LogIn: FC = () => {
     mutation LogInMutation($input: SignInInput!) {
       signIn(input: $input) {
         error
-        accessToken
       }
     }
   `);
@@ -49,6 +47,7 @@ export const LogIn: FC = () => {
         <FormSmall>
           <Label label={t("Email")} />
           <Input
+            type="email"
             name="email"
             placeholder={t("Email")}
             value={email}
@@ -56,6 +55,7 @@ export const LogIn: FC = () => {
           />
           <Label label={t("Password")} />
           <Input
+            type="password"
             name="password"
             placeholder={t("Password")}
             value={password}
@@ -66,6 +66,7 @@ export const LogIn: FC = () => {
             <Spinner />
           ) : (
             <CustomButton
+              type="submit"
               text={t("Iniciar sesión")}
               onClick={() => {
                 commit({
@@ -75,20 +76,9 @@ export const LogIn: FC = () => {
                       password,
                     },
                   },
-                  onCompleted: (response) => {
-                    if (response.signIn.error) {
-                      if (response.signIn.error === "jwt expired") {
-                        logOut();
-                      }
-                      return window.alert(response.signIn.error);
-                    }
-                    tokensAndData.accessToken = response.signIn.accessToken;
-                    tokensAndData.exp = dayjs().add(
-                      expireSessionTime,
-                      "minutes"
-                    );
+                  onCompleted: () => {
                     tokensAndData.refetchUser();
-                    const data = decode<Decode>(response.signIn.accessToken);
+                    const data = decode<Decode>(tokensAndData.accessToken);
                     if (data.isBorrower) {
                       navigate.push("/myLoans");
                     } else if (data.isSupport) {

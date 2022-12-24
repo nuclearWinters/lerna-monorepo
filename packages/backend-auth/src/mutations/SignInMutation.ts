@@ -16,7 +16,6 @@ interface Input {
 }
 
 type Payload = {
-  accessToken: string;
   error: string;
 };
 
@@ -32,10 +31,6 @@ export const SignInMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ error }: Payload): string => error,
     },
-    accessToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ accessToken }: Payload): string => accessToken,
-    },
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
@@ -50,20 +45,23 @@ export const SignInMutation = mutationWithClientMutationId({
       }
       const hash = await bcrypt.compare(password, user.password);
       if (!hash) throw new Error("La contraseña no coincide.");
-      const refreshTokenExpireTime = addMinutes(
-        new Date(),
-        REFRESH_TOKEN_EXP_NUMBER
-      );
+      const now = new Date();
+      const refreshTokenExpireTime = addMinutes(now, REFRESH_TOKEN_EXP_NUMBER);
       refreshTokenExpireTime.setMilliseconds(0);
+      now.setMilliseconds(0);
+      const refreshTokenExpireTimeInt = refreshTokenExpireTime.getTime() / 1000;
+      const nowTime = now.getTime() / 1000;
+      const refreshTokenExpiresIn = refreshTokenExpireTimeInt - nowTime;
       const refreshToken = jwt.sign(
         {
           id: user.id,
           isLender: user.isLender,
           isBorrower: user.isBorrower,
           isSupport: user.isSupport,
+          refreshTokenExpireTime: refreshTokenExpireTimeInt,
         },
         REFRESHSECRET,
-        { expiresIn: refreshTokenExpireTime.getTime() / 1000 }
+        { expiresIn: refreshTokenExpiresIn }
       );
       const accessToken = jwt.sign(
         {
@@ -71,6 +69,7 @@ export const SignInMutation = mutationWithClientMutationId({
           isLender: user.isLender,
           isBorrower: user.isBorrower,
           isSupport: user.isSupport,
+          refreshTokenExpireTime: refreshTokenExpireTimeInt,
         },
         ACCESSSECRET,
         { expiresIn: ACCESS_TOKEN_EXP_STRING }
@@ -82,14 +81,13 @@ export const SignInMutation = mutationWithClientMutationId({
         sameSite: "strict",
         //secure: true,
       });
+      res?.setHeader("accessToken", accessToken);
       return {
         error: "",
-        accessToken,
       };
     } catch (e) {
       return {
         error: e instanceof Error ? e.message : "",
-        accessToken: "",
       };
     }
   },
