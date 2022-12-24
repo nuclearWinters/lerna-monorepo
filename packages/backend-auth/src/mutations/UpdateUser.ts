@@ -54,20 +54,17 @@ export const UpdateUserMutation = mutationWithClientMutationId({
       if (!validAccessToken || !id) {
         throw new Error("No valid access token.");
       }
-      const result = await users.updateOne({ id }, { $set: user });
-      if (!result.modifiedCount) {
+      const result = await users.findOneAndUpdate(
+        { id },
+        { $set: user },
+        { returnDocument: "after" }
+      );
+      if (!result.value) {
         throw new Error("No user found.");
       }
       return {
         error: "",
-        authUser: {
-          ...user,
-          id,
-          isSupport: false,
-          isLender: false,
-          isBorrower: false,
-          password: "",
-        },
+        authUser: result.value,
       };
     } catch (e) {
       return {

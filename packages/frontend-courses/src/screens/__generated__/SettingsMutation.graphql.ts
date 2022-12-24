@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0f3151f635c98ac25f5a90f16db99931>>
+ * @generated SignedSource<<4ed01233a5ecbfe44e7a794700e79851>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,13 +21,24 @@ export type UpdateUserInput = {
   language: Languages;
   mobile: string;
   name: string;
-  user_gid: string;
 };
 export type SettingsMutation$variables = {
   input: UpdateUserInput;
 };
 export type SettingsMutation$data = {
   readonly updateUser: {
+    readonly authUser: {
+      readonly CURP: string;
+      readonly RFC: string;
+      readonly apellidoMaterno: string;
+      readonly apellidoPaterno: string;
+      readonly clabe: string;
+      readonly email: string;
+      readonly id: string;
+      readonly language: Languages;
+      readonly mobile: string;
+      readonly name: string;
+    };
     readonly error: string;
   };
 };
@@ -65,6 +76,87 @@ v1 = [
         "kind": "ScalarField",
         "name": "error",
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "AuthUser",
+        "kind": "LinkedField",
+        "name": "authUser",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "id",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "name",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "apellidoPaterno",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "apellidoMaterno",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "RFC",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "CURP",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "clabe",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "mobile",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "language",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "email",
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -88,16 +180,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "c86a74eef0f0dcb0e098328bbfe7f9d5",
+    "cacheID": "42158b2d4898c10429bee6ac923b8bbc",
     "id": null,
     "metadata": {},
     "name": "SettingsMutation",
     "operationKind": "mutation",
-    "text": "mutation SettingsMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n  }\n}\n"
+    "text": "mutation SettingsMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n    authUser {\n      id\n      name\n      apellidoPaterno\n      apellidoMaterno\n      RFC\n      CURP\n      clabe\n      mobile\n      language\n      email\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "584c5301466a7a63d7f26505ab173137";
+(node as any).hash = "f6458d79bacdb67678af191f522a5d58";
 
 export default node;

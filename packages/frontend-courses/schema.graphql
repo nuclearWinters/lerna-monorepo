@@ -51,7 +51,6 @@ type ExtendSessionPayload {
 
 input UpdateUserInput {
   clientMutationId: String
-  user_gid: String!
   name: String!
   apellidoPaterno: String!
   apellidoMaterno: String!

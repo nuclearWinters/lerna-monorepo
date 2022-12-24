@@ -64,6 +64,18 @@ export const Settings: FC<Props> = (props) => {
     mutation SettingsMutation($input: UpdateUserInput!) {
       updateUser(input: $input) {
         error
+        authUser {
+          id
+          name
+          apellidoPaterno
+          apellidoMaterno
+          RFC
+          CURP
+          clabe
+          mobile
+          language
+          email
+        }
       }
     }
   `);
@@ -78,7 +90,6 @@ export const Settings: FC<Props> = (props) => {
         : "EN"
       : user.language;
   const [formUser, setFormUser] = useState({
-    user_gid: user.id,
     name: user.name,
     apellidoMaterno: user.apellidoMaterno,
     apellidoPaterno: user.apellidoPaterno,
@@ -231,7 +242,6 @@ export const Settings: FC<Props> = (props) => {
                   changeLanguage(originLang);
                   isChanged.current = false;
                   setFormUser({
-                    user_gid: user.id,
                     name: user.name,
                     apellidoMaterno: user.apellidoMaterno,
                     apellidoPaterno: user.apellidoPaterno,

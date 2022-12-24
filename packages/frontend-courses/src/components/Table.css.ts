@@ -11,11 +11,13 @@ export const baseTable = sprinkles({
 
 export const customTable = styleVariants({
   primary: [
+    baseTable,
     sprinkles({
       backgroundColor: "rgba(255,90,96,0.1)",
     }),
   ],
   default: [
+    baseTable,
     sprinkles({
       backgroundColor: "rgba(90,96,255,0.1)",
     }),
