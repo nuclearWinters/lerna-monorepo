@@ -9,7 +9,7 @@ import {
   GraphQLResponse,
 } from "relay-runtime";
 import { tokensAndData } from "App";
-import { API_GATEWAY, REALTIME_GATEWAY } from "utils";
+import { API_GATEWAY, logOut, REALTIME_GATEWAY } from "utils";
 import { Client, ClientOptions, createClient, Sink } from "graphql-ws";
 import jwtDecode from "jwt-decode";
 
@@ -79,6 +79,8 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
     tokensAndData.accessToken = accesstoken;
     const decoded = jwtDecode<{ refreshTokenExpireTime: number }>(accesstoken);
     tokensAndData.exp = decoded.refreshTokenExpireTime;
+  } else if (!accesstoken && tokensAndData.accessToken) {
+    logOut();
   }
 
   return data;

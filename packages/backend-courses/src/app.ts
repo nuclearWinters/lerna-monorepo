@@ -73,11 +73,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: [
-      "http://relay-gateway:4001",
-      "http://0.0.0.0:4001",
-      "http://localhost:8000",
-    ],
+    origin: ["http://relay-gateway:4001", "http://backend-auth:4002"],
     credentials: true,
   })
 );

@@ -7,7 +7,7 @@ import {
   jwt,
   REFRESH_TOKEN_EXP_NUMBER,
 } from "../utils";
-import { addMinutes } from "date-fns";
+import { addMinutes, isAfter } from "date-fns";
 
 type Payload = {
   error: string;
@@ -25,7 +25,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     _: unknown,
-    { rdb, refreshToken, id, res }: Context
+    { rdb, refreshToken, id, res, sessionId }: Context
   ): Promise<Payload> => {
     try {
       if (!refreshToken || !id) {
@@ -33,9 +33,15 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
       }
       const user = jwt.verify(refreshToken, REFRESHSECRET);
       if (!user) throw new Error("El usuario no existe.");
-      const blacklistedUser = await rdb.get(user.id);
-      if (blacklistedUser) {
-        throw new Error("El usuario esta bloqueado.");
+
+      const blacklistedUserTime = await rdb?.get(sessionId);
+      if (blacklistedUserTime) {
+        const time = new Date(Number(blacklistedUserTime) * 1000);
+        const issuedTime = addMinutes(new Date(user.exp * 1000), -3);
+        const loggedAfter = isAfter(issuedTime, time);
+        if (!loggedAfter) {
+          throw new Error("El usuario esta bloqueado.");
+        }
       }
       const { isBorrower, isLender, isSupport } = user;
       const now = new Date();

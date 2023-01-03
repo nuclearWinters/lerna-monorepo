@@ -141,7 +141,8 @@ proto.authPackage.RenewAccessTokenInput.prototype.toObject = function(opt_includ
  */
 proto.authPackage.RenewAccessTokenInput.toObject = function(includeInstance, msg) {
   var f, obj = {
-    refreshtoken: jspb.Message.getFieldWithDefault(msg, 1, "")
+    refreshtoken: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    sessionid: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -182,6 +183,10 @@ proto.authPackage.RenewAccessTokenInput.deserializeBinaryFromReader = function(m
       var value = /** @type {string} */ (reader.readString());
       msg.setRefreshtoken(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSessionid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -218,6 +223,13 @@ proto.authPackage.RenewAccessTokenInput.serializeBinaryToWriter = function(messa
       f
     );
   }
+  f = message.getSessionid();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -236,6 +248,24 @@ proto.authPackage.RenewAccessTokenInput.prototype.getRefreshtoken = function() {
  */
 proto.authPackage.RenewAccessTokenInput.prototype.setRefreshtoken = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string sessionId = 2;
+ * @return {string}
+ */
+proto.authPackage.RenewAccessTokenInput.prototype.getSessionid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.authPackage.RenewAccessTokenInput} returns this
+ */
+proto.authPackage.RenewAccessTokenInput.prototype.setSessionid = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

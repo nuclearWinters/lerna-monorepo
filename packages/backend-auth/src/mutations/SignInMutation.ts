@@ -2,7 +2,7 @@ import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
-import { REFRESHSECRET, ACCESSSECRET } from "../config";
+import { REFRESHSECRET, ACCESSSECRET, NODE_ENV } from "../config";
 import {
   ACCESS_TOKEN_EXP_STRING,
   jwt,
@@ -34,12 +34,22 @@ export const SignInMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password }: Input,
-    { users, rdb, res }: Context
+    {
+      users,
+      rdb,
+      res,
+      logins,
+      ip,
+      sessions,
+      sessionId,
+      deviceType,
+      deviceName,
+    }: Context
   ): Promise<Payload> => {
     try {
       const user = await users.findOne({ email });
       if (!user) throw new Error("El usuario no existe.");
-      const blacklistedUser = await rdb.get(user._id.toHexString());
+      const blacklistedUser = await rdb?.get(user._id.toHexString());
       if (blacklistedUser) {
         throw new Error("El usuario estará bloqueado.");
       }
@@ -79,9 +89,32 @@ export const SignInMutation = mutationWithClientMutationId({
         expires: refreshTokenExpireTime,
         path: "/",
         sameSite: "strict",
-        //secure: true,
+        secure: NODE_ENV === "production" ? true : false,
       });
       res?.setHeader("accessToken", accessToken);
+      await logins.insertOne({
+        applicationName: "Lerna Monorepo",
+        address: ip || "",
+        time: now,
+        userId: user.id,
+      });
+      await sessions.updateOne(
+        { sessionId },
+        {
+          $set: {
+            lasTimeAccessed: now,
+          },
+          $setOnInsert: {
+            applicationName: "Lerna Monorepo",
+            type: deviceType,
+            deviceName: deviceName,
+            sessionId,
+            address: ip,
+            userId: user.id,
+          },
+        },
+        { upsert: true }
+      );
       return {
         error: "",
       };

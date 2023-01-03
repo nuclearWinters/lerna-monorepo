@@ -2,14 +2,22 @@ import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import { Context } from "../types";
 
+interface Input {
+  sessionId: string;
+}
+
 type Payload = {
   error: string;
 };
 
-export const BlacklistUserMutation = mutationWithClientMutationId({
-  name: "BlacklistUser",
-  description: "Bloquea los refresh token de un usuario por una hora.",
-  inputFields: {},
+export const RevokeSessionMutation = mutationWithClientMutationId({
+  name: "RevokeSession",
+  description: "Revoca una sesion.",
+  inputFields: {
+    sessionId: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
   outputFields: {
     error: {
       type: new GraphQLNonNull(GraphQLString),
@@ -17,14 +25,18 @@ export const BlacklistUserMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    _input,
-    { rdb, id }: Context
+    { sessionId }: Input,
+    { rdb, id, sessions }: Context
   ): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("Sin usuario.");
       }
-      await rdb.set(id, id, { EX: 60 * 60 });
+      const now = new Date();
+      now.setMilliseconds(0);
+      const time = now.getTime() / 1000;
+      await sessions.deleteOne({ sessionId, userId: id });
+      await rdb.set(sessionId, time, { EX: 60 * 15 });
       return { error: "" };
     } catch (e) {
       return {

@@ -23,7 +23,7 @@ import {
 import { unbase64 } from "../utils";
 import { REDIS } from "../config";
 
-const options: RedisOptions = {
+export const options: RedisOptions = {
   host: REDIS,
   port: 6379,
   retryStrategy: (times) => {
@@ -32,8 +32,8 @@ const options: RedisOptions = {
 };
 
 export const pubsub = new RedisPubSub({
-  publisher: new (Redis as any)(options),
-  subscriber: new (Redis as any)(options),
+  publisher: new Redis(options),
+  subscriber: new Redis(options),
 });
 
 export const LOAN_INSERT = "LOAN_INSERT";

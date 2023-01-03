@@ -26,6 +26,7 @@
     "graphql-relay": "^0.10.0",
     "jsonwebtoken": "^9.0.0",
     "nanoid": "^3.3.4",
+    "node-device-detector": "^2.0.10",
     "redis": "^4.5.1"
   },
   "devDependencies": {

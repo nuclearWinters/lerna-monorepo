@@ -1,3 +1,13 @@
+input RevokeSessionInput {
+  sessionId: String!
+  clientMutationId: String
+}
+
+type RevokeSessionPayload {
+  error: String
+  clientMutationId: String
+}
+
 input SignInInput {
   password: String!
   email: String!
@@ -18,15 +28,6 @@ input SignUpInput {
 }
 
 type SignUpPayload {
-  error: String!
-  clientMutationId: String
-}
-
-input BlacklistUserInput {
-  clientMutationId: String
-}
-
-type BlacklistUserPayload {
   error: String!
   clientMutationId: String
 }
@@ -122,7 +123,6 @@ type ApproveLoanPayload {
 type Mutation {
   signIn(input: SignInInput!): SignInPayload!
   signUp(input: SignUpInput!): SignUpPayload!
-  blacklistUser(input: BlacklistUserInput!): BlacklistUserPayload!
   updateUser(input: UpdateUserInput!): UpdateUserPayload!
   addLends(input: AddLendsInput!): AddLendsPayload!
   addLoan(input: AddLoanInput!): AddLoanPayload!
@@ -130,6 +130,7 @@ type Mutation {
   approveLoan(input: ApproveLoanInput!): ApproveLoanPayload!
   extendSession(input: ExtendSessionInput!): ExtendSessionPayload!
   logOut(input: LogOutInput!): LogOutPayload!
+  revokeSession(input: RevokeSessionInput!): RevokeSessionPayload!
 }
 
 type Query {
@@ -300,7 +301,46 @@ type User implements Node {
   ): InvestmentsConnection
 }
 
-type AuthUser {
+type Session implements Node {
+  id: ID!
+  applicationName: String!
+  type: String!
+  deviceName: String!
+  sessionId: String!
+  address: String!
+  lasTimeAccessed: Date!
+  userId: String!
+}
+
+type SessionEdge {
+  node: Session
+  cursor: String!
+}
+
+type SessionsConnection {
+  pageInfo: PageInfo!
+  edges: [SessionEdge]
+}
+
+type Login implements Node {
+  id: ID!
+  applicationName: String!
+  time: Date!
+  address: String!
+  userId: String!
+}
+
+type LoginEdge {
+  node: Login
+  cursor: String!
+}
+
+type LoginsConnection {
+  pageInfo: PageInfo!
+  edges: [LoginEdge]
+}
+
+type AuthUser implements Node {
   id: ID!
   accountId: String!
   name: String!
@@ -315,6 +355,8 @@ type AuthUser {
   isSupport: Boolean!
   language: Languages!
   email: String!
+  logins(after: String, first: Int): LoginsConnection
+  sessions(after: String, first: Int): SessionsConnection
 }
 
 scalar Date

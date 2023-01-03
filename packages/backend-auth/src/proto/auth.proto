@@ -9,6 +9,7 @@ service Auth {
 
 message RenewAccessTokenInput {
     string refreshtoken = 1;
+    string sessionId = 2;
 }
 
 message RenewAccessTokenPayload {

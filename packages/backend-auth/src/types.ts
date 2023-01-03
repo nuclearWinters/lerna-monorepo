@@ -6,6 +6,8 @@ export type RedisClientType = ReturnType<typeof createClient>;
 
 export interface Context {
   users: Collection<UserMongo>;
+  logins: Collection<UserLogins>;
+  sessions: Collection<UserSessions>;
   rdb: RedisClientType;
   accessToken?: string;
   refreshToken?: string;
@@ -16,6 +18,29 @@ export interface Context {
   };
   validAccessToken?: string;
   id?: string;
+  ip?: string;
+  sessionId: string;
+  deviceType: string;
+  deviceName: string;
+}
+
+export interface UserLogins {
+  _id?: ObjectId;
+  applicationName: "Lerna Monorepo";
+  time: Date;
+  address: string;
+  userId: string;
+}
+
+export interface UserSessions {
+  _id?: ObjectId;
+  applicationName: "Lerna Monorepo";
+  type: string;
+  deviceName: string;
+  sessionId: string;
+  address: string;
+  lasTimeAccessed: Date;
+  userId: string;
 }
 
 export interface UserMongo {

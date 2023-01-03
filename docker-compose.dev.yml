@@ -19,7 +19,8 @@ services:
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/backend-courses
-    command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "npm", "run", "start"]
+    command:
+      ["./wait-for-it.sh", "backend-auth:4002", "--", "npm", "run", "start"]
     ports:
       - "4000:4000"
     depends_on:

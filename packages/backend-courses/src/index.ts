@@ -1,6 +1,6 @@
 import { app, schema } from "./app";
 import { Db, MongoClient } from "mongodb";
-import { MONGO_DB } from "./config";
+import { ACCESSSECRET, MONGO_DB } from "./config";
 import amqp from "amqplib";
 import {
   ADD_LEND,
@@ -16,6 +16,8 @@ import { sendLend } from "./rabbitmq";
 import { jwt } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { WebSocketServer } from "ws";
+import { options } from "./subscriptions/subscriptions";
+import Redis from "ioredis";
 
 export const ctx: {
   db?: Db;
@@ -36,7 +38,13 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
       sendLend(msg, db, ch);
     }
   });
+  const redis = new Redis(options);
+  app.locals.rdb = redis;
   app.locals.ch = ch;
+  const response = await (
+    await fetch("http://backend-auth:4002/accesssecret")
+  ).text();
+  ACCESSSECRET.ACCESSSECRET = response;
   const serverExpress = app.listen(4000, () => {
     const wsServer = new WebSocketServer({
       server: serverExpress,

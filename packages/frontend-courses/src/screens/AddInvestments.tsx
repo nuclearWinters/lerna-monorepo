@@ -142,7 +142,7 @@ export const AddInvestments: FC<Props> = (props) => {
     { key: "pending", title: t("Faltan") },
     { key: "expiry", title: t("Termina") },
     { key: "lend", title: t("Prestar") },
-    { key: "refetech", title: t("Refrescar") },
+    { key: "refetch", title: t("Refrescar") },
   ];
 
   const [lends, setLends] = useState<ILends[]>([]);

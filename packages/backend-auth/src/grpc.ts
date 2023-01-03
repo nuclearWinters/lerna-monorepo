@@ -14,6 +14,7 @@ import { IAuthServer } from "./proto/auth_grpc_pb";
 import { ctx } from "./index";
 import { ACCESS_TOKEN_EXP_STRING, jwt } from "./utils";
 import { REFRESHSECRET, ACCESSSECRET } from "./config";
+import { addMinutes, isAfter } from "date-fns";
 
 export const AuthServer: IAuthServer = {
   async renewAccessToken(
@@ -29,9 +30,15 @@ export const AuthServer: IAuthServer = {
       if (!user) {
         throw new Error("El token esta corrompido.");
       }
-      const blacklistedUser = await ctx.rdb?.get(user.id);
-      if (blacklistedUser) {
-        throw new Error("El usuario estará bloqueado por una hora.");
+      const sessionId = call.request.getSessionid();
+      const blacklistedUserTime = await ctx.rdb?.get(sessionId);
+      if (blacklistedUserTime) {
+        const time = new Date(Number(blacklistedUserTime) * 1000);
+        const issuedTime = addMinutes(new Date(user.exp * 1000), -15);
+        const loggedAfter = isAfter(issuedTime, time);
+        if (!loggedAfter) {
+          throw new Error("El usuario estará bloqueado por 15 minutos.");
+        }
       }
       const { isBorrower, isLender, isSupport, id } = user;
       const validAccessToken = jwt.sign(

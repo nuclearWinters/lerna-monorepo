@@ -86,6 +86,13 @@ export const resources: Record<
       "Extender sesión 1 hora": "Extend session 1 hour",
       "Selecciona...": "Select...",
       Configuración: "Settings",
+      Aplicacion: "Application",
+      "Tipo de dispositivo": "Device Type",
+      "Nombre del dispositivo": "Device Name",
+      "Ultima vez accedido": "Last Time Accessed",
+      IP: "IP",
+      time: "Date",
+      Borrar: "Delete",
     },
   },
 };

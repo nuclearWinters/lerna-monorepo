@@ -9,6 +9,8 @@ import * as jspb from "google-protobuf";
 export class RenewAccessTokenInput extends jspb.Message {
   getRefreshtoken(): string;
   setRefreshtoken(value: string): RenewAccessTokenInput;
+  getSessionid(): string;
+  setSessionid(value: string): RenewAccessTokenInput;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): RenewAccessTokenInput.AsObject;
@@ -34,6 +36,7 @@ export class RenewAccessTokenInput extends jspb.Message {
 export namespace RenewAccessTokenInput {
   export type AsObject = {
     refreshtoken: string;
+    sessionid: string;
   };
 }
 

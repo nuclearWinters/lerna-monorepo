@@ -5,7 +5,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
 } from "graphql";
-import { ACCESSSECRET, REFRESHSECRET } from "../config";
+import { ACCESSSECRET, NODE_ENV, REFRESHSECRET } from "../config";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import {
@@ -60,7 +60,16 @@ export const SignUpMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
-    { users, res }: Context
+    {
+      users,
+      res,
+      logins,
+      ip,
+      sessions,
+      sessionId,
+      deviceName,
+      deviceType,
+    }: Context
   ): Promise<Payload> => {
     try {
       const user = await users.findOne({ email });
@@ -117,10 +126,33 @@ export const SignUpMutation = mutationWithClientMutationId({
         expires: refreshTokenExpireTime,
         path: "/",
         sameSite: "strict",
-        //secure: true,
+        secure: NODE_ENV === "production" ? true : false,
       });
       res?.setHeader("accessToken", accessToken);
       await createUser(id);
+      await logins.insertOne({
+        applicationName: "Lerna Monorepo",
+        address: ip || "",
+        time: now,
+        userId: id,
+      });
+      await sessions.updateOne(
+        { sessionId },
+        {
+          $set: {
+            lasTimeAccessed: now,
+          },
+          $setOnInsert: {
+            applicationName: "Lerna Monorepo",
+            type: deviceType,
+            deviceName,
+            sessionId,
+            address: ip,
+            userId: id,
+          },
+        },
+        { upsert: true }
+      );
       //const msg = {
       //  to: email,
       //  from: "soporte@amigoprogramador.com",

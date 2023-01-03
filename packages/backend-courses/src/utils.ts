@@ -15,6 +15,8 @@ import {
 import { AuthClient } from "./proto/auth_grpc_pb";
 import { credentials } from "@grpc/grpc-js";
 import { Request, Response } from "express";
+import { addMinutes, isAfter } from "date-fns";
+import Redis from "ioredis";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -46,10 +48,12 @@ export const getContext = async (
 ): Promise<Context> => {
   const db = req.app.locals.db as Db;
   const ch = req.app.locals.ch;
+  const rdb = req.app.locals.rdb as Redis;
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies?.refreshToken || "";
+  const sessionId = req.header("sessionId") || "";
   const { id, validAccessToken, isBorrower, isLender, isSupport } =
-    await refreshTokenMiddleware(accessToken, refreshToken);
+    await refreshTokenMiddleware(accessToken, refreshToken, rdb, sessionId);
   res?.setHeader("accessToken", validAccessToken || "");
   return {
     users: db.collection<UserMongo>("users"),
@@ -100,7 +104,9 @@ interface IResolve {
 
 export const refreshTokenMiddleware = async (
   accessToken: string | undefined,
-  refreshToken: string | undefined
+  refreshToken: string | undefined,
+  rdb: Redis,
+  sessionId: string
 ): Promise<IResolve> => {
   if (!refreshToken) {
     return {
@@ -115,8 +121,22 @@ export const refreshTokenMiddleware = async (
     if (!accessToken) {
       throw new Error("jwt expired");
     }
-    const user = jwt.verify(accessToken, ACCESSSECRET);
+    const user = jwt.verify(accessToken, ACCESSSECRET.ACCESSSECRET);
     if (!user) throw new Error("El token esta corrompido.");
+    const blacklistedUserTime = await rdb?.get(sessionId);
+    if (blacklistedUserTime) {
+      const time = new Date(Number(blacklistedUserTime), 1000);
+      const issuedTime = addMinutes(new Date(user.exp * 1000), -3);
+      const loggedAfter = isAfter(issuedTime, time);
+      if (!loggedAfter)
+        return {
+          validAccessToken: undefined,
+          id: undefined,
+          isLender: false,
+          isBorrower: false,
+          isSupport: false,
+        };
+    }
     const { id, isLender, isBorrower, isSupport } = user;
     return {
       validAccessToken: accessToken,
@@ -130,7 +150,7 @@ export const refreshTokenMiddleware = async (
       try {
         const response = await renewAccessToken(refreshToken);
         const validAccessToken = response.getValidaccesstoken();
-        const user = jwt.verify(validAccessToken, ACCESSSECRET);
+        const user = jwt.verify(validAccessToken, ACCESSSECRET.ACCESSSECRET);
         if (!user) {
           return {
             validAccessToken: undefined,

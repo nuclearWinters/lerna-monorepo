@@ -4,12 +4,7 @@ import { stitchSchemas } from "@graphql-tools/stitch";
 import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
 import { getOperationAST, OperationTypeNode, print } from "graphql";
 import { createClient } from "graphql-ws";
-import {
-  getContext,
-  IContextResult,
-  setCookieContext,
-  setTokenContext,
-} from "./utils";
+import { IContextResult, setCookieContext, setTokenContext } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import {
   getGraphQLParameters,
@@ -18,23 +13,28 @@ import {
   shouldRenderGraphiQL,
 } from "graphql-helix";
 import ws, { WebSocketServer, CloseEvent } from "ws";
+import { nanoid } from "nanoid";
 
 const httpExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
-    const { accessToken, refreshToken } = getContext(context);
-
     const query = print(document);
     const fetchResult = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: accessToken,
-        ...(refreshToken
-          ? {
-              Cookie: `refreshToken=${refreshToken}`,
-            }
-          : {}),
-      },
+      headers: context?.req?.headers
+        ? {
+            ...(context?.req?.headers?.["x-forwarded-for"]
+              ? {
+                  "x-forwarded-for": context?.req?.headers?.["x-forwarded-for"],
+                }
+              : {}),
+            authorization: context?.req?.headers?.authorization,
+            cookie: context?.req?.headers?.cookie,
+            "content-type": context?.req?.headers?.["content-type"],
+            "user-agent": context?.req?.headers?.["user-agent"],
+          }
+        : {
+            "Content-Type": "application/json",
+          },
       body: JSON.stringify({ query, variables }),
     });
     const cookiesResponse = fetchResult.headers.get("set-cookie");
@@ -144,6 +144,10 @@ makeGatewaySchema().then((schema) => {
       method: req.method,
       query: req.query,
     };
+    const cookies = req.cookies;
+    if (!cookies?.sessionId) {
+      res.cookie("sessionId", nanoid());
+    }
     if (shouldRenderGraphiQL(request)) {
       res.send(renderGraphiQL());
     } else {

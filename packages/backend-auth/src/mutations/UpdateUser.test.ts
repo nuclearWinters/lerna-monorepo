@@ -10,6 +10,8 @@ jest.mock("nanoid", () => ({
 
 const request = supertest(app);
 
+const refreshTokenExpireTime = new Date().getTime() + 100000;
+
 describe("UpdateUser tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
@@ -75,7 +77,7 @@ describe("UpdateUser tests", () => {
             isBorrower: false,
             isLender: true,
             isSupport: false,
-            refreshTokenExpireTime: 0,
+            refreshTokenExpireTime,
           },
           "REFRESHSECRET",
           { expiresIn: "15m" }
@@ -89,7 +91,7 @@ describe("UpdateUser tests", () => {
             isBorrower: false,
             isLender: true,
             isSupport: false,
-            refreshTokenExpireTime: 0,
+            refreshTokenExpireTime,
           },
           "ACCESSSECRET",
           { expiresIn: "3m" }
