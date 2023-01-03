@@ -1,6 +1,6 @@
 import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useMutation, graphql } from "react-relay/hooks";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
 import { Label } from "components/Label";
@@ -40,6 +40,23 @@ export const LogIn: FC = () => {
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
+  useEffect(() => {
+    let ref = setTimeout(() => {
+      if (tokensAndData.accessToken) {
+        const data = decode<Decode>(tokensAndData.accessToken);
+        if (data.isBorrower) {
+          navigate.push("/myLoans");
+        } else if (data.isSupport) {
+          navigate.push("/approveLoan");
+        } else {
+          navigate.push("/addInvestments");
+        }
+      }
+    }, 1000);
+    return () => {
+      clearTimeout(ref);
+    };
+  }, [navigate]);
   return (
     <Main>
       <WrapperSmall>
