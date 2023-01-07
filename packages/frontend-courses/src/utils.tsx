@@ -3,9 +3,7 @@ import { resources } from "i18n";
 import { useContext } from "react";
 
 export const logOut = () => {
-  tokensAndData.logOut(() => {
-    window.location.reload();
-  });
+  tokensAndData.logOut();
 };
 
 export const API_GATEWAY =

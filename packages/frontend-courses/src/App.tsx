@@ -22,7 +22,7 @@ const { Suspense } = React;
 export const tokensAndData: {
   accessToken: string;
   exp?: number;
-  logOut: (callback?: () => void) => void;
+  logOut: () => void;
 } = {
   accessToken: "",
   exp: undefined,

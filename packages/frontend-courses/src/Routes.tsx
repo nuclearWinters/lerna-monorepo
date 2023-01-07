@@ -86,19 +86,16 @@ export const Header: FC<Props> = (props) => {
       }
     }
   `);
-  const logOutCallback = useCallback(
-    (callback?: () => void) => {
-      commit({
-        variables: {
-          input: {},
-        },
-        onCompleted: () => {
-          callback && callback();
-        },
-      });
-    },
-    [commit]
-  );
+  const logOutCallback = useCallback(() => {
+    commit({
+      variables: {
+        input: {},
+      },
+      onCompleted: () => {
+        window.location.reload();
+      },
+    });
+  }, [commit]);
   tokensAndData.logOut = logOutCallback;
   const { isBorrower, isSupport } = authUser;
   const isLogged = !!user.accountId;
