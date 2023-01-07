@@ -1,4 +1,3 @@
-import { tokensAndData } from "App";
 import { Checkbox } from "components/Checkbox";
 import { Columns } from "components/Colums";
 import { CustomButton } from "components/CustomButton";
@@ -14,14 +13,10 @@ import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay/hooks";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
 import { useTranslation } from "utils";
-import { Decode } from "./LogIn";
-import { useNavigation } from "yarr";
-import decode from "jwt-decode";
 import { customSpace } from "components/Space.css";
 
 export const SignUp: FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigation();
   const [commit, isInFlight] = useMutation<SignUpMutation>(graphql`
     mutation SignUpMutation($input: SignUpInput!) {
       signUp(input: $input) {
@@ -99,15 +94,7 @@ export const SignUp: FC = () => {
                       },
                     },
                     onCompleted: () => {
-                      tokensAndData.refetchUser();
-                      const data = decode<Decode>(tokensAndData.accessToken);
-                      if (data.isBorrower) {
-                        navigate.push("/myLoans");
-                      } else if (data.isSupport) {
-                        navigate.push("/approveLoan");
-                      } else {
-                        navigate.push("/addInvestments");
-                      }
+                      window.location.reload();
                     },
                   });
                 }}

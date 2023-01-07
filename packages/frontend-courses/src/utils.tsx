@@ -1,12 +1,10 @@
-import { tokensAndData, LanguageContext } from "App";
+import { LanguageContext, tokensAndData } from "App";
 import { resources } from "i18n";
 import { useContext } from "react";
 
 export const logOut = () => {
-  tokensAndData.accessToken = "";
-  tokensAndData.exp = undefined;
   tokensAndData.logOut(() => {
-    tokensAndData.refetchUser();
+    window.location.reload();
   });
 };
 

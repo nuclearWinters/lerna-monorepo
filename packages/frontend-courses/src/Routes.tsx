@@ -1,7 +1,6 @@
 import {
   loadQuery,
   PreloadedQuery,
-  useQueryLoader,
   usePreloadedQuery,
   graphql,
   useSubscription,
@@ -27,7 +26,7 @@ import {
   FaExchangeAlt,
 } from "react-icons/fa";
 import { CustomButton } from "components/CustomButton";
-import { RelayEnvironment, subscriptionsClient } from "RelayEnvironment";
+import { RelayEnvironment } from "RelayEnvironment";
 import SettingsAuthUserQuery from "./screens/__generated__/SettingsAuthUserQuery.graphql";
 import AccountUserQuery from "./screens/__generated__/AccountUserQuery.graphql";
 import MyInvestmentsUserQuery from "./screens/__generated__/MyInvestmentsUserQuery.graphql";
@@ -76,13 +75,9 @@ type Props = {
 
 export const Header: FC<Props> = (props) => {
   const { t, changeLanguage } = useTranslation();
-  const [queryRef, loadQuery] = useQueryLoader<AppUserQueryType>(
-    AppUserQuery,
-    preloadQuery
-  );
   const { user, authUser } = usePreloadedQuery<AppUserQueryType>(
     AppUserQuery,
-    queryRef || preloadQuery
+    preloadQuery
   );
   const [commit] = useMutation<RoutesLogOutMutation>(graphql`
     mutation RoutesLogOutMutation($input: LogOutInput!) {
@@ -105,11 +100,6 @@ export const Header: FC<Props> = (props) => {
     [commit]
   );
   tokensAndData.logOut = logOutCallback;
-  const refetchUser = useCallback(() => {
-    loadQuery({}, { fetchPolicy: "network-only" });
-    subscriptionsClient.restart();
-  }, [loadQuery]);
-  tokensAndData.refetchUser = refetchUser;
   const { isBorrower, isSupport } = authUser;
   const isLogged = !!user.accountId;
   useEffect(() => {
@@ -125,7 +115,7 @@ export const Header: FC<Props> = (props) => {
       variables: {},
       subscription: subscriptionUser,
     }),
-    [user.id]
+    []
   );
 
   useSubscription<RoutesUserSubscription>(configUser);

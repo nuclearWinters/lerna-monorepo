@@ -94,15 +94,7 @@ export const LogIn: FC = () => {
                     },
                   },
                   onCompleted: () => {
-                    tokensAndData.refetchUser();
-                    const data = decode<Decode>(tokensAndData.accessToken);
-                    if (data.isBorrower) {
-                      navigate.push("/myLoans");
-                    } else if (data.isSupport) {
-                      navigate.push("/approveLoan");
-                    } else {
-                      navigate.push("/addInvestments");
-                    }
+                    window.location.reload();
                   },
                 });
               }}

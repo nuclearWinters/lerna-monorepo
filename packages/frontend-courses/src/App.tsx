@@ -20,14 +20,12 @@ import { Languages } from "__generated__/Routes_query.graphql";
 const { Suspense } = React;
 
 export const tokensAndData: {
-  refetchUser: () => void;
   accessToken: string;
   exp?: number;
   logOut: (callback?: () => void) => void;
 } = {
   accessToken: "",
   exp: undefined,
-  refetchUser: () => {},
   logOut: () => {},
 };
 
