@@ -39,8 +39,12 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
   const accesstoken = response.headers.get("accessToken");
   if (tokensAndData.accessToken !== accesstoken) {
     tokensAndData.accessToken = accesstoken || "";
-    const decoded = jwtDecode<{ refreshTokenExpireTime: number }>(accesstoken);
-    tokensAndData.exp = decoded.refreshTokenExpireTime;
+    if (accesstoken) {
+      const decoded = jwtDecode<{ refreshTokenExpireTime: number }>(
+        accesstoken
+      );
+      tokensAndData.exp = decoded.refreshTokenExpireTime;
+    }
   }
 
   return data;
