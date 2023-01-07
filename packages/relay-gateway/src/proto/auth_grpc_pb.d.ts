@@ -5,26 +5,26 @@
 /* eslint-disable */
 
 import * as grpc from "@grpc/grpc-js";
-import * as auth_pb from "./auth_pb.js";
+import * as auth_pb from "./auth_pb";
 
 interface IAuthService
   extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
-  renewAccessToken: IAuthService_IrenewAccessToken;
+  jwtMiddleware: IAuthService_IjwtMiddleware;
   createUser: IAuthService_IcreateUser;
 }
 
-interface IAuthService_IrenewAccessToken
+interface IAuthService_IjwtMiddleware
   extends grpc.MethodDefinition<
-    auth_pb.RenewAccessTokenInput,
-    auth_pb.RenewAccessTokenPayload
+    auth_pb.JWTMiddlewareInput,
+    auth_pb.JWTMiddlewarePayload
   > {
-  path: "/authPackage.Auth/renewAccessToken";
+  path: "/authPackage.Auth/jwtMiddleware";
   requestStream: false;
   responseStream: false;
-  requestSerialize: grpc.serialize<auth_pb.RenewAccessTokenInput>;
-  requestDeserialize: grpc.deserialize<auth_pb.RenewAccessTokenInput>;
-  responseSerialize: grpc.serialize<auth_pb.RenewAccessTokenPayload>;
-  responseDeserialize: grpc.deserialize<auth_pb.RenewAccessTokenPayload>;
+  requestSerialize: grpc.serialize<auth_pb.JWTMiddlewareInput>;
+  requestDeserialize: grpc.deserialize<auth_pb.JWTMiddlewareInput>;
+  responseSerialize: grpc.serialize<auth_pb.JWTMiddlewarePayload>;
+  responseDeserialize: grpc.deserialize<auth_pb.JWTMiddlewarePayload>;
 }
 interface IAuthService_IcreateUser
   extends grpc.MethodDefinition<
@@ -43,9 +43,9 @@ interface IAuthService_IcreateUser
 export const AuthService: IAuthService;
 
 export interface IAuthServer extends grpc.UntypedServiceImplementation {
-  renewAccessToken: grpc.handleUnaryCall<
-    auth_pb.RenewAccessTokenInput,
-    auth_pb.RenewAccessTokenPayload
+  jwtMiddleware: grpc.handleUnaryCall<
+    auth_pb.JWTMiddlewareInput,
+    auth_pb.JWTMiddlewarePayload
   >;
   createUser: grpc.handleUnaryCall<
     auth_pb.CreateUserInput,
@@ -54,28 +54,28 @@ export interface IAuthServer extends grpc.UntypedServiceImplementation {
 }
 
 export interface IAuthClient {
-  renewAccessToken(
-    request: auth_pb.RenewAccessTokenInput,
+  jwtMiddleware(
+    request: auth_pb.JWTMiddlewareInput,
     callback: (
       error: grpc.ServiceError | null,
-      response: auth_pb.RenewAccessTokenPayload
+      response: auth_pb.JWTMiddlewarePayload
     ) => void
   ): grpc.ClientUnaryCall;
-  renewAccessToken(
-    request: auth_pb.RenewAccessTokenInput,
+  jwtMiddleware(
+    request: auth_pb.JWTMiddlewareInput,
     metadata: grpc.Metadata,
     callback: (
       error: grpc.ServiceError | null,
-      response: auth_pb.RenewAccessTokenPayload
+      response: auth_pb.JWTMiddlewarePayload
     ) => void
   ): grpc.ClientUnaryCall;
-  renewAccessToken(
-    request: auth_pb.RenewAccessTokenInput,
+  jwtMiddleware(
+    request: auth_pb.JWTMiddlewareInput,
     metadata: grpc.Metadata,
     options: Partial<grpc.CallOptions>,
     callback: (
       error: grpc.ServiceError | null,
-      response: auth_pb.RenewAccessTokenPayload
+      response: auth_pb.JWTMiddlewarePayload
     ) => void
   ): grpc.ClientUnaryCall;
   createUser(
@@ -110,28 +110,28 @@ export class AuthClient extends grpc.Client implements IAuthClient {
     credentials: grpc.ChannelCredentials,
     options?: Partial<grpc.ClientOptions>
   );
-  public renewAccessToken(
-    request: auth_pb.RenewAccessTokenInput,
+  public jwtMiddleware(
+    request: auth_pb.JWTMiddlewareInput,
     callback: (
       error: grpc.ServiceError | null,
-      response: auth_pb.RenewAccessTokenPayload
+      response: auth_pb.JWTMiddlewarePayload
     ) => void
   ): grpc.ClientUnaryCall;
-  public renewAccessToken(
-    request: auth_pb.RenewAccessTokenInput,
+  public jwtMiddleware(
+    request: auth_pb.JWTMiddlewareInput,
     metadata: grpc.Metadata,
     callback: (
       error: grpc.ServiceError | null,
-      response: auth_pb.RenewAccessTokenPayload
+      response: auth_pb.JWTMiddlewarePayload
     ) => void
   ): grpc.ClientUnaryCall;
-  public renewAccessToken(
-    request: auth_pb.RenewAccessTokenInput,
+  public jwtMiddleware(
+    request: auth_pb.JWTMiddlewareInput,
     metadata: grpc.Metadata,
     options: Partial<grpc.CallOptions>,
     callback: (
       error: grpc.ServiceError | null,
-      response: auth_pb.RenewAccessTokenPayload
+      response: auth_pb.JWTMiddlewarePayload
     ) => void
   ): grpc.ClientUnaryCall;
   public createUser(

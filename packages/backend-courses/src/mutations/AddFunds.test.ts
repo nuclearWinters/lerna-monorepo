@@ -3,9 +3,6 @@ import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { TransactionMongo, UserMongo } from "../types";
 import { jwt } from "../utils";
-import { client as grpcClient } from "../utils";
-import { Metadata } from "@grpc/grpc-js";
-import { SurfaceCall } from "@grpc/grpc-js/build/src/call";
 
 jest.mock("../subscriptions/subscriptionsUtils", () => ({
   publishUser: jest.fn,
@@ -215,30 +212,6 @@ describe("AddFunds tests", () => {
       accountToBePaid: 0,
       accountTotal: 100000,
     });
-    jest
-      .spyOn(grpcClient, "renewAccessToken")
-      .mockImplementationOnce((_request, callback: unknown) => {
-        const callbackTyped = callback as (
-          error: null,
-          response: { getValidaccesstoken: () => string }
-        ) => void;
-        callbackTyped(null, {
-          getValidaccesstoken: () =>
-            jwt.sign(
-              {
-                id: "wHHR1SUBT0dspoF4YUO27",
-                isBorrower: false,
-                isLender: true,
-                isSupport: false,
-              },
-              "ACCESSSECRET",
-              {
-                expiresIn: "15m",
-              }
-            ),
-        });
-        return {} as SurfaceCall;
-      });
     const response = await request
       .post("/graphql")
       .send({
@@ -310,83 +283,6 @@ describe("AddFunds tests", () => {
         quantity: 50000,
       },
     ]);
-  });
-
-  it("test AddFunds increase invalid refresh token", async () => {
-    const users = dbInstance.collection<UserMongo>("users");
-    await users.insertOne({
-      _id: new ObjectId("000000000000000000000002"),
-      id: "wHHR1SUBT0dspoF4YUO28",
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
-    });
-    jest
-      .spyOn(grpcClient, "renewAccessToken")
-      .mockImplementationOnce((_request, callback: unknown) => {
-        const callbackTyped = callback as (error: {
-          name: string;
-          message: string;
-          code: number;
-          details: string;
-          metadata: Metadata;
-        }) => void;
-        callbackTyped({
-          name: "Error Auth Service",
-          message: "Error",
-          code: 1,
-          details: "",
-          metadata: new Metadata(),
-        });
-        return {} as SurfaceCall;
-      });
-    const response = await request
-      .post("/graphql")
-      .send({
-        query: `mutation addFundsMutation($input: AddFundsInput!) {
-          addFunds(input: $input) {
-            error
-          }
-        }`,
-        variables: {
-          input: {
-            quantity: "500.00",
-          },
-        },
-        operationName: "addFundsMutation",
-      })
-      .set("Accept", "application/json")
-      .set(
-        "Authorization",
-        jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO28",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "ACCESSSECRET",
-          { expiresIn: "0s" }
-        )
-      )
-      .set("Cookie", `refreshToken=invalid`);
-    expect(response.body.data.addFunds.error).toBe("No valid access token.");
-    const user = await users.findOne({
-      id: "wHHR1SUBT0dspoF4YUO28",
-    });
-    expect(user).toEqual({
-      _id: new ObjectId("000000000000000000000002"),
-      id: "wHHR1SUBT0dspoF4YUO28",
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
-    });
-    const transactions =
-      dbInstance.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("000000000000000000000002") })
-      .toArray();
-    expect(allTransactions.length).toBe(0);
   });
 
   it("test AddFunds try decrease more than available valid refresh token", async () => {

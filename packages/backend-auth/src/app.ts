@@ -15,7 +15,6 @@ import {
 import cookieParser from "cookie-parser";
 import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation";
 import { LogOutMutation } from "./mutations/LogOutMutation";
-import { ACCESSSECRET } from "./config";
 import { RevokeSessionMutation } from "./mutations/RevokeSession";
 
 const Mutation = new GraphQLObjectType({
@@ -55,10 +54,6 @@ app.use(
     credentials: true,
   })
 );
-
-app.get("/accesssecret", async (req, res) => {
-  res.send(ACCESSSECRET);
-});
 
 app.use("/graphql", async (req, res) => {
   const request = {

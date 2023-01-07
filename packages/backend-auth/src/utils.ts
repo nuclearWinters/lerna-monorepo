@@ -1,19 +1,11 @@
 import { Db } from "mongodb";
-import {
-  UserMongo,
-  Context,
-  UserLogins,
-  UserSessions,
-  RedisClientType,
-} from "./types";
-import { ACCESSSECRET, REFRESHSECRET } from "./config";
+import { UserMongo, Context, UserLogins, UserSessions } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
 import { AuthClient } from "./proto/auth_grpc_pb";
 import { credentials } from "@grpc/grpc-js";
 import { CreateUserInput, CreateUserPayload } from "./proto/auth_pb";
 import { Request, Response } from "express";
-import { isAfter, addMinutes } from "date-fns";
 import DeviceDetector from "node-device-detector";
 
 export const jwt = {
@@ -43,57 +35,21 @@ export const jwt = {
 
 export const refreshTokenMiddleware = async (
   accessToken: string | undefined,
-  refreshToken: string | undefined,
-  rdb: RedisClientType,
-  sessionId: string
+  refreshToken: string | undefined
 ): Promise<{ validAccessToken?: string; id?: string }> => {
-  if (accessToken === undefined) {
-    return { validAccessToken: undefined, id: undefined };
-  }
-  if (refreshToken === undefined) {
+  if (!accessToken || !refreshToken) {
     return { validAccessToken: undefined, id: undefined };
   }
   try {
-    const user = jwt.verify(accessToken, ACCESSSECRET);
-    if (!user) {
+    const user = jwt.decode(accessToken);
+    if (!user || typeof user === "string") {
       return { validAccessToken: undefined, id: undefined };
-    }
-    const blacklistedUserTime = await rdb?.get(sessionId);
-    if (blacklistedUserTime) {
-      const time = new Date(Number(blacklistedUserTime) * 1000);
-      const issuedTime = addMinutes(new Date(user.exp * 1000), -3);
-      const loggedAfter = isAfter(issuedTime, time);
-      if (!loggedAfter) return { validAccessToken: undefined, id: undefined };
     }
     return {
       validAccessToken: accessToken,
       id: user.id,
     };
   } catch (e) {
-    if (e instanceof Error && e.message === "jwt expired") {
-      const user = jwt.verify(refreshToken, REFRESHSECRET);
-      if (!user) {
-        return { validAccessToken: undefined, id: undefined };
-      }
-      const { id, isBorrower, isLender, isSupport } = user;
-      const validAccessToken = jwt.sign(
-        {
-          id,
-          isBorrower,
-          isLender,
-          isSupport,
-          refreshTokenExpireTime: user.exp,
-        },
-        ACCESSSECRET,
-        {
-          expiresIn: ACCESS_TOKEN_EXP_STRING,
-        }
-      );
-      return {
-        validAccessToken,
-        id: user.id,
-      };
-    }
     return { validAccessToken: undefined, id: undefined };
   }
 };
@@ -110,9 +66,7 @@ export const getContext = async (
   const sessionId = req.header("sessionId") || "";
   const { validAccessToken, id } = await refreshTokenMiddleware(
     accessToken,
-    refreshToken,
-    rdb,
-    sessionId
+    refreshToken
   );
   res?.setHeader("accessToken", validAccessToken || "");
   const userAgent = req.headers["user-agent"];

@@ -6,66 +6,69 @@
 
 import * as jspb from "google-protobuf";
 
-export class RenewAccessTokenInput extends jspb.Message {
+export class JWTMiddlewareInput extends jspb.Message {
   getRefreshtoken(): string;
-  setRefreshtoken(value: string): RenewAccessTokenInput;
+  setRefreshtoken(value: string): JWTMiddlewareInput;
   getSessionid(): string;
-  setSessionid(value: string): RenewAccessTokenInput;
+  setSessionid(value: string): JWTMiddlewareInput;
+  getAccesstoken(): string;
+  setAccesstoken(value: string): JWTMiddlewareInput;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): RenewAccessTokenInput.AsObject;
+  toObject(includeInstance?: boolean): JWTMiddlewareInput.AsObject;
   static toObject(
     includeInstance: boolean,
-    msg: RenewAccessTokenInput
-  ): RenewAccessTokenInput.AsObject;
+    msg: JWTMiddlewareInput
+  ): JWTMiddlewareInput.AsObject;
   static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> };
   static extensionsBinary: {
     [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>;
   };
   static serializeBinaryToWriter(
-    message: RenewAccessTokenInput,
+    message: JWTMiddlewareInput,
     writer: jspb.BinaryWriter
   ): void;
-  static deserializeBinary(bytes: Uint8Array): RenewAccessTokenInput;
+  static deserializeBinary(bytes: Uint8Array): JWTMiddlewareInput;
   static deserializeBinaryFromReader(
-    message: RenewAccessTokenInput,
+    message: JWTMiddlewareInput,
     reader: jspb.BinaryReader
-  ): RenewAccessTokenInput;
+  ): JWTMiddlewareInput;
 }
 
-export namespace RenewAccessTokenInput {
+export namespace JWTMiddlewareInput {
   export type AsObject = {
     refreshtoken: string;
     sessionid: string;
+    accesstoken: string;
   };
 }
 
-export class RenewAccessTokenPayload extends jspb.Message {
+export class JWTMiddlewarePayload extends jspb.Message {
   getValidaccesstoken(): string;
-  setValidaccesstoken(value: string): RenewAccessTokenPayload;
+  setValidaccesstoken(value: string): JWTMiddlewarePayload;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): RenewAccessTokenPayload.AsObject;
+  toObject(includeInstance?: boolean): JWTMiddlewarePayload.AsObject;
   static toObject(
     includeInstance: boolean,
-    msg: RenewAccessTokenPayload
-  ): RenewAccessTokenPayload.AsObject;
+    msg: JWTMiddlewarePayload
+  ): JWTMiddlewarePayload.AsObject;
   static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> };
   static extensionsBinary: {
     [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>;
   };
   static serializeBinaryToWriter(
-    message: RenewAccessTokenPayload,
+    message: JWTMiddlewarePayload,
     writer: jspb.BinaryWriter
   ): void;
-  static deserializeBinary(bytes: Uint8Array): RenewAccessTokenPayload;
+  static deserializeBinary(bytes: Uint8Array): JWTMiddlewarePayload;
   static deserializeBinaryFromReader(
-    message: RenewAccessTokenPayload,
+    message: JWTMiddlewarePayload,
     reader: jspb.BinaryReader
-  ): RenewAccessTokenPayload;
+  ): JWTMiddlewarePayload;
 }
 
-export namespace RenewAccessTokenPayload {
+export namespace JWTMiddlewarePayload {
   export type AsObject = {
     validaccesstoken: string;
   };

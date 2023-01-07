@@ -9,15 +9,10 @@ import {
   TransactionMongo,
   UserMongo,
 } from "./types";
-import { Server, ServerCredentials } from "@grpc/grpc-js";
-import { AuthService } from "./proto/auth_grpc_pb";
-import { AuthServer } from "./grpc";
 import { sendLend } from "./rabbitmq";
 import { jwt } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { WebSocketServer } from "ws";
-import { options } from "./subscriptions/subscriptions";
-import Redis from "ioredis";
 
 export const ctx: {
   db?: Db;
@@ -38,8 +33,6 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
       sendLend(msg, db, ch);
     }
   });
-  const redis = new Redis(options);
-  app.locals.rdb = redis;
   app.locals.ch = ch;
   const response = await (
     await fetch("http://backend-auth:4002/accesssecret")
@@ -75,16 +68,4 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
       wsServer
     );
   });
-  const serverGRPC = new Server();
-  serverGRPC.addService(AuthService, AuthServer);
-  serverGRPC.bindAsync(
-    "backend-courses:1983",
-    ServerCredentials.createInsecure(),
-    (err) => {
-      if (err) {
-        throw err;
-      }
-      serverGRPC.start();
-    }
-  );
 });

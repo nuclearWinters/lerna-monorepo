@@ -7,8 +7,8 @@ import {
 import {
   CreateUserInput,
   CreateUserPayload,
-  RenewAccessTokenInput,
-  RenewAccessTokenPayload,
+  JWTMiddlewareInput,
+  JWTMiddlewarePayload,
 } from "./proto/auth_pb";
 import { IAuthServer } from "./proto/auth_grpc_pb";
 import { ctx } from "./index";
@@ -17,27 +17,45 @@ import { REFRESHSECRET, ACCESSSECRET } from "./config";
 import { addMinutes, isAfter } from "date-fns";
 
 export const AuthServer: IAuthServer = {
-  async renewAccessToken(
-    call: ServerUnaryCall<RenewAccessTokenInput, RenewAccessTokenPayload>,
-    callback: sendUnaryData<RenewAccessTokenPayload>
+  async jwtMiddleware(
+    call: ServerUnaryCall<JWTMiddlewareInput, JWTMiddlewarePayload>,
+    callback: sendUnaryData<JWTMiddlewarePayload>
   ): Promise<void> {
     try {
       const refreshToken = call.request.getRefreshtoken();
       if (!refreshToken) {
         throw new Error("No refresh token");
       }
+      const accessToken = call.request.getAccesstoken();
+      const sessionId = call.request.getSessionid();
+      const isBlacklisted = await ctx?.rdb?.get(sessionId);
+      if (accessToken) {
+        const userAccess = jwt.verify(accessToken, ACCESSSECRET);
+        if (!userAccess) {
+          throw new Error("El token esta corrompido.");
+        }
+        if (isBlacklisted) {
+          const time = new Date(Number(isBlacklisted) * 1000);
+          const issuedTime = addMinutes(new Date(userAccess.exp * 1000), -3);
+          const loggedAfter = isAfter(issuedTime, time);
+          if (!loggedAfter) {
+            throw new Error("El usuario esta bloqueado.");
+          }
+        }
+        const payload = new JWTMiddlewarePayload();
+        payload.setValidaccesstoken(accessToken);
+        return callback(null, payload);
+      }
       const user = jwt.verify(refreshToken, REFRESHSECRET);
       if (!user) {
         throw new Error("El token esta corrompido.");
       }
-      const sessionId = call.request.getSessionid();
-      const blacklistedUserTime = await ctx.rdb?.get(sessionId);
-      if (blacklistedUserTime) {
-        const time = new Date(Number(blacklistedUserTime) * 1000);
+      if (isBlacklisted) {
+        const time = new Date(Number(isBlacklisted) * 1000);
         const issuedTime = addMinutes(new Date(user.exp * 1000), -15);
         const loggedAfter = isAfter(issuedTime, time);
         if (!loggedAfter) {
-          throw new Error("El usuario estará bloqueado por 15 minutos.");
+          throw new Error("El usuario esta bloqueado.");
         }
       }
       const { isBorrower, isLender, isSupport, id } = user;
@@ -54,7 +72,7 @@ export const AuthServer: IAuthServer = {
           expiresIn: ACCESS_TOKEN_EXP_STRING,
         }
       );
-      const payload = new RenewAccessTokenPayload();
+      const payload = new JWTMiddlewarePayload();
       payload.setValidaccesstoken(validAccessToken);
       callback(null, payload);
     } catch (e) {

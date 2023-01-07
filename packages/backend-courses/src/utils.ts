@@ -7,16 +7,7 @@ import {
 } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT, Context } from "./types";
-import { ACCESSSECRET } from "./config";
-import {
-  RenewAccessTokenInput,
-  RenewAccessTokenPayload,
-} from "./proto/auth_pb";
-import { AuthClient } from "./proto/auth_grpc_pb";
-import { credentials } from "@grpc/grpc-js";
 import { Request, Response } from "express";
-import { addMinutes, isAfter } from "date-fns";
-import Redis from "ioredis";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -48,12 +39,10 @@ export const getContext = async (
 ): Promise<Context> => {
   const db = req.app.locals.db as Db;
   const ch = req.app.locals.ch;
-  const rdb = req.app.locals.rdb as Redis;
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies?.refreshToken || "";
-  const sessionId = req.header("sessionId") || "";
   const { id, validAccessToken, isBorrower, isLender, isSupport } =
-    await refreshTokenMiddleware(accessToken, refreshToken, rdb, sessionId);
+    await refreshTokenMiddleware(accessToken, refreshToken);
   res?.setHeader("accessToken", validAccessToken || "");
   return {
     users: db.collection<UserMongo>("users"),
@@ -71,29 +60,6 @@ export const getContext = async (
   };
 };
 
-export const client = new AuthClient(
-  `backend-auth:1983`,
-  credentials.createInsecure()
-);
-
-export const renewAccessToken = (
-  refreshToken: string
-): Promise<RenewAccessTokenPayload> => {
-  return new Promise<RenewAccessTokenPayload>((resolve, reject) => {
-    const request = new RenewAccessTokenInput();
-    request.setRefreshtoken(refreshToken);
-
-    client.renewAccessToken(request, (err, user) => {
-      if (err) {
-        const error = new Error(err.message);
-        reject(error);
-      } else {
-        resolve(user);
-      }
-    });
-  });
-};
-
 interface IResolve {
   validAccessToken?: string;
   id?: string;
@@ -104,11 +70,9 @@ interface IResolve {
 
 export const refreshTokenMiddleware = async (
   accessToken: string | undefined,
-  refreshToken: string | undefined,
-  rdb: Redis,
-  sessionId: string
+  refreshToken: string | undefined
 ): Promise<IResolve> => {
-  if (!refreshToken) {
+  if (!accessToken || !refreshToken) {
     return {
       validAccessToken: undefined,
       id: undefined,
@@ -118,24 +82,9 @@ export const refreshTokenMiddleware = async (
     };
   }
   try {
-    if (!accessToken) {
-      throw new Error("jwt expired");
-    }
-    const user = jwt.verify(accessToken, ACCESSSECRET.ACCESSSECRET);
-    if (!user) throw new Error("El token esta corrompido.");
-    const blacklistedUserTime = await rdb?.get(sessionId);
-    if (blacklistedUserTime) {
-      const time = new Date(Number(blacklistedUserTime), 1000);
-      const issuedTime = addMinutes(new Date(user.exp * 1000), -3);
-      const loggedAfter = isAfter(issuedTime, time);
-      if (!loggedAfter)
-        return {
-          validAccessToken: undefined,
-          id: undefined,
-          isLender: false,
-          isBorrower: false,
-          isSupport: false,
-        };
+    const user = jwt.decode(accessToken);
+    if (!user || typeof user === "string") {
+      throw new Error("El token esta corrompido.");
     }
     const { id, isLender, isBorrower, isSupport } = user;
     return {
@@ -146,40 +95,13 @@ export const refreshTokenMiddleware = async (
       isSupport,
     };
   } catch (e) {
-    if (e instanceof Error && e.message === "jwt expired") {
-      try {
-        const response = await renewAccessToken(refreshToken);
-        const validAccessToken = response.getValidaccesstoken();
-        const user = jwt.verify(validAccessToken, ACCESSSECRET.ACCESSSECRET);
-        if (!user) {
-          return {
-            validAccessToken: undefined,
-            id: undefined,
-            isLender: false,
-            isBorrower: false,
-            isSupport: false,
-          };
-        }
-        const { id, isLender, isBorrower, isSupport } = user;
-        return { validAccessToken, id, isLender, isBorrower, isSupport };
-      } catch (e) {
-        return {
-          validAccessToken: undefined,
-          id: undefined,
-          isLender: false,
-          isBorrower: false,
-          isSupport: false,
-        };
-      }
-    } else {
-      return {
-        validAccessToken: undefined,
-        id: undefined,
-        isLender: false,
-        isBorrower: false,
-        isSupport: false,
-      };
-    }
+    return {
+      validAccessToken: undefined,
+      id: undefined,
+      isLender: false,
+      isBorrower: false,
+      isSupport: false,
+    };
   }
 };
 

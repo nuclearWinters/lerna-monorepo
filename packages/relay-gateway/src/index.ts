@@ -4,7 +4,12 @@ import { stitchSchemas } from "@graphql-tools/stitch";
 import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
 import { getOperationAST, OperationTypeNode, print } from "graphql";
 import { createClient } from "graphql-ws";
-import { IContextResult, setCookieContext, setTokenContext } from "./utils";
+import {
+  IContextResult,
+  jwtMiddleware,
+  setCookieContext,
+  setTokenContext,
+} from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import {
   getGraphQLParameters,
@@ -18,6 +23,16 @@ import { nanoid } from "nanoid";
 const httpExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
     const query = print(document);
+    let accessToken: string = context?.req?.headers?.authorization ?? "";
+    const refreshToken: string = context?.req?.cookies?.refreshToken ?? "";
+    if (context?.req?.cookies?.refreshToken) {
+      try {
+        const response = await jwtMiddleware(refreshToken, accessToken);
+        accessToken = response.getValidaccesstoken();
+      } catch (e) {
+        accessToken = "";
+      }
+    }
     const fetchResult = await fetch(url, {
       method: "POST",
       headers: context?.req?.headers
@@ -27,7 +42,7 @@ const httpExecutor = (url: string): AsyncExecutor => {
                   "x-forwarded-for": context?.req?.headers?.["x-forwarded-for"],
                 }
               : {}),
-            authorization: context?.req?.headers?.authorization,
+            authorization: accessToken,
             cookie: context?.req?.headers?.cookie,
             "content-type": context?.req?.headers?.["content-type"],
             "user-agent": context?.req?.headers?.["user-agent"],
@@ -37,8 +52,8 @@ const httpExecutor = (url: string): AsyncExecutor => {
           },
       body: JSON.stringify({ query, variables }),
     });
-    const cookiesResponse = fetchResult.headers.get("set-cookie");
-    const accessTokenHeader = fetchResult.headers.get("accessToken");
+    const cookiesResponse = fetchResult.headers.get("set-cookie") || "";
+    const accessTokenHeader = fetchResult.headers.get("accessToken") || "";
     if (cookiesResponse) {
       setCookieContext(context, cookiesResponse);
     }
@@ -161,13 +176,15 @@ makeGatewaySchema().then((schema) => {
         contextFactory: () => ({ req }),
       });
       if (result.type === "RESPONSE") {
-        const cookies = (result.context as IContextResult | undefined)?.cookies;
-        const accessTokenHeader = (result.context as IContextResult | undefined)
-          ?.accessTokenHeader;
-        if (cookies) {
+        const cookies =
+          (result.context as IContextResult | undefined)?.cookies || "";
+        const accessTokenHeader =
+          (result.context as IContextResult | undefined)?.accessTokenHeader ||
+          "";
+        if (typeof cookies === "string") {
           res.setHeader("Set-Cookie", cookies);
         }
-        if (accessTokenHeader) {
+        if (typeof accessTokenHeader === "string") {
           res.setHeader("accessToken", accessTokenHeader);
         }
         result.headers.forEach(({ name, value }) => res.setHeader(name, value));

@@ -1,14 +1,12 @@
 import { tokensAndData, LanguageContext } from "App";
 import { resources } from "i18n";
 import { useContext } from "react";
-import { subscriptionsClient } from "RelayEnvironment";
 
 export const logOut = () => {
   tokensAndData.accessToken = "";
   tokensAndData.exp = undefined;
   tokensAndData.logOut(() => {
     tokensAndData.refetchUser();
-    subscriptionsClient.restart();
   });
 };
 
