@@ -1,11 +1,12 @@
 import { tokensAndData } from "App";
 import { FC, useEffect, useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
-import { logOut } from "utils";
+import { useLogout } from "utils";
 import { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
 import { useIdleTimer } from "react-idle-timer";
 
 export const CheckExpiration: FC = () => {
+  const logout = useLogout();
   const [commit] = useMutation<CheckExpirationMutation>(graphql`
     mutation CheckExpirationMutation($input: ExtendSessionInput!) {
       extendSession(input: $input) {
@@ -31,7 +32,7 @@ export const CheckExpiration: FC = () => {
         difference < 0 && !active && tokensAndData.accessToken;
       if (logOutFromSession) {
         clearInterval(interval);
-        logOut();
+        logout();
       } else if (refreshSession) {
         clearInterval(interval);
         commit({

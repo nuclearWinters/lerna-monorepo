@@ -4,13 +4,12 @@ import {
   usePreloadedQuery,
   graphql,
   useSubscription,
-  useMutation,
 } from "react-relay/hooks";
 import { Icon } from "components/Icon";
 import { AccountInfo } from "components/AccountInfo";
 import { AccountLink } from "components/AccountLink";
 import { Rows } from "components/Rows";
-import { logOut, useTranslation } from "utils";
+import { useTranslation, useLogout } from "utils";
 import { CheckExpiration } from "components/CheckExpiration";
 import {
   FaUserCircle,
@@ -37,7 +36,7 @@ import AppUserQuery, {
   AppUserQuery as AppUserQueryType,
 } from "./__generated__/AppUserQuery.graphql";
 import { Link, RouteConfig, useNavigation } from "yarr";
-import React, { FC, useEffect, ReactNode, useCallback, useMemo } from "react";
+import React, { FC, useEffect, ReactNode, useMemo } from "react";
 import { preloadQuery, tokensAndData } from "App";
 import { Decode } from "./screens/LogIn";
 import decode from "jwt-decode";
@@ -55,7 +54,6 @@ import {
   baseRoutesLink,
   customRoutesIconUser,
 } from "Routes.css";
-import { RoutesLogOutMutation } from "__generated__/RoutesLogOutMutation.graphql";
 import { nanoid } from "nanoid";
 
 const subscriptionUser = graphql`
@@ -74,29 +72,12 @@ type Props = {
 };
 
 export const Header: FC<Props> = (props) => {
+  const logout = useLogout();
   const { t, changeLanguage } = useTranslation();
   const { user, authUser } = usePreloadedQuery<AppUserQueryType>(
     AppUserQuery,
     preloadQuery
   );
-  const [commit] = useMutation<RoutesLogOutMutation>(graphql`
-    mutation RoutesLogOutMutation($input: LogOutInput!) {
-      logOut(input: $input) {
-        error
-      }
-    }
-  `);
-  const logOutCallback = useCallback(() => {
-    commit({
-      variables: {
-        input: {},
-      },
-      onCompleted: () => {
-        window.location.reload();
-      },
-    });
-  }, [commit]);
-  tokensAndData.logOut = logOutCallback;
   const { isBorrower, isSupport } = authUser;
   const isLogged = !!user.accountId;
   useEffect(() => {
@@ -243,7 +224,7 @@ export const Header: FC<Props> = (props) => {
                   authUser.apellidoMaterno || ""
                 }`.toUpperCase()}
               </Link>
-              <FaSignOutAlt onClick={logOut} className={baseRoutesIconLogout} />
+              <FaSignOutAlt onClick={logout} className={baseRoutesIconLogout} />
             </div>
           ) : (
             <div className={baseRoutesHeaderNotLogged}>

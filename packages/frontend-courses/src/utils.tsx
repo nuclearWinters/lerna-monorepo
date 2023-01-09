@@ -1,9 +1,28 @@
-import { LanguageContext, tokensAndData } from "App";
+import { LanguageContext } from "App";
 import { resources } from "i18n";
 import { useContext } from "react";
+import { graphql, useMutation } from "react-relay";
+import { utilsLogOutMutation } from "__generated__/utilsLogOutMutation.graphql";
 
-export const logOut = () => {
-  tokensAndData.logOut();
+export const useLogout = () => {
+  const [commit] = useMutation<utilsLogOutMutation>(graphql`
+    mutation utilsLogOutMutation($input: LogOutInput!) {
+      logOut(input: $input) {
+        error
+      }
+    }
+  `);
+  const logout = () => {
+    commit({
+      variables: {
+        input: {},
+      },
+      onCompleted: () => {
+        window.location.reload();
+      },
+    });
+  };
+  return logout;
 };
 
 export const API_GATEWAY =

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<dec6b994fe29a044a08ce432a8702d8b>>
+ * @generated SignedSource<<faff85ac3ec793ae28000855ee8612a1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,17 +12,17 @@ import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type LogOutInput = {
   clientMutationId?: string | null;
 };
-export type RoutesLogOutMutation$variables = {
+export type utilsLogOutMutation$variables = {
   input: LogOutInput;
 };
-export type RoutesLogOutMutation$data = {
+export type utilsLogOutMutation$data = {
   readonly logOut: {
     readonly error: string;
   };
 };
-export type RoutesLogOutMutation = {
-  response: RoutesLogOutMutation$data;
-  variables: RoutesLogOutMutation$variables;
+export type utilsLogOutMutation = {
+  response: utilsLogOutMutation$data;
+  variables: utilsLogOutMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -64,7 +64,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "RoutesLogOutMutation",
+    "name": "utilsLogOutMutation",
     "selections": (v1/*: any*/),
     "type": "Mutation",
     "abstractKey": null
@@ -73,20 +73,20 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "RoutesLogOutMutation",
+    "name": "utilsLogOutMutation",
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "035437bf63250ad4cedca711167b3635",
+    "cacheID": "62f48d6f993235723f255966785c11c1",
     "id": null,
     "metadata": {},
-    "name": "RoutesLogOutMutation",
+    "name": "utilsLogOutMutation",
     "operationKind": "mutation",
-    "text": "mutation RoutesLogOutMutation(\n  $input: LogOutInput!\n) {\n  logOut(input: $input) {\n    error\n  }\n}\n"
+    "text": "mutation utilsLogOutMutation(\n  $input: LogOutInput!\n) {\n  logOut(input: $input) {\n    error\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b032e8ac46e7c1a57c29ba55b733155e";
+(node as any).hash = "f4e542bcbca70def31e21b863ebd1180";
 
 export default node;
