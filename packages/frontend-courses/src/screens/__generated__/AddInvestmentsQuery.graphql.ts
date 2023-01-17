@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<731e68ddb4b97976f0d265b9841c6dc5>>
+ * @generated SignedSource<<5237f7cff3e0f35377352a8b526a3924>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,7 +21,9 @@ export type AddInvestmentsQuery$data = {
     readonly isSupport: boolean;
     readonly language: Languages;
   };
-  readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_query">;
+  readonly user: {
+    readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_user">;
+  };
 };
 export type AddInvestmentsQuery = {
   response: AddInvestmentsQuery$data;
@@ -110,9 +112,20 @@ return {
     "name": "AddInvestmentsQuery",
     "selections": [
       {
+        "alias": null,
         "args": null,
-        "kind": "FragmentSpread",
-        "name": "AddInvestments_query"
+        "concreteType": "User",
+        "kind": "LinkedField",
+        "name": "user",
+        "plural": false,
+        "selections": [
+          {
+            "args": null,
+            "kind": "FragmentSpread",
+            "name": "AddInvestments_user"
+          }
+        ],
+        "storageKey": null
       },
       {
         "alias": null,
@@ -143,100 +156,132 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v6/*: any*/),
-        "concreteType": "LoanConnection",
+        "args": null,
+        "concreteType": "User",
         "kind": "LinkedField",
-        "name": "loansFinancing",
+        "name": "user",
         "plural": false,
         "selections": [
           {
             "alias": null,
-            "args": null,
-            "concreteType": "LoanEdge",
+            "args": (v6/*: any*/),
+            "concreteType": "LoanConnection",
             "kind": "LinkedField",
-            "name": "edges",
-            "plural": true,
+            "name": "loansFinancing",
+            "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "Loan",
+                "concreteType": "LoanEdge",
                 "kind": "LinkedField",
-                "name": "node",
-                "plural": false,
+                "name": "edges",
+                "plural": true,
                 "selections": [
-                  (v7/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "id_user",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "score",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "ROI",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "goal",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "term",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "raised",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "expiry",
-                    "storageKey": null
-                  },
-                  (v8/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "ScheduledPayments",
+                    "concreteType": "Loan",
                     "kind": "LinkedField",
-                    "name": "scheduledPayments",
-                    "plural": true,
+                    "name": "node",
+                    "plural": false,
                     "selections": [
+                      (v7/*: any*/),
                       {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "amortize",
+                        "name": "id_user",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "score",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "ROI",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "goal",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "term",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "raised",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "expiry",
                         "storageKey": null
                       },
                       (v8/*: any*/),
                       {
                         "alias": null,
                         "args": null,
+                        "concreteType": "ScheduledPayments",
+                        "kind": "LinkedField",
+                        "name": "scheduledPayments",
+                        "plural": true,
+                        "selections": [
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "amortize",
+                            "storageKey": null
+                          },
+                          (v8/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "scheduledDate",
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
                         "kind": "ScalarField",
-                        "name": "scheduledDate",
+                        "name": "pending",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "pendingCents",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "__typename",
                         "storageKey": null
                       }
                     ],
@@ -246,21 +291,7 @@ return {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "pending",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "pendingCents",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "__typename",
+                    "name": "cursor",
                     "storageKey": null
                   }
                 ],
@@ -269,50 +300,44 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "cursor",
+                "concreteType": "PageInfo",
+                "kind": "LinkedField",
+                "name": "pageInfo",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "endCursor",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "hasNextPage",
+                    "storageKey": null
+                  }
+                ],
                 "storageKey": null
-              }
+              },
+              (v5/*: any*/)
             ],
-            "storageKey": null
+            "storageKey": "loansFinancing(after:\"\",first:5)"
           },
           {
             "alias": null,
-            "args": null,
-            "concreteType": "PageInfo",
-            "kind": "LinkedField",
-            "name": "pageInfo",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "endCursor",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "hasNextPage",
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
+            "args": (v6/*: any*/),
+            "filters": null,
+            "handle": "connection",
+            "key": "AddInvestments_query_loansFinancing",
+            "kind": "LinkedHandle",
+            "name": "loansFinancing"
           },
-          (v5/*: any*/)
+          (v7/*: any*/)
         ],
-        "storageKey": "loansFinancing(after:\"\",first:5)"
-      },
-      {
-        "alias": null,
-        "args": (v6/*: any*/),
-        "filters": null,
-        "handle": "connection",
-        "key": "AddInvestments_query_loansFinancing",
-        "kind": "LinkedHandle",
-        "name": "loansFinancing"
+        "storageKey": null
       },
       {
         "alias": null,
@@ -335,16 +360,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d13544940f88cef2d9a5c170352f55a8",
+    "cacheID": "8351e3098af168614ec7522e4453b34f",
     "id": null,
     "metadata": {},
     "name": "AddInvestmentsQuery",
     "operationKind": "query",
-    "text": "query AddInvestmentsQuery {\n  ...AddInvestments_query\n  authUser {\n    isLender\n    isSupport\n    isBorrower\n    language\n    accountId\n    id\n  }\n}\n\nfragment AddInvestments_query on Query {\n  loansFinancing(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
+    "text": "query AddInvestmentsQuery {\n  user {\n    ...AddInvestments_user\n    id\n  }\n  authUser {\n    isLender\n    isSupport\n    isBorrower\n    language\n    accountId\n    id\n  }\n}\n\nfragment AddInvestments_user on User {\n  loansFinancing(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ceffb8125df48948325ef1c5299b8962";
+(node as any).hash = "7cbbe2817e685bccddba2f49cb0ab9b9";
 
 export default node;

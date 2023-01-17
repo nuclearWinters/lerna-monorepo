@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<edb715c331a554fb7bba496298f7f393>>
+ * @generated SignedSource<<cae0cb247d22ef06a7ce6cf780bf1146>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,21 +8,19 @@
 /* eslint-disable */
 // @ts-nocheck
 
+// @dataDrivenDependency MyTransactions_user.transactions.edges.node {"branches":{"InvestTransaction":{"component":"InvestmentTransaction","fragment":"InvestmentTransaction_transaction$normalization.graphql"},"MoneyTransaction":{"component":"MoneyTransaction","fragment":"MoneyTransaction_transaction$normalization.graphql"}},"plural":true}
+
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
-export type TransactionType = "COLLECT" | "CREDIT" | "INVEST" | "WITHDRAWAL" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type MyTransactions_user$data = {
   readonly id: string;
   readonly transactions: {
     readonly edges: ReadonlyArray<{
       readonly node: {
-        readonly _id_loan: string | null;
-        readonly created: Int;
-        readonly id: string;
-        readonly id_borrower: string | null;
-        readonly id_user: string;
-        readonly quantity: string;
-        readonly type: TransactionType;
+        readonly __fragmentPropName?: string | null;
+        readonly __id: string;
+        readonly __module_component?: string | null;
+        readonly " $fragmentSpreads": FragmentRefs<"InvestmentTransaction_transaction" | "MoneyTransaction_transaction">;
       } | null;
     } | null> | null;
   } | null;
@@ -36,14 +34,7 @@ export type MyTransactions_user$key = {
 const node: ReaderFragment = (function(){
 var v0 = [
   "transactions"
-],
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
+];
 return {
   "argumentDefinitions": [
     {
@@ -55,11 +46,6 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
-    },
-    {
-      "defaultValue": null,
-      "kind": "LocalArgument",
-      "name": "identifier"
     }
   ],
   "kind": "Fragment",
@@ -92,13 +78,7 @@ return {
   "selections": [
     {
       "alias": "transactions",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "identifier",
-          "variableName": "identifier"
-        }
-      ],
+      "args": null,
       "concreteType": "TransactionConnection",
       "kind": "LinkedField",
       "name": "__MyTransactions_user_transactions_connection",
@@ -115,53 +95,50 @@ return {
             {
               "alias": null,
               "args": null,
-              "concreteType": "Transaction",
+              "concreteType": null,
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
               "selections": [
-                (v1/*: any*/),
                 {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id_user",
-                  "storageKey": null
+                  "kind": "InlineFragment",
+                  "selections": [
+                    {
+                      "args": null,
+                      "documentName": "MyTransactions_user",
+                      "fragmentName": "InvestmentTransaction_transaction",
+                      "fragmentPropName": "transaction",
+                      "kind": "ModuleImport"
+                    }
+                  ],
+                  "type": "InvestTransaction",
+                  "abstractKey": null
                 },
                 {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id_borrower",
-                  "storageKey": null
+                  "kind": "InlineFragment",
+                  "selections": [
+                    {
+                      "args": null,
+                      "documentName": "MyTransactions_user",
+                      "fragmentName": "MoneyTransaction_transaction",
+                      "fragmentPropName": "transaction",
+                      "kind": "ModuleImport"
+                    }
+                  ],
+                  "type": "MoneyTransaction",
+                  "abstractKey": null
                 },
                 {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "_id_loan",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "type",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "quantity",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "created",
-                  "storageKey": null
+                  "kind": "ClientExtension",
+                  "selections": [
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "__id",
+                      "storageKey": null
+                    }
+                  ]
                 },
                 {
                   "alias": null,
@@ -211,13 +188,19 @@ return {
       ],
       "storageKey": null
     },
-    (v1/*: any*/)
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
+    }
   ],
   "type": "User",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "3d26ca5ec2cada0fde9958f534aa56e5";
+(node as any).hash = "8fcdb123e1cf72a3358213d08eb0e647";
 
 export default node;

@@ -116,13 +116,22 @@ describe("QueryTransactions tests", () => {
               edges {
                 cursor
                 node {
-                  id
-                  id_user
-                  type
-                  quantity
-                  created
-                  id_borrower
-                  _id_loan
+                  ... on MoneyTransaction {
+                    id
+                    id_user
+                    type
+                    quantity
+                    created
+                  }
+                  ... on InvestTransaction {
+                    id
+                    id_user
+                    type
+                    quantity
+                    created
+                    id_borrower
+                    _id_loan
+                  }
                 }
               }
             } 

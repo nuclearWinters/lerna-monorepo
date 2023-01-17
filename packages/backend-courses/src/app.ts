@@ -2,7 +2,7 @@ import express from "express";
 import { GraphQLSchema, GraphQLObjectType } from "graphql";
 import cors from "cors";
 import { QueryUser } from "./QueryUser";
-import { nodeField } from "./Nodes";
+import { dataDrivenDependencies, nodeField } from "./Nodes";
 import { AddLendsMutation } from "./mutations/AddLends";
 import { AddFundsMutation } from "./mutations/AddFunds";
 import { AddLoanMutation } from "./mutations/AddLoan";
@@ -24,14 +24,12 @@ import {
   shouldRenderGraphiQL,
 } from "graphql-helix";
 import cookieParser from "cookie-parser";
-import { QueryLoans } from "./QueryLoans";
 
 const Query = new GraphQLObjectType({
   name: "Query",
   fields: {
     user: QueryUser,
     node: nodeField,
-    loansFinancing: QueryLoans,
   },
 });
 
@@ -90,6 +88,7 @@ app.use("/graphql", async (req, res) => {
   } else {
     const { operationName, query, variables } = getGraphQLParameters(request);
     const context = await getContext(req, res);
+    dataDrivenDependencies.reset();
     const result = await processRequest({
       operationName,
       query,
@@ -101,6 +100,9 @@ app.use("/graphql", async (req, res) => {
     if (result.type === "RESPONSE") {
       result.headers.forEach(({ name, value }) => res.setHeader(name, value));
       res.status(result.status);
+      result.payload.extensions = {
+        modules: dataDrivenDependencies.getModules(),
+      };
       res.json(result.payload);
     }
   }

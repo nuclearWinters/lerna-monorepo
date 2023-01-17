@@ -137,7 +137,6 @@ type Query {
   user: User!
   authUser: AuthUser!
   node(id: ID!): Node
-  loansFinancing(after: String, first: Int): LoanConnection
 }
 
 type Subscription {
@@ -261,14 +260,26 @@ enum Languages {
   DEFAULT
 }
 
-type Transaction {
+union Transaction = InvestTransaction | MoneyTransaction
+
+type InvestTransaction {
   id: ID!
   id_user: String!
-  id_borrower: String
-  _id_loan: String
+  id_borrower: String!
+  _id_loan: String!
   type: TransactionType!
   quantity: MXN!
   created: Date!
+  js(module: String!, id: String): JSDependency!
+}
+
+type MoneyTransaction {
+  id: ID!
+  id_user: String!
+  type: TransactionType!
+  quantity: MXN!
+  created: Date!
+  js(module: String!, id: String): JSDependency!
 }
 
 type TransactionConnection {
@@ -291,14 +302,13 @@ type User implements Node {
   transactions(
     after: String
     first: Int
-    identifier: String
   ): TransactionConnection
   investments(
     after: String
     first: Int
     status: [InvestmentStatus!]
-    identifier: String
   ): InvestmentsConnection
+  loansFinancing(after: String, first: Int): LoanConnection
 }
 
 type Session implements Node {
@@ -361,3 +371,4 @@ type AuthUser implements Node {
 
 scalar Date
 scalar MXN
+scalar JSDependency

@@ -48,6 +48,6 @@ export const CheckExpiration: FC = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [commit, isIdle, count]);
+  }, [commit, isIdle, count, logout]);
   return null;
 };

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1e592007e139d213528a10488d2623a3>>
+ * @generated SignedSource<<371cb1ba0b8c793a81f8644c1c4ce08f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -53,11 +53,6 @@ return {
     {
       "defaultValue": null,
       "kind": "LocalArgument",
-      "name": "identifier"
-    },
-    {
-      "defaultValue": null,
-      "kind": "LocalArgument",
       "name": "status"
     }
   ],
@@ -92,11 +87,6 @@ return {
     {
       "alias": "investments",
       "args": [
-        {
-          "kind": "Variable",
-          "name": "identifier",
-          "variableName": "identifier"
-        },
         {
           "kind": "Variable",
           "name": "status",
@@ -185,6 +175,6 @@ return {
 };
 })();
 
-(node as any).hash = "e9b82e3a7abd0461252ec1ece40f0983";
+(node as any).hash = "1596b33ba03df96099efabd3db0dcc60";
 
 export default node;

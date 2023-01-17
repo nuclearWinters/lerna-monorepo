@@ -46,13 +46,25 @@ export type TransactionMongoType =
   | "payment"
   | "collect";
 
-export interface TransactionMongo {
+export type TransactionMongo =
+  | InvestmentTransactionMongo
+  | MoneyTransactionMongo;
+
+export interface InvestmentTransactionMongo {
   _id?: ObjectId;
   id_user: string;
   type: TransactionMongoType;
   quantity: number;
-  id_borrower?: string;
-  _id_loan?: ObjectId;
+  id_borrower: string;
+  _id_loan: ObjectId;
+  created: Date;
+}
+
+export interface MoneyTransactionMongo {
+  _id?: ObjectId;
+  id_user: string;
+  type: TransactionMongoType;
+  quantity: number;
   created: Date;
 }
 

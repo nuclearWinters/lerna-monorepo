@@ -54,7 +54,6 @@ import {
   baseRoutesLink,
   customRoutesIconUser,
 } from "Routes.css";
-import { nanoid } from "nanoid";
 
 const subscriptionUser = graphql`
   subscription RoutesUserSubscription {
@@ -316,15 +315,11 @@ export const routes: IRouteConfig = [
     },
     path: "/myInvestments",
     preload: () => {
-      const id = nanoid();
       return {
-        id,
         query: loadQuery(
           RelayEnvironment,
           MyInvestmentsUserQuery,
-          {
-            identifier: id,
-          },
+          {},
           { fetchPolicy: "network-only" }
         ),
       };
@@ -347,13 +342,11 @@ export const routes: IRouteConfig = [
     },
     path: "/myTransactions",
     preload: () => {
-      const id = nanoid();
       return {
-        id,
         query: loadQuery(
           RelayEnvironment,
           MyTransactionsQuery,
-          { identifier: id },
+          {},
           { fetchPolicy: "network-only" }
         ),
       };

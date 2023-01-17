@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, Suspense, useMemo } from "react";
 import {
   graphql,
   PreloadedQuery,
@@ -14,37 +14,23 @@ import { Rows } from "components/Rows";
 import { Space } from "components/Space";
 import { Columns } from "components/Colums";
 import { MyTransactionsPaginationUser } from "./__generated__/MyTransactionsPaginationUser.graphql";
-import {
-  MyTransactions_user$key,
-  TransactionType,
-} from "./__generated__/MyTransactions_user.graphql";
-import es from "dayjs/locale/es";
-import en from "dayjs/locale/en";
-import dayjs from "dayjs";
+import { MyTransactions_user$key } from "./__generated__/MyTransactions_user.graphql";
 import { useTranslation } from "utils";
-import { FaFileContract, FaUserCircle } from "react-icons/fa";
 import { MyTransactionsQuery } from "./__generated__/MyTransactionsQuery.graphql";
 import { customColumn } from "components/Column.css";
 import { customRows } from "components/Rows.css";
 import { customSpace } from "components/Space.css";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import { MyTransactionsTransactionsSubscription } from "./__generated__/MyTransactionsTransactionsSubscription.graphql";
-import {
-  baseMyTransactionsBar,
-  baseMyTransactionsBox,
-  baseMyTransactionsDate,
-  baseMyTransactionsDescription,
-  baseMyTransactionsIcon,
-  customMyTransactionsQuantity,
-  customMyTransactionsStatus,
-} from "./MyTransactions.css";
-import { nanoid } from "nanoid";
+import RelayMatchContainer from "RelayMatchContainer";
+import { baseApp } from "App.css";
+import { Spinner } from "components/Spinner";
 
 const transactionsFragment = graphql`
-  query MyTransactionsQuery($identifier: String) {
+  query MyTransactionsQuery {
     user {
       id
-      ...MyTransactions_user @arguments(identifier: $identifier)
+      ...MyTransactions_user
     }
     authUser {
       language
@@ -56,13 +42,10 @@ const subscriptionTransactions = graphql`
   subscription MyTransactionsTransactionsSubscription($connections: [ID!]!) {
     transactions_subscribe_insert @prependEdge(connections: $connections) {
       node {
-        id
-        id_user
-        id_borrower
-        _id_loan
-        type
-        quantity
-        created
+        __id
+        ...InvestmentTransaction_transaction
+          @module(name: "InvestmentTransaction")
+        ...MoneyTransaction_transaction @module(name: "MoneyTransaction")
       }
       cursor
     }
@@ -74,20 +57,16 @@ const transactionsPaginationFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
-    identifier: { type: "String" }
   )
   @refetchable(queryName: "MyTransactionsPaginationUser") {
-    transactions(first: $count, after: $cursor, identifier: $identifier)
+    transactions(first: $count, after: $cursor)
       @connection(key: "MyTransactions_user_transactions") {
       edges {
         node {
-          id
-          id_user
-          id_borrower
-          _id_loan
-          type
-          quantity
-          created
+          __id
+          ...InvestmentTransaction_transaction
+            @module(name: "InvestmentTransaction")
+          ...MoneyTransaction_transaction @module(name: "MoneyTransaction")
         }
       }
     }
@@ -96,15 +75,13 @@ const transactionsPaginationFragment = graphql`
 
 type Props = {
   preloaded: {
-    id?: string;
     query: PreloadedQuery<MyTransactionsQuery, {}>;
   };
 };
 
 export const MyTransactions: FC<Props> = (props) => {
   const { t } = useTranslation();
-  const [identifier, setIdentifier] = useState(props.preloaded.id || nanoid());
-  const { user, authUser } = usePreloadedQuery(
+  const { user } = usePreloadedQuery(
     transactionsFragment,
     props.preloaded.query
   );
@@ -113,25 +90,10 @@ export const MyTransactions: FC<Props> = (props) => {
     MyTransactions_user$key
   >(transactionsPaginationFragment, user);
 
-  const getStatus = (type: TransactionType) => {
-    switch (type) {
-      case "COLLECT":
-        return t("Pago mensual");
-      case "CREDIT":
-        return t("Ingreso");
-      case "INVEST":
-        return t("Inversión");
-      case "WITHDRAWAL":
-        return t("Retiro");
-      default:
-        return "";
-    }
-  };
-
   const connectionTransactionID = ConnectionHandler.getConnectionID(
     user.id,
     "MyTransactions_user_transactions",
-    { identifier }
+    {}
   );
 
   const configTransactions = useMemo<
@@ -145,82 +107,27 @@ export const MyTransactions: FC<Props> = (props) => {
   );
   useSubscription<MyTransactionsTransactionsSubscription>(configTransactions);
 
-  const language =
-    authUser.language === "DEFAULT"
-      ? navigator.language.includes("es")
-        ? "ES"
-        : "EN"
-      : authUser.language === "ES"
-      ? "ES"
-      : "EN";
-
   return (
     <Main>
       <WrapperSmall>
         <Title text={t("Mis movimientos")} />
         <Rows className={customRows["transactions"]}>
-          {data.transactions &&
-            data.transactions.edges &&
-            data.transactions.edges.map((edge) => {
+          <Suspense
+            fallback={
+              <div className={baseApp}>
+                <Spinner />
+              </div>
+            }
+          >
+            {data?.transactions?.edges?.map((edge) => {
               if (edge && edge.node) {
-                const { id_borrower, _id_loan } = edge.node;
-                const substraction = edge.node.quantity.includes("-")
-                  ? "#CD5C5C"
-                  : "#50C878";
                 return (
-                  <div className={baseMyTransactionsBox} key={edge.node.id}>
-                    <div className={baseMyTransactionsBar}>
-                      <div
-                        className={
-                          substraction
-                            ? customMyTransactionsStatus["substraction"]
-                            : customMyTransactionsStatus["addition"]
-                        }
-                      >
-                        {getStatus(edge.node.type)}
-                      </div>
-                      {id_borrower && _id_loan ? (
-                        <div className={baseMyTransactionsDescription}>
-                          {t("Prestado a")}{" "}
-                          <FaUserCircle
-                            onClick={() => {
-                              navigator.clipboard.writeText(id_borrower);
-                            }}
-                            className={baseMyTransactionsIcon}
-                          />{" "}
-                          {t("al fondo")}:{" "}
-                          <FaFileContract
-                            onClick={() => {
-                              navigator.clipboard.writeText(_id_loan);
-                            }}
-                            className={baseMyTransactionsIcon}
-                          />
-                        </div>
-                      ) : null}
-                      <div className={baseMyTransactionsDate}>
-                        {dayjs(edge.node.created)
-                          .locale(language === "ES" ? es : en)
-                          .format(
-                            authUser.language === "ES"
-                              ? "D [de] MMMM [del] YYYY [a las] h:mm a"
-                              : "D MMMM[,] YYYY [at] h:mm a"
-                          )}
-                      </div>
-                    </div>
-                    <div
-                      className={
-                        substraction
-                          ? customMyTransactionsQuantity["substraction"]
-                          : customMyTransactionsQuantity["addition"]
-                      }
-                    >
-                      {edge.node.quantity}
-                    </div>
-                  </div>
+                  <RelayMatchContainer key={edge.node.__id} match={edge.node} />
                 );
               }
               return null;
             })}
+          </Suspense>
         </Rows>
         <Space className={customSpace["h20"]} />
         <Columns className={customColumn["columnJustifyCenter"]}>
@@ -234,14 +141,10 @@ export const MyTransactions: FC<Props> = (props) => {
             text={t("Refrescar lista")}
             color="secondary"
             onClick={() => {
-              const newId = nanoid();
               refetch(
-                { identifier: newId },
+                {},
                 {
                   fetchPolicy: "network-only",
-                  onComplete: () => {
-                    setIdentifier(newId);
-                  },
                 }
               );
             }}

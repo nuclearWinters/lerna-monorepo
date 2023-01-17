@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7572cc2540e79c1bf52023941bd1b6e3>>
+ * @generated SignedSource<<4f9a86f61de7091d09ecfeb51ab19312>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,8 @@
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type AddInvestments_query$data = {
+export type AddInvestments_user$data = {
+  readonly id: string;
   readonly loansFinancing: {
     readonly __id: string;
     readonly edges: ReadonlyArray<{
@@ -20,17 +21,24 @@ export type AddInvestments_query$data = {
       } | null;
     } | null> | null;
   } | null;
-  readonly " $fragmentType": "AddInvestments_query";
+  readonly " $fragmentType": "AddInvestments_user";
 };
-export type AddInvestments_query$key = {
-  readonly " $data"?: AddInvestments_query$data;
-  readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_query">;
+export type AddInvestments_user$key = {
+  readonly " $data"?: AddInvestments_user$data;
+  readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_user">;
 };
 
 const node: ReaderFragment = (function(){
 var v0 = [
   "loansFinancing"
-];
+],
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
 return {
   "argumentDefinitions": [
     {
@@ -63,11 +71,14 @@ return {
         "backward": null,
         "path": (v0/*: any*/)
       },
-      "fragmentPathInResult": [],
-      "operation": require('./AddInvestmentsPaginationQuery.graphql')
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": require('./AddInvestmentsPaginationQuery.graphql'),
+      "identifierField": "id"
     }
   },
-  "name": "AddInvestments_query",
+  "name": "AddInvestments_user",
   "selections": [
     {
       "alias": "loansFinancing",
@@ -93,13 +104,7 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
+                (v1/*: any*/),
                 {
                   "args": null,
                   "kind": "FragmentSpread",
@@ -164,13 +169,14 @@ return {
         }
       ],
       "storageKey": null
-    }
+    },
+    (v1/*: any*/)
   ],
-  "type": "Query",
+  "type": "User",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "c7901c1f897ccaf2863cffadb9518428";
+(node as any).hash = "916edd85923240558a16a71644a3687d";
 
 export default node;

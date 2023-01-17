@@ -19,6 +19,7 @@ export interface IContextResult {
   refreshToken: string;
   accessTokenHeader?: string;
   sessionId?: string;
+  extensions: any;
 }
 
 export const setCookieContext = (
@@ -36,6 +37,15 @@ export const setTokenContext = (
 ): IContextResult => {
   const ctxTyped = ctx as IContextResult;
   ctxTyped.accessTokenHeader = accessTokenHeader;
+  return ctxTyped;
+};
+
+export const setExtensionsContext = (
+  ctx: unknown,
+  extensions: any
+): IContextResult => {
+  const ctxTyped = ctx as IContextResult;
+  ctxTyped.extensions = extensions;
   return ctxTyped;
 };
 

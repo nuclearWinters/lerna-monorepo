@@ -22,7 +22,7 @@ import { TableColumnName } from "components/TableColumnName";
 import { Table } from "components/Table";
 import { useTranslation } from "utils";
 import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
-import { AddInvestments_query$key } from "./__generated__/AddInvestments_query.graphql";
+import { AddInvestments_user$key } from "./__generated__/AddInvestments_user.graphql";
 import { AddInvestmentsQuery } from "./__generated__/AddInvestmentsQuery.graphql";
 import { useNavigation } from "yarr";
 import { customColumn } from "components/Column.css";
@@ -64,7 +64,9 @@ const subscriptionLoans = graphql`
 const addInvestmentFragment = graphql`
   query AddInvestmentsQuery {
     __id
-    ...AddInvestments_query
+    user {
+      ...AddInvestments_user
+    }
     authUser {
       isLender
       isSupport
@@ -76,7 +78,7 @@ const addInvestmentFragment = graphql`
 `;
 
 const addInvestmentPaginationFragment = graphql`
-  fragment AddInvestments_query on Query
+  fragment AddInvestments_user on User
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
@@ -116,7 +118,7 @@ export const AddInvestments: FC<Props> = (props) => {
     addInvestmentFragment,
     props.preloaded.query
   );
-  const { authUser } = preloadData;
+  const { authUser, user } = preloadData;
   const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {
@@ -127,8 +129,8 @@ export const AddInvestments: FC<Props> = (props) => {
   const navigate = useNavigation();
   const { data, loadNext, refetch } = usePaginationFragment<
     AddInvestmentsPaginationQuery,
-    AddInvestments_query$key
-  >(addInvestmentPaginationFragment, preloadData);
+    AddInvestments_user$key
+  >(addInvestmentPaginationFragment, user);
 
   const { isLender, isSupport, isBorrower, language } = authUser;
 

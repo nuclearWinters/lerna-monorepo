@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<66ae8fad974041e720dc0e139f7e543b>>
+ * @generated SignedSource<<167edc6bb4c53eba51dc95ae28ef4257>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,6 @@ export type MyInvestmentsPaginationUser$variables = {
   count?: number | null;
   cursor?: string | null;
   id: string;
-  identifier?: string | null;
   status?: ReadonlyArray<InvestmentStatus> | null;
 };
 export type MyInvestmentsPaginationUser$data = {
@@ -47,45 +46,35 @@ v2 = {
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "identifier"
-},
-v4 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
   "name": "status"
 },
-v5 = [
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v6 = {
-  "kind": "Variable",
-  "name": "identifier",
-  "variableName": "identifier"
-},
-v7 = {
+v5 = {
   "kind": "Variable",
   "name": "status",
   "variableName": "status"
 },
-v8 = {
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v9 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v10 = [
+v8 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -96,8 +85,7 @@ v10 = [
     "name": "first",
     "variableName": "count"
   },
-  (v6/*: any*/),
-  (v7/*: any*/)
+  (v5/*: any*/)
 ];
 return {
   "fragment": {
@@ -105,8 +93,7 @@ return {
       (v0/*: any*/),
       (v1/*: any*/),
       (v2/*: any*/),
-      (v3/*: any*/),
-      (v4/*: any*/)
+      (v3/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
@@ -114,7 +101,7 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v5/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -132,8 +119,7 @@ return {
                 "name": "cursor",
                 "variableName": "cursor"
               },
-              (v6/*: any*/),
-              (v7/*: any*/)
+              (v5/*: any*/)
             ],
             "kind": "FragmentSpread",
             "name": "MyInvestments_user"
@@ -151,7 +137,6 @@ return {
       (v0/*: any*/),
       (v1/*: any*/),
       (v3/*: any*/),
-      (v4/*: any*/),
       (v2/*: any*/)
     ],
     "kind": "Operation",
@@ -159,20 +144,20 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v5/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v8/*: any*/),
-          (v9/*: any*/),
+          (v6/*: any*/),
+          (v7/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v10/*: any*/),
+                "args": (v8/*: any*/),
                 "concreteType": "InvestmentsConnection",
                 "kind": "LinkedField",
                 "name": "investments",
@@ -194,7 +179,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v9/*: any*/),
+                          (v7/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -286,7 +271,7 @@ return {
                             "name": "to_be_paid",
                             "storageKey": null
                           },
-                          (v8/*: any*/)
+                          (v6/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -330,10 +315,9 @@ return {
               },
               {
                 "alias": null,
-                "args": (v10/*: any*/),
+                "args": (v8/*: any*/),
                 "filters": [
-                  "status",
-                  "identifier"
+                  "status"
                 ],
                 "handle": "connection",
                 "key": "MyInvestments_user_investments",
@@ -350,16 +334,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a668ab446cd97a90e2af95b605088929",
+    "cacheID": "1636a7665361a8a77a8cac9d66c4bf81",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsPaginationUser",
     "operationKind": "query",
-    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $identifier: String\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_4lpmbo\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_4lpmbo on User {\n  investments(first: $count, after: $cursor, status: $status, identifier: $identifier) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestments_user_4qXjrI\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_4qXjrI on User {\n  investments(first: $count, after: $cursor, status: $status) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e9b82e3a7abd0461252ec1ece40f0983";
+(node as any).hash = "1596b33ba03df96099efabd3db0dcc60";
 
 export default node;

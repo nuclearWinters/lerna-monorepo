@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5a3304f06dc7a4fb4ecc1ad7bd09c940>>
+ * @generated SignedSource<<2fe0fee9e49393897ef6c95e0313db21>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,9 +10,7 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type MyInvestmentsUserQuery$variables = {
-  identifier?: string | null;
-};
+export type MyInvestmentsUserQuery$variables = {};
 export type MyInvestmentsUserQuery$data = {
   readonly user: {
     readonly id: string;
@@ -25,26 +23,14 @@ export type MyInvestmentsUserQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "identifier"
-  }
-],
-v1 = {
+var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v2 = {
-  "kind": "Variable",
-  "name": "identifier",
-  "variableName": "identifier"
-},
-v3 = [
+v1 = [
   {
     "kind": "Literal",
     "name": "after",
@@ -54,12 +40,11 @@ v3 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
-  },
-  (v2/*: any*/)
+  }
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
     "name": "MyInvestmentsUserQuery",
@@ -72,11 +57,9 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
-          (v1/*: any*/),
+          (v0/*: any*/),
           {
-            "args": [
-              (v2/*: any*/)
-            ],
+            "args": null,
             "kind": "FragmentSpread",
             "name": "MyInvestments_user"
           }
@@ -89,7 +72,7 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Operation",
     "name": "MyInvestmentsUserQuery",
     "selections": [
@@ -101,10 +84,10 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
-          (v1/*: any*/),
+          (v0/*: any*/),
           {
             "alias": null,
-            "args": (v3/*: any*/),
+            "args": (v1/*: any*/),
             "concreteType": "InvestmentsConnection",
             "kind": "LinkedField",
             "name": "investments",
@@ -126,7 +109,7 @@ return {
                     "name": "node",
                     "plural": false,
                     "selections": [
-                      (v1/*: any*/),
+                      (v0/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -264,14 +247,13 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": null
+            "storageKey": "investments(after:\"\",first:5)"
           },
           {
             "alias": null,
-            "args": (v3/*: any*/),
+            "args": (v1/*: any*/),
             "filters": [
-              "status",
-              "identifier"
+              "status"
             ],
             "handle": "connection",
             "key": "MyInvestments_user_investments",
@@ -284,16 +266,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3a8b529006056771ec1b5ece79db5931",
+    "cacheID": "cc4420c98e7368e0a219b2588e8fe6b3",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsUserQuery",
     "operationKind": "query",
-    "text": "query MyInvestmentsUserQuery(\n  $identifier: String\n) {\n  user {\n    id\n    ...MyInvestments_user_2s2ebf\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user_2s2ebf on User {\n  investments(first: 5, after: \"\", identifier: $identifier) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsUserQuery {\n  user {\n    id\n    ...MyInvestments_user\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "344b7150abb16fc6fc94e89d0665ab54";
+(node as any).hash = "e623dd8ad010fee6479895161e8e1c93";
 
 export default node;

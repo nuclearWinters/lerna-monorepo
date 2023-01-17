@@ -27,7 +27,6 @@ import { customSpace } from "components/Space.css";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import { MyInvestmentsInvestmentsSubscription } from "./__generated__/MyInvestmentsInvestmentsSubscription.graphql";
 import { MyInvestmentsInvestmentsUpdateSubscription } from "./__generated__/MyInvestmentsInvestmentsUpdateSubscription.graphql";
-import { nanoid } from "nanoid";
 import { InvestmentStatus } from "__generated__/Routes_user.graphql";
 
 const subscriptionInvestments = graphql`
@@ -82,10 +81,10 @@ const subscriptionInvestmentsUpdate = graphql`
 `;
 
 const myInvestmentsFragment = graphql`
-  query MyInvestmentsUserQuery($identifier: String) {
+  query MyInvestmentsUserQuery {
     user {
       id
-      ...MyInvestments_user @arguments(identifier: $identifier)
+      ...MyInvestments_user
     }
   }
 `;
@@ -96,15 +95,10 @@ const myInvestmentsPaginationFragment = graphql`
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
     status: { type: "[InvestmentStatus!]", defaultValue: null }
-    identifier: { type: "String" }
   )
   @refetchable(queryName: "MyInvestmentsPaginationUser") {
-    investments(
-      first: $count
-      after: $cursor
-      status: $status
-      identifier: $identifier
-    ) @connection(key: "MyInvestments_user_investments") {
+    investments(first: $count, after: $cursor, status: $status)
+      @connection(key: "MyInvestments_user_investments") {
       edges {
         node {
           id
@@ -124,7 +118,6 @@ type Props = {
 
 export const MyInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
-  const [identifier, setIdentifier] = useState(props.preloaded.id || nanoid());
   const { user } = usePreloadedQuery(
     myInvestmentsFragment,
     props.preloaded.query
@@ -166,7 +159,6 @@ export const MyInvestments: FC<Props> = (props) => {
     "MyInvestments_user_investments",
     {
       status,
-      identifier,
     }
   );
   const configInvestments = useMemo<
@@ -216,7 +208,6 @@ export const MyInvestments: FC<Props> = (props) => {
             refetch(
               {
                 status,
-                identifier,
               },
               { fetchPolicy: "network-only" }
             );
@@ -269,14 +260,10 @@ export const MyInvestments: FC<Props> = (props) => {
             text={t("Refrescar lista")}
             color="secondary"
             onClick={() => {
-              const newId = nanoid();
               refetch(
-                { identifier: newId },
+                {},
                 {
                   fetchPolicy: "network-only",
-                  onComplete: () => {
-                    setIdentifier(newId);
-                  },
                 }
               );
             }}

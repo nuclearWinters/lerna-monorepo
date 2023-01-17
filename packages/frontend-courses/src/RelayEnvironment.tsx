@@ -47,6 +47,10 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
     }
   }
 
+  if (Array.isArray(data?.extensions?.modules)) {
+    registerModuleLoaders(data.extensions.modules);
+  }
+
   return data;
 };
 
@@ -68,7 +72,103 @@ const subscribeRelay = (operation: RequestParameters, variables: Variables) => {
 
 const network = Network.create(fetchRelay, subscribeRelay);
 
-export const RelayEnvironment = new Environment({
+const operationLoader = {
+  get: (name: string) => {
+    return moduleLoader(name).get();
+  },
+  load: (name: string) => {
+    return moduleLoader(name).load();
+  },
+};
+
+const RelayEnvironment = new Environment({
   network: network,
-  store: new Store(new RecordSource()),
+  store: new Store(new RecordSource(), { operationLoader }),
+  operationLoader,
+  isServer: false,
 });
+
+function registerModuleLoaders(modules: string[]) {
+  modules.forEach((module) => {
+    if (module.endsWith("$normalization.graphql")) {
+      registerLoader(
+        module,
+        () => import(`./components/__generated__/${module}`)
+      );
+    } else {
+      registerLoader(module, () => import(`./components/${module}`));
+    }
+  });
+}
+
+const loaders = new Map();
+const loadedModules = new Map();
+const failedModules = new Map();
+const pendingLoaders = new Map();
+
+export default function moduleLoader(name: string) {
+  return {
+    getError() {
+      return failedModules.get(name);
+    },
+    resetError() {
+      failedModules.delete(name);
+    },
+    get() {
+      const module = loadedModules.get(name);
+      return module == null ? null : module.default;
+    },
+    load() {
+      const loader = loaders.get(name);
+      if (loader == null) {
+        const promise = new Promise((resolve, reject) => {
+          loaders.set(name, {
+            kind: "pending",
+            resolve,
+            reject,
+          });
+        });
+        pendingLoaders.set(name, promise);
+        return promise;
+      } else if (loader.kind === "registered") {
+        return loader.loaderFn().then(
+          (module: any) => {
+            loadedModules.set(name, module);
+            return module.default;
+          },
+          (error: Error) => {
+            failedModules.set(name, error);
+            throw error;
+          }
+        );
+      } else if (loader.kind === "pending") {
+        return pendingLoaders.get(name);
+      }
+    },
+  };
+}
+
+export function registerLoader(name: string, loaderFn: any) {
+  const loader = loaders.get(name);
+  if (loader == null) {
+    loaders.set(name, {
+      kind: "registered",
+      loaderFn,
+    });
+  } else if (loader.kind == "pending") {
+    loaderFn().then(
+      (module: any) => {
+        loadedModules.set(name, module);
+        pendingLoaders.delete(name);
+        loader.resolve(module.default);
+      },
+      (error: Error) => {
+        failedModules.set(name, error);
+        pendingLoaders.delete(name);
+        loader.reject(error);
+      }
+    );
+  }
+}
+
+export { RelayEnvironment };

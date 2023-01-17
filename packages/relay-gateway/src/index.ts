@@ -8,6 +8,7 @@ import {
   IContextResult,
   jwtMiddleware,
   setCookieContext,
+  setExtensionsContext,
   setTokenContext,
 } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
@@ -60,7 +61,11 @@ const httpExecutor = (url: string): AsyncExecutor => {
     if (accessTokenHeader) {
       setTokenContext(context, accessTokenHeader);
     }
-    return fetchResult.json();
+    const result = await fetchResult.json();
+    if (result?.extensions && context) {
+      setExtensionsContext(context, result.extensions);
+    }
+    return result;
   };
 };
 
@@ -189,6 +194,9 @@ makeGatewaySchema().then((schema) => {
         }
         result.headers.forEach(({ name, value }) => res.setHeader(name, value));
         res.status(result.status);
+        result.payload.extensions = (
+          result.context as IContextResult | undefined
+        )?.extensions;
         res.json(result.payload);
       }
     }
