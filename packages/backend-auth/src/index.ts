@@ -40,6 +40,3 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
     }
   );
 });
-
-export { userAuthFields } from "./AuthUserQuery";
-export { DateScalarType } from "./AuthUserQuery";
