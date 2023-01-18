@@ -1,8 +1,8 @@
 import express from "express";
-import { GraphQLSchema, GraphQLObjectType } from "graphql";
+import { GraphQLSchema, GraphQLObjectType, GraphQLNonNull } from "graphql";
 import cors from "cors";
 import { QueryUser } from "./QueryUser";
-import { dataDrivenDependencies, nodeField } from "./Nodes";
+import { dataDrivenDependencies, GraphQLAuthUser, nodeField } from "./Nodes";
 import { AddLendsMutation } from "./mutations/AddLends";
 import { AddFundsMutation } from "./mutations/AddFunds";
 import { AddLoanMutation } from "./mutations/AddLoan";
@@ -30,6 +30,12 @@ const Query = new GraphQLObjectType({
   fields: {
     user: QueryUser,
     node: nodeField,
+    authUser: {
+      type: new GraphQLNonNull(GraphQLAuthUser),
+      resolve: async () => {
+        return {};
+      },
+    },
   },
 });
 

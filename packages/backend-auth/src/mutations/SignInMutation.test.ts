@@ -17,7 +17,7 @@ describe("SignInMutation tests", () => {
   beforeAll(async () => {
     client = await MongoClient.connect(process.env.MONGO_URL as string, {});
     dbInstance = client.db("auth");
-    app.locals.db = dbInstance;
+    app.locals.authdb = dbInstance;
     app.locals.ch = { sendToQueue: jest.fn() };
     app.locals.rdb = { get: jest.fn() };
   });

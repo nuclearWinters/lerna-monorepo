@@ -19,7 +19,7 @@ describe("UpdateUser tests", () => {
   beforeAll(async () => {
     client = await MongoClient.connect(process.env.MONGO_URL as string, {});
     dbInstance = client.db("auth");
-    app.locals.db = dbInstance;
+    app.locals.authdb = dbInstance;
   });
 
   afterAll(async () => {

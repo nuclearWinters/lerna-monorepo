@@ -19,6 +19,9 @@
     "pcm": "lerna run --concurrency 1 --stream pcm --since HEAD --exclude-dependents",
     "pcmsg": "exec < /dev/tty && git cz --hook || true"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"

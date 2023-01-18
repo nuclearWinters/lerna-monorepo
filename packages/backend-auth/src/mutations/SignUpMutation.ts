@@ -61,7 +61,7 @@ export const SignUpMutation = mutationWithClientMutationId({
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
     {
-      users,
+      authusers,
       res,
       logins,
       ip,
@@ -72,11 +72,11 @@ export const SignUpMutation = mutationWithClientMutationId({
     }: Context
   ): Promise<Payload> => {
     try {
-      const user = await users.findOne({ email });
+      const user = await authusers.findOne({ email });
       if (user) throw new Error("El email ya esta siendo usado.");
       const hash_password = await bcrypt.hash(password, 12);
       const id = nanoid();
-      await users.insertOne({
+      await authusers.insertOne({
         email,
         password: hash_password,
         isLender: isLender,

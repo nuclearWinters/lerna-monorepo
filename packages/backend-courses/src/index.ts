@@ -1,6 +1,6 @@
 import { app, schema } from "./app";
-import { Db, MongoClient } from "mongodb";
-import { ACCESSSECRET, MONGO_DB } from "./config";
+import { MongoClient } from "mongodb";
+import { MONGO_DB } from "./config";
 import amqp from "amqplib";
 import {
   ADD_LEND,
@@ -14,16 +14,11 @@ import { jwt } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { WebSocketServer } from "ws";
 
-export const ctx: {
-  db?: Db;
-} = {
-  db: undefined,
-};
-
 MongoClient.connect(MONGO_DB, {}).then(async (client) => {
   const db = client.db("fintech");
+  const authdb = client.db("auth");
   app.locals.db = db;
-  ctx.db = db;
+  app.locals.authdb = authdb;
   const conn = await amqp.connect("amqp://rabbitmq:5672");
   const ch = await conn.createChannel();
   await ch.assertQueue(ADD_LEND);
@@ -34,10 +29,6 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
     }
   });
   app.locals.ch = ch;
-  const response = await (
-    await fetch("http://backend-auth:4002/accesssecret")
-  ).text();
-  ACCESSSECRET.ACCESSSECRET = response;
   const serverExpress = app.listen(4000, () => {
     const wsServer = new WebSocketServer({
       server: serverExpress,

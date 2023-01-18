@@ -35,7 +35,7 @@ export const SignInMutation = mutationWithClientMutationId({
   mutateAndGetPayload: async (
     { email, password }: Input,
     {
-      users,
+      authusers,
       rdb,
       res,
       logins,
@@ -47,7 +47,7 @@ export const SignInMutation = mutationWithClientMutationId({
     }: Context
   ): Promise<Payload> => {
     try {
-      const user = await users.findOne({ email });
+      const user = await authusers.findOne({ email });
       if (!user) throw new Error("El usuario no existe.");
       const blacklistedUser = await rdb?.get(user._id.toHexString());
       if (blacklistedUser) {

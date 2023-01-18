@@ -38,6 +38,7 @@ export const getContext = async (
   res: Response
 ): Promise<Context> => {
   const db = req.app.locals.db as Db;
+  const authdb = req.app.locals.authdb as Db;
   const ch = req.app.locals.ch;
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies?.refreshToken || "";
@@ -49,6 +50,9 @@ export const getContext = async (
     loans: db.collection<LoanMongo>("loans"),
     investments: db.collection<InvestmentMongo>("investments"),
     transactions: db.collection<TransactionMongo>("transactions"),
+    logins: authdb?.collection("logins"),
+    authusers: authdb?.collection("users"),
+    sessions: authdb?.collection("sessions"),
     accessToken,
     refreshToken,
     ch,

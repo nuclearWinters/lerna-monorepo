@@ -5,7 +5,7 @@ import { createClient } from "redis";
 export type RedisClientType = ReturnType<typeof createClient>;
 
 export interface Context {
-  users: Collection<UserMongo>;
+  authusers: Collection<UserMongo>;
   logins: Collection<UserLogins>;
   sessions: Collection<UserSessions>;
   rdb: RedisClientType;

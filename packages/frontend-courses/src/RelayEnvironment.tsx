@@ -155,7 +155,7 @@ export function registerLoader(name: string, loaderFn: any) {
       kind: "registered",
       loaderFn,
     });
-  } else if (loader.kind == "pending") {
+  } else if (loader.kind === "pending") {
     loaderFn().then(
       (module: any) => {
         loadedModules.set(name, module);

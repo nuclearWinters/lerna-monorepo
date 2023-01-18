@@ -10,10 +10,10 @@ import { REDIS } from "./config";
 
 export const ctx: {
   rdb?: RedisClientType;
-  db?: Db;
+  authdb?: Db;
 } = {
   rdb: undefined,
-  db: undefined,
+  authdb: undefined,
 };
 
 MongoClient.connect(MONGO_DB, {}).then(async (client) => {
@@ -21,11 +21,11 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
     url: REDIS,
   });
   await redisClient.connect();
-  const db = client.db("auth");
-  app.locals.db = db;
+  const authdb = client.db("auth");
+  app.locals.authdb = authdb;
   app.locals.rdb = redisClient;
   ctx.rdb = redisClient;
-  ctx.db = db;
+  ctx.authdb = authdb;
   app.listen(process.env.PORT || 4002);
   const server = new Server();
   server.addService(AuthService, AuthServer);
@@ -34,9 +34,12 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
     ServerCredentials.createInsecure(),
     (err) => {
       if (err) {
-        throw err;
+        return;
       }
       server.start();
     }
   );
 });
+
+export { userAuthFields } from "./AuthUserQuery";
+export { DateScalarType } from "./AuthUserQuery";

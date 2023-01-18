@@ -58,7 +58,7 @@ export const getContext = async (
   req: Request,
   res: Response
 ): Promise<Context> => {
-  const db = req.app.locals.db as Db;
+  const authdb = req.app.locals.authdb as Db;
   const rdb = req.app.locals.rdb;
   const ip = req.header("x-forwarded-for") || req.socket.remoteAddress;
   const accessToken = req.headers.authorization || "";
@@ -83,9 +83,9 @@ export const getContext = async (
     deviceType = `${result.device.type} ${result.client.type} ${result.client.name}`;
   }
   return {
-    users: db.collection<UserMongo>("users"),
-    logins: db.collection<UserLogins>("logins"),
-    sessions: db.collection<UserSessions>("sessions"),
+    authusers: authdb.collection<UserMongo>("users"),
+    logins: authdb.collection<UserLogins>("logins"),
+    sessions: authdb.collection<UserSessions>("sessions"),
     rdb,
     accessToken,
     refreshToken,

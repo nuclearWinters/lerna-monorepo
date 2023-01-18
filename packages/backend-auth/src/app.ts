@@ -4,7 +4,7 @@ import cors from "cors";
 import { SignUpMutation } from "./mutations/SignUpMutation";
 import { SignInMutation } from "./mutations/SignInMutation";
 import { getContext } from "./utils";
-import { nodeField, QueryUser } from "./AuthUserQuery";
+import { QueryUser } from "./AuthUserQuery";
 import { UpdateUserMutation } from "./mutations/UpdateUser";
 import {
   getGraphQLParameters,
@@ -33,7 +33,6 @@ const Query = new GraphQLObjectType({
   name: "Query",
   fields: {
     authUser: QueryUser,
-    node: nodeField,
   },
 });
 

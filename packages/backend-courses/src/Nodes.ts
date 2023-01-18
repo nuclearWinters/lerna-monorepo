@@ -37,6 +37,7 @@ import {
   MoneyTransactionMongo,
 } from "./types";
 import { base64, unbase64 } from "./utils";
+import { userAuthFields, DateScalarType } from "backend-auth";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatus[];
@@ -73,26 +74,6 @@ export const dataDrivenDependencies = {
     return Array.from(seenDataDrivenDependencies);
   },
 };
-
-export const DateScalarType = new GraphQLScalarType({
-  name: "Date",
-  serialize: (value) => {
-    if (value instanceof Date) {
-      return value.getTime();
-    }
-  },
-  parseValue: (value) => {
-    if (typeof value === "number") {
-      return new Date(value);
-    }
-  },
-  parseLiteral(ast) {
-    if (ast.kind === Kind.INT) {
-      return new Date(parseInt(ast.value, 10));
-    }
-    return null;
-  },
-});
 
 const generateCurrency = (value: unknown) => {
   if (typeof value !== "number") {
@@ -187,6 +168,27 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   async (globalId, { users, loans, investments, id: userId }) => {
     const { type, id } = fromGlobalId(globalId);
     switch (type) {
+      case "AuthUser":
+        if (!userId) {
+          return {
+            _id: new ObjectId("000000000000000000000000"),
+            email: "",
+            password: "",
+            language: "default",
+            name: "",
+            apellidoPaterno: "",
+            apellidoMaterno: "",
+            RFC: "",
+            CURP: "",
+            clabe: "",
+            mobile: "",
+            isBorrower: false,
+            isLender: true,
+            isSupport: false,
+            id: "",
+          };
+        }
+        return { ...(await users.findOne({ _id: new ObjectId(id) })), type };
       case "User":
         if (!userId) {
           return {
@@ -703,6 +705,12 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       },
     },
   },
+  interfaces: [nodeInterface],
+});
+
+export const GraphQLAuthUser = new GraphQLObjectType({
+  name: "AuthUser",
+  fields: userAuthFields,
   interfaces: [nodeInterface],
 });
 

@@ -2,7 +2,7 @@
   "name": "backend-auth",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "start": "ts-node-dev --transpile-only ./src/index.ts",
     "populate": "npx tsc && node ./build/populate.js",
