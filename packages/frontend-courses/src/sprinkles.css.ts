@@ -53,7 +53,16 @@ const colorProperties = defineProperties({
       "70%",
     ],
     border: ["none", "1px solid rgb(203,203,203)", "1px solid #999"],
-    fontSize: ["20px", "18px", "14px", "26px", "22px", "16px", "10px", "28px"],
+    fontSize: {
+      "20px": "1.4rem",
+      "18px": "1.3rem",
+      "14px": "1rem",
+      "26px": "1.8rem",
+      "22px": "1.6rem",
+      "16px": "1.1rem",
+      "10px": "0.7rem",
+      "28px": "2rem",
+    },
     color: [
       "rgb(62,62,62)",
       "white",
