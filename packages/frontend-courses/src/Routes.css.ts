@@ -2,10 +2,12 @@ import { styleVariants } from "@vanilla-extract/css";
 import { sprinkles } from "sprinkles.css";
 
 export const baseRoutes = sprinkles({
-  display: "flex",
   flexDirection: "row",
   height: "100vh",
   width: "100vw",
+  display: "grid",
+  gridTemplateColumns: "126px 1fr",
+  gridAutoRows: "60px 1fr",
 });
 
 export const baseRoutesHeaderLogged = sprinkles({
@@ -23,6 +25,11 @@ export const baseRoutesHeaderNotLogged = sprinkles({
 export const baseRoutesContent = sprinkles({
   flex: "1",
   display: "flex",
+  backgroundColor: "rgb(248,248,248)",
+  gridRowStart: "2",
+  gridRowEnd: "2",
+  gridColumnStart: "2",
+  gridColumnEnd: "3",
 });
 
 export const baseRoutesLink = sprinkles({
@@ -35,6 +42,32 @@ export const baseRoutesLink = sprinkles({
 export const baseRoutesIconUser = sprinkles({
   fontSize: "28px",
   margin: "12px 0px 12px 0px",
+});
+
+export const baseHeader = sprinkles({
+  gridColumnStart: "2",
+  gridColumnEnd: "2",
+  gridRowStart: "1",
+  gridRowEnd: "2",
+});
+
+export const customHeader = styleVariants({
+  fallback: [
+    baseHeader,
+    sprinkles({
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }),
+  ],
+});
+
+export const baseSider = sprinkles({
+  gridRowStart: "1",
+  gridRowEnd: "3",
+  gridColumnStart: "1",
+  gridColumnEnd: "1",
+  display: "flex",
 });
 
 export const customRoutesIconUser = styleVariants({

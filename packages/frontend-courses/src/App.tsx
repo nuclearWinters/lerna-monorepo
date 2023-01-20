@@ -6,7 +6,7 @@ import {
 } from "react-relay/hooks";
 import { RelayEnvironment } from "./RelayEnvironment";
 import { AppUserQuery as AppUserQueryType } from "./__generated__/AppUserQuery.graphql";
-import { Header, routes } from "./Routes";
+import { routes } from "./Routes";
 import { Spinner } from "components/Spinner";
 import {
   createBrowserRouter,
@@ -16,6 +16,14 @@ import {
 } from "yarr";
 import { baseApp } from "App.css";
 import { Languages } from "__generated__/Routes_query.graphql";
+import {
+  baseRoutes,
+  baseRoutesContent,
+  baseSider,
+  customHeader,
+} from "Routes.css";
+import { Sider } from "components/Sider";
+import { Header } from "components/Header";
 
 const { Suspense } = React;
 
@@ -66,19 +74,41 @@ export const App: FC = () => {
   return (
     <LanguageContext.Provider value={[language, setLanguage]}>
       <RelayEnvironmentProvider environment={RelayEnvironment}>
-        <Suspense
-          fallback={
-            <div className={baseApp}>
-              <Spinner />
-            </div>
-          }
-        >
-          <RouterProvider router={router}>
-            <RouteRenderer
-              routeWrapper={({ Route }) => <Header>{Route}</Header>}
-            />
-          </RouterProvider>
-        </Suspense>
+        <RouterProvider router={router}>
+          <div className={baseRoutes}>
+            <Suspense
+              fallback={
+                <div className={baseSider}>
+                  <Spinner />
+                </div>
+              }
+            >
+              <Sider />
+            </Suspense>
+            <Suspense
+              fallback={
+                <div className={customHeader["fallback"]}>
+                  <Spinner />
+                </div>
+              }
+            >
+              <Header />
+            </Suspense>
+            <Suspense
+              fallback={
+                <div className={baseApp}>
+                  <Spinner />
+                </div>
+              }
+            >
+              <RouteRenderer
+                routeWrapper={({ Route }) => (
+                  <div className={baseRoutesContent}>{Route}</div>
+                )}
+              />
+            </Suspense>
+          </div>
+        </RouterProvider>
       </RelayEnvironmentProvider>
     </LanguageContext.Provider>
   );

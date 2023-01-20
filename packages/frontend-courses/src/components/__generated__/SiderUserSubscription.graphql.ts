@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4190435f99a34182f039a17891ed458c>>
+ * @generated SignedSource<<68be21fef8c22f55c0f6fd7be400d736>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,8 +9,8 @@
 // @ts-nocheck
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
-export type RoutesUserSubscription$variables = {};
-export type RoutesUserSubscription$data = {
+export type SiderUserSubscription$variables = {};
+export type SiderUserSubscription$data = {
   readonly user_subscribe: {
     readonly accountAvailable: string;
     readonly accountToBePaid: string;
@@ -18,9 +18,9 @@ export type RoutesUserSubscription$data = {
     readonly id: string;
   };
 };
-export type RoutesUserSubscription = {
-  response: RoutesUserSubscription$data;
-  variables: RoutesUserSubscription$variables;
+export type SiderUserSubscription = {
+  response: SiderUserSubscription$data;
+  variables: SiderUserSubscription$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -70,7 +70,7 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "RoutesUserSubscription",
+    "name": "SiderUserSubscription",
     "selections": (v0/*: any*/),
     "type": "Subscription",
     "abstractKey": null
@@ -79,20 +79,20 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "RoutesUserSubscription",
+    "name": "SiderUserSubscription",
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "85cbcadf8c1e71fab472eb8967abc241",
+    "cacheID": "36feabd5eb31b52eb1997e88d5b1ef95",
     "id": null,
     "metadata": {},
-    "name": "RoutesUserSubscription",
+    "name": "SiderUserSubscription",
     "operationKind": "subscription",
-    "text": "subscription RoutesUserSubscription {\n  user_subscribe {\n    id\n    accountAvailable\n    accountToBePaid\n    accountTotal\n  }\n}\n"
+    "text": "subscription SiderUserSubscription {\n  user_subscribe {\n    id\n    accountAvailable\n    accountToBePaid\n    accountTotal\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c4d643e32aa71c0df35835b95c6f0b55";
+(node as any).hash = "85a803b2ed8e1843d49671ef29fc2aaa";
 
 export default node;
