@@ -49,11 +49,13 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
         if (data?.isSupport) {
-          return "/login";
+          tokensAndData.redirectTo = window.location.pathname;
+          return "/";
         }
         return null;
       }
-      return "/login";
+      tokensAndData.redirectTo = window.location.pathname;
+      return "/";
     },
   },
   {
@@ -69,7 +71,8 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         return null;
       }
-      return "/login";
+      tokensAndData.redirectTo = window.location.pathname;
+      return "/";
     },
   },
   {
@@ -92,11 +95,13 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
         if (!data?.isLender) {
-          return "/login";
+          tokensAndData.redirectTo = window.location.pathname;
+          return "/";
         }
         return null;
       }
-      return "/login";
+      tokensAndData.redirectTo = window.location.pathname;
+      return "/";
     },
   },
   {
@@ -119,11 +124,13 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
         if (!(data?.isLender || data.isBorrower)) {
-          return "/login";
+          tokensAndData.redirectTo = window.location.pathname;
+          return "/";
         }
         return null;
       }
-      return "/login";
+      tokensAndData.redirectTo = window.location.pathname;
+      return "/";
     },
   },
   {
@@ -136,11 +143,13 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
         if (data?.isSupport) {
-          return "/login";
+          tokensAndData.redirectTo = window.location.pathname;
+          return "/";
         }
         return null;
       }
-      return "/login";
+      tokensAndData.redirectTo = window.location.pathname;
+      return "/";
     },
   },
   {
@@ -153,11 +162,13 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
         if (data?.isSupport) {
-          return "/login";
+          tokensAndData.redirectTo = window.location.pathname;
+          return "/";
         }
         return null;
       }
-      return "/login";
+      tokensAndData.redirectTo = window.location.pathname;
+      return "/";
     },
   },
   {
@@ -173,7 +184,8 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
         if (data?.isSupport || data?.isBorrower) {
-          return "/login";
+          tokensAndData.redirectTo = window.location.pathname;
+          return "/";
         }
         return null;
       }
@@ -193,11 +205,13 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
         if (!data?.isSupport) {
-          return "/login";
+          tokensAndData.redirectTo = window.location.pathname;
+          return "/";
         }
         return null;
       }
-      return "/login";
+      tokensAndData.redirectTo = window.location.pathname;
+      return "/";
     },
   },
   {
@@ -213,11 +227,13 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
         if (!data?.isBorrower) {
-          return "/login";
+          tokensAndData.redirectTo = window.location.pathname;
+          return "/";
         }
         return null;
       }
-      return "/login";
+      tokensAndData.redirectTo = window.location.pathname;
+      return "/";
     },
   },
   {
@@ -230,31 +246,20 @@ export const routes: IRouteConfig = [
       if (tokensAndData.accessToken) {
         const data = decode<Decode>(tokensAndData.accessToken);
         if (!data?.isBorrower) {
-          return "/login";
+          tokensAndData.redirectTo = window.location.pathname;
+          return "/";
         }
         return null;
       }
-      return "/login";
+      tokensAndData.redirectTo = window.location.pathname;
+      return "/";
     },
   },
   {
     component: async () => {
-      const module = await import("./screens/LogIn");
-      return module.LogIn;
+      const module = await import("./screens/Blank");
+      return module.Blank;
     },
     path: "/",
-    redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (data?.isBorrower) {
-          return "/myLoans";
-        } else if (data?.isLender) {
-          return "/addInvestments";
-        } else {
-          return "/myLoans";
-        }
-      }
-      return "/login";
-    },
   },
 ];

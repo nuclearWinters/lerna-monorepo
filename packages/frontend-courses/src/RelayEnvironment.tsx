@@ -47,6 +47,10 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
     }
   }
 
+  if (tokensAndData.accessToken && !accesstoken) {
+    return window.location.reload();
+  }
+
   if (Array.isArray(data?.extensions?.modules)) {
     registerModuleLoaders(data.extensions.modules);
   }

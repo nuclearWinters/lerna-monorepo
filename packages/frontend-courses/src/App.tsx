@@ -1,4 +1,4 @@
-import React, { createContext, FC, useState } from "react";
+import React, { createContext, FC, useState, Suspense } from "react";
 import {
   graphql,
   RelayEnvironmentProvider,
@@ -25,14 +25,14 @@ import {
 import { Sider } from "components/Sider";
 import { Header } from "components/Header";
 
-const { Suspense } = React;
-
 export const tokensAndData: {
   accessToken: string;
   exp?: number;
+  redirectTo: string;
 } = {
   accessToken: "",
   exp: undefined,
+  redirectTo: "",
 };
 
 const AppUserQuery = graphql`
