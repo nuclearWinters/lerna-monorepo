@@ -1,7 +1,7 @@
 {
   "eslint.workingDirectories": [
-    "packages/frontend-courses",
-    "packages/backend-courses",
+    "packages/frontend-fintech",
+    "packages/backend-fintech",
     "packages/backend-auth",
     "packages/relay-gateway"
   ],

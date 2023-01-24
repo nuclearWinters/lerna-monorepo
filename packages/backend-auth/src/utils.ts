@@ -107,7 +107,7 @@ export const REFRESH_TOKEN_EXP_NUMBER = 15;
 export const ACCESS_TOKEN_EXP_STRING = "3m";
 
 export const client = new AuthClient(
-  `backend-courses:1983`,
+  `backend-fintech:1983`,
   credentials.createInsecure()
 );
 

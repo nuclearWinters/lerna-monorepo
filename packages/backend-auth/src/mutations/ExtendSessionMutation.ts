@@ -65,8 +65,6 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
       res.cookie("refreshToken", newRefreshToken, {
         httpOnly: true,
         expires: expireTime,
-        path: "/",
-        sameSite: "strict",
         secure: NODE_ENV === "production" ? true : false,
       });
       const accessToken = jwt.sign(

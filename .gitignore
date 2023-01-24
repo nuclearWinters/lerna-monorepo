@@ -7,3 +7,5 @@ data/**
 globalConfig.json
 redis/**
 *.mongodb
+*.crt
+*.key

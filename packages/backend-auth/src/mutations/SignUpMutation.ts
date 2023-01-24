@@ -124,8 +124,6 @@ export const SignUpMutation = mutationWithClientMutationId({
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         expires: refreshTokenExpireTime,
-        path: "/",
-        sameSite: "strict",
         secure: NODE_ENV === "production" ? true : false,
       });
       res?.setHeader("accessToken", accessToken);

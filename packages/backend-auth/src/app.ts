@@ -49,7 +49,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://relay-gateway:4001", "http://backend-courses:4000"],
+    origin: ["http://relay-gateway:3001", "http://backend-fintech:3000"],
     credentials: true,
   })
 );

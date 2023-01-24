@@ -1,5 +1,5 @@
 {
-  "name": "backend-courses",
+  "name": "backend-fintech",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
   "main": "src/index.ts",

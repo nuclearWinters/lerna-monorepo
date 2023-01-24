@@ -7,26 +7,28 @@ services:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/relay-gateway
     command:
-      ["./wait-for-it.sh", "backend-courses:4000", "--", "npm", "run", "start"]
+      ["./wait-for-it.sh", "backend-fintech:4000", "--", "npm", "run", "start"]
     ports:
       - "4001:4001"
     depends_on:
-      - backend-courses
+      - backend-fintech
       - backend-auth
-  backend-courses:
-    container_name: backend-courses
+
+  backend-fintech:
+    container_name: backend-fintech
     image: node:18
     volumes:
       - .:/usr/src/service
-    working_dir: /usr/src/service/packages/backend-courses
+    working_dir: /usr/src/service/packages/backend-fintech
     command:
       ["./wait-for-it.sh", "backend-auth:4002", "--", "npm", "run", "start"]
     ports:
       - "4000:4000"
     depends_on:
-      - mongo-courses
+      - mongo-fintech
       - backend-auth
       - rabbitmq
+
   backend-auth:
     container_name: backend-auth
     image: node:18
@@ -38,20 +40,22 @@ services:
       - "4002:4002"
       - "1983:1983"
     depends_on:
-      - mongo-courses
+      - mongo-fintech
       - redis-auth
       - rabbitmq
-  frontend-courses:
-    container_name: frontend-courses
+
+  frontend-fintech:
+    container_name: frontend-fintech
     image: node:18
     volumes:
       - .:/usr/src/service
-    working_dir: /usr/src/service/packages/frontend-courses
+    working_dir: /usr/src/service/packages/frontend-fintech
     command: ["npm", "run", "start"]
     ports:
       - "8000:8000"
-  mongo-courses:
-    container_name: mongo-courses
+
+  mongo-fintech:
+    container_name: mongo-fintech
     image: mongo
     volumes:
       - ./data:/data/db
@@ -59,7 +63,8 @@ services:
       - "27017:27017"
     logging:
       driver: none
-    entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0"]
+    entrypoint: ["/usr/bin/mongod", "--bind_ip_all"]
+
   redis-auth:
     container_name: redis-auth
     command: redis-server --appendonly yes
@@ -70,6 +75,7 @@ services:
       - ./redis:/data
     logging:
       driver: none
+
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-management

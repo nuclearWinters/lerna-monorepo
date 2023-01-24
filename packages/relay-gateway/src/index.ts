@@ -1,5 +1,5 @@
 import { app } from "./app";
-import { introspectSchema } from "@graphql-tools/wrap";
+import { schemaFromExecutor } from "@graphql-tools/wrap";
 import { stitchSchemas } from "@graphql-tools/stitch";
 import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
 import { getOperationAST, OperationTypeNode, print } from "graphql";
@@ -136,19 +136,19 @@ const wsExecutor = (url: string): AsyncExecutor => {
 };
 
 const makeGatewaySchema = async () => {
-  const courses = executorBoth(
-    "http://backend-courses:4000/graphql",
-    "ws://backend-courses:4000/graphql"
+  const fintech = executorBoth(
+    "http://backend-fintech:4000/graphql",
+    "ws://backend-fintech:4000/graphql"
   );
   const auth = httpExecutor("http://backend-auth:4002/graphql");
   const gatewaySchema = stitchSchemas({
     subschemas: [
       {
-        schema: await introspectSchema(courses),
-        executor: courses,
+        schema: await schemaFromExecutor(fintech),
+        executor: fintech,
       },
       {
-        schema: await introspectSchema(auth),
+        schema: await schemaFromExecutor(auth),
         executor: auth,
       },
     ],

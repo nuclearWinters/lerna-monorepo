@@ -62,4 +62,4 @@ To set up the project in dev mode:
 
 2. Run `make up`
 
-3. Run `npm run populate` on backend-auth and backend-courses root folder projects
+3. Run `npm run populate` on backend-auth and backend-fintech root folder projects
