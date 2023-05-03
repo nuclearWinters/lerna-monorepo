@@ -33,10 +33,10 @@ export const jwt = {
   },
 };
 
-export const refreshTokenMiddleware = async (
+export const refreshTokenMiddleware = (
   accessToken: string | undefined,
   refreshToken: string | undefined
-): Promise<{ validAccessToken?: string; id?: string }> => {
+): { validAccessToken?: string; id?: string } => {
   if (!accessToken || !refreshToken) {
     return { validAccessToken: undefined, id: undefined };
   }
@@ -54,17 +54,14 @@ export const refreshTokenMiddleware = async (
   }
 };
 
-export const getContext = async (
-  req: Request,
-  res: Response
-): Promise<Context> => {
+export const getContext = (req: Request, res: Response): Context => {
   const authdb = req.app.locals.authdb as Db;
   const rdb = req.app.locals.rdb;
   const ip = req.header("x-forwarded-for") || req.socket.remoteAddress;
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies.refreshToken || "";
   const sessionId = req.header("sessionId") || "";
-  const { validAccessToken, id } = await refreshTokenMiddleware(
+  const { validAccessToken, id } = refreshTokenMiddleware(
     accessToken,
     refreshToken
   );

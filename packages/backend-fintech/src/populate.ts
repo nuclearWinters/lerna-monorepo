@@ -257,6 +257,8 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         type: "invest",
         quantity: -5000000,
         created: now,
+        id_borrower: "",
+        _id_loan: new ObjectId(),
       },
       {
         _id: _id_transaction_2,
@@ -264,6 +266,8 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         type: "invest",
         quantity: -1000000,
         created: now,
+        id_borrower: "",
+        _id_loan: new ObjectId(),
       },
       {
         _id: _id_transaction_3,
@@ -271,6 +275,8 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         type: "invest",
         quantity: -1000000,
         created: now,
+        id_borrower: "",
+        _id_loan: new ObjectId(),
       },
       {
         _id: _id_transaction_4,
@@ -278,6 +284,8 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         type: "invest",
         quantity: -1000000,
         created: now,
+        id_borrower: "",
+        _id_loan: new ObjectId(),
       },
       {
         _id: _id_transaction_5,
@@ -285,6 +293,8 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         type: "invest",
         quantity: -500000,
         created: now,
+        id_borrower: "",
+        _id_loan: new ObjectId(),
       },
       {
         _id: _id_transaction_6,
@@ -292,6 +302,8 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         type: "invest",
         quantity: -500000,
         created: now,
+        id_borrower: "",
+        _id_loan: new ObjectId(),
       },
       {
         _id: _id_transaction_7,
@@ -299,6 +311,8 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         type: "invest",
         quantity: -500000,
         created: now,
+        id_borrower: "",
+        _id_loan: new ObjectId(),
       },
     ]);
     process.exit();

@@ -9,3 +9,4 @@ redis/**
 *.mongodb
 *.crt
 *.key
+target/

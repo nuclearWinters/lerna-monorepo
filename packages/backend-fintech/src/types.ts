@@ -38,16 +38,13 @@ export interface IInvestmentEdge {
 }
 
 export interface ITransactionEdge {
-  node: TransactionMongoRedis;
+  node: TransactionMongo;
   cursor: string;
 }
 
-export type TransactionMongoType =
-  | "credit"
-  | "withdrawal"
-  | "invest"
-  | "payment"
-  | "collect";
+export type TransactionInvestMongoType = "collect" | "invest";
+
+export type TransactionMongoType = "credit" | "withdrawal" | "payment";
 
 export type TransactionMongo =
   | InvestmentTransactionMongo
@@ -56,7 +53,7 @@ export type TransactionMongo =
 export interface InvestmentTransactionMongo {
   _id?: ObjectId;
   id_user: string;
-  type: TransactionMongoType;
+  type: TransactionInvestMongoType;
   quantity: number;
   id_borrower: string;
   _id_loan: ObjectId;
@@ -69,16 +66,6 @@ export interface MoneyTransactionMongo {
   type: TransactionMongoType;
   quantity: number;
   created: Date;
-}
-
-export interface TransactionMongoRedis {
-  _id: string;
-  id_user: string;
-  type: TransactionMongoType;
-  quantity: number;
-  id_borrower?: string;
-  _id_loan?: string;
-  created: string;
 }
 
 export type ILoanStatus =

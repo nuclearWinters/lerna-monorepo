@@ -35,6 +35,7 @@ import {
   UserMongo,
   InvestmentTransactionMongo,
   MoneyTransactionMongo,
+  TransactionInvestMongoType,
 } from "./types";
 import { base64, unbase64 } from "./utils";
 import { userAuthFields, DateScalarType } from "backend-auth";
@@ -324,7 +325,7 @@ export const GraphQLInvestTransaction = new GraphQLObjectType<
     },
     type: {
       type: new GraphQLNonNull(TransactionType),
-      resolve: ({ type }): TransactionMongoType => type,
+      resolve: ({ type }): TransactionInvestMongoType => type,
     },
     js: JSDependencyField,
   },

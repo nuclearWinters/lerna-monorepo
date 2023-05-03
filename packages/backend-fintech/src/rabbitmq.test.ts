@@ -147,12 +147,16 @@ describe("rabbitMQ tests", () => {
       .toArray();
     expect(allTransactions.length).toBe(2);
     expect(
-      allTransactions.map((transaction) => ({
-        type: transaction.type,
-        quantity: transaction.quantity,
-        id_borrower: transaction.id_borrower,
-        _id_loan: transaction._id_loan?.toHexString(),
-      }))
+      allTransactions.map((transaction) => {
+        return transaction.type === "invest"
+          ? {
+              type: transaction.type,
+              quantity: transaction.quantity,
+              id_borrower: transaction.id_borrower,
+              _id_loan: transaction._id_loan?.toHexString(),
+            }
+          : {};
+      })
     ).toEqual([
       {
         type: "invest",
@@ -306,12 +310,16 @@ describe("rabbitMQ tests", () => {
       .toArray();
     expect(allTransactions2.length).toBe(4);
     expect(
-      allTransactions2.map((transaction) => ({
-        type: transaction.type,
-        quantity: transaction.quantity,
-        id_borrower: transaction.id_borrower,
-        _id_loan: transaction._id_loan?.toHexString(),
-      }))
+      allTransactions2.map((transaction) => {
+        return transaction.type === "invest"
+          ? {
+              type: transaction.type,
+              quantity: transaction.quantity,
+              id_borrower: transaction.id_borrower,
+              _id_loan: transaction._id_loan?.toHexString(),
+            }
+          : {};
+      })
     ).toEqual([
       {
         type: "invest",
@@ -735,12 +743,16 @@ describe("rabbitMQ tests", () => {
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(
-      allTransactions.map((transaction) => ({
-        type: transaction.type,
-        quantity: transaction.quantity,
-        id_borrower: transaction.id_borrower,
-        _id_loan: transaction._id_loan?.toHexString(),
-      }))
+      allTransactions.map((transaction) => {
+        return transaction.type === "invest"
+          ? {
+              type: transaction.type,
+              quantity: transaction.quantity,
+              id_borrower: transaction.id_borrower,
+              _id_loan: transaction._id_loan?.toHexString(),
+            }
+          : {};
+      })
     ).toEqual([
       {
         type: "invest",

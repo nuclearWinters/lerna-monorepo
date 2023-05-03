@@ -49,6 +49,8 @@ describe("QueryTransactions tests", () => {
         type: "invest",
         quantity: -100,
         created: new Date(),
+        _id_loan: new ObjectId(),
+        id_borrower: "",
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
@@ -84,6 +86,8 @@ describe("QueryTransactions tests", () => {
         type: "invest",
         quantity: -200,
         created: new Date(),
+        _id_loan: new ObjectId(),
+        id_borrower: "",
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",

@@ -1,0 +1,19 @@
+[package]
+name = "rust-backend-auth"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-graphql = "4.0"
+async-graphql-warp = "4.0"
+tokio = { version = "1.0.2", features = ["macros", "rt-multi-thread"] }
+warp = "0.3"
+http = "0.2"
+mongodb = "2.5.0"
+base64 = "0.21.0"
+serde = { version = "1.0", features = ["derive"] }
+jsonwebtoken = "8"
+bcrypt = "0.14"
+cookie = "0.17"
