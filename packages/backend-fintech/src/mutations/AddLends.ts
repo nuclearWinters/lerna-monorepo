@@ -69,10 +69,10 @@ export const AddLendsMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { lends: newLends }: Input,
-    { validAccessToken, id, ch }: Context
+    { id, ch }: Context
   ): Promise<Payload> => {
     try {
-      if (!id || !validAccessToken) {
+      if (!id) {
         throw new Error("No valid access token.");
       }
       //Crear lista de elementos con datos en el input

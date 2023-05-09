@@ -75,19 +75,7 @@ describe("AddFunds tests", () => {
           { expiresIn: "15m" }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO25",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO25`);
     expect(response.body.data.addFunds.error).toBeFalsy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO25",
@@ -159,19 +147,7 @@ describe("AddFunds tests", () => {
           }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO26",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO26`);
     expect(response.body.data.addFunds.error).toBeFalsy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO26",
@@ -241,19 +217,7 @@ describe("AddFunds tests", () => {
           { expiresIn: "0s" }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO27",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO27`);
     expect(response.body.data.addFunds.error).toBeFalsy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO27",
@@ -323,19 +287,7 @@ describe("AddFunds tests", () => {
           { expiresIn: "15s" }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO29",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO29`);
     expect(response.body.data.addFunds.error).toBe(
       "No cuentas con fondos suficientes."
     );
@@ -396,19 +348,7 @@ describe("AddFunds tests", () => {
           { expiresIn: "15s" }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO30",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO30`);
     expect(response.body.data.addFunds.error).toBe(
       "La cantidad no puede ser cero."
     );

@@ -74,6 +74,10 @@ export const AuthServer: IAuthServer = {
       );
       const payload = new JWTMiddlewarePayload();
       payload.setValidaccesstoken(validAccessToken);
+      payload.setId(id);
+      payload.setIsborrower(isBorrower);
+      payload.setIslender(isLender);
+      payload.setIssupport(isSupport);
       callback(null, payload);
     } catch (e) {
       const error: ServiceError = {

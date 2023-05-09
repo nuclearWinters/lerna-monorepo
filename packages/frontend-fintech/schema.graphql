@@ -299,10 +299,7 @@ type User implements Node {
   accountToBePaid: MXN!
   accountTotal: MXN!
   myLoans(after: String, first: Int): LoanConnection
-  transactions(
-    after: String
-    first: Int
-  ): TransactionConnection
+  transactions(after: String, first: Int): TransactionConnection
   investments(
     after: String
     first: Int
@@ -318,7 +315,7 @@ type Session implements Node {
   deviceName: String!
   sessionId: String!
   address: String!
-  lasTimeAccessed: Date!
+  lastTimeAccessed: Date!
   userId: String!
 }
 

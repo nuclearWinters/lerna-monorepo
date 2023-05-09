@@ -77,19 +77,7 @@ describe("AddLoan tests", () => {
           }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO20",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO20`);
     expect(response.body.data.addLoan.error).toBeFalsy();
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO20",

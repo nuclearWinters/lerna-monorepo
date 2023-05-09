@@ -4,13 +4,7 @@ import { stitchSchemas } from "@graphql-tools/stitch";
 import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
 import { getOperationAST, OperationTypeNode, print } from "graphql";
 import { createClient } from "graphql-ws";
-import {
-  IContextResult,
-  jwtMiddleware,
-  setCookieContext,
-  setExtensionsContext,
-  setTokenContext,
-} from "./utils";
+import { IContextResult, jwtMiddleware, setExtensionsContext } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import {
   getGraphQLParameters,
@@ -20,31 +14,18 @@ import {
 } from "graphql-helix";
 import ws, { WebSocketServer, CloseEvent } from "ws";
 import { nanoid } from "nanoid";
+import cookie from "cookie";
 
 const httpExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
     const query = print(document);
-    let accessToken: string = context?.req?.headers?.authorization ?? "";
-    const refreshToken: string = context?.req?.cookies?.refreshToken ?? "";
-    if (context?.req?.cookies?.refreshToken) {
-      try {
-        const response = await jwtMiddleware(refreshToken, accessToken);
-        accessToken = response.getValidaccesstoken();
-      } catch (e) {
-        accessToken = "";
-      }
-    }
     const fetchResult = await fetch(url, {
       method: "POST",
       headers: context?.req?.headers
         ? {
-            ...(context?.req?.headers?.["x-forwarded-for"]
-              ? {
-                  "x-forwarded-for": context?.req?.headers?.["x-forwarded-for"],
-                }
-              : {}),
-            authorization: accessToken,
-            cookie: context?.req?.headers?.cookie,
+            "x-forwarded-for": context?.req?.headers?.["x-forwarded-for"],
+            authorization: context?.req?.headers?.["authorization"],
+            cookie: context?.req?.headers?.["cookie"],
             "content-type": context?.req?.headers?.["content-type"],
             "user-agent": context?.req?.headers?.["user-agent"],
           }
@@ -56,10 +37,10 @@ const httpExecutor = (url: string): AsyncExecutor => {
     const cookiesResponse = fetchResult.headers.get("set-cookie") || "";
     const accessTokenHeader = fetchResult.headers.get("accessToken") || "";
     if (cookiesResponse) {
-      setCookieContext(context, cookiesResponse);
+      context?.res?.setHeader("Set-Cookie", cookiesResponse);
     }
     if (accessTokenHeader) {
-      setTokenContext(context, accessTokenHeader);
+      context?.res?.setHeader("accessToken", accessTokenHeader);
     }
     const result = await fetchResult.json();
     if (result?.extensions && context) {
@@ -166,11 +147,49 @@ makeGatewaySchema().then((schema) => {
     };
     const cookies = req.cookies;
     if (!cookies?.sessionId) {
-      res.cookie("sessionId", nanoid());
+      res.cookie("sessionId", nanoid(), { httpOnly: true });
     }
     if (shouldRenderGraphiQL(request)) {
       res.send(renderGraphiQL());
     } else {
+      const refreshToken: string = req.cookies.refreshToken ?? "";
+      if (req.cookies.refreshToken) {
+        try {
+          const response = await jwtMiddleware(
+            refreshToken,
+            req.headers.authorization ?? ""
+          );
+          req.headers.authorization = response.getValidaccesstoken();
+          const id = response.getId();
+          const isLender = response.getIslender();
+          const isBorrower = response.getIsborrower();
+          const isSupport = response.getIssupport();
+          if (req?.headers?.cookie) {
+            req.headers.cookie +=
+              "; " +
+              cookie.serialize("id", id, {
+                httpOnly: true,
+              });
+            req.headers.cookie +=
+              "; " +
+              cookie.serialize("isLender", String(isLender), {
+                httpOnly: true,
+              });
+            req.headers.cookie +=
+              "; " +
+              cookie.serialize("isBorrower", String(isBorrower), {
+                httpOnly: true,
+              });
+            req.headers.cookie +=
+              "; " +
+              cookie.serialize("isSupport", String(isSupport), {
+                httpOnly: true,
+              });
+          }
+        } catch (e) {
+          req.headers.authorization = "";
+        }
+      }
       const { operationName, query, variables } = getGraphQLParameters(request);
       const result = await processRequest({
         operationName,
@@ -178,20 +197,9 @@ makeGatewaySchema().then((schema) => {
         variables,
         request,
         schema,
-        contextFactory: () => ({ req }),
+        contextFactory: () => ({ req, res }),
       });
       if (result.type === "RESPONSE") {
-        const cookies =
-          (result.context as IContextResult | undefined)?.cookies || "";
-        const accessTokenHeader =
-          (result.context as IContextResult | undefined)?.accessTokenHeader ||
-          "";
-        if (typeof cookies === "string") {
-          res.setHeader("Set-Cookie", cookies);
-        }
-        if (typeof accessTokenHeader === "string") {
-          res.setHeader("accessToken", accessTokenHeader);
-        }
         result.headers.forEach(({ name, value }) => res.setHeader(name, value));
         res.status(result.status);
         result.payload.extensions = (

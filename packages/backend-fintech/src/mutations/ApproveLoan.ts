@@ -35,11 +35,14 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { loan_gid }: Input,
-    { loans, validAccessToken }: Context
+    { loans, id, isSupport }: Context
   ): Promise<Payload> => {
     try {
-      if (!validAccessToken) {
+      if (!id) {
         throw new Error("No valid access token.");
+      }
+      if (!isSupport) {
+        throw new Error("User is not support.");
       }
       const { id: loan_id } = fromGlobalId(loan_gid);
       const { value: loan } = await loans.findOneAndUpdate(

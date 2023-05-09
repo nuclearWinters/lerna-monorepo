@@ -103,19 +103,7 @@ describe("ApproveLoan tests", () => {
           }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO21",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO21; isSupport=true`);
     expect(response.body.data.approveLoan.error).toBeFalsy();
     expect(response.body.data.approveLoan.loan).toBeTruthy();
     const user = await users.findOne({

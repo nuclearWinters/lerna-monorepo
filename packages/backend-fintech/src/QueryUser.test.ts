@@ -71,19 +71,7 @@ describe("QueryUser tests", () => {
           { expiresIn: "15m" }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO24",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO24`);
     expect(response.body.data.user.id).toBeTruthy();
     expect(response.body.data.user.accountAvailable).toBe("$500.00");
     expect(response.body.data.user.accountToBePaid).toBe("$0.00");

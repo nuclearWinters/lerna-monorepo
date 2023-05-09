@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<43c16ad9a2d1d1c4f18f224155734738>>
+ * @generated SignedSource<<1d4b3704f5fb27eaaf2ac57b743098a5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type SessionRow_session$data = {
   readonly applicationName: string;
   readonly deviceName: string;
   readonly id: string;
-  readonly lasTimeAccessed: Int;
+  readonly lastTimeAccessed: Int;
   readonly sessionId: string;
   readonly type: string;
   readonly " $fragmentType": "SessionRow_session";
@@ -79,7 +79,7 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "lasTimeAccessed",
+      "name": "lastTimeAccessed",
       "storageKey": null
     },
     {
@@ -94,6 +94,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "3efd23a18301dc418b2a41ad4c1d266d";
+(node as any).hash = "3e71dfd52eb56d78a519dd00436b343f";
 
 export default node;

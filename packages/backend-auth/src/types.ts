@@ -39,7 +39,7 @@ export interface UserSessions {
   deviceName: string;
   sessionId: string;
   address: string;
-  lasTimeAccessed: Date;
+  lastTimeAccessed: Date;
   userId: string;
 }
 

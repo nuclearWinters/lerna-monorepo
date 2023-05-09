@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3bb3f42ac5aa58f1b95ae913728ba449>>
+ * @generated SignedSource<<a7a6d08732d47853486737822d82ddf2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -351,7 +351,7 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "lasTimeAccessed",
+                        "name": "lastTimeAccessed",
                         "storageKey": null
                       },
                       (v14/*: any*/)
@@ -381,12 +381,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "dd53f24e01d55815061891318f1b988c",
+    "cacheID": "2521e153e2047c254a19b3657d491dbc",
     "id": null,
     "metadata": {},
     "name": "SettingsAuthUserQuery",
     "operationKind": "query",
-    "text": "query SettingsAuthUserQuery {\n  authUser {\n    id\n    accountId\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    email\n    language\n    ...Settings_logins_user\n    ...Settings_sessions_user\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SessionRow_session on Session {\n  applicationName\n  type\n  deviceName\n  sessionId\n  address\n  lasTimeAccessed\n  id\n}\n\nfragment Settings_logins_user on AuthUser {\n  logins(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Settings_sessions_user on AuthUser {\n  sessions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsAuthUserQuery {\n  authUser {\n    id\n    accountId\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    email\n    language\n    ...Settings_logins_user\n    ...Settings_sessions_user\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SessionRow_session on Session {\n  applicationName\n  type\n  deviceName\n  sessionId\n  address\n  lastTimeAccessed\n  id\n}\n\nfragment Settings_logins_user on AuthUser {\n  logins(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Settings_sessions_user on AuthUser {\n  sessions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

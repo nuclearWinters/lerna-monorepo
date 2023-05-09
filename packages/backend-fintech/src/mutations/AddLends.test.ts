@@ -89,19 +89,7 @@ describe("AddLends tests", () => {
           }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO31",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO31`);
     expect(response.body.data.addLends.error).toBeFalsy();
     expect(ch.sendToQueue).toBeCalledTimes(2);
     const response2 = await request
@@ -152,19 +140,7 @@ describe("AddLends tests", () => {
           }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO31",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO31`);
     expect(response2.body.data.addLends.error).toBeFalsy();
     expect(ch.sendToQueue).toBeCalledTimes(4);
   });
@@ -208,19 +184,7 @@ describe("AddLends tests", () => {
           { expiresIn: "15m" }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO33",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO33`);
     expect(response.body.data.addLends.error).toBe("");
     expect(ch.sendToQueue).toBeCalledTimes(5);
   });
@@ -264,19 +228,7 @@ describe("AddLends tests", () => {
           { expiresIn: "15m" }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO35",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO35`);
     expect(response.body.data.addLends.error).toBe("");
     expect(ch.sendToQueue).toBeCalledTimes(6);
   });
@@ -328,19 +280,7 @@ describe("AddLends tests", () => {
           { expiresIn: "15m" }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO37",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO37`);
     expect(response.body.data.addLends.error).toBeFalsy();
     expect(ch.sendToQueue).toBeCalledTimes(8);
   });

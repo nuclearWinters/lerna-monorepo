@@ -33,27 +33,6 @@ export const jwt = {
   },
 };
 
-export const refreshTokenMiddleware = (
-  accessToken: string | undefined,
-  refreshToken: string | undefined
-): { validAccessToken?: string; id?: string } => {
-  if (!accessToken || !refreshToken) {
-    return { validAccessToken: undefined, id: undefined };
-  }
-  try {
-    const user = jwt.decode(accessToken);
-    if (!user || typeof user === "string") {
-      return { validAccessToken: undefined, id: undefined };
-    }
-    return {
-      validAccessToken: accessToken,
-      id: user.id,
-    };
-  } catch (e) {
-    return { validAccessToken: undefined, id: undefined };
-  }
-};
-
 export const getContext = (req: Request, res: Response): Context => {
   const authdb = req.app.locals.authdb as Db;
   const rdb = req.app.locals.rdb;
@@ -61,11 +40,7 @@ export const getContext = (req: Request, res: Response): Context => {
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies.refreshToken || "";
   const sessionId = req.header("sessionId") || "";
-  const { validAccessToken, id } = refreshTokenMiddleware(
-    accessToken,
-    refreshToken
-  );
-  res?.setHeader("accessToken", validAccessToken || "");
+  const id = req.cookies.id || "";
   const userAgent = req.headers["user-agent"];
   const detector = new DeviceDetector({
     clientIndexes: true,
@@ -87,7 +62,6 @@ export const getContext = (req: Request, res: Response): Context => {
     accessToken,
     refreshToken,
     res,
-    validAccessToken,
     id,
     ip,
     sessionId,

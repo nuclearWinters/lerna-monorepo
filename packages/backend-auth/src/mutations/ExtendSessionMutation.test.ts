@@ -63,7 +63,7 @@ describe("ExtendSessionMutation tests", () => {
       .set("Accept", "application/json")
       .set(
         "Cookie",
-        `refreshToken=${jwt.sign(
+        `id=wHHR1SUBT0dspoF4YUOw5; refreshToken=${jwt.sign(
           {
             id: "wHHR1SUBT0dspoF4YUOw5",
             isBorrower: false,
@@ -74,20 +74,6 @@ describe("ExtendSessionMutation tests", () => {
           "REFRESHSECRET",
           { expiresIn: "15m" }
         )}`
-      )
-      .set(
-        "Authorization",
-        jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUOw5",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-            refreshTokenExpireTime: 0,
-          },
-          "ACCESSSECRET",
-          { expiresIn: "3m" }
-        )
       );
     expect(response.body.data.extendSession.error).toBeFalsy();
     expect(response.headers["set-cookie"]).toBeTruthy();
@@ -107,9 +93,7 @@ describe("ExtendSessionMutation tests", () => {
         },
         operationName: "extendSessionMutation",
       })
-      .set("Accept", "application/json")
-      .set("Cookie", `refreshToken=invalid`)
-      .set("Authorization", "invalid");
+      .set("Accept", "application/json");
     expect(response.body.data.extendSession.error).toBeTruthy();
     expect(response.headers["set-cookie"]).toBeFalsy();
   });

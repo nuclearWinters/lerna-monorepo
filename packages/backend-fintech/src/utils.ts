@@ -7,7 +7,7 @@ import {
 } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT, Context } from "./types";
-import { Request, Response } from "express";
+import { Request } from "express";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -33,18 +33,16 @@ export const jwt = {
   },
 };
 
-export const getContext = async (
-  req: Request,
-  res: Response
-): Promise<Context> => {
+export const getContext = async (req: Request): Promise<Context> => {
   const db = req.app.locals.db as Db;
   const authdb = req.app.locals.authdb as Db;
   const ch = req.app.locals.ch;
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies?.refreshToken || "";
-  const { id, validAccessToken, isBorrower, isLender, isSupport } =
-    await refreshTokenMiddleware(accessToken, refreshToken);
-  res?.setHeader("accessToken", validAccessToken || "");
+  const id = req.cookies?.id || "";
+  const isBorrower = req.cookies?.isBorrower === "true";
+  const isLender = req.cookies?.isLender === "true";
+  const isSupport = req.cookies?.isSupport === "true";
   return {
     users: db.collection<UserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
@@ -57,56 +55,10 @@ export const getContext = async (
     refreshToken,
     ch,
     id,
-    validAccessToken,
     isBorrower,
     isLender,
     isSupport,
   };
-};
-
-interface IResolve {
-  validAccessToken?: string;
-  id?: string;
-  isLender: boolean;
-  isBorrower: boolean;
-  isSupport: boolean;
-}
-
-export const refreshTokenMiddleware = async (
-  accessToken: string | undefined,
-  refreshToken: string | undefined
-): Promise<IResolve> => {
-  if (!accessToken || !refreshToken) {
-    return {
-      validAccessToken: undefined,
-      id: undefined,
-      isLender: false,
-      isBorrower: false,
-      isSupport: false,
-    };
-  }
-  try {
-    const user = jwt.decode(accessToken);
-    if (!user || typeof user === "string") {
-      throw new Error("El token esta corrompido.");
-    }
-    const { id, isLender, isBorrower, isSupport } = user;
-    return {
-      validAccessToken: accessToken,
-      id,
-      isLender,
-      isBorrower,
-      isSupport,
-    };
-  } catch (e) {
-    return {
-      validAccessToken: undefined,
-      id: undefined,
-      isLender: false,
-      isBorrower: false,
-      isSupport: false,
-    };
-  }
 };
 
 export const base64 = (i: string): string => {

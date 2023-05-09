@@ -48,10 +48,10 @@ export const UpdateUserMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     user: Input,
-    { authusers, validAccessToken, id }: Context
+    { authusers, id }: Context
   ): Promise<Payload> => {
     try {
-      if (!validAccessToken || !id) {
+      if (!id) {
         throw new Error("No valid access token.");
       }
       const result = await authusers.findOneAndUpdate(

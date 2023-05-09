@@ -126,19 +126,7 @@ describe("QueryLoans tests", () => {
           }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO23",
-            isBorrower: true,
-            isLender: false,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO23`);
     expect(response.body.data.user.myLoans.edges.length).toBe(2);
     expect(response.body.data.user.myLoans.edges[0].cursor).toBeTruthy();
     expect(response.body.data.user.myLoans.edges[0].node.id).toBeTruthy();

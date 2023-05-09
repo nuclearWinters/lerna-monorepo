@@ -46,6 +46,14 @@ export namespace JWTMiddlewareInput {
 export class JWTMiddlewarePayload extends jspb.Message {
   getValidaccesstoken(): string;
   setValidaccesstoken(value: string): JWTMiddlewarePayload;
+  getId(): string;
+  setId(value: string): JWTMiddlewarePayload;
+  getIslender(): boolean;
+  setIslender(value: boolean): JWTMiddlewarePayload;
+  getIsborrower(): boolean;
+  setIsborrower(value: boolean): JWTMiddlewarePayload;
+  getIssupport(): boolean;
+  setIssupport(value: boolean): JWTMiddlewarePayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): JWTMiddlewarePayload.AsObject;
@@ -71,6 +79,10 @@ export class JWTMiddlewarePayload extends jspb.Message {
 export namespace JWTMiddlewarePayload {
   export type AsObject = {
     validaccesstoken: string;
+    id: string;
+    islender: boolean;
+    isborrower: boolean;
+    issupport: boolean;
   };
 }
 

@@ -348,6 +348,10 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
     var f,
       obj = {
         validaccesstoken: jspb.Message.getFieldWithDefault(msg, 1, ""),
+        id: jspb.Message.getFieldWithDefault(msg, 2, ""),
+        islender: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+        isborrower: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+        issupport: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
       };
 
     if (includeInstance) {
@@ -392,6 +396,22 @@ proto.authPackage.JWTMiddlewarePayload.deserializeBinaryFromReader = function (
         var value = /** @type {string} */ (reader.readString());
         msg.setValidaccesstoken(value);
         break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setId(value);
+        break;
+      case 3:
+        var value = /** @type {boolean} */ (reader.readBool());
+        msg.setIslender(value);
+        break;
+      case 4:
+        var value = /** @type {boolean} */ (reader.readBool());
+        msg.setIsborrower(value);
+        break;
+      case 5:
+        var value = /** @type {boolean} */ (reader.readBool());
+        msg.setIssupport(value);
+        break;
       default:
         reader.skipField();
         break;
@@ -426,6 +446,22 @@ proto.authPackage.JWTMiddlewarePayload.serializeBinaryToWriter = function (
   if (f.length > 0) {
     writer.writeString(1, f);
   }
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getIslender();
+  if (f) {
+    writer.writeBool(3, f);
+  }
+  f = message.getIsborrower();
+  if (f) {
+    writer.writeBool(4, f);
+  }
+  f = message.getIssupport();
+  if (f) {
+    writer.writeBool(5, f);
+  }
 };
 
 /**
@@ -447,6 +483,82 @@ proto.authPackage.JWTMiddlewarePayload.prototype.setValidaccesstoken =
   function (value) {
     return jspb.Message.setProto3StringField(this, 1, value);
   };
+
+/**
+ * optional string id = 2;
+ * @return {string}
+ */
+proto.authPackage.JWTMiddlewarePayload.prototype.getId = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.authPackage.JWTMiddlewarePayload} returns this
+ */
+proto.authPackage.JWTMiddlewarePayload.prototype.setId = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional bool isLender = 3;
+ * @return {boolean}
+ */
+proto.authPackage.JWTMiddlewarePayload.prototype.getIslender = function () {
+  return /** @type {boolean} */ (
+    jspb.Message.getBooleanFieldWithDefault(this, 3, false)
+  );
+};
+
+/**
+ * @param {boolean} value
+ * @return {!proto.authPackage.JWTMiddlewarePayload} returns this
+ */
+proto.authPackage.JWTMiddlewarePayload.prototype.setIslender = function (
+  value
+) {
+  return jspb.Message.setProto3BooleanField(this, 3, value);
+};
+
+/**
+ * optional bool isBorrower = 4;
+ * @return {boolean}
+ */
+proto.authPackage.JWTMiddlewarePayload.prototype.getIsborrower = function () {
+  return /** @type {boolean} */ (
+    jspb.Message.getBooleanFieldWithDefault(this, 4, false)
+  );
+};
+
+/**
+ * @param {boolean} value
+ * @return {!proto.authPackage.JWTMiddlewarePayload} returns this
+ */
+proto.authPackage.JWTMiddlewarePayload.prototype.setIsborrower = function (
+  value
+) {
+  return jspb.Message.setProto3BooleanField(this, 4, value);
+};
+
+/**
+ * optional bool isSupport = 5;
+ * @return {boolean}
+ */
+proto.authPackage.JWTMiddlewarePayload.prototype.getIssupport = function () {
+  return /** @type {boolean} */ (
+    jspb.Message.getBooleanFieldWithDefault(this, 5, false)
+  );
+};
+
+/**
+ * @param {boolean} value
+ * @return {!proto.authPackage.JWTMiddlewarePayload} returns this
+ */
+proto.authPackage.JWTMiddlewarePayload.prototype.setIssupport = function (
+  value
+) {
+  return jspb.Message.setProto3BooleanField(this, 5, value);
+};
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
   /**

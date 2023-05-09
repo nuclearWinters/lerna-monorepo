@@ -135,19 +135,7 @@ describe("QueryInvestments tests", () => {
           }
         )
       )
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO16",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      );
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO16`);
     expect(response.body.data.user.investments.edges.length).toBe(2);
     expect(response.body.data.user.investments.edges[0].cursor).toBeTruthy();
     expect(response.body.data.user.investments.edges[0].node.id).toBeTruthy();

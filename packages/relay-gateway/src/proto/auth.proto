@@ -15,6 +15,10 @@ message JWTMiddlewareInput {
 
 message JWTMiddlewarePayload {
     string validAccessToken = 1;
+    string id = 2;
+    bool isLender = 3;
+    bool isBorrower = 4;
+    bool isSupport = 5;
 }
 
 message CreateUserInput {

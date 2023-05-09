@@ -68,9 +68,9 @@ export const GraphQLSession = new GraphQLObjectType<UserSessions>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ address }): string => address,
     },
-    lasTimeAccessed: {
+    lastTimeAccessed: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ lasTimeAccessed }): Date => lasTimeAccessed,
+      resolve: ({ lastTimeAccessed }): Date => lastTimeAccessed,
     },
     userId: {
       type: new GraphQLNonNull(GraphQLString),
@@ -285,6 +285,9 @@ const QueryUser = {
     { authusers, id }: Context
   ): Promise<UserMongo> => {
     try {
+      if (!id) {
+        throw new Error("El usuario no ha iniciado sesion.");
+      }
       const user = await authusers.findOne({
         id,
       });

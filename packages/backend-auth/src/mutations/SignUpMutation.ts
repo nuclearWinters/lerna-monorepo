@@ -138,7 +138,7 @@ export const SignUpMutation = mutationWithClientMutationId({
         { sessionId },
         {
           $set: {
-            lasTimeAccessed: now,
+            lastTimeAccessed: now,
           },
           $setOnInsert: {
             applicationName: "Lerna Monorepo",

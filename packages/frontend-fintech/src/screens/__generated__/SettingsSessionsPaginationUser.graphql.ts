@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f842b600574c0bd4d7e8ecc73bc38115>>
+ * @generated SignedSource<<5452f2271fb7e25d2bf82941410d51c0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -197,7 +197,7 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "lasTimeAccessed",
+                            "name": "lastTimeAccessed",
                             "storageKey": null
                           },
                           (v2/*: any*/)
@@ -261,12 +261,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "27d86fc2b1c0b0d22a197e889a7e9a8c",
+    "cacheID": "a12813454911195cb5a35a081a9b0c8c",
     "id": null,
     "metadata": {},
     "name": "SettingsSessionsPaginationUser",
     "operationKind": "query",
-    "text": "query SettingsSessionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...Settings_sessions_user_1G22uz\n    id\n  }\n}\n\nfragment SessionRow_session on Session {\n  applicationName\n  type\n  deviceName\n  sessionId\n  address\n  lasTimeAccessed\n  id\n}\n\nfragment Settings_sessions_user_1G22uz on AuthUser {\n  sessions(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsSessionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...Settings_sessions_user_1G22uz\n    id\n  }\n}\n\nfragment SessionRow_session on Session {\n  applicationName\n  type\n  deviceName\n  sessionId\n  address\n  lastTimeAccessed\n  id\n}\n\nfragment Settings_sessions_user_1G22uz on AuthUser {\n  sessions(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

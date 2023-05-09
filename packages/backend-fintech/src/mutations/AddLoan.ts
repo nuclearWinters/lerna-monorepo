@@ -31,10 +31,10 @@ export const AddLoanMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     loan: Input,
-    { loans, id, validAccessToken }: Context
+    { loans, id }: Context
   ): Promise<Payload> => {
     try {
-      if (!validAccessToken || !id) {
+      if (!id) {
         throw new Error("No valid access token.");
       }
       const _id_loan = new ObjectId();

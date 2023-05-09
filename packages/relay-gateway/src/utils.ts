@@ -22,24 +22,6 @@ export interface IContextResult {
   extensions: any;
 }
 
-export const setCookieContext = (
-  ctx: unknown,
-  cookies: string
-): IContextResult => {
-  const ctxTyped = ctx as IContextResult;
-  ctxTyped.cookies = cookies;
-  return ctxTyped;
-};
-
-export const setTokenContext = (
-  ctx: unknown,
-  accessTokenHeader: string
-): IContextResult => {
-  const ctxTyped = ctx as IContextResult;
-  ctxTyped.accessTokenHeader = accessTokenHeader;
-  return ctxTyped;
-};
-
 export const setExtensionsContext = (
   ctx: unknown,
   extensions: any

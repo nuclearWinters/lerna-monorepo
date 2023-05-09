@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<65c5a952215ecce0a3f80e6e2806f9a2>>
+ * @generated SignedSource<<d3cda95039b88e8f44d745ff70bfadd6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -135,7 +135,7 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "lasTimeAccessed",
+                "name": "lastTimeAccessed",
                 "storageKey": null
               }
             ],
@@ -148,16 +148,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1058e6759fe81ca2fd258144de384a8c",
+    "cacheID": "73ae4260e16e2790d4101e597f390621",
     "id": null,
     "metadata": {},
     "name": "SessionRowRefetchQuery",
     "operationKind": "query",
-    "text": "query SessionRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SessionRow_session\n    id\n  }\n}\n\nfragment SessionRow_session on Session {\n  applicationName\n  type\n  deviceName\n  sessionId\n  address\n  lasTimeAccessed\n  id\n}\n"
+    "text": "query SessionRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SessionRow_session\n    id\n  }\n}\n\nfragment SessionRow_session on Session {\n  applicationName\n  type\n  deviceName\n  sessionId\n  address\n  lastTimeAccessed\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3efd23a18301dc418b2a41ad4c1d266d";
+(node as any).hash = "3e71dfd52eb56d78a519dd00436b343f";
 
 export default node;

@@ -31,10 +31,10 @@ export const AddFundsMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { quantity }: Input,
-    { users, transactions, id, validAccessToken }: Context
+    { users, transactions, id }: Context
   ): Promise<Payload> => {
     try {
-      if (!validAccessToken || !id) {
+      if (!id) {
         throw new Error("No valid access token.");
       }
       if (quantity === 0) {

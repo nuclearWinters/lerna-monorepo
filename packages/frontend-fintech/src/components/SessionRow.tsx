@@ -26,7 +26,7 @@ const loginRowRefetchableFragment = graphql`
     deviceName
     sessionId
     address
-    lasTimeAccessed
+    lastTimeAccessed
   }
 `;
 
@@ -56,7 +56,7 @@ export const SessionRow: FC<Props> = ({ session, language }) => {
       <div className={baseLoanRowCell}>{data.type}</div>
       <div className={baseLoanRowCell}>{data.deviceName}</div>
       <div className={baseLoanRowCell}>
-        {dayjs(data.lasTimeAccessed).format("DD[/]MM[/]YYYY h:mm a")}
+        {dayjs(data.lastTimeAccessed).format("DD[/]MM[/]YYYY h:mm a")}
       </div>
       <div className={baseLoanRowCell}>{data.address}</div>
       {isInFlightRevokeSession ? (

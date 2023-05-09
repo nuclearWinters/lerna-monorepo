@@ -2,15 +2,12 @@ import { app } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "../types";
-import { jwt } from "../utils";
 
 jest.mock("nanoid", () => ({
   customAlphabet: () => () => "wHHR1SUBT0dspoF4YUOw1",
 }));
 
 const request = supertest(app);
-
-const refreshTokenExpireTime = new Date().getTime() + 100000;
 
 describe("UpdateUser tests", () => {
   let client: MongoClient;
@@ -69,34 +66,7 @@ describe("UpdateUser tests", () => {
         operationName: "UpdateUserMutation",
       })
       .set("Accept", "application/json")
-      .set(
-        "Cookie",
-        `refreshToken=${jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUOw6",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-            refreshTokenExpireTime,
-          },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
-        )}`
-      )
-      .set(
-        "Authorization",
-        jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUOw6",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-            refreshTokenExpireTime,
-          },
-          "ACCESSSECRET",
-          { expiresIn: "3m" }
-        )
-      );
+      .set("Cookie", "id=wHHR1SUBT0dspoF4YUOw6");
     expect(response.body.data.updateUser.error).toBeFalsy();
     const user = await users.findOne({
       _id: new ObjectId("000000000000000000000007"),
