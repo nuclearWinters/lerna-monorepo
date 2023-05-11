@@ -42,7 +42,7 @@ export const UpdateUserMutation = mutationWithClientMutationId({
       resolve: ({ error }: Payload): string => error,
     },
     authUser: {
-      type: new GraphQLNonNull(GraphQLAuthUser),
+      type: GraphQLAuthUser,
       resolve: ({ authUser }: Payload): UserMongo | null => authUser,
     },
   },
