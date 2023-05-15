@@ -1,6 +1,7 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import { Context } from "../types";
+import { addMinutes } from "date-fns";
 
 type Payload = {
   error: string;
@@ -18,10 +19,21 @@ export const LogOutMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     _: unknown,
-    { res }: Context
+    { res, refreshToken, rdb, sessions }: Context
   ): Promise<Payload> => {
     try {
       res.clearCookie("refreshToken");
+      const now = new Date();
+      now.setMilliseconds(0);
+      const time = now.getTime() / 1000;
+      const expireDate = addMinutes(now, -15);
+      const session = await sessions.findOneAndUpdate(
+        { refreshToken },
+        { expirationDate: expireDate }
+      );
+      if (session.value) {
+        await rdb.set(session.value.refreshToken, time, { EX: 60 * 15 });
+      }
       return {
         error: "",
       };

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<85904d67ec94b9fe2756ad04a7e84ed0>>
+ * @generated SignedSource<<bd09046acb9618710a6a0467d43604cc>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,7 @@ export type LogInMutation$variables = {
 };
 export type LogInMutation$data = {
   readonly signIn: {
-    readonly error: string | null;
+    readonly error: string;
   };
 };
 export type LogInMutation = {

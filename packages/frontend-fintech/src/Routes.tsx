@@ -7,9 +7,7 @@ import MyTransactionsQuery from "./screens/__generated__/MyTransactionsQuery.gra
 import AddInvestmentsQuery from "./screens/__generated__/AddInvestmentsQuery.graphql";
 import MyLoansQuery from "./screens/__generated__/MyLoansQuery.graphql";
 import { RouteConfig } from "yarr";
-import { tokensAndData } from "App";
 import { Decode } from "./screens/LogIn";
-import decode from "jwt-decode";
 
 export type IRouteConfig = RouteConfig<
   string,
@@ -21,6 +19,67 @@ export type IRouteConfig = RouteConfig<
   }
 >[];
 
+export const getUserDataCache = (): Decode | null => {
+  const userData = sessionStorage.getItem("userData");
+  if (userData) {
+    return JSON.parse(userData);
+  }
+  return null;
+};
+
+type inputUser = "lender" | "borrower" | "support";
+
+const redirectPage = (
+  allowedUsers: inputUser[],
+  path: string
+): string | null => {
+  const data = getUserDataCache();
+  if (data) {
+    if (
+      (allowedUsers.includes("borrower") && data.isBorrower) ||
+      (allowedUsers.includes("lender") && data.isLender) ||
+      (allowedUsers.includes("support") && data.isSupport)
+    ) {
+      return null;
+    } else {
+      if (data.isBorrower) {
+        return defaultBorrower;
+      } else if (data.isLender) {
+        return defaultLender;
+      } else {
+        return defaultSupport;
+      }
+    }
+  }
+  return `/login?redirectTo=${path}`;
+};
+
+export const supportPages = ["/approveLoan", "/settings"];
+
+export const borrowerPages = [
+  "/account",
+  "/addLoan",
+  "/myLoans",
+  "/addFunds",
+  "/retireFunds",
+  "/settings",
+  "/myTransactions",
+];
+
+const defaultSupport = "/approveLoan";
+const defaultBorrower = "/myLoans";
+const defaultLender = "/addInvestments";
+
+export const lenderPages = [
+  "/account",
+  "/addInvestments",
+  "/addFunds",
+  "/retireFunds",
+  "/myInvestments",
+  "/myTransactions",
+  "/settings",
+];
+
 export const routes: IRouteConfig = [
   {
     component: async () => {
@@ -28,6 +87,19 @@ export const routes: IRouteConfig = [
       return module.LogIn;
     },
     path: "/login",
+    redirectRules: () => {
+      const data = getUserDataCache();
+      if (data?.isBorrower) {
+        return defaultBorrower;
+      }
+      if (data?.isSupport) {
+        return defaultSupport;
+      }
+      if (data?.isLender) {
+        return defaultSupport;
+      }
+      return null;
+    },
   },
   {
     component: async () => {
@@ -35,6 +107,19 @@ export const routes: IRouteConfig = [
       return module.SignUp;
     },
     path: "/register",
+    redirectRules: () => {
+      const data = getUserDataCache();
+      if (data?.isBorrower) {
+        return defaultBorrower;
+      }
+      if (data?.isSupport) {
+        return defaultSupport;
+      }
+      if (data?.isLender) {
+        return defaultSupport;
+      }
+      return null;
+    },
   },
   {
     component: async () => {
@@ -46,16 +131,14 @@ export const routes: IRouteConfig = [
       query: loadQuery(RelayEnvironment, AccountUserQuery, {}),
     }),
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (data?.isSupport) {
-          tokensAndData.redirectTo = window.location.pathname;
-          return "/";
-        }
-        return null;
+      const data = getUserDataCache();
+      if (!data) {
+        return "/login?redirectTo=account";
       }
-      tokensAndData.redirectTo = window.location.pathname;
-      return "/";
+      if (data?.isSupport) {
+        return defaultSupport;
+      }
+      return null;
     },
   },
   {
@@ -68,11 +151,11 @@ export const routes: IRouteConfig = [
       query: loadQuery(RelayEnvironment, SettingsAuthUserQuery, {}),
     }),
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        return null;
+      const data = getUserDataCache();
+      if (!data) {
+        return "/login?redirectTo=settings";
       }
-      tokensAndData.redirectTo = window.location.pathname;
-      return "/";
+      return null;
     },
   },
   {
@@ -92,16 +175,17 @@ export const routes: IRouteConfig = [
       };
     },
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (!data?.isLender) {
-          tokensAndData.redirectTo = window.location.pathname;
-          return "/";
-        }
-        return null;
+      const data = getUserDataCache();
+      if (!data) {
+        return "/login?redirectTo=myInvestments";
       }
-      tokensAndData.redirectTo = window.location.pathname;
-      return "/";
+      if (data.isBorrower) {
+        return defaultBorrower;
+      }
+      if (data.isSupport) {
+        return defaultSupport;
+      }
+      return null;
     },
   },
   {
@@ -121,16 +205,14 @@ export const routes: IRouteConfig = [
       };
     },
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (!(data?.isLender || data.isBorrower)) {
-          tokensAndData.redirectTo = window.location.pathname;
-          return "/";
-        }
-        return null;
+      const data = getUserDataCache();
+      if (!data) {
+        return "/login?redirectTo=myTransactions";
       }
-      tokensAndData.redirectTo = window.location.pathname;
-      return "/";
+      if (data.isSupport) {
+        return defaultSupport;
+      }
+      return null;
     },
   },
   {
@@ -140,16 +222,14 @@ export const routes: IRouteConfig = [
     },
     path: "/addFunds",
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (data?.isSupport) {
-          tokensAndData.redirectTo = window.location.pathname;
-          return "/";
-        }
-        return null;
+      const data = getUserDataCache();
+      if (!data) {
+        return "/login?redirectTo=addFunds";
       }
-      tokensAndData.redirectTo = window.location.pathname;
-      return "/";
+      if (data.isSupport) {
+        return defaultSupport;
+      }
+      return null;
     },
   },
   {
@@ -159,16 +239,7 @@ export const routes: IRouteConfig = [
     },
     path: "/retireFunds",
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (data?.isSupport) {
-          tokensAndData.redirectTo = window.location.pathname;
-          return "/";
-        }
-        return null;
-      }
-      tokensAndData.redirectTo = window.location.pathname;
-      return "/";
+      return redirectPage(["lender", "borrower"], "/retireFunds");
     },
   },
   {
@@ -181,15 +252,7 @@ export const routes: IRouteConfig = [
       query: loadQuery(RelayEnvironment, AddInvestmentsQuery, {}),
     }),
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (data?.isSupport || data?.isBorrower) {
-          tokensAndData.redirectTo = window.location.pathname;
-          return "/";
-        }
-        return null;
-      }
-      return null;
+      return redirectPage(["lender"], "/addInvestments");
     },
   },
   {
@@ -202,16 +265,7 @@ export const routes: IRouteConfig = [
       query: loadQuery(RelayEnvironment, MyLoansQuery, {}),
     }),
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (!data?.isSupport) {
-          tokensAndData.redirectTo = window.location.pathname;
-          return "/";
-        }
-        return null;
-      }
-      tokensAndData.redirectTo = window.location.pathname;
-      return "/";
+      return redirectPage(["support"], "/approveLoan");
     },
   },
   {
@@ -224,16 +278,7 @@ export const routes: IRouteConfig = [
       query: loadQuery(RelayEnvironment, MyLoansQuery, {}),
     }),
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (!data?.isBorrower) {
-          tokensAndData.redirectTo = window.location.pathname;
-          return "/";
-        }
-        return null;
-      }
-      tokensAndData.redirectTo = window.location.pathname;
-      return "/";
+      return redirectPage(["borrower"], "/myLoans");
     },
   },
   {
@@ -243,16 +288,7 @@ export const routes: IRouteConfig = [
     },
     path: "/addLoan",
     redirectRules: () => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (!data?.isBorrower) {
-          tokensAndData.redirectTo = window.location.pathname;
-          return "/";
-        }
-        return null;
-      }
-      tokensAndData.redirectTo = window.location.pathname;
-      return "/";
+      return redirectPage(["borrower"], "/addLoan");
     },
   },
   {
@@ -261,5 +297,18 @@ export const routes: IRouteConfig = [
       return module.Blank;
     },
     path: "/",
+    redirectRules: () => {
+      const data = getUserDataCache();
+      if (data?.isBorrower) {
+        return defaultBorrower;
+      }
+      if (data?.isSupport) {
+        return defaultSupport;
+      }
+      if (data?.isLender) {
+        return defaultSupport;
+      }
+      return "/login";
+    },
   },
 ];

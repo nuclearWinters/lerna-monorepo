@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1d4b3704f5fb27eaaf2ac57b743098a5>>
+ * @generated SignedSource<<20399d6a701af32e0ee51b50f8bfc23b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,6 @@ export type SessionRow_session$data = {
   readonly deviceName: string;
   readonly id: string;
   readonly lastTimeAccessed: Int;
-  readonly sessionId: string;
   readonly type: string;
   readonly " $fragmentType": "SessionRow_session";
 };
@@ -44,6 +43,13 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "applicationName",
       "storageKey": null
     },
@@ -65,13 +71,6 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "sessionId",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
       "name": "address",
       "storageKey": null
     },
@@ -81,19 +80,12 @@ const node: ReaderFragment = {
       "kind": "ScalarField",
       "name": "lastTimeAccessed",
       "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
     }
   ],
   "type": "Session",
   "abstractKey": null
 };
 
-(node as any).hash = "3e71dfd52eb56d78a519dd00436b343f";
+(node as any).hash = "64ad97c9244ed031a7b448a815094adb";
 
 export default node;

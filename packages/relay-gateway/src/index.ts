@@ -13,7 +13,6 @@ import {
   shouldRenderGraphiQL,
 } from "graphql-helix";
 import ws, { WebSocketServer, CloseEvent } from "ws";
-import { nanoid } from "nanoid";
 import cookie from "cookie";
 
 const httpExecutor = (url: string): AsyncExecutor => {
@@ -23,7 +22,7 @@ const httpExecutor = (url: string): AsyncExecutor => {
       method: "POST",
       headers: context?.req?.headers
         ? {
-            "x-forwarded-for": context?.req?.headers?.["x-forwarded-for"],
+            "x-forwarded-for": context?.req?.socket?.remoteAddress,
             authorization: context?.req?.headers?.["authorization"],
             cookie: context?.req?.headers?.["cookie"],
             "content-type": context?.req?.headers?.["content-type"],
@@ -145,10 +144,6 @@ makeGatewaySchema().then((schema) => {
       method: req.method,
       query: req.query,
     };
-    const cookies = req.cookies;
-    if (!cookies?.sessionId) {
-      res.cookie("sessionId", nanoid(), { httpOnly: true });
-    }
     if (shouldRenderGraphiQL(request)) {
       res.send(renderGraphiQL());
     } else {
@@ -159,7 +154,9 @@ makeGatewaySchema().then((schema) => {
             refreshToken,
             req.headers.authorization ?? ""
           );
-          req.headers.authorization = response.getValidaccesstoken();
+          const validAccessToken = response.getValidaccesstoken();
+          req.headers.authorization = validAccessToken;
+          res.setHeader("accessToken", validAccessToken);
           const id = response.getId();
           const isLender = response.getIslender();
           const isBorrower = response.getIsborrower();

@@ -9,8 +9,6 @@ import * as jspb from "google-protobuf";
 export class JWTMiddlewareInput extends jspb.Message {
   getRefreshtoken(): string;
   setRefreshtoken(value: string): JWTMiddlewareInput;
-  getSessionid(): string;
-  setSessionid(value: string): JWTMiddlewareInput;
   getAccesstoken(): string;
   setAccesstoken(value: string): JWTMiddlewareInput;
 
@@ -38,7 +36,6 @@ export class JWTMiddlewareInput extends jspb.Message {
 export namespace JWTMiddlewareInput {
   export type AsObject = {
     refreshtoken: string;
-    sessionid: string;
     accesstoken: string;
   };
 }

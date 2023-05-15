@@ -69,10 +69,10 @@ describe("ExtendSessionMutation tests", () => {
             isBorrower: false,
             isLender: true,
             isSupport: false,
-            refreshTokenExpireTime: 0,
+            refreshTokenExpireTime: new Date().getTime() / 1000 + 900,
+            exp: new Date().getTime() / 1000 + 900,
           },
-          "REFRESHSECRET",
-          { expiresIn: "15m" }
+          "REFRESHSECRET"
         )}`
       );
     expect(response.body.data.extendSession.error).toBeFalsy();

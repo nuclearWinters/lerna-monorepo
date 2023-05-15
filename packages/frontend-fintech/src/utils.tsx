@@ -18,6 +18,8 @@ export const useLogout = () => {
         input: {},
       },
       onCompleted: () => {
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("userData");
         window.location.reload();
       },
     });

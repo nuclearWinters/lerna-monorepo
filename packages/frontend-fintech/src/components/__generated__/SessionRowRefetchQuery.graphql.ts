@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d3cda95039b88e8f44d745ff70bfadd6>>
+ * @generated SignedSource<<569a689fb479cedc5eecf5c4434ec785>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -121,13 +121,6 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "sessionId",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
                 "name": "address",
                 "storageKey": null
               },
@@ -148,16 +141,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "73ae4260e16e2790d4101e597f390621",
+    "cacheID": "29736282fe5a52e4bc815cc8d772ee70",
     "id": null,
     "metadata": {},
     "name": "SessionRowRefetchQuery",
     "operationKind": "query",
-    "text": "query SessionRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SessionRow_session\n    id\n  }\n}\n\nfragment SessionRow_session on Session {\n  applicationName\n  type\n  deviceName\n  sessionId\n  address\n  lastTimeAccessed\n  id\n}\n"
+    "text": "query SessionRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SessionRow_session\n    id\n  }\n}\n\nfragment SessionRow_session on Session {\n  id\n  applicationName\n  type\n  deviceName\n  address\n  lastTimeAccessed\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3e71dfd52eb56d78a519dd00436b343f";
+(node as any).hash = "64ad97c9244ed031a7b448a815094adb";
 
 export default node;

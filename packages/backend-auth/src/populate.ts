@@ -1,13 +1,15 @@
 import { MongoClient, ObjectId } from "mongodb";
-import { UserLogins, UserMongo } from "./types";
+import { UserLogins, UserMongo, UserSessions } from "./types";
 
 MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
   async (client) => {
     const db = client.db("auth");
     const users = db.collection<UserMongo>("users");
     const logins = db.collection<UserLogins>("logins");
+    const sessions = db.collection<UserSessions>("sessions");
     await logins.deleteMany({});
     await users.deleteMany({});
+    await sessions.deleteMany({});
     await logins.insertOne({
       applicationName: "Lerna Monorepo",
       time: new Date(),

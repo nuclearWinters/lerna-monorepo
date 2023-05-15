@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5ec00f296ea9dbc3d422a718d08a6d4c>>
+ * @generated SignedSource<<7b14225d26345c9c82d0fb810731de71>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,7 +18,12 @@ export type SessionRowRevokeSessionMutation$variables = {
 };
 export type SessionRowRevokeSessionMutation$data = {
   readonly revokeSession: {
-    readonly error: string | null;
+    readonly error: string;
+    readonly session: {
+      readonly expirationDate: Int;
+      readonly id: string;
+    } | null;
+    readonly shouldReloadBrowser: boolean;
   };
 };
 export type SessionRowRevokeSessionMutation = {
@@ -55,6 +60,38 @@ v1 = [
         "kind": "ScalarField",
         "name": "error",
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "shouldReloadBrowser",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "Session",
+        "kind": "LinkedField",
+        "name": "session",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "id",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "expirationDate",
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -78,16 +115,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "ff5900811f750a8bfb83511c69b109f1",
+    "cacheID": "c805d3efba6a287ee137739ad32685a5",
     "id": null,
     "metadata": {},
     "name": "SessionRowRevokeSessionMutation",
     "operationKind": "mutation",
-    "text": "mutation SessionRowRevokeSessionMutation(\n  $input: RevokeSessionInput!\n) {\n  revokeSession(input: $input) {\n    error\n  }\n}\n"
+    "text": "mutation SessionRowRevokeSessionMutation(\n  $input: RevokeSessionInput!\n) {\n  revokeSession(input: $input) {\n    error\n    shouldReloadBrowser\n    session {\n      id\n      expirationDate\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ea03c8185fbf1583ce7e8a276fd80a0b";
+(node as any).hash = "6ac2c13bea532666bcf23fcb7a4f54a0";
 
 export default node;

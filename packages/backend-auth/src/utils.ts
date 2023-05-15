@@ -24,9 +24,10 @@ export const jwt = {
       isLender: boolean;
       isSupport: boolean;
       refreshTokenExpireTime: number;
+      exp: number;
     },
     secret: string,
-    options: SignOptions
+    options?: SignOptions
   ): string => {
     const token = jsonwebtoken.sign(data, secret, options);
     return token;
@@ -39,7 +40,6 @@ export const getContext = (req: Request, res: Response): Context => {
   const ip = req.header("x-forwarded-for") || req.socket.remoteAddress;
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies.refreshToken || "";
-  const sessionId = req.header("sessionId") || "";
   const id = req.cookies.id || "";
   const userAgent = req.headers["user-agent"];
   const detector = new DeviceDetector({
@@ -64,7 +64,6 @@ export const getContext = (req: Request, res: Response): Context => {
     res,
     id,
     ip,
-    sessionId,
     deviceName,
     deviceType,
   };
@@ -74,8 +73,8 @@ export const base64Name = (i: string, name: string): string => {
   return Buffer.from(name + ":" + i, "utf8").toString("base64");
 };
 
-export const REFRESH_TOKEN_EXP_NUMBER = 15;
-export const ACCESS_TOKEN_EXP_STRING = "3m";
+export const REFRESH_TOKEN_EXP_NUMBER = 900;
+export const ACCESS_TOKEN_EXP_NUMBER = 180;
 
 export const client = new AuthClient(
   `backend-fintech:1983`,

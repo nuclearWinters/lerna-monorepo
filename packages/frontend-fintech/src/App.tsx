@@ -25,16 +25,6 @@ import {
 import { Sider } from "components/Sider";
 import { Header } from "components/Header";
 
-export const tokensAndData: {
-  accessToken: string;
-  exp?: number;
-  redirectTo: string;
-} = {
-  accessToken: "",
-  exp: undefined,
-  redirectTo: "",
-};
-
 const AppUserQuery = graphql`
   query AppUserQuery {
     user {

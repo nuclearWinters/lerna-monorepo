@@ -142,7 +142,6 @@ proto.authPackage.JWTMiddlewareInput.prototype.toObject = function(opt_includeIn
 proto.authPackage.JWTMiddlewareInput.toObject = function(includeInstance, msg) {
   var f, obj = {
     refreshtoken: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    sessionid: jspb.Message.getFieldWithDefault(msg, 2, ""),
     accesstoken: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
@@ -184,10 +183,6 @@ proto.authPackage.JWTMiddlewareInput.deserializeBinaryFromReader = function(msg,
       var value = /** @type {string} */ (reader.readString());
       msg.setRefreshtoken(value);
       break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSessionid(value);
-      break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setAccesstoken(value);
@@ -228,13 +223,6 @@ proto.authPackage.JWTMiddlewareInput.serializeBinaryToWriter = function(message,
       f
     );
   }
-  f = message.getSessionid();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
   f = message.getAccesstoken();
   if (f.length > 0) {
     writer.writeString(
@@ -260,24 +248,6 @@ proto.authPackage.JWTMiddlewareInput.prototype.getRefreshtoken = function() {
  */
 proto.authPackage.JWTMiddlewareInput.prototype.setRefreshtoken = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string sessionId = 2;
- * @return {string}
- */
-proto.authPackage.JWTMiddlewareInput.prototype.getSessionid = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.authPackage.JWTMiddlewareInput} returns this
- */
-proto.authPackage.JWTMiddlewareInput.prototype.setSessionid = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

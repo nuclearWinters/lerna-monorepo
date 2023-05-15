@@ -8,16 +8,16 @@ import {
   Observable,
   GraphQLResponse,
 } from "relay-runtime";
-import { tokensAndData } from "App";
 import { API_GATEWAY, REALTIME_GATEWAY } from "utils";
 import { createClient, Sink } from "graphql-ws";
-import jwtDecode from "jwt-decode";
+import decode from "jwt-decode";
+import { Decode } from "screens/LogIn";
 
 export const subscriptionsClient = createClient({
   url: REALTIME_GATEWAY,
   connectionParams: () => {
     return {
-      Authorization: tokensAndData.accessToken,
+      Authorization: sessionStorage.getItem("accessToken"),
     };
   },
 });
@@ -27,7 +27,7 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: tokensAndData.accessToken,
+      Authorization: sessionStorage.getItem("accessToken") ?? "",
     },
     credentials: "include",
     body: JSON.stringify({
@@ -37,17 +37,15 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
   });
   const data = await response.json();
   const accesstoken = response.headers.get("accessToken");
-  if (tokensAndData.accessToken !== accesstoken) {
-    tokensAndData.accessToken = accesstoken || "";
-    if (accesstoken) {
-      const decoded = jwtDecode<{ refreshTokenExpireTime: number }>(
-        accesstoken
-      );
-      tokensAndData.exp = decoded.refreshTokenExpireTime;
-    }
+  if (accesstoken && sessionStorage.getItem("accessToken") !== accesstoken) {
+    const decoded = decode<Decode>(accesstoken);
+    sessionStorage.setItem("accessToken", accesstoken);
+    sessionStorage.setItem("userData", JSON.stringify(decoded));
   }
 
-  if (tokensAndData.accessToken && !accesstoken) {
+  if (sessionStorage.getItem("accessToken") && !accesstoken) {
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("userData");
     return window.location.reload();
   }
 

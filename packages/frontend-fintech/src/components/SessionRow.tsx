@@ -4,7 +4,6 @@ import {
   useMutation,
   useRefetchableFragment,
 } from "react-relay/hooks";
-import { Languages } from "__generated__/Routes_query.graphql";
 import dayjs from "dayjs";
 import {
   baseLoanRowCell,
@@ -21,10 +20,10 @@ import { Spinner } from "./Spinner";
 const loginRowRefetchableFragment = graphql`
   fragment SessionRow_session on Session
   @refetchable(queryName: "SessionRowRefetchQuery") {
+    id
     applicationName
     type
     deviceName
-    sessionId
     address
     lastTimeAccessed
   }
@@ -32,10 +31,9 @@ const loginRowRefetchableFragment = graphql`
 
 type Props = {
   session: SessionRow_session$key;
-  language: Languages;
 };
 
-export const SessionRow: FC<Props> = ({ session, language }) => {
+export const SessionRow: FC<Props> = ({ session }) => {
   const [data] = useRefetchableFragment<
     SessionRowRefetchQuery,
     SessionRow_session$key
@@ -46,6 +44,11 @@ export const SessionRow: FC<Props> = ({ session, language }) => {
       mutation SessionRowRevokeSessionMutation($input: RevokeSessionInput!) {
         revokeSession(input: $input) {
           error
+          shouldReloadBrowser
+          session {
+            id
+            expirationDate
+          }
         }
       }
     `);
@@ -66,7 +69,12 @@ export const SessionRow: FC<Props> = ({ session, language }) => {
           className={baseLoanRowClipboard}
           onClick={() => {
             commitRevokeSession({
-              variables: { input: { sessionId: data.sessionId } },
+              variables: { input: { sessionId: data.id } },
+              onCompleted: (data) => {
+                if (data.revokeSession.shouldReloadBrowser) {
+                  window.location.reload();
+                }
+              },
             });
           }}
         >

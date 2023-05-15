@@ -9,7 +9,6 @@ service Auth {
 
 message JWTMiddlewareInput {
     string refreshtoken = 1;
-    string sessionId = 2;
     string accessToken = 3;
 }
 

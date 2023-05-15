@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3da37970549c1c156bea9fdcb06bf834>>
+ * @generated SignedSource<<602c92c894d69d064bd90f928b3ff239>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,6 +15,7 @@ export type Settings_sessions_user$data = {
   readonly sessions: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly expirationDate: Int;
         readonly id: string;
         readonly " $fragmentSpreads": FragmentRefs<"SessionRow_session">;
       } | null;
@@ -105,6 +106,13 @@ return {
               "selections": [
                 (v1/*: any*/),
                 {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "expirationDate",
+                  "storageKey": null
+                },
+                {
                   "args": null,
                   "kind": "FragmentSpread",
                   "name": "SessionRow_session"
@@ -164,6 +172,6 @@ return {
 };
 })();
 
-(node as any).hash = "f6b3c0cec5606c46ebc3cbb77fa95652";
+(node as any).hash = "1dc401c59342b535f958b9cff49b354f";
 
 export default node;

@@ -85,6 +85,7 @@ const settingsSessionsPaginationFragment = graphql`
       edges {
         node {
           id
+          expirationDate
           ...SessionRow_session
         }
       }
@@ -359,15 +360,15 @@ export const Settings: FC<Props> = (props) => {
             </Columns>
           </Rows>
         </Table>
-        {sessionsData?.sessions?.edges?.map((edge) =>
-          edge?.node ? (
-            <SessionRow
-              key={edge?.node?.id}
-              session={edge.node}
-              language={originLang}
-            />
-          ) : null
-        )}
+        {sessionsData?.sessions?.edges
+          ?.filter((edge) => {
+            return edge?.node?.expirationDate > new Date().getTime();
+          })
+          .map((edge) =>
+            edge?.node ? (
+              <SessionRow key={edge?.node?.id} session={edge.node} />
+            ) : null
+          )}
         <CustomButton
           color="secondary"
           text={t("Cargar más")}

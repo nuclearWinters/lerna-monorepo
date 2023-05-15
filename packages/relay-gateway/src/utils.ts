@@ -1,24 +1,12 @@
-import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { AuthClient } from "./proto/auth_grpc_pb";
 import { JWTMiddlewareInput, JWTMiddlewarePayload } from "./proto/auth_pb";
 import { credentials } from "@grpc/grpc-js";
-
-export interface DecodeJWT {
-  id: string;
-  isLender: boolean;
-  isBorrower: boolean;
-  isSupport: boolean;
-  iat: number;
-  exp: number;
-  refreshTokenExpireTime: number;
-}
 
 export interface IContextResult {
   accessToken: string;
   cookies: string;
   refreshToken: string;
   accessTokenHeader?: string;
-  sessionId?: string;
   extensions: any;
 }
 
@@ -29,31 +17,6 @@ export const setExtensionsContext = (
   const ctxTyped = ctx as IContextResult;
   ctxTyped.extensions = extensions;
   return ctxTyped;
-};
-
-export const jwt = {
-  decode: (token: string): string | DecodeJWT | null => {
-    const decoded = jsonwebtoken.decode(token);
-    return decoded as string | DecodeJWT | null;
-  },
-  verify: (token: string, password: string): DecodeJWT | undefined => {
-    const decoded = jsonwebtoken.verify(token, password);
-    return decoded as DecodeJWT | undefined;
-  },
-  sign: (
-    data: {
-      id: string;
-      isBorrower: boolean;
-      isLender: boolean;
-      isSupport: boolean;
-      refreshTokenExpireTime: number;
-    },
-    secret: string,
-    options: SignOptions
-  ): string => {
-    const token = jsonwebtoken.sign(data, secret, options);
-    return token;
-  },
 };
 
 export const client = new AuthClient(

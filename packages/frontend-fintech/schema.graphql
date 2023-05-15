@@ -4,8 +4,10 @@ input RevokeSessionInput {
 }
 
 type RevokeSessionPayload {
-  error: String
+  error: String!
   clientMutationId: String
+  session: Session
+  shouldReloadBrowser: Boolean!
 }
 
 input SignInInput {
@@ -15,7 +17,7 @@ input SignInInput {
 }
 
 type SignInPayload {
-  error: String
+  error: String!
   clientMutationId: String
 }
 
@@ -313,10 +315,10 @@ type Session implements Node {
   applicationName: String!
   type: String!
   deviceName: String!
-  sessionId: String!
   address: String!
   lastTimeAccessed: Date!
   userId: String!
+  expirationDate: Date!
 }
 
 type SessionEdge {

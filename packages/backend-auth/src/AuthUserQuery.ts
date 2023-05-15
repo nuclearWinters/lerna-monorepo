@@ -60,10 +60,6 @@ export const GraphQLSession = new GraphQLObjectType<UserSessions>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ deviceName }): string => deviceName,
     },
-    sessionId: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ sessionId }): string => sessionId,
-    },
     address: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ address }): string => address,
@@ -75,6 +71,10 @@ export const GraphQLSession = new GraphQLObjectType<UserSessions>({
     userId: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ userId }): string => userId,
+    },
+    expirationDate: {
+      type: new GraphQLNonNull(DateScalarType),
+      resolve: ({ expirationDate }): Date => expirationDate,
     },
   },
 });
@@ -190,6 +190,7 @@ export const userAuthFields: ThunkObjMap<
         }
         const query: Filter<UserSessions> = {
           userId: id,
+          expirationDate: { $gt: new Date() },
         };
         if (sessions_id) {
           query._id = { $lt: new ObjectId(sessions_id) };

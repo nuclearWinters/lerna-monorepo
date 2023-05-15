@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Link, useRouter } from "yarr";
+import { Link } from "yarr";
 import {
   baseAccountLinkIcon,
   customAccountLinkBox,
@@ -10,11 +10,11 @@ interface Props {
   title: string;
   icon: JSX.Element;
   path: string;
+  location: string;
 }
 
-export const AccountLink: FC<Props> = ({ title, icon, path }) => {
-  const { isActive } = useRouter();
-  const selected = isActive(path);
+export const AccountLink: FC<Props> = ({ title, icon, path, location }) => {
+  const selected = path === location;
   return (
     <Link
       to={path}

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a7a6d08732d47853486737822d82ddf2>>
+ * @generated SignedSource<<286c5498728bc7574c7afd93a62bb11b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -324,6 +324,13 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "expirationDate",
+                        "storageKey": null
+                      },
                       (v12/*: any*/),
                       {
                         "alias": null,
@@ -337,13 +344,6 @@ return {
                         "args": null,
                         "kind": "ScalarField",
                         "name": "deviceName",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "sessionId",
                         "storageKey": null
                       },
                       (v13/*: any*/),
@@ -381,12 +381,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "2521e153e2047c254a19b3657d491dbc",
+    "cacheID": "84a4d86c47e100e3f40f9ebbbb99ec11",
     "id": null,
     "metadata": {},
     "name": "SettingsAuthUserQuery",
     "operationKind": "query",
-    "text": "query SettingsAuthUserQuery {\n  authUser {\n    id\n    accountId\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    email\n    language\n    ...Settings_logins_user\n    ...Settings_sessions_user\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SessionRow_session on Session {\n  applicationName\n  type\n  deviceName\n  sessionId\n  address\n  lastTimeAccessed\n  id\n}\n\nfragment Settings_logins_user on AuthUser {\n  logins(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Settings_sessions_user on AuthUser {\n  sessions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsAuthUserQuery {\n  authUser {\n    id\n    accountId\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    email\n    language\n    ...Settings_logins_user\n    ...Settings_sessions_user\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SessionRow_session on Session {\n  id\n  applicationName\n  type\n  deviceName\n  address\n  lastTimeAccessed\n}\n\nfragment Settings_logins_user on AuthUser {\n  logins(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Settings_sessions_user on AuthUser {\n  sessions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        expirationDate\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

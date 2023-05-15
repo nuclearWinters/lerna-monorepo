@@ -9,12 +9,11 @@ import { ACCESSSECRET, NODE_ENV, REFRESHSECRET } from "../config";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import {
-  ACCESS_TOKEN_EXP_STRING,
+  ACCESS_TOKEN_EXP_NUMBER,
   createUser,
   jwt,
   REFRESH_TOKEN_EXP_NUMBER,
 } from "../utils";
-import { addMinutes } from "date-fns";
 import { customAlphabet } from "nanoid";
 
 const nanoid = customAlphabet(
@@ -60,16 +59,7 @@ export const SignUpMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
-    {
-      authusers,
-      res,
-      logins,
-      ip,
-      sessions,
-      sessionId,
-      deviceName,
-      deviceType,
-    }: Context
+    { authusers, res, logins, ip, sessions, deviceName, deviceType }: Context
   ): Promise<Payload> => {
     try {
       const user = await authusers.findOne({ email });
@@ -93,22 +83,20 @@ export const SignUpMutation = mutationWithClientMutationId({
         id,
       });
       const now = new Date();
-      const refreshTokenExpireTime = addMinutes(now, REFRESH_TOKEN_EXP_NUMBER);
       now.setMilliseconds(0);
-      refreshTokenExpireTime.setMilliseconds(0);
-      const refreshTokenExpireTimeInt = refreshTokenExpireTime.getTime() / 1000;
       const nowTime = now.getTime() / 1000;
-      const refreshTokenExpiresIn = refreshTokenExpireTimeInt - nowTime;
+      const refreshTokenExpireTime = nowTime + REFRESH_TOKEN_EXP_NUMBER;
+      const accessTokenExpireTime = nowTime + ACCESS_TOKEN_EXP_NUMBER;
       const refreshToken = jwt.sign(
         {
           id,
           isBorrower: !isLender,
           isLender: isLender,
           isSupport: false,
-          refreshTokenExpireTime: refreshTokenExpireTimeInt,
+          refreshTokenExpireTime: refreshTokenExpireTime,
+          exp: refreshTokenExpireTime,
         },
-        REFRESHSECRET,
-        { expiresIn: refreshTokenExpiresIn }
+        REFRESHSECRET
       );
       const accessToken = jwt.sign(
         {
@@ -116,14 +104,15 @@ export const SignUpMutation = mutationWithClientMutationId({
           isBorrower: !isLender,
           isLender: isLender,
           isSupport: false,
-          refreshTokenExpireTime: refreshTokenExpireTimeInt,
+          refreshTokenExpireTime: refreshTokenExpireTime,
+          exp: accessTokenExpireTime,
         },
-        ACCESSSECRET,
-        { expiresIn: ACCESS_TOKEN_EXP_STRING }
+        ACCESSSECRET
       );
+      const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1000);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        expires: refreshTokenExpireTime,
+        expires: refreshTokenExpireDate,
         secure: NODE_ENV === "production" ? true : false,
       });
       res?.setHeader("accessToken", accessToken);
@@ -134,31 +123,16 @@ export const SignUpMutation = mutationWithClientMutationId({
         time: now,
         userId: id,
       });
-      await sessions.updateOne(
-        { sessionId },
-        {
-          $set: {
-            lastTimeAccessed: now,
-          },
-          $setOnInsert: {
-            applicationName: "Lerna Monorepo",
-            type: deviceType,
-            deviceName,
-            sessionId,
-            address: ip,
-            userId: id,
-          },
-        },
-        { upsert: true }
-      );
-      //const msg = {
-      //  to: email,
-      //  from: "soporte@amigoprogramador.com",
-      //  subject: "Sending with Twilio SendGrid is Fun",
-      //  text: "and easy to do anywhere, even with Node.js",
-      //  html: "<strong>and easy to do anywhere, even with Node.js</strong>",
-      //};
-      //sgMail.send(msg);
+      await sessions.insertOne({
+        refreshToken,
+        lastTimeAccessed: now,
+        applicationName: "Lerna Monorepo",
+        type: deviceType,
+        deviceName,
+        address: ip || "",
+        userId: id,
+        expirationDate: refreshTokenExpireDate,
+      });
       return { error: "" };
     } catch (e) {
       return {

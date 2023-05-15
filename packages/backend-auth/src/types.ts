@@ -19,7 +19,6 @@ export interface Context {
   validAccessToken?: string;
   id?: string;
   ip?: string;
-  sessionId: string;
   deviceType: string;
   deviceName: string;
 }
@@ -37,10 +36,11 @@ export interface UserSessions {
   applicationName: "Lerna Monorepo";
   type: string;
   deviceName: string;
-  sessionId: string;
   address: string;
   lastTimeAccessed: Date;
   userId: string;
+  refreshToken: string;
+  expirationDate: Date;
 }
 
 export interface UserMongo {

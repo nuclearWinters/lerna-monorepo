@@ -12,9 +12,10 @@ import {
 } from "./proto/auth_pb";
 import { IAuthServer } from "./proto/auth_grpc_pb";
 import { ctx } from "./index";
-import { ACCESS_TOKEN_EXP_STRING, jwt } from "./utils";
+import { ACCESS_TOKEN_EXP_NUMBER, jwt } from "./utils";
 import { REFRESHSECRET, ACCESSSECRET } from "./config";
 import { addMinutes, isAfter } from "date-fns";
+import { UserSessions } from "./types";
 
 export const AuthServer: IAuthServer = {
   async jwtMiddleware(
@@ -27,8 +28,7 @@ export const AuthServer: IAuthServer = {
         throw new Error("No refresh token");
       }
       const accessToken = call.request.getAccesstoken();
-      const sessionId = call.request.getSessionid();
-      const isBlacklisted = await ctx?.rdb?.get(sessionId);
+      const isBlacklisted = await ctx?.rdb?.get(refreshToken);
       if (accessToken) {
         const userAccess = jwt.verify(accessToken, ACCESSSECRET);
         if (!userAccess) {
@@ -44,6 +44,10 @@ export const AuthServer: IAuthServer = {
         }
         const payload = new JWTMiddlewarePayload();
         payload.setValidaccesstoken(accessToken);
+        payload.setId(userAccess.id);
+        payload.setIsborrower(userAccess.isBorrower);
+        payload.setIslender(userAccess.isLender);
+        payload.setIssupport(userAccess.isSupport);
         return callback(null, payload);
       }
       const user = jwt.verify(refreshToken, REFRESHSECRET);
@@ -59,6 +63,10 @@ export const AuthServer: IAuthServer = {
         }
       }
       const { isBorrower, isLender, isSupport, id } = user;
+      const now = new Date();
+      now.setMilliseconds(0);
+      const accessTokenExpireTime =
+        now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
       const validAccessToken = jwt.sign(
         {
           isBorrower,
@@ -66,11 +74,9 @@ export const AuthServer: IAuthServer = {
           isSupport,
           id,
           refreshTokenExpireTime: user.exp,
+          exp: accessTokenExpireTime,
         },
-        ACCESSSECRET,
-        {
-          expiresIn: ACCESS_TOKEN_EXP_STRING,
-        }
+        ACCESSSECRET
       );
       const payload = new JWTMiddlewarePayload();
       payload.setValidaccesstoken(validAccessToken);
@@ -78,6 +84,17 @@ export const AuthServer: IAuthServer = {
       payload.setIsborrower(isBorrower);
       payload.setIslender(isLender);
       payload.setIssupport(isSupport);
+      const sessions = ctx?.authdb?.collection<UserSessions>("sessions");
+      sessions?.updateOne(
+        {
+          refreshToken,
+        },
+        {
+          $set: {
+            lastTimeAccessed: now,
+          },
+        }
+      );
       callback(null, payload);
     } catch (e) {
       const error: ServiceError = {

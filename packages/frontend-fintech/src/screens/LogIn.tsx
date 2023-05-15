@@ -1,6 +1,5 @@
-import { tokensAndData } from "App";
 import { Spinner } from "components/Spinner";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import { useMutation, graphql } from "react-relay/hooks";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
 import { Label } from "components/Label";
@@ -12,19 +11,26 @@ import { Title } from "components/Title";
 import { Input } from "components/Input";
 import { Space } from "components/Space";
 import { useTranslation } from "utils";
-import decode from "jwt-decode";
-import { useNavigation } from "yarr";
+import { useRouteProps } from "yarr";
 import { customSpace } from "components/Space.css";
+import {
+  borrowerPages,
+  getUserDataCache,
+  lenderPages,
+  supportPages,
+} from "Routes";
 
 export interface Decode {
-  isBorrower?: boolean;
-  isLender?: boolean;
-  isSupport?: boolean;
+  id: string;
+  isBorrower: boolean;
+  isLender: boolean;
+  isSupport: boolean;
+  refreshTokenExpireTime: number;
+  exp: number;
 }
 
 export const LogIn: FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigation();
   const [commit, isInFlight] = useMutation<LogInMutation>(graphql`
     mutation LogInMutation($input: SignInInput!) {
       signIn(input: $input) {
@@ -40,23 +46,7 @@ export const LogIn: FC = () => {
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
-  useEffect(() => {
-    let ref = setTimeout(() => {
-      if (tokensAndData.accessToken) {
-        const data = decode<Decode>(tokensAndData.accessToken);
-        if (data.isBorrower) {
-          navigate.push("/myLoans");
-        } else if (data.isSupport) {
-          navigate.push("/approveLoan");
-        } else {
-          navigate.push("/addInvestments");
-        }
-      }
-    }, 1000);
-    return () => {
-      clearTimeout(ref);
-    };
-  }, [navigate]);
+  const { search } = useRouteProps();
   return (
     <Main>
       <WrapperSmall>
@@ -94,7 +84,30 @@ export const LogIn: FC = () => {
                     },
                   },
                   onCompleted: () => {
-                    window.location.reload();
+                    const redirectTo = search.redirectTo;
+                    const redirectPage = `/${redirectTo}`;
+                    const userData = getUserDataCache();
+                    if (userData) {
+                      if (userData.isBorrower) {
+                        if (borrowerPages.includes(redirectPage)) {
+                          window.location.href = redirectPage;
+                        } else {
+                          window.location.href = "/myLoans";
+                        }
+                      } else if (userData.isSupport) {
+                        if (supportPages.includes(redirectPage)) {
+                          window.location.href = redirectPage;
+                        } else {
+                          window.location.href = "/approveLoan";
+                        }
+                      } else {
+                        if (lenderPages.includes(redirectPage)) {
+                          window.location.href = redirectPage;
+                        } else {
+                          window.location.href = "/addInvestments";
+                        }
+                      }
+                    }
                   },
                 });
               }}
