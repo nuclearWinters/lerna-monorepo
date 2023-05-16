@@ -15,6 +15,14 @@ use cookie::{Cookie, time::OffsetDateTime};
 use redis::{Commands, Client as RedisClient, Connection as RedisConnection, RedisResult};
 use nanoid::nanoid;
 use tokio::sync::{Mutex, MutexGuard};
+use tonic::{transport::Server, Request, Response, Status};
+use auth::auth_server::{Auth, AuthServer};
+use auth::{JwtMiddlewareInput, JwtMiddlewarePayload, CreateUserInput, CreateUserPayload};
+use futures::future;
+
+pub mod auth {
+    tonic::include_proto!("auth_package");
+}
 
 struct DateScalarType(DateTime);
 
@@ -1015,6 +1023,48 @@ struct SessionsConnection {
 
 struct Query;
 
+#[derive(Debug, Default)]
+pub struct AuthService {}
+
+#[tonic::async_trait]
+impl Auth for AuthService {
+    async fn jwt_middleware(
+        &self,
+        request: Request<JwtMiddlewareInput>,
+    ) -> Result<Response<JwtMiddlewarePayload>, Status> {
+        println!("Got a request: {:?}", request);
+
+        let req = request.into_inner();
+
+        println!("access token: {}", req.access_token);
+        println!("refreshtoken: {}", req.refreshtoken);
+
+        let reply = JwtMiddlewarePayload {
+            valid_access_token: req.access_token,
+            id: req.refreshtoken,
+            is_lender: false,
+            is_borrower: false,
+            is_support: false
+        };
+
+        Ok(Response::new(reply))
+    }
+    async fn create_user(
+        &self,
+        request: Request<CreateUserInput>,
+    ) -> Result<Response<CreateUserPayload>, Status> {
+        println!("Got a request: {:?}", request);
+
+        let req = request.into_inner();
+
+        let reply = CreateUserPayload {
+            done: "test".to_string()
+        };
+
+        Ok(Response::new(reply))
+    }
+}
+
 #[Object]
 impl Query {
   async fn auth_user(&self, ctx: &Context<'_>) -> GraphQLResult<AuthUser> {
@@ -1201,7 +1251,17 @@ async fn main() -> GraphQLResult<()> {
                 StatusCode::INTERNAL_SERVER_ERROR,
             ))
         });
+    
+    let addr = "[::1]:50051".parse()?;
+    let auth_service = AuthService::default();
 
-    warp::serve(routes).run(([127, 0, 0, 1], 8001)).await;
+    let grpc_service = Server::builder()
+        .add_service(AuthServer::new(auth_service))
+        .serve(addr);
+
+    let warp_service = warp::serve(routes).run(([127, 0, 0, 1], 8001));
+
+    future::join(warp_service, grpc_service).await;
+
     Ok(())
 }

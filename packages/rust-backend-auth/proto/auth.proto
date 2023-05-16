@@ -1,0 +1,28 @@
+syntax = "proto3";
+package authPackage;
+
+service Auth {
+    rpc jwtMiddleware(JWTMiddlewareInput) returns (JWTMiddlewarePayload) {};
+    rpc createUser(CreateUserInput) returns (CreateUserPayload) {};
+}
+
+message JWTMiddlewareInput {
+    string refreshtoken = 1;
+    string accessToken = 3;
+}
+
+message JWTMiddlewarePayload {
+    string validAccessToken = 1;
+    string id = 2;
+    bool isLender = 3;
+    bool isBorrower = 4;
+    bool isSupport = 5;
+}
+
+message CreateUserInput {
+    string nanoId = 1;
+}
+
+message CreateUserPayload {
+    string done = 1;
+}
