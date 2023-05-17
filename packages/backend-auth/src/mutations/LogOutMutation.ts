@@ -29,7 +29,7 @@ export const LogOutMutation = mutationWithClientMutationId({
       const expireDate = addMinutes(now, -15);
       const session = await sessions.findOneAndUpdate(
         { refreshToken },
-        { expirationDate: expireDate }
+        { $set: { expirationDate: expireDate } }
       );
       if (session.value) {
         await rdb.set(session.value.refreshToken, time, { EX: 60 * 15 });

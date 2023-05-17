@@ -1,10 +1,10 @@
-use std::{convert::Infallible, sync::Arc, str, net::SocketAddr};
+use std::{convert::Infallible, sync::Arc, str::{self, FromStr}, net::SocketAddr};
 use async_graphql::{http::GraphiQLSource, EmptySubscription, Schema, Object, ID, Enum, Result as GraphQLResult, Context, SimpleObject, Scalar, ScalarType, InputValueResult, Value, InputValueError, futures_util::StreamExt, InputObject};
 use async_graphql_warp::{GraphQLBadRequest, GraphQLResponse};
 use http::StatusCode;
 use serde_json::from_str;
 use warp::{http::Response as HttpResponse, Filter, Rejection};
-use mongodb::{Client, options::{ClientOptions, ServerApi, ServerApiVersion, FindOneOptions, UpdateOptions, FindOptions, FindOneAndUpdateOptions, ReturnDocument, DeleteOptions}, bson::{doc, oid::ObjectId, DateTime, Document}, Collection, Cursor, Database};
+use mongodb::{Client, options::{ClientOptions, ServerApi, ServerApiVersion, FindOneOptions, FindOptions, FindOneAndUpdateOptions, ReturnDocument}, bson::{doc, oid::ObjectId, DateTime, Document}, Collection, Cursor, Database};
 use serde::{Deserialize, Serialize};
 use base64::{engine::{general_purpose, GeneralPurpose}, Engine as _, alphabet};
 use bcrypt::{verify, hash, DEFAULT_COST};
@@ -15,10 +15,11 @@ use cookie::{Cookie, time::OffsetDateTime};
 use redis::{Commands, Client as RedisClient, Connection as RedisConnection, RedisResult};
 use nanoid::nanoid;
 use tokio::sync::{Mutex, MutexGuard};
-use tonic::{transport::Server, Request, Response, Status};
+use tonic::{transport::{Server, Channel}, Request, Response, Status, Code};
 use auth::auth_server::{Auth, AuthServer};
 use auth::{JwtMiddlewareInput, JwtMiddlewarePayload, CreateUserInput, CreateUserPayload};
-use futures::future;
+use futures::{future, executor};
+use auth::auth_client::AuthClient;
 
 pub mod auth {
     tonic::include_proto!("auth_package");
@@ -139,13 +140,15 @@ struct ExtendSessionPayload {
 #[derive(InputObject)]
 struct RevokeSessionInput {
     client_mutation_id: Option<String>,
-    session_id: String,
+    session_id: ID,
 }
 
 #[derive(SimpleObject)]
 struct RevokeSessionPayload {
     error: String,
     client_mutation_id: Option<String>,
+    session: Option<Session>,
+    should_reload_browser: bool,
 }
 
 #[Object]
@@ -195,7 +198,7 @@ impl Mutation {
                                 ctx.append_http_header("accessToken", access_token);
                                 match OffsetDateTime::from_unix_timestamp(since_the_epoch_refresh) {
                                     Ok(now) => {
-                                        let cookie: Cookie = Cookie::build("refreshToken", refresh_token).http_only(true).expires(now).finish();
+                                        let cookie: Cookie = Cookie::build("refreshToken", refresh_token.to_owned()).http_only(true).expires(now).finish();
                                         ctx.append_http_header("Set-Cookie", cookie.to_string());
                                         let auth_logins: &Collection<LoginsMongo> = ctx.data::<Collection<LoginsMongo>>()?;
                                         let auth_sessions: &Collection<SessionsMongo> = ctx.data::<Collection<SessionsMongo>>()?;
@@ -208,7 +211,6 @@ impl Mutation {
                                             user_id: user.id.to_owned()
                                         };
                                         auth_logins.insert_one(new_login, None).await?;
-                                        let update_one_options: UpdateOptions = UpdateOptions::builder().upsert(true).build();
                                         let parser: Parser = Parser::new();
                                         let result: Option<WootheeResult> = parser.parse(request_context.user_agent.as_str());
                                         let mut device_name: String = String::from("");
@@ -226,22 +228,19 @@ impl Mutation {
                                             },
                                             None => {}
                                         }
-                                        auth_sessions.update_one(
-                                            doc! { "sessionId": request_context.session_id.to_owned() },
-                                            doc! {
-                                                "$set": {
-                                                    "lastTimeAccessed": DateTime::now()
-                                                },
-                                                "$setOnInsert": { 
-                                                    "applicationName": "Lerna Monorepo",
-                                                    "deviceName": device_name,
-                                                    "sessionId": request_context.session_id.to_owned(),
-                                                    "address": request_context.ip.to_owned(),
-                                                    "userId": user.id.to_owned(),
-                                                    "deviceType": device_type
-                                                }
+                                        auth_sessions.insert_one(
+                                            SessionsMongo {
+                                                _id: ObjectId::new(),
+                                                refresh_token: refresh_token.to_owned(),
+                                                last_time_accessed: DateTime::now(),
+                                                application_name: String::from("Lerna Monorepo"),
+                                                device_name,
+                                                address: request_context.ip.to_owned(),
+                                                user_id: user.id.to_owned(),
+                                                device_type,
+                                                expiration_date: DateTime::from_millis(since_the_epoch_refresh * 1000)
                                             },
-                                            update_one_options
+                                            None
                                         ).await?;
                                         Some(SignInPayload {
                                             error: String::from(""),
@@ -271,12 +270,42 @@ impl Mutation {
         })
     }
     async fn log_out(&self, ctx: &Context<'_>, _input: LogOutInput) -> GraphQLResult<Option<LogOutPayload>> {
+        let request_context: &RequestContext = ctx.data::<RequestContext>()?;
         let cookie: Cookie = Cookie::build("refreshToken", "").http_only(true).expires(OffsetDateTime::now_utc()).finish();
         ctx.append_http_header("Set-Cookie", cookie.to_string());
-        Ok(Some(LogOutPayload {
-            error: String::from(""),
-            client_mutation_id: None,
-        }))
+        let auth_sessions: &Collection<SessionsMongo> = ctx.data::<Collection<SessionsMongo>>()?;
+        let start: SystemTime = SystemTime::now();
+        let since_the_epoch: i64 = start
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards")
+            .as_secs() as i64;
+        let since_the_epoch_refresh: i64 = since_the_epoch - 900;
+        let result: Option<SessionsMongo> = auth_sessions.find_one_and_update(
+            doc! { "refresh_token": request_context.refresh_token.to_owned() },
+            doc! {
+                "$set": {
+                    "expiration_date": DateTime::from_millis(since_the_epoch_refresh * 1000)
+                }
+            },
+            None
+        ).await?;
+        Ok(match result {
+            Some(result) => {
+                let mut con: MutexGuard<RedisConnection> = ctx.data::<Arc<Mutex<RedisConnection>>>()?.lock().await;
+                con.set(result.refresh_token.as_str(), since_the_epoch)?;
+                con.expire(result.refresh_token.as_str(), 15 * 60)?;
+                Some(LogOutPayload {
+                    error: String::from(""),
+                    client_mutation_id: None,
+                })
+            },
+            None => {
+                Some(LogOutPayload {
+                    error: String::from(""),
+                    client_mutation_id: None,
+                })
+            }
+        })
     }
     async fn sign_up(&self, ctx: &Context<'_>, input: SignUpInput) -> GraphQLResult<Option<SignUpPayload>> {
         let auth_users: &Collection<AuthUserMongo> = ctx.data::<Collection<AuthUserMongo>>()?;
@@ -344,7 +373,7 @@ impl Mutation {
                 ctx.append_http_header("accessToken", access_token);
                 match OffsetDateTime::from_unix_timestamp(since_the_epoch_refresh) {
                     Ok(now) => {
-                        let cookie: Cookie = Cookie::build("refreshToken", refresh_token).http_only(true).expires(now).finish();
+                        let cookie: Cookie = Cookie::build("refreshToken", refresh_token.to_owned()).http_only(true).expires(now).finish();
                         ctx.append_http_header("Set-Cookie", cookie.to_string());
                         let auth_logins: &Collection<LoginsMongo> = ctx.data::<Collection<LoginsMongo>>()?;
                         let auth_sessions: &Collection<SessionsMongo> = ctx.data::<Collection<SessionsMongo>>()?;
@@ -357,7 +386,6 @@ impl Mutation {
                             user_id: id.to_owned()
                         };
                         auth_logins.insert_one(new_login, None).await?;
-                        let update_one_options: UpdateOptions = UpdateOptions::builder().upsert(true).build();
                         let parser = Parser::new();
                         let result: Option<WootheeResult> = parser.parse(request_context.user_agent.as_str());
                         let mut device_name: String = String::from("");
@@ -375,23 +403,27 @@ impl Mutation {
                             },
                             None => {}
                         }
-                        auth_sessions.update_one(
-                            doc! { "sessionId": request_context.session_id.to_owned() },
-                            doc! {
-                                "$set": {
-                                    "lastTimeAccessed": DateTime::now()
-                                },
-                                "$setOnInsert": { 
-                                    "applicationName": "Lerna Monorepo",
-                                    "deviceName": device_name,
-                                    "sessionId": request_context.session_id.to_owned(),
-                                    "address": request_context.ip.to_owned(),
-                                    "userId": id.to_owned(),
-                                    "deviceType": device_type
-                                }
+                        auth_sessions.insert_one(
+                            SessionsMongo {
+                                _id: ObjectId::new(),
+                                refresh_token: refresh_token.to_owned(),
+                                last_time_accessed: DateTime::now(),
+                                application_name: String::from("Lerna Monorepo"),
+                                device_name,
+                                address: request_context.ip.to_owned(),
+                                user_id: id.to_owned(),
+                                device_type,
+                                expiration_date: DateTime::from_millis(since_the_epoch_refresh * 1000)
                             },
-                            update_one_options
+                            None
                         ).await?;
+                        let mut grpc_client = ctx.data::<Arc<Mutex<AuthClient<Channel>>>>()?.lock().await;
+                        let request = tonic::Request::new(
+                            CreateUserInput {
+                                nano_id: id.to_owned(),
+                            }
+                        );
+                        grpc_client.create_user(request).await?;
                         Some(SignUpPayload {
                             error: String::from(""),
                             client_mutation_id: None,
@@ -479,7 +511,7 @@ impl Mutation {
             }
         };
         let mut con: MutexGuard<RedisConnection> = ctx.data::<Arc<Mutex<RedisConnection>>>()?.lock().await;
-        let black_listed_user: RedisResult<i64> = con.get(request_context.session_id.to_owned());
+        let black_listed_user: RedisResult<i64> = con.get(request_context.refresh_token.to_owned());
         match black_listed_user {
             Ok(black_listed_user) => {
                 let time: i64 = black_listed_user * 1000;
@@ -535,12 +567,14 @@ impl Mutation {
             client_mutation_id: None,
         }))
     }
-    async fn revoke_session(&self, ctx: &Context<'_>, _input: RevokeSessionInput) -> GraphQLResult<Option<RevokeSessionPayload>> {
+    async fn revoke_session(&self, ctx: &Context<'_>, input: RevokeSessionInput) -> GraphQLResult<Option<RevokeSessionPayload>> {
         let request_context: &RequestContext = ctx.data::<RequestContext>()?;
         if request_context.id.is_empty() {
             return Ok(Some(RevokeSessionPayload {
                 error: String::from("No valid access token."),
                 client_mutation_id: None,
+                should_reload_browser: false,
+                session: None,
             }));
         }
         let start: SystemTime = SystemTime::now();
@@ -549,15 +583,63 @@ impl Mutation {
             .expect("Time went backwards")
             .as_secs() as i64;
         let auth_sessions: &Collection<SessionsMongo> = ctx.data::<Collection<SessionsMongo>>()?;
-        let delete_options: DeleteOptions = DeleteOptions::builder().build();
-        let delete_query: Document = doc! { "session_id": request_context.session_id.to_owned(), "id": request_context.id.to_owned() };
-        auth_sessions.delete_one(delete_query, delete_options).await?;
-        let mut con: MutexGuard<RedisConnection> = ctx.data::<Arc<Mutex<RedisConnection>>>()?.lock().await;
-        con.set(request_context.session_id.as_str(), since_the_epoch)?;
-        Ok(Some(RevokeSessionPayload {
-            error: String::from(""),
-            client_mutation_id: None,
-        }))
+        let find_one_and_update_options: FindOneAndUpdateOptions = FindOneAndUpdateOptions::builder().return_document(ReturnDocument::After).build();
+        let result: Option<SessionsMongo> = auth_sessions.find_one_and_update(
+            doc! { "_id": ObjectId::from_str(input.session_id.as_str()).unwrap() },
+            doc! { "$set": { "expiration_date": DateTime::from_millis((since_the_epoch - 900) * 1000) }},
+            find_one_and_update_options
+        ).await?;
+        Ok(match result {
+            Some(result) => {
+                let mut con: MutexGuard<RedisConnection> = ctx.data::<Arc<Mutex<RedisConnection>>>()?.lock().await;
+                con.set(request_context.refresh_token.as_str(), since_the_epoch)?;
+                con.expire(request_context.refresh_token.as_str(), 15 * 60)?;
+                match request_context.refresh_token == result.refresh_token {
+                    true => {
+                        let cookie: Cookie = Cookie::build("refreshToken", "").http_only(true).expires(OffsetDateTime::now_utc()).finish();
+                        ctx.append_http_header("Set-Cookie", cookie.to_string());
+                        Some(RevokeSessionPayload {
+                            error: String::from(""),
+                            client_mutation_id: None,
+                            should_reload_browser: true,
+                            session: Some(Session {
+                                id: ID::from(result._id.to_hex()),
+                                application_name: result.application_name.to_owned(),
+                                device_type: result.device_type,
+                                device_name: result.device_name,
+                                address: result.address,
+                                last_time_accessed: DateScalarType(result.last_time_accessed),
+                                user_id: result.user_id,
+                                expiration_date: DateScalarType(result.expiration_date),
+                            })
+                        })
+                    },
+                    false => {
+                        Some(RevokeSessionPayload {
+                            error: String::from(""),
+                            client_mutation_id: None,
+                            should_reload_browser: false,
+                            session: Some(Session {
+                                id: ID::from(result._id.to_hex()),
+                                application_name: result.application_name,
+                                device_type: result.device_type,
+                                device_name: result.device_name,
+                                address: result.address,
+                                last_time_accessed: DateScalarType(result.last_time_accessed),
+                                user_id: result.user_id,
+                                expiration_date: DateScalarType(result.expiration_date),
+                            }),
+                        })
+                    }   
+                }
+            },
+            None => Some(RevokeSessionPayload {
+                error: String::from("Mongo error."),
+                client_mutation_id: None,
+                should_reload_browser: false,
+                session: None,
+            })
+        })
     }
 }
 
@@ -575,8 +657,8 @@ struct LoginsMongo {
 #[derive(Debug, Serialize, Deserialize)]
 struct SessionsMongo {
     _id: ObjectId,
-    #[serde(rename(serialize = "sessionId", deserialize = "sessionId"))]
-    session_id: String,
+    #[serde(rename(serialize = "refreshToken", deserialize = "refreshToken"))]
+    refresh_token: String,
     #[serde(rename(serialize = "lastTimeAccessed", deserialize = "lastTimeAccessed"))]
     last_time_accessed: DateTime,
     #[serde(rename(serialize = "applicationName", deserialize = "applicationName"))]
@@ -588,6 +670,8 @@ struct SessionsMongo {
     user_id: String,
     #[serde(rename(serialize = "type", deserialize = "type"))]
     device_type: String,
+    #[serde(rename(serialize = "expirationDate", deserialize = "expirationDate"))]
+    expiration_date: DateTime,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -766,10 +850,10 @@ impl AuthUser {
                             application_name: session_doc.application_name,
                             device_type: session_doc.device_type,
                             device_name: session_doc.device_name,
-                            session_id: session_doc.session_id,
                             address: session_doc.address,
                             last_time_accessed: DateScalarType(session_doc.last_time_accessed),
                             user_id: session_doc.user_id,
+                            expiration_date: DateScalarType(session_doc.expiration_date),
                         }
                     }));
                 }
@@ -1003,10 +1087,10 @@ struct Session {
     #[graphql(name = "type")]
     device_type: String,
     device_name: String,
-    session_id: String,
     address: String,
     last_time_accessed: DateScalarType,
     user_id: String,
+    expiration_date: DateScalarType,
 }
 
 #[derive(SimpleObject)]
@@ -1023,8 +1107,27 @@ struct SessionsConnection {
 
 struct Query;
 
-#[derive(Debug, Default)]
-pub struct AuthService {}
+pub struct AuthService {
+    redis: Arc<Mutex<RedisConnection>>,
+    mongo: Arc<Mutex<Database>>
+}
+
+impl Default for AuthService {
+    fn default() -> Self {
+        let uri: &str = "mongodb://127.0.0.1:27017";
+        let mut client_options: ClientOptions = executor::block_on(ClientOptions::parse(uri)).unwrap();
+        let server_api: ServerApi = ServerApi::builder().version(ServerApiVersion::V1).build();
+        client_options.server_api = Some(server_api);
+        let client: Client = Client::with_options(client_options).unwrap();
+        let db: Database = client.database("auth");
+        let redis_client: RedisClient = RedisClient::open("redis://127.0.0.1/").unwrap();
+        let redis_connection: RedisConnection = redis_client.get_connection().unwrap();
+        AuthService {
+            redis: Arc::new(Mutex::new(redis_connection)),
+            mongo: Arc::new(Mutex::new(db)),
+        }
+    }
+}
 
 #[tonic::async_trait]
 impl Auth for AuthService {
@@ -1032,36 +1135,120 @@ impl Auth for AuthService {
         &self,
         request: Request<JwtMiddlewareInput>,
     ) -> Result<Response<JwtMiddlewarePayload>, Status> {
-        println!("Got a request: {:?}", request);
 
-        let req = request.into_inner();
+        let req: JwtMiddlewareInput = request.into_inner();
 
-        println!("access token: {}", req.access_token);
-        println!("refreshtoken: {}", req.refreshtoken);
-
-        let reply = JwtMiddlewarePayload {
-            valid_access_token: req.access_token,
-            id: req.refreshtoken,
-            is_lender: false,
-            is_borrower: false,
-            is_support: false
-        };
-
-        Ok(Response::new(reply))
+        match req.refreshtoken.to_owned().is_empty() {
+            true => {
+                return Err(Status::new(Code::InvalidArgument, "refresh token is invalid"))
+            },
+            false => {
+                match req.access_token.to_owned().is_empty() {
+                    true => {
+                        match decode::<Claims>(req.access_token.as_str(), &DecodingKey::from_secret(ACCESSSECRET.as_ref()), &Validation::default()) {
+                            Ok(user_access) => {
+                                let is_blacklisted: RedisResult<i64> = self.redis.lock().await.get(req.refreshtoken.to_owned());
+                                match is_blacklisted {
+                                    Ok(is_blacklisted) => {
+                                        if user_access.claims.exp < is_blacklisted {
+                                            return Err(Status::new(Code::Internal, "El usuario esta bloqueado."))
+                                        }
+                                        let reply: JwtMiddlewarePayload = JwtMiddlewarePayload {
+                                            valid_access_token: req.access_token.to_owned(),
+                                            id: user_access.claims.id.to_owned(),
+                                            is_lender: user_access.claims.is_lender,
+                                            is_borrower: user_access.claims.is_borrower,
+                                            is_support: user_access.claims.is_support
+                                        };
+                                        return Ok(Response::new(reply))
+                                    },
+                                    Err(_is_blacklisted) => {
+                                        return Err(Status::new(Code::Internal, "redis error"))
+                                    }
+                                }
+                            },
+                            Err(_user_access) => {
+                                return Err(Status::new(Code::InvalidArgument, "access token is invalid"))
+                            }
+                        }
+                    },
+                    false => {
+                        match decode::<Claims>(req.refreshtoken.as_str(), &DecodingKey::from_secret(REFRESHSECRET.as_ref()), &Validation::default()) {
+                            Ok(user_access) => {
+                                let is_blacklisted: RedisResult<i64> = self.redis.lock().await.get(req.refreshtoken.to_owned());
+                                match is_blacklisted {
+                                    Ok(is_blacklisted) => {
+                                        if user_access.claims.exp < is_blacklisted {
+                                            return Err(Status::new(Code::Internal, "El usuario esta bloqueado."))
+                                        }
+                                        let start: SystemTime = SystemTime::now();
+                                        let since_the_epoch: i64 = start
+                                            .duration_since(UNIX_EPOCH)
+                                            .expect("Time went backwards")
+                                            .as_secs() as i64;
+                                        let since_the_epoch_access: i64 = since_the_epoch + 180;
+                                        let my_claims_access: Claims = Claims {
+                                            id: user_access.claims.id.to_owned(),
+                                            is_borrower: user_access.claims.is_borrower,
+                                            is_lender: user_access.claims.is_lender,
+                                            is_support: user_access.claims.is_support,
+                                            refresh_token_expire_time: user_access.claims.refresh_token_expire_time,
+                                            exp: since_the_epoch_access,
+                                        };
+                                        match encode(&Header::default(), &my_claims_access, &EncodingKey::from_secret(ACCESSSECRET.as_ref())) {
+                                            Ok(access_token) => {
+                                                let reply: JwtMiddlewarePayload = JwtMiddlewarePayload {
+                                                    valid_access_token: access_token,
+                                                    id: user_access.claims.id.to_owned(),
+                                                    is_lender: user_access.claims.is_lender,
+                                                    is_borrower: user_access.claims.is_borrower,
+                                                    is_support: user_access.claims.is_support
+                                                };
+                                                let sessions: Collection<SessionsMongo> = self.mongo.lock().await.collection::<SessionsMongo>("sessions");
+                                                let result = sessions.update_one(
+                                                    doc! { "refresh_token": req.refreshtoken },
+                                                    doc! {
+                                                        "$set": {
+                                                            "last_time_accessed": DateTime::now()
+                                                        },
+                                                    },
+                                                    None
+                                                ).await;
+                                                match result {
+                                                    Ok(_result) => {
+                                                        return Ok(Response::new(reply))
+                                                    },
+                                                    Err(_result) => {
+                                                        return Err(Status::new(Code::Internal, "mongo error"))
+                                                    }
+                                                }
+                                            }, 
+                                            Err(_acces_token) => {
+                                                return Err(Status::new(Code::Internal, "redis error"))
+                                            }
+                                        }
+                                    },
+                                    Err(_is_blacklisted) => {
+                                        return Err(Status::new(Code::Internal, "redis error"))
+                                    }
+                                }
+                            },
+                            Err(_user_access) => {
+                                return Err(Status::new(Code::InvalidArgument, "refresh token is invalid"))
+                            }
+                        } 
+                    }
+                }
+            }
+        }
     }
     async fn create_user(
         &self,
-        request: Request<CreateUserInput>,
+        _request: Request<CreateUserInput>,
     ) -> Result<Response<CreateUserPayload>, Status> {
-        println!("Got a request: {:?}", request);
-
-        let req = request.into_inner();
-
-        let reply = CreateUserPayload {
-            done: "test".to_string()
-        };
-
-        Ok(Response::new(reply))
+        Ok(Response::new(CreateUserPayload {
+            done: "".to_string()
+        }))
     }
 }
 
@@ -1145,7 +1332,6 @@ impl Query {
 struct RequestContext {
     id: String,
     ip: String,
-    session_id: String,
     user_agent: String,
     refresh_token: String,
 }
@@ -1163,10 +1349,12 @@ async fn main() -> GraphQLResult<()> {
     let auth_logins: Collection<LoginsMongo> = db.collection::<LoginsMongo>("logins");
     let redis_client: RedisClient = RedisClient::open("redis://127.0.0.1/")?;
     let redis_connection: RedisConnection = redis_client.get_connection()?;
+    let grpc_client: AuthClient<Channel> = AuthClient::connect("http://[::1]:50051").await?;
     let schema: Schema<Query, Mutation, EmptySubscription> = Schema::build(Query, Mutation, EmptySubscription)
         .data(auth_users)
         .data(auth_sessions)
         .data(auth_logins)
+        .data(Arc::new(Mutex::new(grpc_client)))
         .data(Arc::new(Mutex::new(redis_connection)))
         .finish();
 
@@ -1175,14 +1363,13 @@ async fn main() -> GraphQLResult<()> {
     let graphql_post = async_graphql_warp::graphql(schema)
     .and(warp::header::optional::<String>("Authorization"))
     .and(warp::filters::addr::remote())
-    .and(warp::filters::cookie::optional::<String>("sessionId"))
     .and(warp::header::optional::<String>("User-Agent"))
     .and(warp::filters::cookie::optional::<String>("refreshToken"))
     .and_then(
         |(schema, request): (
             Schema<Query, Mutation, EmptySubscription>,
             async_graphql::Request,
-        ), auth: Option<String>, ip: Option<SocketAddr>, session_id: Option<String>, user_agent: Option<String>, refresh_token: Option<String>| async move {
+        ), auth: Option<String>, ip: Option<SocketAddr>, user_agent: Option<String>, refresh_token: Option<String>| async move {
             let request_context: RequestContext = RequestContext {
                 id: match auth {
                     Some(auth) => {
@@ -1206,10 +1393,6 @@ async fn main() -> GraphQLResult<()> {
                 },
                 ip: match ip {
                     Some(ip) => ip.to_string(),
-                    None => String::from("")
-                },
-                session_id: match session_id {
-                    Some(session_id) => session_id,
                     None => String::from("")
                 },
                 user_agent: match user_agent {
