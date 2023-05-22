@@ -120,7 +120,7 @@ const makeGatewaySchema = async () => {
     "http://backend-fintech:4000/graphql",
     "ws://backend-fintech:4000/graphql"
   );
-  const auth = httpExecutor("http://backend-auth:4002/graphql");
+  const auth = httpExecutor("http://host.docker.internal:8001");
   const gatewaySchema = stitchSchemas({
     subschemas: [
       {

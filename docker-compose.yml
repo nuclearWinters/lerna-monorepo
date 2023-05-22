@@ -24,6 +24,7 @@ services:
       ["./wait-for-it.sh", "backend-auth:4002", "--", "npm", "run", "start"]
     ports:
       - "4000:4000"
+      - "1984:1984"
     depends_on:
       - mongo-fintech
       - backend-auth

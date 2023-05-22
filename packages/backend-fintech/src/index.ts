@@ -1,5 +1,5 @@
 import { app, schema } from "./app";
-import { MongoClient } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 import { MONGO_DB } from "./config";
 import amqp from "amqplib";
 import {
@@ -13,6 +13,15 @@ import { sendLend } from "./rabbitmq";
 import { jwt } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { WebSocketServer } from "ws";
+import { Server, ServerCredentials } from "@grpc/grpc-js";
+import { AuthServer } from "./grpc";
+import { AuthService } from "./proto/auth_grpc_pb";
+
+export const ctx: {
+  fintechdb?: Db;
+} = {
+  fintechdb: undefined,
+};
 
 MongoClient.connect(MONGO_DB, {}).then(async (client) => {
   const db = client.db("fintech");
@@ -59,4 +68,16 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
       wsServer
     );
   });
+  const server = new Server();
+  server.addService(AuthService, AuthServer);
+  server.bindAsync(
+    "backend-auth:1984",
+    ServerCredentials.createInsecure(),
+    (err) => {
+      if (err) {
+        return;
+      }
+      server.start();
+    }
+  );
 });

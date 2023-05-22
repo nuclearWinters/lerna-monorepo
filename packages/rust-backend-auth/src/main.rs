@@ -25,15 +25,15 @@ pub mod auth {
     tonic::include_proto!("auth_package");
 }
 
-struct DateScalarType(DateTime);
+struct Date(DateTime);
 
 #[Scalar]
-impl ScalarType for DateScalarType {
+impl ScalarType for Date {
     fn parse(value: Value) -> InputValueResult<Self> {
         if let Value::Number(value) = &value {
             match value.as_i64() {
-                Some(value) => Ok(DateScalarType(DateTime::from_millis(value))),
-                None => Ok(DateScalarType(DateTime::from_millis(0))),
+                Some(value) => Ok(Date(DateTime::from_millis(value))),
+                None => Ok(Date(DateTime::from_millis(0))),
             }
         } else {
             Err(InputValueError::expected_type(value))
@@ -608,9 +608,9 @@ impl Mutation {
                                 device_type: result.device_type,
                                 device_name: result.device_name,
                                 address: result.address,
-                                last_time_accessed: DateScalarType(result.last_time_accessed),
+                                last_time_accessed: Date(result.last_time_accessed),
                                 user_id: result.user_id,
-                                expiration_date: DateScalarType(result.expiration_date),
+                                expiration_date: Date(result.expiration_date),
                             })
                         })
                     },
@@ -625,9 +625,9 @@ impl Mutation {
                                 device_type: result.device_type,
                                 device_name: result.device_name,
                                 address: result.address,
-                                last_time_accessed: DateScalarType(result.last_time_accessed),
+                                last_time_accessed: Date(result.last_time_accessed),
                                 user_id: result.user_id,
-                                expiration_date: DateScalarType(result.expiration_date),
+                                expiration_date: Date(result.expiration_date),
                             }),
                         })
                     }   
@@ -794,8 +794,8 @@ impl AuthUser {
                 page_info: PageInfo {
                     has_next_page: false,
                     has_previous_page: false,
-                    start_cursor: String::from(""),
-                    end_cursor: String::from("")
+                    start_cursor: Some(String::from("")),
+                    end_cursor: Some(String::from(""))
                 },
                 edges: Some(Vec::new()),
             })
@@ -845,16 +845,16 @@ impl AuthUser {
                     node_id.push_str(&hex);
                     sessions_edges.push(Some(SessionsEdge {
                         cursor: general_purpose::STANDARD.encode(cursor_string),
-                        node: Session {
+                        node: Some(Session {
                             id: ID::from(general_purpose::STANDARD.encode(node_id)),
                             application_name: session_doc.application_name,
                             device_type: session_doc.device_type,
                             device_name: session_doc.device_name,
                             address: session_doc.address,
-                            last_time_accessed: DateScalarType(session_doc.last_time_accessed),
+                            last_time_accessed: Date(session_doc.last_time_accessed),
                             user_id: session_doc.user_id,
-                            expiration_date: DateScalarType(session_doc.expiration_date),
-                        }
+                            expiration_date: Date(session_doc.expiration_date),
+                        })
                     }));
                 }
                 Err(_session_doc) => {}
@@ -867,8 +867,8 @@ impl AuthUser {
                     page_info: PageInfo {
                         has_next_page: false,
                         has_previous_page: false,
-                        start_cursor: String::from(""),
-                        end_cursor: String::from("")
+                        start_cursor: Some(String::from("")),
+                        end_cursor: Some(String::from(""))
                     },
                     edges: Some(Vec::new()),
                 })
@@ -907,8 +907,8 @@ impl AuthUser {
             page_info: PageInfo {
                 has_next_page,
                 has_previous_page: false,
-                start_cursor,
-                end_cursor,
+                start_cursor: Some(start_cursor),
+                end_cursor: Some(end_cursor),
             },
             edges: Some(sessions_edges)
         })
@@ -924,8 +924,8 @@ impl AuthUser {
                     page_info: PageInfo {
                         has_next_page: false,
                         has_previous_page: false,
-                        start_cursor: String::from(""),
-                        end_cursor: String::from("")
+                        start_cursor: Some(String::from("")),
+                        end_cursor: Some(String::from(""))
                     },
                     edges: Some(Vec::new())
                 })
@@ -959,8 +959,8 @@ impl AuthUser {
                             page_info: PageInfo {
                                 has_next_page: false,
                                 has_previous_page: false,
-                                start_cursor: String::from(""),
-                                end_cursor: String::from("")
+                                start_cursor: Some(String::from("")),
+                                end_cursor: Some(String::from(""))
                             },
                             edges: Some(Vec::new())
                         })
@@ -986,13 +986,13 @@ impl AuthUser {
                         node_id.push_str(&hex);
                         logins_edges.push(Some(LoginsEdge {
                             cursor: general_purpose::STANDARD.encode(cursor_string),
-                            node: Login {
+                            node: Some(Login {
                                 id: ID::from(general_purpose::STANDARD.encode(node_id)),
                                 application_name: login_doc.application_name,
-                                time: DateScalarType(login_doc.time),
+                                time: Date(login_doc.time),
                                 address: login_doc.address,
                                 user_id: login_doc.user_id,
-                            }
+                            })
                         }));
                     }
                     Err(_login_doc) => {}
@@ -1005,8 +1005,8 @@ impl AuthUser {
                         page_info: PageInfo {
                             has_next_page: false,
                             has_previous_page: false,
-                            start_cursor: String::from(""),
-                            end_cursor: String::from("")
+                            start_cursor: Some(String::from("")),
+                            end_cursor: Some(String::from(""))
                         },
                         edges: Some(Vec::new())
                     })
@@ -1043,8 +1043,8 @@ impl AuthUser {
                 page_info: PageInfo {
                     has_next_page,
                     has_previous_page: false,
-                    start_cursor,
-                    end_cursor,
+                    start_cursor: Some(start_cursor),
+                    end_cursor: Some(end_cursor),
                 },
                 edges: Some(logins_edges)
             })
@@ -1055,15 +1055,15 @@ impl AuthUser {
 struct PageInfo {
     has_next_page: bool,
     has_previous_page: bool,
-    start_cursor: String, 
-    end_cursor: String,
+    start_cursor: Option<String>, 
+    end_cursor: Option<String>,
 }
 
 #[derive(SimpleObject)]
 struct Login {
     id: ID,
     application_name: String,
-    time: DateScalarType,
+    time: Date,
     address: String,
     user_id: String,
 }
@@ -1071,7 +1071,7 @@ struct Login {
 #[derive(SimpleObject)]
 struct LoginsEdge {
     cursor: String,
-    node: Login,
+    node: Option<Login>,
 }
 
 #[derive(SimpleObject)]
@@ -1088,15 +1088,15 @@ struct Session {
     device_type: String,
     device_name: String,
     address: String,
-    last_time_accessed: DateScalarType,
+    last_time_accessed: Date,
     user_id: String,
-    expiration_date: DateScalarType,
+    expiration_date: Date,
 }
 
 #[derive(SimpleObject)]
 struct SessionsEdge {
     cursor: String,
-    node: Session,
+    node: Option<Session>,
 }
 
 #[derive(SimpleObject)]
@@ -1349,7 +1349,7 @@ async fn main() -> GraphQLResult<()> {
     let auth_logins: Collection<LoginsMongo> = db.collection::<LoginsMongo>("logins");
     let redis_client: RedisClient = RedisClient::open("redis://127.0.0.1/")?;
     let redis_connection: RedisConnection = redis_client.get_connection()?;
-    let grpc_client: AuthClient<Channel> = AuthClient::connect("http://[::1]:50051").await?;
+    let grpc_client: AuthClient<Channel> = AuthClient::connect("http://127.0.0.1:1984").await?;
     let schema: Schema<Query, Mutation, EmptySubscription> = Schema::build(Query, Mutation, EmptySubscription)
         .data(auth_users)
         .data(auth_sessions)
@@ -1435,13 +1435,13 @@ async fn main() -> GraphQLResult<()> {
             ))
         });
     
-    let addr = "[::1]:50051".parse()?;
-    let auth_service = AuthService::default();
+    let addr: SocketAddr = "[::1]:50051".parse()?;
+    let auth_service: AuthService = AuthService::default();
 
     let grpc_service = Server::builder()
         .add_service(AuthServer::new(auth_service))
         .serve(addr);
-
+    
     let warp_service = warp::serve(routes).run(([127, 0, 0, 1], 8001));
 
     future::join(warp_service, grpc_service).await;
