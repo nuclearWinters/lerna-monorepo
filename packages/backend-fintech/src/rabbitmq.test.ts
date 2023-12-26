@@ -6,6 +6,15 @@ import {
   UserMongo,
 } from "./types";
 import { sendLend } from "./rabbitmq";
+import { Channel, Connection, ConsumeMessage } from "amqplib";
+jest.mock("amqplib", () => ({
+  connect: () => ({
+    createChannel: () => ({
+      ack: jest.fn,
+    }),
+  }),
+}));
+import amqp from "amqplib";
 
 jest.mock("./subscriptions/subscriptionsUtils", () => ({
   publishUser: jest.fn,
@@ -30,10 +39,14 @@ jest.mock("ioredis", () =>
 describe("rabbitMQ tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
+  let conn: Connection;
+  let ch: Channel;
 
   beforeAll(async () => {
     client = await MongoClient.connect(process.env.MONGO_URL as string, {});
     dbInstance = client.db("fintech2");
+    conn = await amqp.connect("amqp://rabbitmq:5672");
+    ch = await conn.createChannel();
   });
 
   afterAll(async () => {
@@ -105,11 +118,9 @@ describe("rabbitMQ tests", () => {
             TEM: 0.007974140428903764,
           })
         ),
-      } as any,
+      } as ConsumeMessage,
       dbInstance,
-      {
-        ack: jest.fn(),
-      } as any
+      ch
     );
     await sendLend(
       {
@@ -126,11 +137,9 @@ describe("rabbitMQ tests", () => {
             TEM: 0.007974140428903764,
           })
         ),
-      } as any,
+      } as ConsumeMessage,
       dbInstance,
-      {
-        ack: jest.fn(),
-      } as any
+      ch
     );
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO31",
@@ -258,11 +267,9 @@ describe("rabbitMQ tests", () => {
             TEM: 0.007974140428903764,
           })
         ),
-      } as any,
+      } as ConsumeMessage,
       dbInstance,
-      {
-        ack: jest.fn(),
-      } as any
+      ch
     );
     await sendLend(
       {
@@ -279,11 +286,9 @@ describe("rabbitMQ tests", () => {
             TEM: 0.007974140428903764,
           })
         ),
-      } as any,
+      } as ConsumeMessage,
       dbInstance,
-      {
-        ack: jest.fn(),
-      } as any
+      ch
     );
     const user2 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO31",
@@ -496,11 +501,9 @@ describe("rabbitMQ tests", () => {
             TEM: 0.007974140428903764,
           })
         ),
-      } as any,
+      } as ConsumeMessage,
       dbInstance,
-      {
-        ack: jest.fn(),
-      } as any
+      ch
     );
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO33",
@@ -592,11 +595,9 @@ describe("rabbitMQ tests", () => {
             TEM: 0.007974140428903764,
           })
         ),
-      } as any,
+      } as ConsumeMessage,
       dbInstance,
-      {
-        ack: jest.fn(),
-      } as any
+      ch
     );
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO35",
@@ -701,11 +702,9 @@ describe("rabbitMQ tests", () => {
             TEM: 0.007974140428903764,
           })
         ),
-      } as any,
+      } as ConsumeMessage,
       dbInstance,
-      {
-        ack: jest.fn(),
-      } as any
+      ch
     );
     await sendLend(
       {
@@ -722,11 +721,9 @@ describe("rabbitMQ tests", () => {
             TEM: 0.007974140428903764,
           })
         ),
-      } as any,
+      } as ConsumeMessage,
       dbInstance,
-      {
-        ack: jest.fn(),
-      } as any
+      ch
     );
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO37",
@@ -813,6 +810,164 @@ describe("rabbitMQ tests", () => {
         created: "",
         updated: "",
         _id: "",
+      },
+    ]);
+  });
+
+  it("sendLend test one full investment", async () => {
+    const users = dbInstance.collection<UserMongo>("users");
+    const now = new Date();
+    await users.insertMany([
+      {
+        _id: new ObjectId("000000000000000000001004"),
+        id: "wHHR1SUBT0dspoF4YUO91",
+        accountAvailable: 100000,
+        accountToBePaid: 0,
+        accountTotal: 100000,
+      },
+      {
+        _id: new ObjectId("000000000000000000001005"),
+        id: "wHHR1SUBT0dspoF4YUO92",
+        accountAvailable: 100000,
+        accountToBePaid: 0,
+        accountTotal: 100000,
+      },
+    ]);
+    const loans = dbInstance.collection<LoanMongo>("loans");
+    await loans.insertMany([
+      {
+        _id: new ObjectId("000000000000000000001002"),
+        id_user: "wHHR1SUBT0dspoF4YUO92",
+        score: "AAA",
+        ROI: 10,
+        goal: 50000,
+        term: 2,
+        raised: 0,
+        expiry: now,
+        status: "financing",
+        scheduledPayments: null,
+        pending: 50000,
+      },
+      {
+        _id: new ObjectId("000000000000000000001003"),
+        id_user: "wHHR1SUBT0dspoF4YUO92",
+        score: "AAA",
+        ROI: 10,
+        goal: 50000,
+        term: 2,
+        raised: 0,
+        expiry: now,
+        status: "financing",
+        scheduledPayments: null,
+        pending: 50000,
+      },
+    ]);
+    const transactions =
+      dbInstance.collection<TransactionMongo>("transactions");
+    await sendLend(
+      {
+        content: Buffer.from(
+          JSON.stringify({
+            id_lender: "wHHR1SUBT0dspoF4YUO91",
+            id_borrower: "wHHR1SUBT0dspoF4YUO92",
+            quantity: 50000,
+            id_loan: "000000000000000000001002",
+            goal: 50000,
+            raised: 0,
+            term: 2,
+            ROI: 10,
+            TEM: 0.007974140428903764,
+          })
+        ),
+      } as ConsumeMessage,
+      dbInstance,
+      ch
+    );
+    const user = await users.findOne({
+      id: "wHHR1SUBT0dspoF4YUO91",
+    });
+    expect(user).toEqual({
+      _id: new ObjectId("000000000000000000001004"),
+      id: "wHHR1SUBT0dspoF4YUO91",
+      accountAvailable: 50000,
+      accountToBePaid: 50598,
+      accountTotal: 100598,
+    });
+    const allTransactions = await transactions
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO91" })
+      .toArray();
+    expect(allTransactions.length).toBe(1);
+    expect(
+      allTransactions.map((transaction) => {
+        return transaction.type === "invest"
+          ? {
+              type: transaction.type,
+              quantity: transaction.quantity,
+              id_borrower: transaction.id_borrower,
+              _id_loan: transaction._id_loan?.toHexString(),
+            }
+          : {};
+      })
+    ).toEqual([
+      {
+        type: "invest",
+        quantity: -50000,
+        id_borrower: "wHHR1SUBT0dspoF4YUO92",
+        _id_loan: "000000000000000000001002",
+      },
+    ]);
+    const allLoans = await loans
+      .find({ id_user: "wHHR1SUBT0dspoF4YUO92" })
+      .toArray();
+    expect(allLoans.length).toBe(2);
+    expect(
+      allLoans.map((loan) => ({
+        raised: loan.raised,
+        status: loan.status,
+        pending: loan.pending,
+      }))
+    ).toEqual([
+      {
+        raised: 50000,
+        status: "to be paid",
+        pending: 0,
+      },
+      {
+        raised: 0,
+        status: "financing",
+        pending: 50000,
+      },
+    ]);
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
+    const allInvestments = await investments
+      .find({ id_lender: "wHHR1SUBT0dspoF4YUO91" })
+      .toArray();
+    expect(allInvestments.length).toBe(1);
+    expect(
+      allInvestments.map((investment) => ({
+        ...investment,
+        _id: "",
+        updated: "",
+        created: "",
+      }))
+    ).toEqual([
+      {
+        quantity: 50000,
+        ROI: 10,
+        payments: 0,
+        moratory: 0,
+        term: 2,
+        interest_to_earn: 598,
+        to_be_paid: 50598,
+        paid_already: 0,
+        amortize: 25299,
+        id_borrower: "wHHR1SUBT0dspoF4YUO92",
+        id_lender: "wHHR1SUBT0dspoF4YUO91",
+        _id_loan: new ObjectId("000000000000000000001002"),
+        status: "up to date",
+        _id: "",
+        updated: "",
+        created: "",
       },
     ]);
   });

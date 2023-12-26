@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4f9a86f61de7091d09ecfeb51ab19312>>
+ * @generated SignedSource<<410c200b5850f0aab2d44e20131238d4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,9 +18,9 @@ export type AddInvestments_user$data = {
       readonly node: {
         readonly id: string;
         readonly " $fragmentSpreads": FragmentRefs<"LoanRow_loan">;
-      } | null;
-    } | null> | null;
-  } | null;
+      } | null | undefined;
+    } | null | undefined> | null | undefined;
+  } | null | undefined;
   readonly " $fragmentType": "AddInvestments_user";
 };
 export type AddInvestments_user$key = {
@@ -75,7 +75,10 @@ return {
         "node"
       ],
       "operation": require('./AddInvestmentsPaginationQuery.graphql'),
-      "identifierField": "id"
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "AddInvestments_user",

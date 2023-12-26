@@ -35,12 +35,19 @@ const AppUserQuery = graphql`
     }
     authUser {
       id
+      accountId
       name
       apellidoPaterno
       apellidoMaterno
-      language
+      RFC
+      CURP
+      clabe
+      mobile
+      isLender
       isBorrower
       isSupport
+      language
+      email
     }
   }
 `;

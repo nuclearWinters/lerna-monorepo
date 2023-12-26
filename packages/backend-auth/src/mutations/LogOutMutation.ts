@@ -31,8 +31,8 @@ export const LogOutMutation = mutationWithClientMutationId({
         { refreshToken },
         { $set: { expirationDate: expireDate } }
       );
-      if (session.value) {
-        await rdb.set(session.value.refreshToken, time, { EX: 60 * 15 });
+      if (session) {
+        await rdb.set(session.refreshToken, time, { EX: 60 * 15 });
       }
       return {
         error: "",

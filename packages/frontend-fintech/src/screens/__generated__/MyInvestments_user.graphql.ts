@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<371cb1ba0b8c793a81f8644c1c4ce08f>>
+ * @generated SignedSource<<721c22e891ebf6a22febf6f526593f56>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,9 +17,9 @@ export type MyInvestments_user$data = {
       readonly node: {
         readonly id: string;
         readonly " $fragmentSpreads": FragmentRefs<"InvestmentRow_investment">;
-      } | null;
-    } | null> | null;
-  } | null;
+      } | null | undefined;
+    } | null | undefined> | null | undefined;
+  } | null | undefined;
   readonly " $fragmentType": "MyInvestments_user";
 };
 export type MyInvestments_user$key = {
@@ -79,7 +79,10 @@ return {
         "node"
       ],
       "operation": require('./MyInvestmentsPaginationUser.graphql'),
-      "identifierField": "id"
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "MyInvestments_user",

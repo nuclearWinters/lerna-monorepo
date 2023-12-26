@@ -45,7 +45,7 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
         throw new Error("User is not support.");
       }
       const { id: loan_id } = fromGlobalId(loan_gid);
-      const { value: loan } = await loans.findOneAndUpdate(
+      const loan = await loans.findOneAndUpdate(
         { _id: new ObjectId(loan_id) },
         { $set: { status: "financing" } },
         { returnDocument: "after" }

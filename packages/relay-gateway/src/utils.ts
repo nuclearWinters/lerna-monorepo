@@ -7,12 +7,12 @@ export interface IContextResult {
   cookies: string;
   refreshToken: string;
   accessTokenHeader?: string;
-  extensions: any;
+  extensions: unknown;
 }
 
 export const setExtensionsContext = (
   ctx: unknown,
-  extensions: any
+  extensions: unknown
 ): IContextResult => {
   const ctxTyped = ctx as IContextResult;
   ctxTyped.extensions = extensions;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<167edc6bb4c53eba51dc95ae28ef4257>>
+ * @generated SignedSource<<d1c7628aea748e3e7607a77e1e66102a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,15 +12,15 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 export type MyInvestmentsPaginationUser$variables = {
-  count?: number | null;
-  cursor?: string | null;
+  count?: number | null | undefined;
+  cursor?: string | null | undefined;
   id: string;
-  status?: ReadonlyArray<InvestmentStatus> | null;
+  status?: ReadonlyArray<InvestmentStatus> | null | undefined;
 };
 export type MyInvestmentsPaginationUser$data = {
   readonly node: {
     readonly " $fragmentSpreads": FragmentRefs<"MyInvestments_user">;
-  } | null;
+  } | null | undefined;
 };
 export type MyInvestmentsPaginationUser = {
   response: MyInvestmentsPaginationUser$data;

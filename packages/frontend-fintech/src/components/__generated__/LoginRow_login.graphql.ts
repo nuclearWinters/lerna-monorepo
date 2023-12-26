@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ce94858dadbe6a86db5703be64b93fd0>>
+ * @generated SignedSource<<59bcadafddd6843b3e66ed19f55c20d9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -32,7 +32,10 @@ const node: ReaderFragment = {
         "node"
       ],
       "operation": require('./LoginRowRefetchQuery.graphql'),
-      "identifierField": "id"
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "LoginRow_login",

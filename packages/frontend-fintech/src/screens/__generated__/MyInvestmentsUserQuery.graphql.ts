@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2fe0fee9e49393897ef6c95e0313db21>>
+ * @generated SignedSource<<de3754dfedb9af34527944734d5f9b76>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type MyInvestmentsUserQuery$variables = {};
+export type MyInvestmentsUserQuery$variables = Record<PropertyKey, never>;
 export type MyInvestmentsUserQuery$data = {
   readonly user: {
     readonly id: string;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8841d8c7bba13226389050827efc3fb6>>
+ * @generated SignedSource<<4ffa99468bd16d432a831e71d04c975b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -25,7 +25,7 @@ export type LoanRow_loan$data = {
     readonly amortize: string;
     readonly scheduledDate: Int;
     readonly status: LoanScheduledPaymentStatus;
-  }> | null;
+  }> | null | undefined;
   readonly score: string;
   readonly status: LoanStatus;
   readonly term: number;
@@ -54,7 +54,10 @@ return {
         "node"
       ],
       "operation": require('./LoanRowRefetchQuery.graphql'),
-      "identifierField": "id"
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "LoanRow_loan",

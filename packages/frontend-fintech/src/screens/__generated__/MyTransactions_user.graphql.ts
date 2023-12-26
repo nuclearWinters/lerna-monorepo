@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cae0cb247d22ef06a7ce6cf780bf1146>>
+ * @generated SignedSource<<26c4d47ec4715b55c57cb8644a5e64b8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,13 +17,13 @@ export type MyTransactions_user$data = {
   readonly transactions: {
     readonly edges: ReadonlyArray<{
       readonly node: {
-        readonly __fragmentPropName?: string | null;
+        readonly __fragmentPropName?: string | null | undefined;
         readonly __id: string;
-        readonly __module_component?: string | null;
+        readonly __module_component?: string | null | undefined;
         readonly " $fragmentSpreads": FragmentRefs<"InvestmentTransaction_transaction" | "MoneyTransaction_transaction">;
-      } | null;
-    } | null> | null;
-  } | null;
+      } | null | undefined;
+    } | null | undefined> | null | undefined;
+  } | null | undefined;
   readonly " $fragmentType": "MyTransactions_user";
 };
 export type MyTransactions_user$key = {
@@ -71,7 +71,10 @@ return {
         "node"
       ],
       "operation": require('./MyTransactionsPaginationUser.graphql'),
-      "identifierField": "id"
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "MyTransactions_user",

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<828bcdc9f74d64cf02c673e7b3f1e0c6>>
+ * @generated SignedSource<<f7c3aa7f9bd88e53aa605dd97b437151>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,14 +11,14 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestmentsPaginationQuery$variables = {
-  count?: number | null;
-  cursor?: string | null;
+  count?: number | null | undefined;
+  cursor?: string | null | undefined;
   id: string;
 };
 export type AddInvestmentsPaginationQuery$data = {
   readonly node: {
     readonly " $fragmentSpreads": FragmentRefs<"AddInvestments_user">;
-  } | null;
+  } | null | undefined;
 };
 export type AddInvestmentsPaginationQuery = {
   response: AddInvestmentsPaginationQuery$data;

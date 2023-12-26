@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ec77d8ae53cb0481fcb05893e4c1ce4b>>
+ * @generated SignedSource<<87aa0a147940cbb9a620595972b1ff32>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type AccountUserQuery$variables = {};
+export type AccountUserQuery$variables = Record<PropertyKey, never>;
 export type AccountUserQuery$data = {
   readonly user: {
     readonly accountAvailable: string;

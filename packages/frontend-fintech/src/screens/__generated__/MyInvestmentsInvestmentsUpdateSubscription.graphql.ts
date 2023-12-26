@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<80dc1a60f074df6eeabab74eb7746703>>
+ * @generated SignedSource<<a0334dbbf2dd408a8db54b99dad622dd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
-export type MyInvestmentsInvestmentsUpdateSubscription$variables = {};
+export type MyInvestmentsInvestmentsUpdateSubscription$variables = Record<PropertyKey, never>;
 export type MyInvestmentsInvestmentsUpdateSubscription$data = {
   readonly investments_subscribe_update: {
     readonly ROI: number;

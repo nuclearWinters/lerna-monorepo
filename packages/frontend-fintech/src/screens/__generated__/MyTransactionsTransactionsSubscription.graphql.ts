@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ac653111c32e582ad267db02347effc9>>
+ * @generated SignedSource<<a4083d3f81e062bb926880dd6a20fef5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,11 +19,11 @@ export type MyTransactionsTransactionsSubscription$data = {
   readonly transactions_subscribe_insert: {
     readonly cursor: string;
     readonly node: {
-      readonly __fragmentPropName?: string | null;
+      readonly __fragmentPropName?: string | null | undefined;
       readonly __id: string;
-      readonly __module_component?: string | null;
+      readonly __module_component?: string | null | undefined;
       readonly " $fragmentSpreads": FragmentRefs<"InvestmentTransaction_transaction" | "MoneyTransaction_transaction">;
-    } | null;
+    } | null | undefined;
   };
 };
 export type MyTransactionsTransactionsSubscription = {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b82996c38849900e1880b2dabe0a1efe>>
+ * @generated SignedSource<<b6d0347d8372ed31e88177f0b77b159c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,9 +17,9 @@ export type Settings_logins_user$data = {
       readonly node: {
         readonly id: string;
         readonly " $fragmentSpreads": FragmentRefs<"LoginRow_login">;
-      } | null;
-    } | null> | null;
-  } | null;
+      } | null | undefined;
+    } | null | undefined> | null | undefined;
+  } | null | undefined;
   readonly " $fragmentType": "Settings_logins_user";
 };
 export type Settings_logins_user$key = {
@@ -74,7 +74,10 @@ return {
         "node"
       ],
       "operation": require('./SettingsLoginsPaginationUser.graphql'),
-      "identifierField": "id"
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "Settings_logins_user",

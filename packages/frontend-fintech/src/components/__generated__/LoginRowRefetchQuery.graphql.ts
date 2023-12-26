@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b43cff31327cb0503dcd9175ca2239fd>>
+ * @generated SignedSource<<13f688734bb00d6c6b4171deeb8ea8c0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type LoginRowRefetchQuery$variables = {
 export type LoginRowRefetchQuery$data = {
   readonly node: {
     readonly " $fragmentSpreads": FragmentRefs<"LoginRow_login">;
-  } | null;
+  } | null | undefined;
 };
 export type LoginRowRefetchQuery = {
   response: LoginRowRefetchQuery$data;

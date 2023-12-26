@@ -61,18 +61,18 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
         { $set: { expirationDate: expireDate } },
         { returnDocument: "after" }
       );
-      if (session.value) {
-        await rdb.set(session.value.refreshToken, time, { EX: 60 * 15 });
-        if (refreshToken === session.value.refreshToken) {
+      if (session) {
+        await rdb.set(session.refreshToken, time, { EX: 60 * 15 });
+        if (refreshToken === session.refreshToken) {
           res.clearCookie("refreshToken");
           return {
             error: "",
-            session: session.value,
+            session,
             shouldReloadBrowser: true,
           };
         }
       }
-      return { error: "", session: session.value, shouldReloadBrowser: false };
+      return { error: "", session, shouldReloadBrowser: false };
     } catch (e) {
       return {
         error: e instanceof Error ? e.message : "",

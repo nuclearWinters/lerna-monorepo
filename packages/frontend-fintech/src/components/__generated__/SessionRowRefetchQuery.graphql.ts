@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<569a689fb479cedc5eecf5c4434ec785>>
+ * @generated SignedSource<<1747e62c721fb726be3bec49e1808159>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type SessionRowRefetchQuery$variables = {
 export type SessionRowRefetchQuery$data = {
   readonly node: {
     readonly " $fragmentSpreads": FragmentRefs<"SessionRow_session">;
-  } | null;
+  } | null | undefined;
 };
 export type SessionRowRefetchQuery = {
   response: SessionRowRefetchQuery$data;

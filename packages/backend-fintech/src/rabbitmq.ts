@@ -51,11 +51,11 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     },
     { returnDocument: "after" }
   );
-  if (!resultUser.value) {
+  if (!resultUser) {
     ch.ack(msg);
     return;
   }
-  publishUser(resultUser.value);
+  publishUser(resultUser);
   const { quantity, goal, id_loan, id_borrower, term, ROI } = doc;
   const _id_loan = new ObjectId(id_loan);
   //Aumentar propiedad raised de la deuda si no se sobrepasa la propiedad goal
@@ -72,11 +72,11 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     },
     { returnDocument: "after" }
   );
-  if (resultLoan.value) {
-    publishLoanUpdate(resultLoan.value);
+  if (resultLoan) {
+    publishLoanUpdate(resultLoan);
   }
   //Si NO se realizó la operación: incrementar saldo y no realizar más acciones
-  if (!resultLoan.value) {
+  if (!resultLoan) {
     //Actualizar a quien presta dinero
     const result = await users.findOneAndUpdate(
       { id },
@@ -85,13 +85,13 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       },
       { returnDocument: "after" }
     );
-    if (result.value) {
-      publishUser(result.value);
+    if (result) {
+      publishUser(result);
     }
     ch.ack(msg);
     return;
   }
-  const completed = resultLoan.value.raised === resultLoan.value.goal;
+  const completed = resultLoan.raised === resultLoan.goal;
   const transactionOperation: WithId<TransactionMongo>[] = [
     {
       _id: new ObjectId(),
@@ -148,8 +148,7 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       returnDocument: "after",
     }),
   });
-  const goalArchived = resultLoan.value.raised === resultLoan.value.goal;
-  const scheduledPayments = goalArchived
+  const scheduledPayments = completed
     ? new Array(doc.term).fill({}).map((_, index) => {
         const TEM = doc.TEM;
         return {
@@ -165,28 +164,28 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   //Si raised es igual a goal: añadir fondos a quien pidio prestado
   const creditBorrowerTransaction = {
     _id: new ObjectId(),
-    id_user: resultLoan.value.id_user,
+    id_user: resultLoan.id_user,
     type: "credit" as const,
-    quantity: resultLoan.value.goal,
+    quantity: resultLoan.goal,
     created: now,
   };
   //Si raised es igual a goal: actualizar inversiones y prestamo
-  if (goalArchived) {
+  if (completed) {
     //Actualizar a quien pidio dinero prestado
-    const { value } = await users.findOneAndUpdate(
-      { id: resultLoan.value.id_user },
+    const user = await users.findOneAndUpdate(
+      { id: resultLoan.id_user },
       {
         $inc: {
-          accountAvailable: resultLoan.value.goal,
-          accountTotal: resultLoan.value.goal,
+          accountAvailable: resultLoan.goal,
+          accountTotal: resultLoan.goal,
         },
       },
       {
         returnDocument: "after",
       }
     );
-    if (value) {
-      publishUser(value);
+    if (user) {
+      publishUser(user);
     }
     //Obtener todas las inversiones del prestamo completado
     const investmentsResults = await investments.find({ _id_loan }).toArray();
@@ -295,8 +294,8 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       },
       { returnDocument: "after" }
     );
-    if (updatedLoan.value) {
-      publishLoanUpdate(updatedLoan.value);
+    if (updatedLoan) {
+      publishLoanUpdate(updatedLoan);
     }
     transactionOperation.push(creditBorrowerTransaction);
   }
@@ -322,8 +321,8 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
           investment.updateUser(),
           investment.optionsUser()
         );
-        if (updatedUser.value) {
-          publishUser(updatedUser.value);
+        if (updatedUser) {
+          publishUser(updatedUser);
         }
       }
     } else if (options) {
@@ -332,12 +331,13 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
         investment.update,
         options
       );
-      if (updatedInvestment.value) {
-        const upsert = !updatedInvestment.lastErrorObject?.updatedExisting;
+      if (updatedInvestment) {
+        //const upsert = !updatedInvestment.lastErrorObject?.updatedExisting;
+        const upsert = updatedInvestment;
         if (upsert) {
-          publishInvestmentInsert(updatedInvestment.value);
+          publishInvestmentInsert(updatedInvestment);
         } else {
-          publishInvestmentUpdate(updatedInvestment.value);
+          publishInvestmentUpdate(updatedInvestment);
         }
         if (
           investment.filterUser &&
@@ -349,8 +349,8 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
             investment.updateUser(),
             investment.optionsUser()
           );
-          if (updatedUser.value) {
-            publishUser(updatedUser.value);
+          if (updatedUser) {
+            publishUser(updatedUser);
           }
         }
       }

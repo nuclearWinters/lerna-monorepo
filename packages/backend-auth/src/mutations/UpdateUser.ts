@@ -59,12 +59,12 @@ export const UpdateUserMutation = mutationWithClientMutationId({
         { $set: user },
         { returnDocument: "after" }
       );
-      if (!result.value) {
+      if (!result) {
         throw new Error("No user found.");
       }
       return {
         error: "",
-        authUser: result.value,
+        authUser: result,
       };
     } catch (e) {
       return {

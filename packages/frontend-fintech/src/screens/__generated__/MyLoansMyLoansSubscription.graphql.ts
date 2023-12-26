@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e80274342d1f06ac51576745a92bd2db>>
+ * @generated SignedSource<<198cb869c8bf6054c92a3cea60bc120b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -30,11 +30,11 @@ export type MyLoansMyLoansSubscription$data = {
         readonly amortize: string;
         readonly scheduledDate: Int;
         readonly status: LoanScheduledPaymentStatus;
-      }> | null;
+      }> | null | undefined;
       readonly score: string;
       readonly status: LoanStatus;
       readonly term: number;
-    } | null;
+    } | null | undefined;
   };
 };
 export type MyLoansMyLoansSubscription = {

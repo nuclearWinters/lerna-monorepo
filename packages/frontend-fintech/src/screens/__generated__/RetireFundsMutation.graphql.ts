@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<92ab8f0839aaa1935d6849c07737d1d3>>
+ * @generated SignedSource<<c8c5a27d2377aa6937a1d7d81d51a4ef>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type AddFundsInput = {
-  clientMutationId?: string | null;
+  clientMutationId?: string | null | undefined;
   quantity: string;
 };
 export type RetireFundsMutation$variables = {

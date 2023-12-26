@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<90144a1cd74bd5a17175b6d514bc0431>>
+ * @generated SignedSource<<e194d485a326a3a6ced840fecfc6b83f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -43,7 +43,10 @@ const node: ReaderFragment = {
         "node"
       ],
       "operation": require('./InvestmentRowRefetchQuery.graphql'),
-      "identifierField": "id"
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "InvestmentRow_investment",

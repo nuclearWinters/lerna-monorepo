@@ -2,7 +2,12 @@ import { app } from "./app";
 import { schemaFromExecutor } from "@graphql-tools/wrap";
 import { stitchSchemas } from "@graphql-tools/stitch";
 import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
-import { getOperationAST, OperationTypeNode, print } from "graphql";
+import {
+  ExecutionResult,
+  getOperationAST,
+  OperationTypeNode,
+  print,
+} from "graphql";
 import { createClient } from "graphql-ws";
 import { IContextResult, jwtMiddleware, setExtensionsContext } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
@@ -14,6 +19,7 @@ import {
 } from "graphql-helix";
 import ws, { WebSocketServer, CloseEvent } from "ws";
 import cookie from "cookie";
+import { ObjMap } from "graphql/jsutils/ObjMap";
 
 const httpExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
@@ -86,8 +92,9 @@ const wsExecutor = (url: string): AsyncExecutor => {
             extensions,
           },
           {
-            next: (data) => {
-              observer.next && observer.next(data as any);
+            next: (data: unknown) => {
+              observer.next &&
+                observer.next(data as ExecutionResult<null, unknown>);
             },
             error: (err) => {
               if (!observer.error) return;
@@ -201,7 +208,7 @@ makeGatewaySchema().then((schema) => {
         res.status(result.status);
         result.payload.extensions = (
           result.context as IContextResult | undefined
-        )?.extensions;
+        )?.extensions as ObjMap<unknown> | undefined;
         res.json(result.payload);
       }
     }

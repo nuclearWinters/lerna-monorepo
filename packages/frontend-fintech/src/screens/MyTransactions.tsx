@@ -32,9 +32,6 @@ const transactionsFragment = graphql`
       id
       ...MyTransactions_user
     }
-    authUser {
-      language
-    }
   }
 `;
 

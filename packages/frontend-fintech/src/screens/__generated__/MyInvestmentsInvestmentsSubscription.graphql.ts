@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ee421e8a2237a4ca5d2b093282117e6d>>
+ * @generated SignedSource<<87c1692a508ba931d285cc20d857fb2f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,7 +12,7 @@ import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 export type MyInvestmentsInvestmentsSubscription$variables = {
   connections: ReadonlyArray<string>;
-  status?: ReadonlyArray<InvestmentStatus> | null;
+  status?: ReadonlyArray<InvestmentStatus> | null | undefined;
 };
 export type MyInvestmentsInvestmentsSubscription$data = {
   readonly investments_subscribe_insert: {
@@ -33,7 +33,7 @@ export type MyInvestmentsInvestmentsSubscription$data = {
       readonly term: number;
       readonly to_be_paid: string;
       readonly updated: Int;
-    } | null;
+    } | null | undefined;
   };
 };
 export type MyInvestmentsInvestmentsSubscription = {

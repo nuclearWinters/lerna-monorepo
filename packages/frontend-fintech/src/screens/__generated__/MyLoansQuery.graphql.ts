@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ca2e1f48664acdfc8ac5c93e3695d734>>
+ * @generated SignedSource<<1f9ca602dc5fde4061d5012a8ed29066>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,16 +10,8 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
-export type MyLoansQuery$variables = {};
+export type MyLoansQuery$variables = Record<PropertyKey, never>;
 export type MyLoansQuery$data = {
-  readonly authUser: {
-    readonly accountId: string;
-    readonly isBorrower: boolean;
-    readonly isLender: boolean;
-    readonly isSupport: boolean;
-    readonly language: Languages;
-  };
   readonly user: {
     readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"MyLoans_user">;
@@ -38,42 +30,7 @@ var v0 = {
   "name": "id",
   "storageKey": null
 },
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "isLender",
-  "storageKey": null
-},
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "isSupport",
-  "storageKey": null
-},
-v3 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "isBorrower",
-  "storageKey": null
-},
-v4 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "language",
-  "storageKey": null
-},
-v5 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "accountId",
-  "storageKey": null
-},
-v6 = [
+v1 = [
   {
     "kind": "Literal",
     "name": "after",
@@ -85,7 +42,7 @@ v6 = [
     "value": 5
   }
 ],
-v7 = {
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -115,22 +72,6 @@ return {
           }
         ],
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "AuthUser",
-        "kind": "LinkedField",
-        "name": "authUser",
-        "plural": false,
-        "selections": [
-          (v1/*: any*/),
-          (v2/*: any*/),
-          (v3/*: any*/),
-          (v4/*: any*/),
-          (v5/*: any*/)
-        ],
-        "storageKey": null
       }
     ],
     "type": "Query",
@@ -153,7 +94,7 @@ return {
           (v0/*: any*/),
           {
             "alias": null,
-            "args": (v6/*: any*/),
+            "args": (v1/*: any*/),
             "concreteType": "LoanConnection",
             "kind": "LinkedField",
             "name": "myLoans",
@@ -225,7 +166,7 @@ return {
                         "name": "expiry",
                         "storageKey": null
                       },
-                      (v7/*: any*/),
+                      (v2/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -241,7 +182,7 @@ return {
                             "name": "amortize",
                             "storageKey": null
                           },
-                          (v7/*: any*/),
+                          (v2/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -316,7 +257,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v6/*: any*/),
+            "args": (v1/*: any*/),
             "filters": null,
             "handle": "connection",
             "key": "MyLoans_user_myLoans",
@@ -325,37 +266,20 @@ return {
           }
         ],
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "AuthUser",
-        "kind": "LinkedField",
-        "name": "authUser",
-        "plural": false,
-        "selections": [
-          (v1/*: any*/),
-          (v2/*: any*/),
-          (v3/*: any*/),
-          (v4/*: any*/),
-          (v5/*: any*/),
-          (v0/*: any*/)
-        ],
-        "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "45534a3635d1189392253c9f18c8454d",
+    "cacheID": "c9f7e4abbefcf4aa726f625c37920cd7",
     "id": null,
     "metadata": {},
     "name": "MyLoansQuery",
     "operationKind": "query",
-    "text": "query MyLoansQuery {\n  user {\n    id\n    ...MyLoans_user\n  }\n  authUser {\n    isLender\n    isSupport\n    isBorrower\n    language\n    accountId\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user on User {\n  myLoans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyLoansQuery {\n  user {\n    id\n    ...MyLoans_user\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user on User {\n  myLoans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b57e31cc20541348276ff482f489ddfa";
+(node as any).hash = "038e682a7958ec8c1fd003da2a516475";
 
 export default node;

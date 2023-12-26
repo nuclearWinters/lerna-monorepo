@@ -1,0 +1,26 @@
+{
+  "name": "kafka-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "kafka.js",
+  "scripts": {
+    "start": "ts-node-dev --transpile-only ./src/kafka.ts",
+    "populate": "npx tsc && node ./build/populate.js",
+    "build": "npx tsc",
+    "serve": "node ./build/kafka.js",
+    "pcm": "lint-staged"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cassandra-driver": "^4.7.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
+  },
+  "lint-staged": {
+    "**/!(*_pb).{js,ts}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ]
+  }
+}

@@ -74,10 +74,10 @@ export const monthFunction = async (db: Db): Promise<void> => {
           returnDocument: "after",
         }
       );
-      if (result.value) {
-        publishUser(result.value);
+      if (result) {
+        publishUser(result);
       }
-      if (!result.value) {
+      if (!result) {
         loan.scheduledPayments[payment.index].status = "delayed";
         //Si el deudor no tiene suficiente dinero el estatus de su deuda se vuelve atrasada
         const updatedLoan = await loans.updateOne(
@@ -210,8 +210,8 @@ export const monthFunction = async (db: Db): Promise<void> => {
           operation.userOptions
         );
         publishTransactionInsert(operation.transactionsInsert);
-        if (result.value) {
-          publishUser(result.value);
+        if (result) {
+          publishUser(result);
         }
         //Actualizar el los intereses moratorios en las inversiones
         const updatedInvestment = await investments.updateOne(

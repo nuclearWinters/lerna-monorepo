@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<faff85ac3ec793ae28000855ee8612a1>>
+ * @generated SignedSource<<5e55253fc3c8c8f84ecaaad3fef1294e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type LogOutInput = {
-  clientMutationId?: string | null;
+  clientMutationId?: string | null | undefined;
 };
 export type utilsLogOutMutation$variables = {
   input: LogOutInput;

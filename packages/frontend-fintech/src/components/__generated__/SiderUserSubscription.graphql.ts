@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<68be21fef8c22f55c0f6fd7be400d736>>
+ * @generated SignedSource<<9c10a0eb6f73bfcada59cba317e667b9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
-export type SiderUserSubscription$variables = {};
+export type SiderUserSubscription$variables = Record<PropertyKey, never>;
 export type SiderUserSubscription$data = {
   readonly user_subscribe: {
     readonly accountAvailable: string;

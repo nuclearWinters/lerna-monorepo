@@ -2,6 +2,7 @@ node_modules/
 build/
 .env
 data/**
+cassandra/**
 .DS_Store
 .eslintcache
 globalConfig.json

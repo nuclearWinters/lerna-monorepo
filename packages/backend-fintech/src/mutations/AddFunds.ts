@@ -58,10 +58,10 @@ export const AddFundsMutation = mutationWithClientMutationId({
         },
         { returnDocument: "after" }
       );
-      if (result.value) {
-        publishUser(result.value);
+      if (result) {
+        publishUser(result);
       }
-      if (!result.value) {
+      if (!result) {
         throw new Error("No cuentas con fondos suficientes.");
       }
       await transactions.insertOne(newTransaction);

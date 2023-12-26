@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b713f943adfbf7e50f590325fec35d09>>
+ * @generated SignedSource<<8666925cdde3f4db3f0dd86d399add22>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type ExtendSessionInput = {
-  clientMutationId?: string | null;
+  clientMutationId?: string | null | undefined;
 };
 export type CheckExpirationMutation$variables = {
   input: ExtendSessionInput;

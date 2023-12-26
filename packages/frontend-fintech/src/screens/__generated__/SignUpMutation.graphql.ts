@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<647d809680a2dd6f0b1859ab94571b3e>>
+ * @generated SignedSource<<176869e59b1aa3fefe68d06b766a483b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
 export type SignUpInput = {
-  clientMutationId?: string | null;
+  clientMutationId?: string | null | undefined;
   email: string;
   isLender: boolean;
   language: Languages;

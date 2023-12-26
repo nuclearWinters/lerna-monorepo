@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4ed01233a5ecbfe44e7a794700e79851>>
+ * @generated SignedSource<<00ea707bc1c55039012d02065566447c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type UpdateUserInput = {
   apellidoMaterno: string;
   apellidoPaterno: string;
   clabe: string;
-  clientMutationId?: string | null;
+  clientMutationId?: string | null | undefined;
   email: string;
   language: Languages;
   mobile: string;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<20399d6a701af32e0ee51b50f8bfc23b>>
+ * @generated SignedSource<<9965b61d46adeb13ce79fd1403ff8d12>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -34,7 +34,10 @@ const node: ReaderFragment = {
         "node"
       ],
       "operation": require('./SessionRowRefetchQuery.graphql'),
-      "identifierField": "id"
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "SessionRow_session",

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e1205ec44e44761b05e0a5698b881487>>
+ * @generated SignedSource<<74297a9e7731a8f3f96b4d116716b593>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type InvestmentRowRefetchQuery$variables = {
 export type InvestmentRowRefetchQuery$data = {
   readonly node: {
     readonly " $fragmentSpreads": FragmentRefs<"InvestmentRow_investment">;
-  } | null;
+  } | null | undefined;
 };
 export type InvestmentRowRefetchQuery = {
   response: InvestmentRowRefetchQuery$data;

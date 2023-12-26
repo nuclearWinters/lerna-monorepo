@@ -60,7 +60,7 @@ const JSDependencyField = {
     id: { type: GraphQLString },
   },
   type: new GraphQLNonNull(JSDependencyType),
-  resolve: async (_: unknown, { module }: any) => {
+  resolve: async (_: unknown, { module }: { module: unknown }) => {
     seenDataDrivenDependencies.add(module);
     return module;
   },

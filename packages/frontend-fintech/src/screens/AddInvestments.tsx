@@ -34,6 +34,10 @@ import {
   baseAddInvestmentsTotal,
   basePrestarWrapper,
 } from "./AddInvestments.css";
+import { preloadQuery } from "App";
+import AppUserQuery, {
+  AppUserQuery as AppUserQueryType,
+} from "../__generated__/AppUserQuery.graphql";
 
 const subscriptionLoans = graphql`
   subscription AddInvestmentsLoansSubscription($connections: [ID!]!) {
@@ -66,13 +70,6 @@ const addInvestmentFragment = graphql`
     __id
     user {
       ...AddInvestments_user
-    }
-    authUser {
-      isLender
-      isSupport
-      isBorrower
-      language
-      accountId
     }
   }
 `;
@@ -118,7 +115,11 @@ export const AddInvestments: FC<Props> = (props) => {
     addInvestmentFragment,
     props.preloaded.query
   );
-  const { authUser, user } = preloadData;
+  const { authUser } = usePreloadedQuery<AppUserQueryType>(
+    AppUserQuery,
+    preloadQuery
+  );
+  const { user } = preloadData;
   const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {

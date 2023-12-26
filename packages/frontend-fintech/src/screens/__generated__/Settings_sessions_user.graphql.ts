@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<602c92c894d69d064bd90f928b3ff239>>
+ * @generated SignedSource<<7b951c847ae57c8345bb1a6505163ac9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,9 +18,9 @@ export type Settings_sessions_user$data = {
         readonly expirationDate: Int;
         readonly id: string;
         readonly " $fragmentSpreads": FragmentRefs<"SessionRow_session">;
-      } | null;
-    } | null> | null;
-  } | null;
+      } | null | undefined;
+    } | null | undefined> | null | undefined;
+  } | null | undefined;
   readonly " $fragmentType": "Settings_sessions_user";
 };
 export type Settings_sessions_user$key = {
@@ -75,7 +75,10 @@ return {
         "node"
       ],
       "operation": require('./SettingsSessionsPaginationUser.graphql'),
-      "identifierField": "id"
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "Settings_sessions_user",

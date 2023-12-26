@@ -25,19 +25,16 @@ import { customRows } from "components/Rows.css";
 import { customSpace } from "components/Space.css";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import { MyLoansMyLoansSubscription } from "./__generated__/MyLoansMyLoansSubscription.graphql";
+import AppUserQuery, {
+  AppUserQuery as AppUserQueryType,
+} from "../__generated__/AppUserQuery.graphql";
+import { preloadQuery } from "App";
 
 const myLoansFragment = graphql`
   query MyLoansQuery {
     user {
       id
       ...MyLoans_user
-    }
-    authUser {
-      isLender
-      isSupport
-      isBorrower
-      language
-      accountId
     }
   }
 `;
@@ -104,10 +101,11 @@ interface ILends {
 
 export const MyLoans: FC<Props> = (props) => {
   const { t } = useTranslation();
-  const { user, authUser } = usePreloadedQuery(
-    myLoansFragment,
-    props.preloaded.query
+  const { authUser } = usePreloadedQuery<AppUserQueryType>(
+    AppUserQuery,
+    preloadQuery
   );
+  const { user } = usePreloadedQuery(myLoansFragment, props.preloaded.query);
   const { data, loadNext, refetch } = usePaginationFragment<
     MyLoansPaginationUser,
     MyLoans_user$key

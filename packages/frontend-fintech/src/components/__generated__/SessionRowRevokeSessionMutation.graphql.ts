@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7b14225d26345c9c82d0fb810731de71>>
+ * @generated SignedSource<<303958ed6e355d8afbaeef3c04b08f27>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type RevokeSessionInput = {
-  clientMutationId?: string | null;
+  clientMutationId?: string | null | undefined;
   sessionId: string;
 };
 export type SessionRowRevokeSessionMutation$variables = {
@@ -22,7 +22,7 @@ export type SessionRowRevokeSessionMutation$data = {
     readonly session: {
       readonly expirationDate: Int;
       readonly id: string;
-    } | null;
+    } | null | undefined;
     readonly shouldReloadBrowser: boolean;
   };
 };

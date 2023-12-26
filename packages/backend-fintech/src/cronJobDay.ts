@@ -84,11 +84,11 @@ export const dayFunction = async (db: Db): Promise<void> => {
           returnDocument: "after",
         }
       );
-      if (result.value) {
-        publishUser(result.value);
+      if (result) {
+        publishUser(result);
       }
       //Si el deudor no tiene suficiente dinero el estatus ya no se realizan acciones
-      if (!result.value) {
+      if (!result) {
         const allInvestments = await investments
           .find({ _id_loan: loan._id })
           .toArray();
@@ -120,8 +120,8 @@ export const dayFunction = async (db: Db): Promise<void> => {
               returnDocument: "after",
             }
           );
-          if (result.value) {
-            publishUser(result.value);
+          if (result) {
+            publishUser(result);
           }
         }
         continue;
@@ -225,8 +225,8 @@ export const dayFunction = async (db: Db): Promise<void> => {
           operation.userOptions
         );
         publishTransactionInsert(operation.transactionsInsert);
-        if (result.value) {
-          publishUser(result.value);
+        if (result) {
+          publishUser(result);
         }
         //Actualizar el los intereses moratorios en las inversiones
         const updatedInvestment = await investments.updateOne(

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<286c5498728bc7574c7afd93a62bb11b>>
+ * @generated SignedSource<<c361b50b813b0b4958512138bd95d6a3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
-export type SettingsAuthUserQuery$variables = {};
+export type SettingsAuthUserQuery$variables = Record<PropertyKey, never>;
 export type SettingsAuthUserQuery$data = {
   readonly authUser: {
     readonly CURP: string;

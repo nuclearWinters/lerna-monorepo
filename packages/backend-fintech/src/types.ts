@@ -14,9 +14,9 @@ export interface Context {
   isBorrower: boolean;
   isSupport: boolean;
   isLender: boolean;
-  logins?: any;
-  authusers?: any;
-  sessions?: any;
+  logins?: unknown;
+  authusers?: unknown;
+  sessions?: unknown;
 }
 
 export interface UserMongo {
