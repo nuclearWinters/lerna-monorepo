@@ -23,7 +23,10 @@ describe("QueryTransactions tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
+    client = await MongoClient.connect(
+      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
+      {}
+    );
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
   });
@@ -38,14 +41,14 @@ describe("QueryTransactions tests", () => {
     await transactions.insertMany([
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000051"),
+        _id: new ObjectId(),
         type: "credit",
         quantity: 100,
         created: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000052"),
+        _id: new ObjectId(),
         type: "invest",
         quantity: -100,
         created: new Date(),
@@ -54,35 +57,35 @@ describe("QueryTransactions tests", () => {
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000053"),
+        _id: new ObjectId(),
         type: "payment",
         quantity: -100,
         created: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000054"),
+        _id: new ObjectId(),
         type: "withdrawal",
         quantity: -100,
         created: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000055"),
+        _id: new ObjectId(),
         type: "credit",
         quantity: 100,
         created: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000151"),
+        _id: new ObjectId(),
         type: "credit",
         quantity: 200,
         created: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000152"),
+        _id: new ObjectId(),
         type: "invest",
         quantity: -200,
         created: new Date(),
@@ -91,21 +94,21 @@ describe("QueryTransactions tests", () => {
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000153"),
+        _id: new ObjectId(),
         type: "payment",
         quantity: -200,
         created: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000154"),
+        _id: new ObjectId(),
         type: "withdrawal",
         quantity: -200,
         created: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
-        _id: new ObjectId("000000000000000000000155"),
+        _id: new ObjectId(),
         type: "credit",
         quantity: 200,
         created: new Date(),

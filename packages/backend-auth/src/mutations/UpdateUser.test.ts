@@ -25,8 +25,10 @@ describe("UpdateUser tests", () => {
 
   it("test UpdateUser valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const _id = new ObjectId();
+    const id = "wHHR1SUBT0dspoF4YUOw6";
     await users.insertOne({
-      _id: new ObjectId("000000000000000000000007"),
+      _id,
       name: "",
       apellidoPaterno: "",
       apellidoMaterno: "",
@@ -40,7 +42,7 @@ describe("UpdateUser tests", () => {
       email: "armando10@gmail.com",
       password: "",
       language: "default",
-      id: "wHHR1SUBT0dspoF4YUOw6",
+      id,
     });
     const response = await request
       .post("/graphql")
@@ -66,13 +68,13 @@ describe("UpdateUser tests", () => {
         operationName: "UpdateUserMutation",
       })
       .set("Accept", "application/json")
-      .set("Cookie", "id=wHHR1SUBT0dspoF4YUOw6");
+      .set("Cookie", "id=" + id);
     expect(response.body.data.updateUser.error).toBeFalsy();
     const user = await users.findOne({
-      _id: new ObjectId("000000000000000000000007"),
+      _id,
     });
     expect(user).toEqual({
-      _id: new ObjectId("000000000000000000000007"),
+      _id,
       email: "armando10@gmail.com",
       isBorrower: false,
       isLender: true,
@@ -86,7 +88,7 @@ describe("UpdateUser tests", () => {
       apellidoMaterno: "Peréz",
       apellidoPaterno: "Rueda",
       clabe: "clabe",
-      id: "wHHR1SUBT0dspoF4YUOw6",
+      id,
     });
   });
 });

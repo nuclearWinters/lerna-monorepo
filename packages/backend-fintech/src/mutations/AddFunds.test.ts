@@ -28,7 +28,10 @@ describe("AddFunds tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
+    client = await MongoClient.connect(
+      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
+      {}
+    );
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
   });
@@ -39,9 +42,11 @@ describe("AddFunds tests", () => {
 
   it("test AddFunds increase valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const _id = new ObjectId();
+    const id = "wHHR1SUBT0dspoF4YUO25";
     await users.insertOne({
-      _id: new ObjectId("000000000000000000000000"),
-      id: "wHHR1SUBT0dspoF4YUO25",
+      _id,
+      id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
@@ -66,7 +71,7 @@ describe("AddFunds tests", () => {
         "Authorization",
         jwt.sign(
           {
-            id: "wHHR1SUBT0dspoF4YUO25",
+            id,
             isBorrower: false,
             isLender: true,
             isSupport: false,
@@ -75,23 +80,21 @@ describe("AddFunds tests", () => {
           { expiresIn: "15m" }
         )
       )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO25`);
+      .set("Cookie", `id=` + id);
     expect(response.body.data.addFunds.error).toBeFalsy();
     const user = await users.findOne({
-      id: "wHHR1SUBT0dspoF4YUO25",
+      id,
     });
     expect(user).toEqual({
-      _id: new ObjectId("000000000000000000000000"),
-      id: "wHHR1SUBT0dspoF4YUO25",
+      _id,
+      id,
       accountAvailable: 150000,
       accountToBePaid: 0,
       accountTotal: 150000,
     });
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO25" })
-      .toArray();
+    const allTransactions = await transactions.find({ id_user: id }).toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions.length).toBe(1);
     expect(
@@ -109,9 +112,11 @@ describe("AddFunds tests", () => {
 
   it("test AddFunds decrease valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const user_oid = new ObjectId();
+    const id = "wHHR1SUBT0dspoF4YUO26";
     await users.insertOne({
-      _id: new ObjectId("020000000000000000000003"),
-      id: "wHHR1SUBT0dspoF4YUO26",
+      _id: user_oid,
+      id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
@@ -136,7 +141,7 @@ describe("AddFunds tests", () => {
         "Authorization",
         jwt.sign(
           {
-            id: "wHHR1SUBT0dspoF4YUO26",
+            id,
             isBorrower: false,
             isLender: true,
             isSupport: false,
@@ -147,23 +152,21 @@ describe("AddFunds tests", () => {
           }
         )
       )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO26`);
+      .set("Cookie", `id=` + id);
     expect(response.body.data.addFunds.error).toBeFalsy();
     const user = await users.findOne({
-      id: "wHHR1SUBT0dspoF4YUO26",
+      id,
     });
     expect(user).toEqual({
-      _id: new ObjectId("020000000000000000000003"),
-      id: "wHHR1SUBT0dspoF4YUO26",
+      _id: user_oid,
+      id,
       accountAvailable: 50000,
       accountToBePaid: 0,
       accountTotal: 50000,
     });
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO26" })
-      .toArray();
+    const allTransactions = await transactions.find({ id_user: id }).toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions.length).toBe(1);
     expect(
@@ -181,9 +184,11 @@ describe("AddFunds tests", () => {
 
   it("test AddFunds increase invalid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const user_oid = new ObjectId();
+    const id = "wHHR1SUBT0dspoF4YUO27";
     await users.insertOne({
-      _id: new ObjectId("000000000000000000000001"),
-      id: "wHHR1SUBT0dspoF4YUO27",
+      _id: user_oid,
+      id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
@@ -208,7 +213,7 @@ describe("AddFunds tests", () => {
         "Authorization",
         jwt.sign(
           {
-            id: "wHHR1SUBT0dspoF4YUO27",
+            id,
             isBorrower: false,
             isLender: true,
             isSupport: false,
@@ -217,23 +222,21 @@ describe("AddFunds tests", () => {
           { expiresIn: "0s" }
         )
       )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO27`);
+      .set("Cookie", `id=` + id);
     expect(response.body.data.addFunds.error).toBeFalsy();
     const user = await users.findOne({
-      id: "wHHR1SUBT0dspoF4YUO27",
+      id,
     });
     expect(user).toEqual({
-      _id: new ObjectId("000000000000000000000001"),
-      id: "wHHR1SUBT0dspoF4YUO27",
+      _id: user_oid,
+      id,
       accountAvailable: 150000,
       accountToBePaid: 0,
       accountTotal: 150000,
     });
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO27" })
-      .toArray();
+    const allTransactions = await transactions.find({ id_user: id }).toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions.length).toBe(1);
     expect(
@@ -251,9 +254,11 @@ describe("AddFunds tests", () => {
 
   it("test AddFunds try decrease more than available valid refresh token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const user_oid = new ObjectId();
+    const id = "wHHR1SUBT0dspoF4YUO29";
     await users.insertOne({
-      _id: new ObjectId("100000000000000000000002"),
-      id: "wHHR1SUBT0dspoF4YUO29",
+      _id: user_oid,
+      id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
@@ -278,7 +283,7 @@ describe("AddFunds tests", () => {
         "Authorization",
         jwt.sign(
           {
-            id: "wHHR1SUBT0dspoF4YUO29",
+            id,
             isBorrower: false,
             isLender: true,
             isSupport: false,
@@ -287,16 +292,16 @@ describe("AddFunds tests", () => {
           { expiresIn: "15s" }
         )
       )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO29`);
+      .set("Cookie", `id=` + id);
     expect(response.body.data.addFunds.error).toBe(
       "No cuentas con fondos suficientes."
     );
     const user = await users.findOne({
-      id: "wHHR1SUBT0dspoF4YUO29",
+      id,
     });
     expect(user).toEqual({
-      _id: new ObjectId("100000000000000000000002"),
-      id: "wHHR1SUBT0dspoF4YUO29",
+      _id: user_oid,
+      id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
@@ -305,16 +310,18 @@ describe("AddFunds tests", () => {
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("100000000000000000000002") })
+      .find({ _id_user: user_oid })
       .toArray();
     expect(allTransactions.length).toBe(0);
   });
 
   it("test AddFunds try increase cero valid refresh token", async () => {
+    const user_oid = new ObjectId();
+    const id = "wHHR1SUBT0dspoF4YUO30";
     const users = dbInstance.collection<UserMongo>("users");
     await users.insertOne({
-      _id: new ObjectId("100000000000000000000003"),
-      id: "wHHR1SUBT0dspoF4YUO30",
+      _id: user_oid,
+      id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
@@ -339,7 +346,7 @@ describe("AddFunds tests", () => {
         "Authorization",
         jwt.sign(
           {
-            id: "wHHR1SUBT0dspoF4YUO30",
+            id,
             isBorrower: false,
             isLender: true,
             isSupport: false,
@@ -348,16 +355,16 @@ describe("AddFunds tests", () => {
           { expiresIn: "15s" }
         )
       )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO30`);
+      .set("Cookie", `id=` + id);
     expect(response.body.data.addFunds.error).toBe(
       "La cantidad no puede ser cero."
     );
     const user = await users.findOne({
-      id: "wHHR1SUBT0dspoF4YUO30",
+      id,
     });
     expect(user).toEqual({
-      _id: new ObjectId("100000000000000000000003"),
-      id: "wHHR1SUBT0dspoF4YUO30",
+      _id: user_oid,
+      id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
@@ -366,7 +373,7 @@ describe("AddFunds tests", () => {
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions
-      .find({ _id_user: new ObjectId("100000000000000000000003") })
+      .find({ _id_user: user_oid })
       .toArray();
     expect(allTransactions.length).toBe(0);
   });

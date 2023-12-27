@@ -23,7 +23,10 @@ describe("QueryInvestments tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
+    client = await MongoClient.connect(
+      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
+      {}
+    );
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
   });
@@ -34,12 +37,18 @@ describe("QueryInvestments tests", () => {
 
   it("test InvestmentConnection valid access token", async () => {
     const investments = dbInstance.collection<InvestmentMongo>("investments");
+    const invest1_oid = new ObjectId();
+    const invest2_oid = new ObjectId();
+    const invest3_oid = new ObjectId();
+    const loan1_oid = new ObjectId();
+    const loan2_oid = new ObjectId();
+    const loan3_oid = new ObjectId();
     await investments.insertMany([
       {
-        _id: new ObjectId("000000000000000000000032"),
+        _id: invest1_oid,
         id_borrower: "wHHR1SUBT0dspoF4YUO17",
         id_lender: "wHHR1SUBT0dspoF4YUO16",
-        _id_loan: new ObjectId("000000000000000000000033"),
+        _id_loan: loan1_oid,
         quantity: 50000,
         status: "up to date",
         created: new Date(),
@@ -54,10 +63,10 @@ describe("QueryInvestments tests", () => {
         amortize: 50989,
       },
       {
-        _id: new ObjectId("000000000000000000000034"),
+        _id: invest2_oid,
         id_borrower: "wHHR1SUBT0dspoF4YUO18",
         id_lender: "wHHR1SUBT0dspoF4YUO16",
-        _id_loan: new ObjectId("000000000000000000000038"),
+        _id_loan: loan2_oid,
         quantity: 50000,
         status: "up to date",
         created: new Date(),
@@ -72,10 +81,10 @@ describe("QueryInvestments tests", () => {
         amortize: 50989,
       },
       {
-        _id: new ObjectId("000000000000000000000035"),
+        _id: invest3_oid,
         id_borrower: "wHHR1SUBT0dspoF4YUO19",
         id_lender: "wHHR1SUBT0dspoF4YUO16",
-        _id_loan: new ObjectId("000000000000000000000039"),
+        _id_loan: loan3_oid,
         quantity: 50000,
         status: "up to date",
         created: new Date(),

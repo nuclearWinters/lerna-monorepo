@@ -23,7 +23,10 @@ describe("QueryLoans tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
+    client = await MongoClient.connect(
+      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
+      {}
+    );
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
   });
@@ -34,9 +37,12 @@ describe("QueryLoans tests", () => {
 
   it("test LoanConnection valid access token", async () => {
     const loans = dbInstance.collection<LoanMongo>("loans");
+    const loan1_oid = new ObjectId();
+    const loan2_oid = new ObjectId();
+    const loan3_oid = new ObjectId();
     await loans.insertMany([
       {
-        _id: new ObjectId("000000000000000000000041"),
+        _id: loan1_oid,
         id_user: "wHHR1SUBT0dspoF4YUO23",
         score: "AAA",
         ROI: 17,
@@ -55,7 +61,7 @@ describe("QueryLoans tests", () => {
         pending: 0,
       },
       {
-        _id: new ObjectId("000000000000000000000042"),
+        _id: loan2_oid,
         id_user: "wHHR1SUBT0dspoF4YUO23",
         score: "BBB",
         ROI: 20,
@@ -68,7 +74,7 @@ describe("QueryLoans tests", () => {
         pending: 0,
       },
       {
-        _id: new ObjectId("000000000000000000000043"),
+        _id: loan3_oid,
         id_user: "wHHR1SUBT0dspoF4YUO23",
         score: "CCC",
         ROI: 24,

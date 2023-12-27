@@ -29,7 +29,8 @@ describe("ExtendSessionMutation tests", () => {
 
   it("ExtendSessionMutation: success", async () => {
     const users = dbInstance.collection<UserMongo>("users");
-    const _user_id = new ObjectId("000000000000000000000071");
+    const _user_id = new ObjectId();
+    const id = "wHHR1SUBT0dspoF4YUOw5";
     await users.insertOne({
       _id: _user_id,
       email: "armandocorrect@hotmail.com",
@@ -45,7 +46,7 @@ describe("ExtendSessionMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
-      id: "wHHR1SUBT0dspoF4YUOw5",
+      id,
     });
     const response = await request
       .post("/graphql")
@@ -63,9 +64,9 @@ describe("ExtendSessionMutation tests", () => {
       .set("Accept", "application/json")
       .set(
         "Cookie",
-        `id=wHHR1SUBT0dspoF4YUOw5; refreshToken=${jwt.sign(
+        `id=${id}; refreshToken=${jwt.sign(
           {
-            id: "wHHR1SUBT0dspoF4YUOw5",
+            id,
             isBorrower: false,
             isLender: true,
             isSupport: false,

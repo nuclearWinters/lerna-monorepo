@@ -30,7 +30,10 @@ describe("AddLends tests", () => {
   const ch = { sendToQueue: jest.fn() };
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
+    client = await MongoClient.connect(
+      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
+      {}
+    );
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
     app.locals.ch = ch;

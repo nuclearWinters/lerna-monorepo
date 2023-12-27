@@ -28,7 +28,10 @@ describe("ApproveLoan tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
+    client = await MongoClient.connect(
+      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
+      {}
+    );
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
   });
@@ -39,17 +42,22 @@ describe("ApproveLoan tests", () => {
 
   it("test ApproveLoan valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const support_oid = new ObjectId();
+    const borrower_oid = new ObjectId();
+    const support_id = "wHHR1SUBT0dspoF4YUO21";
+    const borrower_id = "wHHR1SUBT0dspoF4YUO22";
+    const loan_oid = new ObjectId();
     await users.insertMany([
       {
-        _id: new ObjectId("000000000000000000000009"),
-        id: "wHHR1SUBT0dspoF4YUO21",
+        _id: support_oid,
+        id: support_id,
         accountAvailable: 100000,
         accountToBePaid: 0,
         accountTotal: 100000,
       },
       {
-        _id: new ObjectId("000000000000000000000010"),
-        id: "wHHR1SUBT0dspoF4YUO22",
+        _id: borrower_oid,
+        id: borrower_id,
         accountAvailable: 100000,
         accountToBePaid: 0,
         accountTotal: 100000,
@@ -57,8 +65,8 @@ describe("ApproveLoan tests", () => {
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertOne({
-      _id: new ObjectId("000000000000000000000008"),
-      id_user: "wHHR1SUBT0dspoF4YUO22",
+      _id: loan_oid,
+      id_user: borrower_id,
       score: "AAA",
       ROI: 17,
       goal: 100000,
@@ -82,7 +90,7 @@ describe("ApproveLoan tests", () => {
         }`,
         variables: {
           input: {
-            loan_gid: base64Name("000000000000000000000008", "Loan"),
+            loan_gid: base64Name(loan_oid.toHexString(), "Loan"),
           },
         },
         operationName: "ApproveLoanMutation",
@@ -92,7 +100,7 @@ describe("ApproveLoan tests", () => {
         "Authorization",
         jwt.sign(
           {
-            id: "wHHR1SUBT0dspoF4YUO21",
+            id: support_id,
             isBorrower: false,
             isLender: true,
             isSupport: false,
@@ -103,22 +111,20 @@ describe("ApproveLoan tests", () => {
           }
         )
       )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO21; isSupport=true`);
+      .set("Cookie", `id=${support_id}; isSupport=true`);
     expect(response.body.data.approveLoan.error).toBeFalsy();
     expect(response.body.data.approveLoan.loan).toBeTruthy();
     const user = await users.findOne({
-      id: "wHHR1SUBT0dspoF4YUO22",
+      id: support_id,
     });
     expect(user).toEqual({
-      _id: new ObjectId("000000000000000000000010"),
-      id: "wHHR1SUBT0dspoF4YUO22",
+      _id: support_oid,
+      id: support_id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
     });
-    const allLoans = await loans
-      .find({ _id: new ObjectId("000000000000000000000008") })
-      .toArray();
+    const allLoans = await loans.find({ _id: loan_oid }).toArray();
     expect(allLoans.length).toBe(1);
     expect(
       allLoans.map((loan) => ({
@@ -134,7 +140,7 @@ describe("ApproveLoan tests", () => {
     ).toEqual([
       {
         ROI: 17,
-        id_user: "wHHR1SUBT0dspoF4YUO22",
+        id_user: borrower_id,
         goal: 100000,
         raised: 0,
         scheduledPayments: null,

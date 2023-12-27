@@ -23,7 +23,10 @@ describe("QueryUser tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
+    client = await MongoClient.connect(
+      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
+      {}
+    );
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
   });
@@ -34,10 +37,12 @@ describe("QueryUser tests", () => {
 
   it("test QueryUser valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const user_oid = new ObjectId();
+    const user_id = "wHHR1SUBT0dspoF4YUO24";
     await users.insertMany([
       {
-        _id: new ObjectId("000000000000000000000060"),
-        id: "wHHR1SUBT0dspoF4YUO24",
+        _id: user_oid,
+        id: user_id,
         accountAvailable: 50000,
         accountToBePaid: 0,
         accountTotal: 50000,
@@ -62,7 +67,7 @@ describe("QueryUser tests", () => {
         "Authorization",
         jwt.sign(
           {
-            id: "wHHR1SUBT0dspoF4YUO24",
+            id: user_id,
             isBorrower: false,
             isLender: true,
             isSupport: false,
@@ -71,7 +76,7 @@ describe("QueryUser tests", () => {
           { expiresIn: "15m" }
         )
       )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO24`);
+      .set("Cookie", `id=` + user_id);
     expect(response.body.data.user.id).toBeTruthy();
     expect(response.body.data.user.accountAvailable).toBe("$500.00");
     expect(response.body.data.user.accountToBePaid).toBe("$0.00");

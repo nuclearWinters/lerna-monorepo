@@ -28,8 +28,10 @@ describe("SignInMutation tests", () => {
 
   it("SignInMutation: user exists and password is correct", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const _id = new ObjectId();
+    const id = "wHHR1SUBT0dspoF4YUOw4";
     await users.insertOne({
-      _id: new ObjectId("000000000000000000000020"),
+      _id,
       email: "armandocorrect@hotmail.com",
       password: bcrypt.hashSync("correct", 12),
       isLender: true,
@@ -43,7 +45,7 @@ describe("SignInMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
-      id: "wHHR1SUBT0dspoF4YUOw4",
+      id,
     });
     const response = await request
       .post("/graphql")

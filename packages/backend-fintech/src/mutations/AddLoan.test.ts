@@ -27,7 +27,10 @@ describe("AddLoan tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
+    client = await MongoClient.connect(
+      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
+      {}
+    );
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
   });
@@ -38,9 +41,11 @@ describe("AddLoan tests", () => {
 
   it("test AddLoan valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const _id = new ObjectId();
+    const id = "wHHR1SUBT0dspoF4YUO20";
     await users.insertOne({
-      _id: new ObjectId("000000000000000000000006"),
-      id: "wHHR1SUBT0dspoF4YUO20",
+      _id,
+      id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
@@ -66,7 +71,7 @@ describe("AddLoan tests", () => {
         "Authorization",
         jwt.sign(
           {
-            id: "wHHR1SUBT0dspoF4YUO20",
+            id,
             isBorrower: false,
             isLender: true,
             isSupport: false,
@@ -77,22 +82,20 @@ describe("AddLoan tests", () => {
           }
         )
       )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO20`);
+      .set("Cookie", `id=` + id);
     expect(response.body.data.addLoan.error).toBeFalsy();
     const user = await users.findOne({
-      id: "wHHR1SUBT0dspoF4YUO20",
+      id,
     });
     expect(user).toEqual({
-      _id: new ObjectId("000000000000000000000006"),
-      id: "wHHR1SUBT0dspoF4YUO20",
+      _id,
+      id,
       accountAvailable: 100000,
       accountToBePaid: 0,
       accountTotal: 100000,
     });
     const loans = dbInstance.collection<LoanMongo>("loans");
-    const allLoans = await loans
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO20" })
-      .toArray();
+    const allLoans = await loans.find({ id_user: id }).toArray();
     expect(allLoans.length).toBe(1);
     expect(
       allLoans.map((loan) => ({
@@ -109,7 +112,7 @@ describe("AddLoan tests", () => {
     ).toEqual([
       {
         ROI: 17,
-        id_user: "wHHR1SUBT0dspoF4YUO20",
+        id_user: id,
         goal: 100000,
         raised: 0,
         scheduledPayments: null,
