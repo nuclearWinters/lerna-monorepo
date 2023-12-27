@@ -16,6 +16,9 @@ import { WebSocketServer } from "ws";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
 import { AuthServer } from "./grpc";
 import { AuthService } from "./proto/auth_grpc_pb";
+import { checkEveryDay, checkEveryMonth } from "./cronJobs";
+import { dayFunction } from "./cronJobDay";
+import { monthFunction } from "./cronJobMonth";
 
 export const ctx: {
   fintechdb?: Db;
@@ -37,6 +40,8 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
       sendLend(msg, db, ch);
     }
   });
+  checkEveryDay(() => dayFunction(db));
+  checkEveryMonth(() => monthFunction(db));
   app.locals.ch = ch;
   const serverExpress = app.listen(4000, () => {
     const wsServer = new WebSocketServer({
