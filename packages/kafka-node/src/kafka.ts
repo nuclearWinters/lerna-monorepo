@@ -1,21 +1,8 @@
-import { Kafka } from "kafkajs";
-import cassandra from "cassandra-driver";
+import { Consumer } from "kafkajs";
+import { Client, ArrayOrObject } from "cassandra-driver";
 import { publishUser } from "./subscriptions/subscriptionsUtils";
 
-const client = new cassandra.Client({
-  contactPoints: ["cassandra-fintech"],
-  localDataCenter: "datacenter1",
-  keyspace: "fintech",
-});
-
-const kafka = new Kafka({
-  clientId: "my-app",
-  brokers: ["kafka:9092"],
-});
-
-const consumer = kafka.consumer({ groupId: "test-group" });
-
-const run = async () => {
+export const runKafkaConsumer = async (consumer: Consumer, client: Client) => {
   await consumer.connect();
   //One topic for every table instead?
   //User account transaction topic
@@ -115,7 +102,7 @@ const run = async () => {
         /*----- Quitar fondos al lender END -----*/
         const investmentsOperations: {
           query: string;
-          params?: cassandra.ArrayOrObject | undefined;
+          params?: ArrayOrObject | undefined;
         }[] = [];
         const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
         let found = false;
@@ -234,5 +221,3 @@ const run = async () => {
     },
   });
 };
-
-run();

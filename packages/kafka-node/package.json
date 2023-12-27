@@ -2,12 +2,12 @@
   "name": "kafka-node",
   "version": "1.0.0",
   "description": "",
-  "main": "kafka.js",
+  "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev --transpile-only ./src/kafka.ts",
+    "start": "ts-node-dev --transpile-only ./src/index.ts",
     "populate": "npx tsc && node ./build/populate.js",
     "build": "npx tsc",
-    "serve": "node ./build/kafka.js",
+    "serve": "node ./build/index.js",
     "pcm": "lint-staged"
   },
   "author": "",

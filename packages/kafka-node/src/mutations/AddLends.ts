@@ -60,7 +60,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
       for (const lend of newLends) {
         const { id: id_loan } = fromGlobalId(lend.loan_gid);
         await producer.send({
-          topic: "add-lend",
+          topic: "add-lends",
           messages: [
             {
               value: JSON.stringify({

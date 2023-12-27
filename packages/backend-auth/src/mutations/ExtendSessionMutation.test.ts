@@ -16,7 +16,10 @@ describe("ExtendSessionMutation tests", () => {
   let dbInstance: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL as string, {});
+    client = await MongoClient.connect(
+      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
+      {}
+    );
     dbInstance = client.db("auth");
     app.locals.authdb = dbInstance;
     app.locals.ch = { sendToQueue: jest.fn() };

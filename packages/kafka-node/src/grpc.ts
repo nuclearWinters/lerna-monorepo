@@ -11,9 +11,9 @@ import {
   JWTMiddlewarePayload,
 } from "./proto/auth_pb";
 import { IAuthServer } from "./proto/auth_grpc_pb";
-import { ctx } from "./index";
+import { Client } from "cassandra-driver";
 
-export const AuthServer: IAuthServer = {
+export const AuthServer: (client: Client) => IAuthServer = (client) => ({
   async jwtMiddleware(
     call: ServerUnaryCall<JWTMiddlewareInput, JWTMiddlewarePayload>,
     callback: sendUnaryData<JWTMiddlewarePayload>
@@ -44,7 +44,7 @@ export const AuthServer: IAuthServer = {
     try {
       const id = call.request.getNanoid();
       const payload = new CreateUserPayload();
-      await ctx.client?.execute(`
+      await client.execute(`
         INSERT INTO fintech.users (id, account_available, account_to_be_paid, account_total)
           VALUES (${id}, 0, 0, 0)`);
       payload.setDone("");
@@ -60,4 +60,4 @@ export const AuthServer: IAuthServer = {
       callback(error, null);
     }
   },
-};
+});

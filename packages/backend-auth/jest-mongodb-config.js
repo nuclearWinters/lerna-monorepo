@@ -5,8 +5,9 @@ module.exports = {
       skipMD5: true,
     },
     instance: {
-      dbName: "fintech",
+      dbName: "auth",
     },
     autoStart: false,
   },
+  useSharedDBForAllJestWorkers: false,
 };

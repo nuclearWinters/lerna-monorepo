@@ -10,6 +10,7 @@ services:
       - "4004:4004"
     depends_on:
       - kafka
+      - redis-auth
     command:
       ["npm", "run", "start"]
 
@@ -35,3 +36,14 @@ services:
       - ./cassandra:/var/lib/cassandra
     environment:
       - CASSANDRA_CLUSTER_NAME=cloudinfra
+  
+  redis-auth:
+    container_name: redis-auth
+    command: redis-server --appendonly yes
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis:/data
+    logging:
+      driver: none
