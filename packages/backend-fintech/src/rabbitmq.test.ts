@@ -218,8 +218,8 @@ describe("rabbitMQ tests", () => {
       allInvestments.map((investment) => ({
         ...investment,
         _id: "",
-        updated: "",
-        created: "",
+        updated_at: "",
+        created_at: "",
       }))
     ).toEqual([
       {
@@ -237,8 +237,8 @@ describe("rabbitMQ tests", () => {
         _id_loan: loan1_oid,
         status: "financing",
         _id: "",
-        updated: "",
-        created: "",
+        updated_at: "",
+        created_at: "",
       },
       {
         quantity: 5000,
@@ -255,8 +255,8 @@ describe("rabbitMQ tests", () => {
         id_lender: "wHHR1SUBT0dspoF4YUO31",
         status: "financing",
         _id: "",
-        updated: "",
-        created: "",
+        updated_at: "",
+        created_at: "",
       },
     ]);
     await sendLend(
@@ -413,8 +413,8 @@ describe("rabbitMQ tests", () => {
       allInvestments2.map((investment) => ({
         ...investment,
         _id: "",
-        updated: "",
-        created: "",
+        updated_at: "",
+        created_at: "",
       }))
     ).toEqual([
       {
@@ -432,8 +432,8 @@ describe("rabbitMQ tests", () => {
         paid_already: 0,
         status: "up to date",
         _id: "",
-        updated: "",
-        created: "",
+        updated_at: "",
+        created_at: "",
       },
       {
         quantity: 50000,
@@ -450,8 +450,8 @@ describe("rabbitMQ tests", () => {
         id_borrower: "wHHR1SUBT0dspoF4YUO32",
         id_lender: "wHHR1SUBT0dspoF4YUO31",
         _id: "",
-        updated: "",
-        created: "",
+        updated_at: "",
+        created_at: "",
       },
     ]);
   });
@@ -796,8 +796,8 @@ describe("rabbitMQ tests", () => {
       allInvestments.map((investment) => ({
         ...investment,
         _id: "",
-        created: "",
-        updated: "",
+        created_at: "",
+        updated_at: "",
       }))
     ).toEqual([
       {
@@ -814,8 +814,8 @@ describe("rabbitMQ tests", () => {
         id_borrower: "wHHR1SUBT0dspoF4YUO38",
         id_lender: "wHHR1SUBT0dspoF4YUO37",
         status: "financing",
-        created: "",
-        updated: "",
+        created_at: "",
+        updated_at: "",
         _id: "",
       },
     ]);
@@ -987,8 +987,8 @@ describe("rabbitMQ tests", () => {
       allInvestments.map((investment) => ({
         ...investment,
         _id: "",
-        updated: "",
-        created: "",
+        updated_at: "",
+        created_at: "",
       }))
     ).toEqual([
       {
@@ -1006,8 +1006,8 @@ describe("rabbitMQ tests", () => {
         _id_loan: loan1_oid,
         status: "up to date",
         _id: "",
-        updated: "",
-        created: "",
+        updated_at: "",
+        created_at: "",
       },
     ]);
   });

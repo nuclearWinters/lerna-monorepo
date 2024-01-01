@@ -255,15 +255,15 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ moratory }): number => moratory,
     },
-    created: {
+    created_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created }): Date =>
-        typeof created === "string" ? new Date(created) : created,
+      resolve: ({ created_at }): Date =>
+        typeof created_at === "string" ? new Date(created_at) : created_at,
     },
-    updated: {
+    updated_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ updated }): Date =>
-        typeof updated === "string" ? new Date(updated) : updated,
+      resolve: ({ updated_at }): Date =>
+        typeof updated_at === "string" ? new Date(updated_at) : updated_at,
     },
     status: {
       type: new GraphQLNonNull(InvestmentStatus),
@@ -318,10 +318,10 @@ export const GraphQLInvestTransaction = new GraphQLObjectType<
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ quantity }): number => quantity,
     },
-    created: {
+    created_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created }): Date =>
-        typeof created === "string" ? new Date(created) : created,
+      resolve: ({ created_at }): Date =>
+        typeof created_at === "string" ? new Date(created_at) : created_at,
     },
     type: {
       type: new GraphQLNonNull(TransactionType),
@@ -349,10 +349,10 @@ export const GraphQLMoneyTransaction = new GraphQLObjectType<
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ quantity }): number => quantity,
     },
-    created: {
+    created_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created }): Date =>
-        typeof created === "string" ? new Date(created) : created,
+      resolve: ({ created_at }): Date =>
+        typeof created_at === "string" ? new Date(created_at) : created_at,
     },
     type: {
       type: new GraphQLNonNull(TransactionType),

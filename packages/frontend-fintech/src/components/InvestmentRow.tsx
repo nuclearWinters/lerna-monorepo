@@ -21,8 +21,8 @@ const investmentRowRefetchableFragment = graphql`
     id_borrower
     _id_loan
     quantity
-    created
-    updated
+    created_at
+    updated_at
     status
     payments
     ROI
@@ -111,10 +111,10 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
       <div className={baseInvestmentRowCell}>{data.interest_to_earn}</div>
       <div className={baseInvestmentRowCell}>{data.moratory}</div>
       <div className={baseInvestmentRowCell}>
-        {dayjs(data.updated).format("DD/MM/YYYY")}
+        {dayjs(data.updated_at).format("DD/MM/YYYY")}
       </div>
       <div className={baseInvestmentRowCell}>
-        {dayjs(data.created).format("DD/MM/YYYY")}
+        {dayjs(data.created_at).format("DD/MM/YYYY")}
       </div>
       <div
         className={baseInvestmentRowClipboard}

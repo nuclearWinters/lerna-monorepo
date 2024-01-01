@@ -58,15 +58,30 @@ export const AddLendsMutation = mutationWithClientMutationId({
         throw new Error("No valid access token.");
       }
       for (const lend of newLends) {
-        const { id: id_loan } = fromGlobalId(lend.loan_gid);
+        const { id: loan_id } = fromGlobalId(lend.loan_gid);
         await producer.send({
-          topic: "add-lends",
+          topic: "user-transaction",
           messages: [
             {
+              key: id,
               value: JSON.stringify({
-                id_lender: id,
+                user_id: id,
                 quantity: lend.quantity,
-                id_loan: id_loan,
+                loan_id,
+                nextTopic: "loan-transaction",
+                nextKey: loan_id,
+                nextValue: JSON.stringify({
+                  quantity: lend.quantity,
+                  lender_id: id,
+                  loan_id,
+                  nextTopic: "add-lends",
+                  nextKey: id,
+                  nextValue: JSON.stringify({
+                    quantity: lend.quantity,
+                    loan_id,
+                    lender_id: id,
+                  }),
+                }),
               }),
             },
           ],

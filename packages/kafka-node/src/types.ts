@@ -22,6 +22,7 @@ export interface UserCassandra {
   account_available: number;
   account_to_be_paid: number;
   account_total: number;
+  account_withheld: number;
 }
 
 export interface ILoanEdge {
@@ -49,20 +50,20 @@ export type TransactionCassandra =
 
 export interface InvestmentTransactionCassandra {
   id: string;
-  id_user: string;
+  user_id: string;
   type: TransactionInvestCassandraType;
   quantity: number;
-  id_borrower: string;
-  id_loan: string;
-  created: Date;
+  borrower_id: string;
+  loan_id: string;
+  created_at: Date;
 }
 
 export interface MoneyTransactionCassandra {
   id: string;
-  id_user: string;
+  user_id: string;
   type: TransactionCassandraType;
   quantity: number;
-  created: Date;
+  created_at: Date;
 }
 
 export type ILoanStatus =
@@ -82,7 +83,7 @@ export interface IScheduledPayments {
 
 export interface LoanCassandra {
   id: string;
-  id_user: string;
+  user_id: string;
   score: string;
   roi: number;
   goal: number;
@@ -91,6 +92,8 @@ export interface LoanCassandra {
   expiry: Date;
   status: ILoanStatus;
   pending: number;
+  payments_done: number;
+  payments_delayed: number;
 }
 
 export type IInvestmentStatus =
@@ -104,12 +107,12 @@ export type IInvestmentStatusType = "on_going" | "over";
 
 export interface InvestmentCassandra {
   id: string;
-  id_borrower: string;
-  id_lender: string;
-  id_loan: string;
+  borrower_id: string;
+  lender_id: string;
+  loan_id: string;
   quantity: number;
-  created: Date;
-  updated: Date;
+  created_at: Date;
+  updated_at: Date;
   status: IInvestmentStatus;
   status_type: IInvestmentStatusType;
   roi: number;

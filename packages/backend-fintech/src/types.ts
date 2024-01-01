@@ -57,7 +57,7 @@ export interface InvestmentTransactionMongo {
   quantity: number;
   id_borrower: string;
   _id_loan: ObjectId;
-  created: Date;
+  created_at: Date;
 }
 
 export interface MoneyTransactionMongo {
@@ -65,7 +65,7 @@ export interface MoneyTransactionMongo {
   id_user: string;
   type: TransactionMongoType;
   quantity: number;
-  created: Date;
+  created_at: Date;
 }
 
 export type ILoanStatus =
@@ -130,8 +130,8 @@ export interface InvestmentMongo {
   id_lender: string;
   _id_loan: ObjectId;
   quantity: number;
-  created: Date;
-  updated: Date;
+  created_at: Date;
+  updated_at: Date;
   status: IInvestmentStatus;
   ROI: number;
   term: number;
@@ -149,8 +149,8 @@ export interface InvestmentMongoRedis {
   id_lender: string;
   _id_loan: string;
   quantity: number;
-  created: string;
-  updated: string;
+  created_at: string;
+  updated_at: string;
   status: IInvestmentStatus;
   ROI: number;
   term: number;

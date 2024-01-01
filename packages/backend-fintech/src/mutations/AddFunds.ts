@@ -46,7 +46,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
         id_user: id,
         type: quantity > 0 ? "credit" : "withdrawal",
         quantity,
-        created: now,
+        created_at: now,
       };
       const result = await users.findOneAndUpdate(
         { id, accountAvailable: { $gte: -quantity } },

@@ -115,7 +115,7 @@ const { connectionType: LoginConnection, edgeType: GraphQLLoginEdge } =
   });
 
 export const userAuthFields: ThunkObjMap<
-  GraphQLFieldConfig<UserMongo, Context, any>
+  GraphQLFieldConfig<UserMongo, Context, unknown>
 > = {
   id: globalIdField("AuthUser", ({ _id }): string => _id.toHexString()),
   accountId: {

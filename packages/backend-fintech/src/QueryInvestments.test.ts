@@ -51,8 +51,8 @@ describe("QueryInvestments tests", () => {
         _id_loan: loan1_oid,
         quantity: 50000,
         status: "up to date",
-        created: new Date(),
-        updated: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
         payments: 0,
         term: 3,
         ROI: 17,
@@ -69,8 +69,8 @@ describe("QueryInvestments tests", () => {
         _id_loan: loan2_oid,
         quantity: 50000,
         status: "up to date",
-        created: new Date(),
-        updated: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
         payments: 0,
         term: 50000,
         ROI: 17,
@@ -87,8 +87,8 @@ describe("QueryInvestments tests", () => {
         _id_loan: loan3_oid,
         quantity: 50000,
         status: "up to date",
-        created: new Date(),
-        updated: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
         payments: 0,
         term: 50000,
         ROI: 17,
@@ -113,8 +113,8 @@ describe("QueryInvestments tests", () => {
                   id_lender
                   _id_loan
                   quantity
-                  created
-                  updated
+                  created_at
+                  updated_at
                   status
                 }
               }
@@ -161,10 +161,10 @@ describe("QueryInvestments tests", () => {
       "$500.00"
     );
     expect(
-      response.body.data.user.investments.edges[0].node.created
+      response.body.data.user.investments.edges[0].node.created_at
     ).toBeTruthy();
     expect(
-      response.body.data.user.investments.edges[0].node.updated
+      response.body.data.user.investments.edges[0].node.updated_at
     ).toBeTruthy();
     expect(response.body.data.user.investments.edges[0].node.status).toBe(
       "UP_TO_DATE"

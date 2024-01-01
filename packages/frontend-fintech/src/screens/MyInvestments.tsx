@@ -46,8 +46,8 @@ const subscriptionInvestments = graphql`
         payments
         term
         moratory
-        created
-        updated
+        created_at
+        updated_at
         status
         interest_to_earn
         paid_already
@@ -70,8 +70,8 @@ const subscriptionInvestmentsUpdate = graphql`
       payments
       term
       moratory
-      created
-      updated
+      created_at
+      updated_at
       status
       interest_to_earn
       paid_already
@@ -138,7 +138,7 @@ export const MyInvestments: FC<Props> = (props) => {
     { key: "interests", title: t("Intereses") },
     { key: "moratory", title: t("Interés por mora") },
     { key: "created", title: t("Creado en") },
-    { key: "updated", title: t("Último cambio en") },
+    { key: "updated_at", title: t("Último cambio en") },
     { key: "refetch", title: t("Refrescar") },
   ];
 
@@ -150,8 +150,8 @@ export const MyInvestments: FC<Props> = (props) => {
     return investmentStatus === "on_going"
       ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
       : investmentStatus === "over"
-      ? ["PAID", "PAST_DUE"]
-      : null;
+        ? ["PAID", "PAST_DUE"]
+        : null;
   }, [investmentStatus]);
 
   const connectionInvestmentID = ConnectionHandler.getConnectionID(
@@ -203,8 +203,8 @@ export const MyInvestments: FC<Props> = (props) => {
               investmentStatus === "on_going"
                 ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
                 : investmentStatus === "over"
-                ? ["PAID", "PAST_DUE"]
-                : null;
+                  ? ["PAID", "PAST_DUE"]
+                  : null;
             refetch(
               {
                 status,

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1e4b0862ae585078d717569aa9cb7705>>
+ * @generated SignedSource<<22c5a43d0bfe325387df89f97f9b7d8b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,7 @@ export type TransactionType = "COLLECT" | "CREDIT" | "INVEST" | "WITHDRAWAL" | "
 import { FragmentRefs } from "relay-runtime";
 export type InvestmentTransaction_transaction$data = {
   readonly _id_loan: string;
-  readonly created: Int;
+  readonly created_at: Int;
   readonly id: string;
   readonly id_borrower: string;
   readonly id_user: string;
@@ -64,7 +64,7 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "created",
+      "name": "created_at",
       "storageKey": null
     },
     {
@@ -86,6 +86,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "b73642a25a613c6eb7d55d50e95b6041";
+(node as any).hash = "e12f17e01c52c8b835a48805d905740f";
 
 export default node;

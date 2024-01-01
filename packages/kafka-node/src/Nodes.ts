@@ -219,17 +219,17 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentCassandra>({
   name: "Investment",
   fields: {
     id: globalIdField("Investment"),
-    id_borrower: {
+    borrower_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_borrower }): string => id_borrower,
+      resolve: ({ borrower_id }): string => borrower_id,
     },
-    id_lender: {
+    lender_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_lender }): string => id_lender,
+      resolve: ({ lender_id }): string => lender_id,
     },
-    _id_loan: {
+    _loan_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_loan }): string => id_loan,
+      resolve: ({ loan_id }): string => loan_id,
     },
     quantity: {
       type: new GraphQLNonNull(MXNScalarType),
@@ -251,15 +251,15 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentCassandra>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ moratory }): number => moratory,
     },
-    created: {
+    created_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created }): Date =>
-        typeof created === "string" ? new Date(created) : created,
+      resolve: ({ created_at }): Date =>
+        typeof created_at === "string" ? new Date(created_at) : created_at,
     },
-    updated: {
+    updated_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ updated }): Date =>
-        typeof updated === "string" ? new Date(updated) : updated,
+      resolve: ({ updated_at }): Date =>
+        typeof updated_at === "string" ? new Date(updated_at) : updated_at,
     },
     status: {
       type: new GraphQLNonNull(InvestmentStatus),
@@ -296,26 +296,26 @@ export const GraphQLInvestTransaction = new GraphQLObjectType<
   name: "InvestTransaction",
   fields: {
     id: globalIdField("Transaction"),
-    id_user: {
+    user_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_user }): string => id_user,
+      resolve: ({ user_id }): string => user_id,
     },
-    id_borrower: {
+    borrower_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_borrower }): string => id_borrower,
+      resolve: ({ borrower_id }): string => borrower_id,
     },
-    _id_loan: {
+    _loan_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_loan }): string => id_loan,
+      resolve: ({ loan_id }): string => loan_id,
     },
     quantity: {
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ quantity }): number => quantity,
     },
-    created: {
+    created_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created }): Date =>
-        typeof created === "string" ? new Date(created) : created,
+      resolve: ({ created_at }): Date =>
+        typeof created_at === "string" ? new Date(created_at) : created_at,
     },
     type: {
       type: new GraphQLNonNull(TransactionType),
@@ -333,18 +333,18 @@ export const GraphQLMoneyTransaction = new GraphQLObjectType<
   name: "MoneyTransaction",
   fields: {
     id: globalIdField("Transaction"),
-    id_user: {
+    user_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_user }): string => id_user,
+      resolve: ({ user_id }): string => user_id,
     },
     quantity: {
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ quantity }): number => quantity,
     },
-    created: {
+    created_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created }): Date =>
-        typeof created === "string" ? new Date(created) : created,
+      resolve: ({ created_at }): Date =>
+        typeof created_at === "string" ? new Date(created_at) : created_at,
     },
     type: {
       type: new GraphQLNonNull(TransactionType),
@@ -399,9 +399,9 @@ export const GraphQLLoan = new GraphQLObjectType<LoanCassandra>({
   name: "Loan",
   fields: {
     id: globalIdField("Loan"),
-    id_user: {
+    user_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_user }): string => id_user,
+      resolve: ({ user_id }): string => user_id,
     },
     score: {
       type: new GraphQLNonNull(GraphQLString),
@@ -498,7 +498,7 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
                 } LIMIT ${limit}`
               )
             : await client.execute(
-                `SELECT * FROM fintech.loans_by_user WHERE id_user = ${id}${
+                `SELECT * FROM fintech.loans_by_user WHERE user_id = ${id}${
                   loan_id ? ` AND id < ${loan_id}` : ""
                 } LIMIT ${limit}`
               );
@@ -507,7 +507,7 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
               cursor: base64(loan._id.toHexString()),
               node: {
                 id: loan.get("id"),
-                id_user: loan.get("id_user"),
+                user_id: loan.get("user_id"),
                 score: loan.get("score"),
                 roi: loan.get("roi"),
                 goal: loan.get("goal"),
@@ -516,6 +516,8 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
                 expiry: loan.get("expiry"),
                 status: loan.get("status"),
                 pending: loan.get("pending"),
+                payments_done: loan.get("payments_done"),
+                payments_delayed: loan.get("payments_delayed"),
               },
             };
           });
@@ -559,13 +561,13 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
           }
           const result = status
             ? await client.execute(
-                `SELECT * FROM fintech.investments_by_status_type WHERE status_type = ? AND id_lender = ${id}${
+                `SELECT * FROM fintech.investments_by_status_type WHERE status_type = ? AND lender_id = ${id}${
                   investment_id ? ` AND id < ${investment_id}` : ""
                 } LIMIT ${limit}`,
                 [status]
               )
             : await client.execute(
-                `SELECT * FROM fintech.investments_by_lender WHERE id_lender = ${id}${
+                `SELECT * FROM fintech.investments_by_lender WHERE lender_id = ${id}${
                   investment_id ? ` AND id < ${investment_id}` : ""
                 } LIMIT ${limit}`
               );
@@ -574,12 +576,12 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
               cursor: base64(investment._id.toHexString()),
               node: {
                 id: investment.get("id"),
-                id_borrower: investment.get("id_borrower"),
-                id_lender: investment.get("id_lender"),
-                id_loan: investment.get("id_loan"),
+                borrower_id: investment.get("borrower_id"),
+                lender_id: investment.get("lender_id"),
+                loan_id: investment.get("loan_id"),
                 quantity: investment.get("quantity"),
-                created: investment.get("created"),
-                updated: investment.get("updated"),
+                created_at: investment.get("created_at"),
+                updated_at: investment.get("updated_at"),
                 status: investment.get("status"),
                 status_type: investment.get("status_type"),
                 roi: investment.get("roi"),
@@ -629,7 +631,7 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
           const result = await client.execute(
-            `SELECT * FROM fintech.transactions_by_user WHERE id_user = ${id}${
+            `SELECT * FROM fintech.transactions_by_user WHERE user_id = ${id}${
               transaction_id ? ` AND id < ${transaction_id}` : ""
             } LIMIT ${limit}`
           );
@@ -638,12 +640,12 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
               cursor: base64(transaction._id.toHexString()),
               node: {
                 id: transaction.get("id"),
-                id_user: transaction.get("id_user"),
+                user_id: transaction.get("user_id"),
                 type: transaction.get("type"),
                 quantity: transaction.get("quantity"),
-                id_borrower: transaction.get("id_borrower"),
-                id_loan: transaction.get("id_loan"),
-                created: transaction.get("created"),
+                borrower_id: transaction.get("borrower_id"),
+                loan_id: transaction.get("loan_id"),
+                created_at: transaction.get("created_at"),
               },
             };
           });
@@ -687,7 +689,7 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
               cursor: base64(loan._id.toHexString()),
               node: {
                 id: loan.get("id"),
-                id_user: loan.get("id_user"),
+                user_id: loan.get("user_id"),
                 score: loan.get("score"),
                 roi: loan.get("roi"),
                 goal: loan.get("goal"),
@@ -696,6 +698,8 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
                 expiry: loan.get("expiry"),
                 status: loan.get("status"),
                 pending: loan.get("pending"),
+                payments_done: loan.get("payments_done"),
+                payments_delayed: loan.get("payments_delayed"),
               },
             };
           });

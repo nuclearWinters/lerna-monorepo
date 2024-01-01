@@ -49,7 +49,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
         _id: new ObjectId(),
         type: "payment",
         quantity: -delayedTotal,
-        created: now,
+        created_at: now,
         id_user: user_id,
       };
       //Variable que indica que todas los pagos ya se realizaron
@@ -85,7 +85,6 @@ export const monthFunction = async (db: Db): Promise<void> => {
           {
             $set: {
               [`scheduledPayments.${payment.index}.status`]: "delayed",
-              ...{},
             },
           }
         );
@@ -96,19 +95,8 @@ export const monthFunction = async (db: Db): Promise<void> => {
         const allInvestments = await investments
           .find({ _id_loan: loan._id })
           .toArray();
-        const ids = allInvestments.reduce<{
-          usersIds: string[];
-          investmentIds: ObjectId[];
-        }>(
-          (curr, next) => {
-            curr.usersIds.push(next.id_lender);
-            curr.investmentIds.push(next._id);
-            return curr;
-          },
-          { usersIds: [], investmentIds: [] }
-        );
         await investments.updateMany(
-          { _id: { $in: ids.investmentIds } },
+          { _id_loan: loan._id },
           { $set: { status: "delay payment" } }
         );
         for (const investment of allInvestments) {
@@ -161,7 +149,7 @@ export const monthFunction = async (db: Db): Promise<void> => {
           id_user: id_lender,
           type: "collect",
           quantity: amortize,
-          created: now,
+          created_at: now,
           id_borrower: loan.id_user,
           _id_loan: loan._id,
         };

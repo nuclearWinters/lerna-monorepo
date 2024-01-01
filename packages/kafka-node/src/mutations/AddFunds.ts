@@ -36,13 +36,14 @@ export const AddFundsMutation = mutationWithClientMutationId({
         throw new Error("La cantidad no puede ser cero.");
       }
       await producer.send({
-        topic: "add-funds",
+        topic: "user-transaction",
         messages: [
           {
             value: JSON.stringify({
               quantity,
-              id_user: id,
+              user_id: id,
             }),
+            key: id,
           },
         ],
       });

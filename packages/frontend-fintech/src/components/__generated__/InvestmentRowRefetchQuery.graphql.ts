@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<74297a9e7731a8f3f96b4d116716b593>>
+ * @generated SignedSource<<dbae2a0198b47b8df271e2425b38e9a7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -121,14 +121,14 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "created",
+                "name": "created_at",
                 "storageKey": null
               },
               {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "updated",
+                "name": "updated_at",
                 "storageKey": null
               },
               {
@@ -197,16 +197,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "f8c1a58291cddf1b00867c84bd2209e4",
+    "cacheID": "b5b79c114cd92a3f53150bb6ece2ed2c",
     "id": null,
     "metadata": {},
     "name": "InvestmentRowRefetchQuery",
     "operationKind": "query",
-    "text": "query InvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...InvestmentRow_investment\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created\n  updated\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n"
+    "text": "query InvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...InvestmentRow_investment\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4d94b72d10e0af57e32f5810533bd97b";
+(node as any).hash = "439d5f1814bee68f42b0c2be7b84b36a";
 
 export default node;

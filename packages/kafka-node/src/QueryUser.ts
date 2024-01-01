@@ -22,6 +22,7 @@ const QueryUser = {
         account_available: user.get("account_available"),
         account_to_be_paid: user.get("account_to_be_paid"),
         account_total: user.get("account_total"),
+        account_withheld: user.get("account_total"),
       };
     } catch (e) {
       return {
@@ -29,6 +30,7 @@ const QueryUser = {
         account_to_be_paid: 0,
         id: "",
         account_total: 0,
+        account_withheld: 0,
       };
     }
   },

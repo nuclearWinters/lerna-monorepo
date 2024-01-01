@@ -44,14 +44,14 @@ describe("QueryTransactions tests", () => {
         _id: new ObjectId(),
         type: "credit",
         quantity: 100,
-        created: new Date(),
+        created_at: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "invest",
         quantity: -100,
-        created: new Date(),
+        created_at: new Date(),
         _id_loan: new ObjectId(),
         id_borrower: "",
       },
@@ -60,35 +60,35 @@ describe("QueryTransactions tests", () => {
         _id: new ObjectId(),
         type: "payment",
         quantity: -100,
-        created: new Date(),
+        created_at: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "withdrawal",
         quantity: -100,
-        created: new Date(),
+        created_at: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "credit",
         quantity: 100,
-        created: new Date(),
+        created_at: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "credit",
         quantity: 200,
-        created: new Date(),
+        created_at: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "invest",
         quantity: -200,
-        created: new Date(),
+        created_at: new Date(),
         _id_loan: new ObjectId(),
         id_borrower: "",
       },
@@ -97,21 +97,21 @@ describe("QueryTransactions tests", () => {
         _id: new ObjectId(),
         type: "payment",
         quantity: -200,
-        created: new Date(),
+        created_at: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "withdrawal",
         quantity: -200,
-        created: new Date(),
+        created_at: new Date(),
       },
       {
         id_user: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "credit",
         quantity: 200,
-        created: new Date(),
+        created_at: new Date(),
       },
     ]);
     const response = await request
@@ -128,14 +128,14 @@ describe("QueryTransactions tests", () => {
                     id_user
                     type
                     quantity
-                    created
+                    created_at
                   }
                   ... on InvestTransaction {
                     id
                     id_user
                     type
                     quantity
-                    created
+                    created_at
                     id_borrower
                     _id_loan
                   }
@@ -181,7 +181,7 @@ describe("QueryTransactions tests", () => {
       "$2.00"
     );
     expect(
-      response.body.data.user.transactions.edges[0].node.created
+      response.body.data.user.transactions.edges[0].node.created_at
     ).toBeTruthy();
   });
 });

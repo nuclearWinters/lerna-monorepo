@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e194d485a326a3a6ced840fecfc6b83f>>
+ * @generated SignedSource<<50e064741966251aee5e317e347ab12b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ import { FragmentRefs } from "relay-runtime";
 export type InvestmentRow_investment$data = {
   readonly ROI: number;
   readonly _id_loan: string;
-  readonly created: Int;
+  readonly created_at: Int;
   readonly id: string;
   readonly id_borrower: string;
   readonly interest_to_earn: string;
@@ -25,7 +25,7 @@ export type InvestmentRow_investment$data = {
   readonly status: InvestmentStatus;
   readonly term: number;
   readonly to_be_paid: string;
-  readonly updated: Int;
+  readonly updated_at: Int;
   readonly " $fragmentType": "InvestmentRow_investment";
 };
 export type InvestmentRow_investment$key = {
@@ -83,14 +83,14 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "created",
+      "name": "created_at",
       "storageKey": null
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "updated",
+      "name": "updated_at",
       "storageKey": null
     },
     {
@@ -154,6 +154,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "4d94b72d10e0af57e32f5810533bd97b";
+(node as any).hash = "439d5f1814bee68f42b0c2be7b84b36a";
 
 export default node;

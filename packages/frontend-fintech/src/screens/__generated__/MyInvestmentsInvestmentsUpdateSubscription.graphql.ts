@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a0334dbbf2dd408a8db54b99dad622dd>>
+ * @generated SignedSource<<7d4bbc08a10135d9ab46f28196725417>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type MyInvestmentsInvestmentsUpdateSubscription$data = {
   readonly investments_subscribe_update: {
     readonly ROI: number;
     readonly _id_loan: string;
-    readonly created: Int;
+    readonly created_at: Int;
     readonly id: string;
     readonly id_borrower: string;
     readonly id_lender: string;
@@ -27,7 +27,7 @@ export type MyInvestmentsInvestmentsUpdateSubscription$data = {
     readonly status: InvestmentStatus;
     readonly term: number;
     readonly to_be_paid: string;
-    readonly updated: Int;
+    readonly updated_at: Int;
   };
 };
 export type MyInvestmentsInvestmentsUpdateSubscription = {
@@ -112,14 +112,14 @@ var v0 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "created",
+        "name": "created_at",
         "storageKey": null
       },
       {
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "updated",
+        "name": "updated_at",
         "storageKey": null
       },
       {
@@ -172,16 +172,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "9a2ccf0b86e9a251a59ce2ce2069beb3",
+    "cacheID": "a8a2962404b499d62874dc8df8b39dd2",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsInvestmentsUpdateSubscription",
     "operationKind": "subscription",
-    "text": "subscription MyInvestmentsInvestmentsUpdateSubscription {\n  investments_subscribe_update {\n    id\n    id_borrower\n    id_lender\n    _id_loan\n    quantity\n    ROI\n    payments\n    term\n    moratory\n    created\n    updated\n    status\n    interest_to_earn\n    paid_already\n    to_be_paid\n  }\n}\n"
+    "text": "subscription MyInvestmentsInvestmentsUpdateSubscription {\n  investments_subscribe_update {\n    id\n    id_borrower\n    id_lender\n    _id_loan\n    quantity\n    ROI\n    payments\n    term\n    moratory\n    created_at\n    updated_at\n    status\n    interest_to_earn\n    paid_already\n    to_be_paid\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f57ee5ddb2c06d3271cc2a40459ceba0";
+(node as any).hash = "3619dad285fabce091c558a875d88bcc";
 
 export default node;

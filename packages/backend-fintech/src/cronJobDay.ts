@@ -55,7 +55,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
         id_user: user_id,
         type: "payment",
         quantity: -delayedTotal,
-        created: now,
+        created_at: now,
       };
       count++;
       const allPaid =
@@ -176,7 +176,7 @@ export const dayFunction = async (db: Db): Promise<void> => {
           id_user: id_lender,
           type: "collect",
           quantity: amortize,
-          created: now,
+          created_at: now,
           id_borrower: loan.id_user,
           _id_loan: loan._id,
         };

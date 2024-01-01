@@ -178,8 +178,8 @@ type Investment implements Node {
   payments: Int!
   term: Int!
   moratory: MXN!
-  created: Date!
-  updated: Date!
+  created_at: Date!
+  updated_at: Date!
   status: InvestmentStatus!
   interest_to_earn: MXN!
   paid_already: MXN!
@@ -271,7 +271,7 @@ type InvestTransaction {
   _id_loan: String!
   type: TransactionType!
   quantity: MXN!
-  created: Date!
+  created_at: Date!
   js(module: String!, id: String): JSDependency!
 }
 
@@ -280,7 +280,7 @@ type MoneyTransaction {
   id_user: String!
   type: TransactionType!
   quantity: MXN!
-  created: Date!
+  created_at: Date!
   js(module: String!, id: String): JSDependency!
 }
 

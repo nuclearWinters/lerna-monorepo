@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<87c1692a508ba931d285cc20d857fb2f>>
+ * @generated SignedSource<<3317722f606f5f465bad79512dd4b687>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,7 +20,7 @@ export type MyInvestmentsInvestmentsSubscription$data = {
     readonly node: {
       readonly ROI: number;
       readonly _id_loan: string;
-      readonly created: Int;
+      readonly created_at: Int;
       readonly id: string;
       readonly id_borrower: string;
       readonly id_lender: string;
@@ -32,7 +32,7 @@ export type MyInvestmentsInvestmentsSubscription$data = {
       readonly status: InvestmentStatus;
       readonly term: number;
       readonly to_be_paid: string;
-      readonly updated: Int;
+      readonly updated_at: Int;
     } | null | undefined;
   };
 };
@@ -144,14 +144,14 @@ v2 = {
           "alias": null,
           "args": null,
           "kind": "ScalarField",
-          "name": "created",
+          "name": "created_at",
           "storageKey": null
         },
         {
           "alias": null,
           "args": null,
           "kind": "ScalarField",
-          "name": "updated",
+          "name": "updated_at",
           "storageKey": null
         },
         {
@@ -233,16 +233,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1058a550eb80db3a9959d263309f9a2a",
+    "cacheID": "a8c3bfac470f331fb486aeff9827d853",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsInvestmentsSubscription",
     "operationKind": "subscription",
-    "text": "subscription MyInvestmentsInvestmentsSubscription(\n  $status: [InvestmentStatus!]\n) {\n  investments_subscribe_insert(status: $status) {\n    node {\n      id\n      id_borrower\n      id_lender\n      _id_loan\n      quantity\n      ROI\n      payments\n      term\n      moratory\n      created\n      updated\n      status\n      interest_to_earn\n      paid_already\n      to_be_paid\n    }\n    cursor\n  }\n}\n"
+    "text": "subscription MyInvestmentsInvestmentsSubscription(\n  $status: [InvestmentStatus!]\n) {\n  investments_subscribe_insert(status: $status) {\n    node {\n      id\n      id_borrower\n      id_lender\n      _id_loan\n      quantity\n      ROI\n      payments\n      term\n      moratory\n      created_at\n      updated_at\n      status\n      interest_to_earn\n      paid_already\n      to_be_paid\n    }\n    cursor\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e607befa8a592f1cc29a171a75764582";
+(node as any).hash = "03977b5faaffedd31a67abcba6bf9867";
 
 export default node;

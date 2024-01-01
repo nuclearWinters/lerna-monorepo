@@ -49,7 +49,7 @@ producer.connect().then(async () => {
 
   const consumer = kafka.consumer({ groupId: "test-group" });
 
-  runKafkaConsumer(consumer, client);
+  runKafkaConsumer(consumer, client, producer);
 
   const serverExpress = app.listen(4004, () => {
     const wsServer = new WebSocketServer({

@@ -26,7 +26,7 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
         id_user
         type
         quantity
-        created
+        created_at
       }
     `,
     transaction
@@ -66,7 +66,7 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
           {getStatus(data.type)}
         </div>
         <div className={baseMyTransactionsDate}>
-          {dayjs(data.created)
+          {dayjs(data.created_at)
             .locale(isEs ? es : en)
             .format(
               isEs

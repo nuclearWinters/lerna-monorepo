@@ -35,8 +35,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
         throw new Error("No valid access token.");
       }
       await client.execute(
-        `
-        INSERT INTO fintech.loans (id, id_user, score, raised, expiry, roi, status, pending, term)
+        `INSERT INTO fintech.loans (id, user_id, score, raised, expiry, roi, status, pending, term)
           VALUES (now(), ${id}, ?, 0, now(), 17, ?, ${loan.goal}, ${loan.term}`,
         ["AAA", "waiting for approval"]
       );

@@ -35,10 +35,8 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
       }
       const { id: loan_id } = fromGlobalId(loan_gid);
       await client.execute(
-        `
-        UPDATE fintech.loans
-            SET status = ?
-            WHERE id = ${loan_id}`,
+        `UPDATE fintech.loans SET status = ?
+        WHERE id = ${loan_id}`,
         ["financing"]
       );
       return { error: "" };
