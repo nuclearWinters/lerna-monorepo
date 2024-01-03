@@ -12,8 +12,6 @@ export const runKafkaConsumer = async (
   producer: Producer
 ) => {
   await consumer.connect();
-  //One topic for every table instead?
-  //User account transaction topic
   await consumer.subscribe({
     topics: ["add-lends", "user-transaction", "loan-transaction"],
     fromBeginning: true,
@@ -40,17 +38,17 @@ export const runKafkaConsumer = async (
           await client.batch([
             {
               query: `UPDATE fintech.loans_by_user
-                                SET raised = ${newRaised}, pending = ${newPending}${
-                                  completed ? `, status = "to be paid"` : ""
-                                }
-                                WHERE id = ${loan_id}`,
+                SET raised = ${newRaised}, pending = ${newPending}${
+                  completed ? `, status = "to be paid"` : ""
+                }
+                WHERE id = ${loan_id}`,
             },
             {
               query: `UPDATE fintech.loans_by_status
-                                SET raised = ${newRaised}, pending = ${newPending}${
-                                  completed ? `, status = "to be paid"` : ""
-                                }
-                                WHERE id = ${loan_id}`,
+                SET raised = ${newRaised}, pending = ${newPending}${
+                  completed ? `, status = "to be paid"` : ""
+                }
+                WHERE id = ${loan_id}`,
             },
           ]);
           await producer.send({

@@ -11,10 +11,10 @@ import {
   JWTMiddlewarePayload,
 } from "./proto/auth_pb";
 import { IAuthServer } from "./proto/auth_grpc_pb";
-import { ctx } from "./index";
 import { UserMongo } from "./types";
+import { Collection } from "mongodb";
 
-export const AuthServer: IAuthServer = {
+export const AuthServer = (users: Collection<UserMongo>): IAuthServer => ({
   async jwtMiddleware(
     call: ServerUnaryCall<JWTMiddlewareInput, JWTMiddlewarePayload>,
     callback: sendUnaryData<JWTMiddlewarePayload>
@@ -45,12 +45,12 @@ export const AuthServer: IAuthServer = {
     try {
       const id = call.request.getNanoid();
       const payload = new CreateUserPayload();
-      const users = ctx.fintechdb?.collection<UserMongo>("users");
-      users?.insertOne({
+      users.insertOne({
         id,
-        accountAvailable: 0,
-        accountToBePaid: 0,
-        accountTotal: 0,
+        account_available: 0,
+        account_to_be_paid: 0,
+        account_total: 0,
+        account_withheld: 0,
       });
       payload.setDone("");
       callback(null, payload);
@@ -65,4 +65,4 @@ export const AuthServer: IAuthServer = {
       callback(error, null);
     }
   },
-};
+});

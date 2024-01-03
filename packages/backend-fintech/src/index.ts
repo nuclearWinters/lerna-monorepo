@@ -1,15 +1,13 @@
 import { app, schema } from "./app";
-import { Db, MongoClient } from "mongodb";
+import { MongoClient } from "mongodb";
 import { MONGO_DB } from "./config";
-import amqp from "amqplib";
 import {
-  ADD_LEND,
   InvestmentMongo,
   LoanMongo,
+  ScheduledPaymentsMongo,
   TransactionMongo,
   UserMongo,
 } from "./types";
-import { sendLend } from "./rabbitmq";
 import { jwt } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { WebSocketServer } from "ws";
@@ -19,30 +17,41 @@ import { AuthService } from "./proto/auth_grpc_pb";
 import { checkEveryDay, checkEveryMonth } from "./cronJobs";
 import { dayFunction } from "./cronJobDay";
 import { monthFunction } from "./cronJobMonth";
+import { runKafkaConsumer } from "./kafka";
+import { Kafka } from "kafkajs";
 
-export const ctx: {
-  fintechdb?: Db;
-} = {
-  fintechdb: undefined,
-};
+const kafka = new Kafka({
+  clientId: "my-app",
+  brokers: ["kafka:9092"],
+});
+
+const producer = kafka.producer();
 
 MongoClient.connect(MONGO_DB, {}).then(async (client) => {
   const db = client.db("fintech");
   const authdb = client.db("auth");
+  const consumer = kafka.consumer({ groupId: "test-group" });
+  const loans = db.collection<LoanMongo>("loans");
+  const investments = db.collection<InvestmentMongo>("investments");
+  const transactions = db.collection<TransactionMongo>("transactions");
+  const users = db.collection<UserMongo>("users");
+  const scheduledPayments =
+    db.collection<ScheduledPaymentsMongo>("scheduledPayments");
   app.locals.db = db;
   app.locals.authdb = authdb;
-  const conn = await amqp.connect("amqp://rabbitmq:5672");
-  const ch = await conn.createChannel();
-  await ch.assertQueue(ADD_LEND);
-  //Consume ADD_LEND
-  ch.consume(ADD_LEND, (msg) => {
-    if (msg !== null) {
-      sendLend(msg, db, ch);
-    }
-  });
-  checkEveryDay(() => dayFunction(db));
-  checkEveryMonth(() => monthFunction(db));
-  app.locals.ch = ch;
+  app.locals.producer = producer;
+  await producer.connect();
+  checkEveryDay(() => dayFunction(db, producer));
+  checkEveryMonth(() => monthFunction(db, producer));
+  runKafkaConsumer(
+    consumer,
+    producer,
+    loans,
+    users,
+    transactions,
+    scheduledPayments,
+    investments
+  );
   const serverExpress = app.listen(4000, () => {
     const wsServer = new WebSocketServer({
       server: serverExpress,
@@ -56,10 +65,10 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
             (ctx?.connectionParams?.Authorization as string | undefined) || ""
           );
           return {
-            users: db.collection<UserMongo>("users"),
-            loans: db.collection<LoanMongo>("loans"),
-            investments: db.collection<InvestmentMongo>("investments"),
-            transactions: db.collection<TransactionMongo>("transactions"),
+            users,
+            loans,
+            investments,
+            transactions,
             id: decoded && typeof decoded !== "string" ? decoded.id : "",
             isBorrower:
               decoded && typeof decoded !== "string" ? decoded.isBorrower : "",
@@ -74,7 +83,7 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
     );
   });
   const server = new Server();
-  server.addService(AuthService, AuthServer);
+  server.addService(AuthService, AuthServer(users));
   server.bindAsync(
     "backend-auth:1984",
     ServerCredentials.createInsecure(),

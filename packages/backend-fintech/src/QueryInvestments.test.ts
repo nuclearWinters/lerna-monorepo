@@ -46,57 +46,60 @@ describe("QueryInvestments tests", () => {
     await investments.insertMany([
       {
         _id: invest1_oid,
-        id_borrower: "wHHR1SUBT0dspoF4YUO17",
-        id_lender: "wHHR1SUBT0dspoF4YUO16",
-        _id_loan: loan1_oid,
+        borrower_id: "wHHR1SUBT0dspoF4YUO17",
+        lender_id: "wHHR1SUBT0dspoF4YUO16",
+        loan_oid: loan1_oid,
         quantity: 50000,
         status: "up to date",
         created_at: new Date(),
         updated_at: new Date(),
         payments: 0,
         term: 3,
-        ROI: 17,
+        roi: 17,
         moratory: 0,
         interest_to_earn: 0,
         to_be_paid: 0,
         paid_already: 0,
         amortize: 50989,
+        status_type: "on_going",
       },
       {
         _id: invest2_oid,
-        id_borrower: "wHHR1SUBT0dspoF4YUO18",
-        id_lender: "wHHR1SUBT0dspoF4YUO16",
-        _id_loan: loan2_oid,
+        borrower_id: "wHHR1SUBT0dspoF4YUO18",
+        lender_id: "wHHR1SUBT0dspoF4YUO16",
+        loan_oid: loan2_oid,
         quantity: 50000,
         status: "up to date",
         created_at: new Date(),
         updated_at: new Date(),
         payments: 0,
         term: 50000,
-        ROI: 17,
+        roi: 17,
         moratory: 0,
         interest_to_earn: 0,
         to_be_paid: 0,
         paid_already: 0,
         amortize: 50989,
+        status_type: "on_going",
       },
       {
         _id: invest3_oid,
-        id_borrower: "wHHR1SUBT0dspoF4YUO19",
-        id_lender: "wHHR1SUBT0dspoF4YUO16",
-        _id_loan: loan3_oid,
+        borrower_id: "wHHR1SUBT0dspoF4YUO19",
+        lender_id: "wHHR1SUBT0dspoF4YUO16",
+        loan_oid: loan3_oid,
         quantity: 50000,
         status: "up to date",
         created_at: new Date(),
         updated_at: new Date(),
         payments: 0,
         term: 50000,
-        ROI: 17,
+        roi: 17,
         moratory: 0,
         interest_to_earn: 0,
         to_be_paid: 0,
         paid_already: 0,
         amortize: 50989,
+        status_type: "on_going",
       },
     ]);
     const response = await request
@@ -109,9 +112,9 @@ describe("QueryInvestments tests", () => {
                 cursor
                 node {
                   id
-                  id_borrower
-                  id_lender
-                  _id_loan
+                  borrower_id
+                  lender_id
+                  loan_id
                   quantity
                   created_at
                   updated_at
@@ -149,13 +152,13 @@ describe("QueryInvestments tests", () => {
     expect(response.body.data.user.investments.edges[0].cursor).toBeTruthy();
     expect(response.body.data.user.investments.edges[0].node.id).toBeTruthy();
     expect(
-      response.body.data.user.investments.edges[0].node.id_borrower
+      response.body.data.user.investments.edges[0].node.borrower_id
     ).toBeTruthy();
     expect(
-      response.body.data.user.investments.edges[0].node.id_lender
+      response.body.data.user.investments.edges[0].node.lender_id
     ).toBeTruthy();
     expect(
-      response.body.data.user.investments.edges[0].node._id_loan
+      response.body.data.user.investments.edges[0].node.loan_id
     ).toBeTruthy();
     expect(response.body.data.user.investments.edges[0].node.quantity).toBe(
       "$500.00"

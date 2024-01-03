@@ -2,6 +2,19 @@ import { app } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient } from "mongodb";
 import { base64Name, jwt } from "../utils";
+jest.mock("kafkajs", () => {
+  return {
+    Kafka: function () {
+      return {
+        producer: () => ({
+          send: jest.fn(),
+          connect: () => Promise.resolve(jest.fn()),
+        }),
+      };
+    },
+  };
+});
+import { Kafka, Producer } from "kafkajs";
 
 jest.mock("../subscriptions/subscriptionsUtils", () => ({
   publishUser: jest.fn,
@@ -27,16 +40,22 @@ const request = supertest(app);
 describe("AddLends tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
-  const ch = { sendToQueue: jest.fn() };
+  let producer: Producer;
 
   beforeAll(async () => {
     client = await MongoClient.connect(
       (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
       {}
     );
+    const kafka = new Kafka({
+      clientId: "my-app",
+      brokers: ["kafka:9092"],
+    });
+    producer = kafka.producer();
+    await producer.connect();
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
-    app.locals.ch = ch;
+    app.locals.producer = producer;
   });
 
   afterAll(async () => {
@@ -59,17 +78,11 @@ describe("AddLends tests", () => {
                 loan_gid: base64Name("000000000000000000000002", "Loan"),
                 quantity: "100.00",
                 borrower_id: "wHHR1SUBT0dspoF4YUO32",
-                term: 2,
-                goal: "500.00",
-                ROI: 10,
               },
               {
                 loan_gid: base64Name("000000000000000000000003", "Loan"),
                 quantity: "50.00",
                 borrower_id: "wHHR1SUBT0dspoF4YUO32",
-                term: 2,
-                goal: "500.00",
-                ROI: 10,
               },
             ],
           },
@@ -94,7 +107,7 @@ describe("AddLends tests", () => {
       )
       .set("Cookie", `id=wHHR1SUBT0dspoF4YUO31`);
     expect(response.body.data.addLends.error).toBeFalsy();
-    expect(ch.sendToQueue).toBeCalledTimes(2);
+    expect(producer.send).toHaveBeenCalledTimes(2);
     const response2 = await request
       .post("/graphql")
       .send({
@@ -110,17 +123,11 @@ describe("AddLends tests", () => {
                 loan_gid: base64Name("000000000000000000000002", "Loan"),
                 quantity: "400.00",
                 borrower_id: "wHHR1SUBT0dspoF4YUO32",
-                term: 2,
-                goal: "500.00",
-                ROI: 10,
               },
               {
                 loan_gid: base64Name("000000000000000000000003", "Loan"),
                 quantity: "450.00",
                 borrower_id: "wHHR1SUBT0dspoF4YUO32",
-                term: 2,
-                goal: "500.00",
-                ROI: 10,
               },
             ],
           },
@@ -145,7 +152,7 @@ describe("AddLends tests", () => {
       )
       .set("Cookie", `id=wHHR1SUBT0dspoF4YUO31`);
     expect(response2.body.data.addLends.error).toBeFalsy();
-    expect(ch.sendToQueue).toBeCalledTimes(4);
+    expect(producer.send).toHaveBeenCalledTimes(4);
   });
 
   it("test AddLends not enough money valid access token", async () => {
@@ -164,9 +171,6 @@ describe("AddLends tests", () => {
                 loan_gid: base64Name("400000000000000000000002", "Loan"),
                 quantity: "150.00",
                 borrower_id: "wHHR1SUBT0dspoF4YUO34",
-                term: 2,
-                goal: "500.00",
-                ROI: 10,
               },
             ],
           },
@@ -189,7 +193,7 @@ describe("AddLends tests", () => {
       )
       .set("Cookie", `id=wHHR1SUBT0dspoF4YUO33`);
     expect(response.body.data.addLends.error).toBe("");
-    expect(ch.sendToQueue).toBeCalledTimes(5);
+    expect(producer.send).toHaveBeenCalledTimes(5);
   });
 
   it("test AddLends no investments done valid access token", async () => {
@@ -208,9 +212,6 @@ describe("AddLends tests", () => {
                 loan_gid: base64Name("500000000000000000000002", "Loan"),
                 quantity: "50.00",
                 borrower_id: "wHHR1SUBT0dspoF4YUO36",
-                term: 2,
-                goal: "500.00",
-                ROI: 10,
               },
             ],
           },
@@ -233,7 +234,7 @@ describe("AddLends tests", () => {
       )
       .set("Cookie", `id=wHHR1SUBT0dspoF4YUO35`);
     expect(response.body.data.addLends.error).toBe("");
-    expect(ch.sendToQueue).toBeCalledTimes(6);
+    expect(producer.send).toHaveBeenCalledTimes(6);
   });
 
   it("test AddLends not all investments are done valid access token", async () => {
@@ -252,17 +253,11 @@ describe("AddLends tests", () => {
                 loan_gid: base64Name("600000000000000000000002", "Loan"),
                 quantity: "50.00",
                 borrower_id: "wHHR1SUBT0dspoF4YUO38",
-                term: 2,
-                goal: "500.00",
-                ROI: 10,
               },
               {
                 loan_gid: base64Name("600000000000000000000003", "Loan"),
                 quantity: "50.00",
                 borrower_id: "wHHR1SUBT0dspoF4YUO38",
-                term: 2,
-                goal: "500.00",
-                ROI: 10,
               },
             ],
           },
@@ -285,6 +280,6 @@ describe("AddLends tests", () => {
       )
       .set("Cookie", `id=wHHR1SUBT0dspoF4YUO37`);
     expect(response.body.data.addLends.error).toBeFalsy();
-    expect(ch.sendToQueue).toBeCalledTimes(8);
+    expect(producer.send).toHaveBeenCalledTimes(8);
   });
 });

@@ -43,9 +43,10 @@ describe("QueryUser tests", () => {
       {
         _id: user_oid,
         id: user_id,
-        accountAvailable: 50000,
-        accountToBePaid: 0,
-        accountTotal: 50000,
+        account_available: 50000,
+        account_to_be_paid: 0,
+        account_total: 50000,
+        account_withheld: 0,
       },
     ]);
     const response = await request
@@ -57,6 +58,7 @@ describe("QueryUser tests", () => {
             accountAvailable
             accountToBePaid
             accountTotal
+            accountWithheld
           }  
         }`,
         variables: {},

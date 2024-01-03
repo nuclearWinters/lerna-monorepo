@@ -8,6 +8,7 @@ import {
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT, Context } from "./types";
 import { Request } from "express";
+import { Producer } from "kafkajs";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -36,7 +37,7 @@ export const jwt = {
 export const getContext = async (req: Request): Promise<Context> => {
   const db = req.app.locals.db as Db;
   const authdb = req.app.locals.authdb as Db;
-  const ch = req.app.locals.ch;
+  const producer = req.app.locals.producer as Producer;
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies?.refreshToken || "";
   const id = req.cookies?.id || "";
@@ -53,11 +54,11 @@ export const getContext = async (req: Request): Promise<Context> => {
     sessions: authdb?.collection("sessions"),
     accessToken,
     refreshToken,
-    ch,
     id,
     isBorrower,
     isLender,
     isSupport,
+    producer,
   };
 };
 

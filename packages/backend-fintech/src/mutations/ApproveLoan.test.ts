@@ -51,31 +51,34 @@ describe("ApproveLoan tests", () => {
       {
         _id: support_oid,
         id: support_id,
-        accountAvailable: 100000,
-        accountToBePaid: 0,
-        accountTotal: 100000,
+        account_available: 100000,
+        account_to_be_paid: 0,
+        account_total: 100000,
+        account_withheld: 0,
       },
       {
         _id: borrower_oid,
         id: borrower_id,
-        accountAvailable: 100000,
-        accountToBePaid: 0,
-        accountTotal: 100000,
+        account_available: 100000,
+        account_to_be_paid: 0,
+        account_total: 100000,
+        account_withheld: 0,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertOne({
       _id: loan_oid,
-      id_user: borrower_id,
+      user_id: borrower_id,
       score: "AAA",
-      ROI: 17,
+      roi: 17,
       goal: 100000,
       term: 2,
       raised: 0,
       expiry: new Date(),
       status: "waiting for approval",
-      scheduledPayments: null,
       pending: 0,
+      payments_delayed: 0,
+      payments_done: 0,
     });
     const response = await request
       .post("/graphql")
@@ -120,19 +123,19 @@ describe("ApproveLoan tests", () => {
     expect(user).toEqual({
       _id: support_oid,
       id: support_id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
     const allLoans = await loans.find({ _id: loan_oid }).toArray();
     expect(allLoans.length).toBe(1);
     expect(
       allLoans.map((loan) => ({
-        ROI: loan.ROI,
-        id_user: loan.id_user,
+        ROI: loan.roi,
+        id_user: loan.user_id,
         goal: loan.goal,
         raised: loan.raised,
-        scheduledPayments: loan.scheduledPayments,
         score: loan.score,
         status: loan.status,
         term: loan.term,
@@ -143,7 +146,6 @@ describe("ApproveLoan tests", () => {
         id_user: borrower_id,
         goal: 100000,
         raised: 0,
-        scheduledPayments: null,
         score: "AAA",
         status: "financing",
         term: 2,

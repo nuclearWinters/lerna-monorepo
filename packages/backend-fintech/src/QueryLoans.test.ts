@@ -43,48 +43,45 @@ describe("QueryLoans tests", () => {
     await loans.insertMany([
       {
         _id: loan1_oid,
-        id_user: "wHHR1SUBT0dspoF4YUO23",
+        user_id: "wHHR1SUBT0dspoF4YUO23",
         score: "AAA",
-        ROI: 17,
+        roi: 17,
         goal: 100000,
         term: 3,
         raised: 0,
         status: "to be paid",
-        scheduledPayments: [
-          {
-            scheduledDate: new Date(),
-            amortize: 100,
-            status: "to be paid",
-          },
-        ],
         expiry: new Date(),
         pending: 0,
+        payments_done: 0,
+        payments_delayed: 0,
       },
       {
         _id: loan2_oid,
-        id_user: "wHHR1SUBT0dspoF4YUO23",
+        user_id: "wHHR1SUBT0dspoF4YUO23",
         score: "BBB",
-        ROI: 20,
+        roi: 20,
         goal: 50000,
         term: 3,
         raised: 0,
         status: "waiting for approval",
-        scheduledPayments: null,
         expiry: new Date(),
         pending: 0,
+        payments_done: 0,
+        payments_delayed: 0,
       },
       {
         _id: loan3_oid,
-        id_user: "wHHR1SUBT0dspoF4YUO23",
+        user_id: "wHHR1SUBT0dspoF4YUO23",
         score: "CCC",
-        ROI: 24,
+        roi: 24,
         goal: 150000,
         term: 3,
         raised: 0,
         status: "financing",
-        scheduledPayments: null,
         expiry: new Date(),
         pending: 0,
+        payments_done: 0,
+        payments_delayed: 0,
       },
     ]);
     const response = await request
@@ -97,7 +94,7 @@ describe("QueryLoans tests", () => {
                 cursor
                 node {
                   id
-                  id_user
+                  user_id
                   score
                   ROI
                   goal
@@ -136,7 +133,7 @@ describe("QueryLoans tests", () => {
     expect(response.body.data.user.myLoans.edges.length).toBe(2);
     expect(response.body.data.user.myLoans.edges[0].cursor).toBeTruthy();
     expect(response.body.data.user.myLoans.edges[0].node.id).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.id_user).toBeTruthy();
+    expect(response.body.data.user.myLoans.edges[0].node.user_id).toBeTruthy();
     expect(response.body.data.user.myLoans.edges[0].node.score).toBeTruthy();
     expect(response.body.data.user.myLoans.edges[0].node.ROI).toBeTruthy();
     expect(response.body.data.user.myLoans.edges[0].node.goal).toBeTruthy();

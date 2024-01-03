@@ -1,8 +1,28 @@
 import { app } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { TransactionMongo, UserMongo } from "../types";
+import {
+  InvestmentMongo,
+  LoanMongo,
+  ScheduledPaymentsMongo,
+  TransactionMongo,
+  UserMongo,
+} from "../types";
 import { jwt } from "../utils";
+import { UserTransaction } from "../kafkaUserTransaction";
+jest.mock("kafkajs", () => {
+  return {
+    Kafka: function () {
+      return {
+        producer: () => ({
+          send: jest.fn(),
+          connect: () => Promise.resolve(jest.fn()),
+        }),
+      };
+    },
+  };
+});
+import { Kafka, Producer } from "kafkajs";
 
 jest.mock("../subscriptions/subscriptionsUtils", () => ({
   publishUser: jest.fn,
@@ -26,14 +46,22 @@ const request = supertest(app);
 describe("AddFunds tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
+  let producer: Producer;
 
   beforeAll(async () => {
     client = await MongoClient.connect(
       (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
       {}
     );
+    const kafka = new Kafka({
+      clientId: "my-app",
+      brokers: ["kafka:9092"],
+    });
+    producer = kafka.producer();
+    await producer.connect();
     dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
+    app.locals.producer = producer;
   });
 
   afterAll(async () => {
@@ -42,15 +70,34 @@ describe("AddFunds tests", () => {
 
   it("test AddFunds increase valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const loans = dbInstance.collection<LoanMongo>("loans");
+    const transactions =
+      dbInstance.collection<TransactionMongo>("transactions");
+    const scheduledPayments =
+      dbInstance.collection<ScheduledPaymentsMongo>("scheduledPayments");
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
     const _id = new ObjectId();
     const id = "wHHR1SUBT0dspoF4YUO25";
     await users.insertOne({
       _id,
       id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
+    await UserTransaction(
+      JSON.stringify({
+        user_id: id,
+        quantity: 50000,
+      }),
+      users,
+      producer,
+      loans,
+      transactions,
+      scheduledPayments,
+      investments
+    );
     const response = await request
       .post("/graphql")
       .send({
@@ -88,13 +135,12 @@ describe("AddFunds tests", () => {
     expect(user).toEqual({
       _id,
       id,
-      accountAvailable: 150000,
-      accountToBePaid: 0,
-      accountTotal: 150000,
+      account_available: 150000,
+      account_to_be_paid: 0,
+      account_total: 150000,
+      account_withheld: 0,
     });
-    const transactions =
-      dbInstance.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions.find({ id_user: id }).toArray();
+    const allTransactions = await transactions.find({ user_id: id }).toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions.length).toBe(1);
     expect(
@@ -112,15 +158,34 @@ describe("AddFunds tests", () => {
 
   it("test AddFunds decrease valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const loans = dbInstance.collection<LoanMongo>("loans");
+    const transactions =
+      dbInstance.collection<TransactionMongo>("transactions");
+    const scheduledPayments =
+      dbInstance.collection<ScheduledPaymentsMongo>("scheduledPayments");
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
     const user_oid = new ObjectId();
     const id = "wHHR1SUBT0dspoF4YUO26";
     await users.insertOne({
       _id: user_oid,
       id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
+    await UserTransaction(
+      JSON.stringify({
+        user_id: id,
+        quantity: -50000,
+      }),
+      users,
+      producer,
+      loans,
+      transactions,
+      scheduledPayments,
+      investments
+    );
     const response = await request
       .post("/graphql")
       .send({
@@ -160,13 +225,12 @@ describe("AddFunds tests", () => {
     expect(user).toEqual({
       _id: user_oid,
       id,
-      accountAvailable: 50000,
-      accountToBePaid: 0,
-      accountTotal: 50000,
+      account_available: 50000,
+      account_to_be_paid: 0,
+      account_total: 50000,
+      account_withheld: 0,
     });
-    const transactions =
-      dbInstance.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions.find({ id_user: id }).toArray();
+    const allTransactions = await transactions.find({ user_id: id }).toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions.length).toBe(1);
     expect(
@@ -184,15 +248,34 @@ describe("AddFunds tests", () => {
 
   it("test AddFunds increase invalid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const loans = dbInstance.collection<LoanMongo>("loans");
+    const transactions =
+      dbInstance.collection<TransactionMongo>("transactions");
+    const scheduledPayments =
+      dbInstance.collection<ScheduledPaymentsMongo>("scheduledPayments");
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
     const user_oid = new ObjectId();
     const id = "wHHR1SUBT0dspoF4YUO27";
     await users.insertOne({
       _id: user_oid,
       id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
+    await UserTransaction(
+      JSON.stringify({
+        user_id: id,
+        quantity: 50000,
+      }),
+      users,
+      producer,
+      loans,
+      transactions,
+      scheduledPayments,
+      investments
+    );
     const response = await request
       .post("/graphql")
       .send({
@@ -230,13 +313,12 @@ describe("AddFunds tests", () => {
     expect(user).toEqual({
       _id: user_oid,
       id,
-      accountAvailable: 150000,
-      accountToBePaid: 0,
-      accountTotal: 150000,
+      account_available: 150000,
+      account_to_be_paid: 0,
+      account_total: 150000,
+      account_withheld: 0,
     });
-    const transactions =
-      dbInstance.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions.find({ id_user: id }).toArray();
+    const allTransactions = await transactions.find({ user_id: id }).toArray();
     expect(allTransactions.length).toBe(1);
     expect(allTransactions.length).toBe(1);
     expect(
@@ -254,15 +336,34 @@ describe("AddFunds tests", () => {
 
   it("test AddFunds try decrease more than available valid refresh token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
+    const loans = dbInstance.collection<LoanMongo>("loans");
+    const transactions =
+      dbInstance.collection<TransactionMongo>("transactions");
+    const scheduledPayments =
+      dbInstance.collection<ScheduledPaymentsMongo>("scheduledPayments");
+    const investments = dbInstance.collection<InvestmentMongo>("investments");
     const user_oid = new ObjectId();
     const id = "wHHR1SUBT0dspoF4YUO29";
     await users.insertOne({
       _id: user_oid,
       id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
+    await UserTransaction(
+      JSON.stringify({
+        user_id: id,
+        quantity: -150000,
+      }),
+      users,
+      producer,
+      loans,
+      transactions,
+      scheduledPayments,
+      investments
+    );
     const response = await request
       .post("/graphql")
       .send({
@@ -293,25 +394,19 @@ describe("AddFunds tests", () => {
         )
       )
       .set("Cookie", `id=` + id);
-    expect(response.body.data.addFunds.error).toBe(
-      "No cuentas con fondos suficientes."
-    );
+    expect(response.body.data.addFunds.error).toBe("");
     const user = await users.findOne({
       id,
     });
     expect(user).toEqual({
       _id: user_oid,
       id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
-
-    const transactions =
-      dbInstance.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions
-      .find({ _id_user: user_oid })
-      .toArray();
+    const allTransactions = await transactions.find({ user_id: id }).toArray();
     expect(allTransactions.length).toBe(0);
   });
 
@@ -322,9 +417,10 @@ describe("AddFunds tests", () => {
     await users.insertOne({
       _id: user_oid,
       id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
     const response = await request
       .post("/graphql")
@@ -365,16 +461,15 @@ describe("AddFunds tests", () => {
     expect(user).toEqual({
       _id: user_oid,
       id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
 
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions
-      .find({ _id_user: user_oid })
-      .toArray();
+    const allTransactions = await transactions.find({ user_id: id }).toArray();
     expect(allTransactions.length).toBe(0);
   });
 });

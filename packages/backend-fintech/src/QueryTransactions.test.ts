@@ -40,74 +40,74 @@ describe("QueryTransactions tests", () => {
       dbInstance.collection<TransactionMongo>("transactions");
     await transactions.insertMany([
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "credit",
         quantity: 100,
         created_at: new Date(),
       },
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "invest",
         quantity: -100,
         created_at: new Date(),
-        _id_loan: new ObjectId(),
-        id_borrower: "",
+        loan_oid: new ObjectId(),
+        borrower_id: "",
       },
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "payment",
         quantity: -100,
         created_at: new Date(),
       },
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "withdrawal",
         quantity: -100,
         created_at: new Date(),
       },
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "credit",
         quantity: 100,
         created_at: new Date(),
       },
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "credit",
         quantity: 200,
         created_at: new Date(),
       },
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "invest",
         quantity: -200,
         created_at: new Date(),
-        _id_loan: new ObjectId(),
-        id_borrower: "",
+        loan_oid: new ObjectId(),
+        borrower_id: "",
       },
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "payment",
         quantity: -200,
         created_at: new Date(),
       },
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "withdrawal",
         quantity: -200,
         created_at: new Date(),
       },
       {
-        id_user: "wHHR1SUBT0dspoF4YUO15",
+        user_id: "wHHR1SUBT0dspoF4YUO15",
         _id: new ObjectId(),
         type: "credit",
         quantity: 200,
@@ -125,19 +125,19 @@ describe("QueryTransactions tests", () => {
                 node {
                   ... on MoneyTransaction {
                     id
-                    id_user
+                    user_id
                     type
                     quantity
                     created_at
                   }
                   ... on InvestTransaction {
                     id
-                    id_user
+                    user_id
                     type
                     quantity
                     created_at
-                    id_borrower
-                    _id_loan
+                    borrower_id
+                    loan_id
                   }
                 }
               }
@@ -171,7 +171,7 @@ describe("QueryTransactions tests", () => {
     expect(response.body.data.user.transactions.edges[0].cursor).toBeTruthy();
     expect(response.body.data.user.transactions.edges[0].node.id).toBeTruthy();
     expect(
-      response.body.data.user.transactions.edges[0].node.id_user
+      response.body.data.user.transactions.edges[0].node.user_id
     ).toBeTruthy();
     expect(response.body.data.user.transactions.edges[0].node.id).toBeTruthy();
     expect(response.body.data.user.transactions.edges[0].node.type).toBe(

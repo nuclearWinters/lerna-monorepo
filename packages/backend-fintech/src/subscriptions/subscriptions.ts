@@ -58,7 +58,7 @@ export const my_loans_subscribe_insert = {
       return isSupport
         ? payload.my_loans_subscribe_insert.node.status ===
             "waiting for approval"
-        : id === payload.my_loans_subscribe_insert.node.id_user;
+        : id === payload.my_loans_subscribe_insert.node.user_id;
     }
   ),
 };
@@ -90,7 +90,7 @@ export const transactions_subscribe_insert = {
   subscribe: withFilter(
     () => pubsub.asyncIterator(TRANSACTION_INSERT),
     (payload: PayloadTransactionInsert, _, context: Context) => {
-      return payload.transactions_subscribe_insert.node.id_user === context.id;
+      return payload.transactions_subscribe_insert.node.user_id === context.id;
     }
   ),
 };
@@ -106,7 +106,7 @@ export const investments_subscribe_update = {
   subscribe: withFilter(
     () => pubsub.asyncIterator(INVESTMENT_UPDATE),
     (payload: PayloadInvestmentUpdate, _, context: Context) => {
-      return payload.investments_subscribe_update.id_lender === context.id;
+      return payload.investments_subscribe_update.lender_id === context.id;
     }
   ),
 };
@@ -147,7 +147,7 @@ export const investments_subscribe_insert = {
     () => pubsub.asyncIterator(INVESTMENT_INSERT),
     (payload: PayloadInvestmentInsert, variables, { id }: Context) => {
       return (
-        payload.investments_subscribe_insert.node.id_lender === id &&
+        payload.investments_subscribe_insert.node.lender_id === id &&
         (variables.status?.includes(
           payload.investments_subscribe_insert.node.status
         ) ||

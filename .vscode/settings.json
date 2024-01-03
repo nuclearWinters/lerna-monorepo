@@ -6,4 +6,5 @@
     "packages/relay-gateway"
   ],
   "editor.formatOnSave": true,
+  "editor.indentSize": 2
 }

@@ -46,9 +46,10 @@ describe("AddLoan tests", () => {
     await users.insertOne({
       _id,
       id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
     const response = await request
       .post("/graphql")
@@ -90,20 +91,20 @@ describe("AddLoan tests", () => {
     expect(user).toEqual({
       _id,
       id,
-      accountAvailable: 100000,
-      accountToBePaid: 0,
-      accountTotal: 100000,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
     });
     const loans = dbInstance.collection<LoanMongo>("loans");
-    const allLoans = await loans.find({ id_user: id }).toArray();
+    const allLoans = await loans.find({ user_id: id }).toArray();
     expect(allLoans.length).toBe(1);
     expect(
       allLoans.map((loan) => ({
-        ROI: loan.ROI,
-        id_user: loan.id_user,
+        ROI: loan.roi,
+        user_id: loan.user_id,
         goal: loan.goal,
         raised: loan.raised,
-        scheduledPayments: loan.scheduledPayments,
         score: loan.score,
         status: loan.status,
         term: loan.term,
@@ -112,10 +113,9 @@ describe("AddLoan tests", () => {
     ).toEqual([
       {
         ROI: 17,
-        id_user: id,
+        user_id: id,
         goal: 100000,
         raised: 0,
-        scheduledPayments: null,
         score: "AAA",
         status: "waiting for approval",
         term: 2,

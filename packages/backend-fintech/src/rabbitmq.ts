@@ -24,10 +24,10 @@ import {
 
 export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   const doc: {
-    id_lender: string;
-    id_borrower: string;
+    lender_id: string;
+    borrower_id: string;
     quantity: number;
-    id_loan: string;
+    loan_id: string;
     goal: number;
     raised: number;
     term: number;
@@ -39,14 +39,14 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   const loans = db.collection<LoanMongo>("loans");
   const investments = db.collection<InvestmentMongo>("investments");
   const transactions = db.collection<TransactionMongo>("transactions");
-  const id = doc.id_lender;
+  const lender_id = doc.lender_id;
   //Actualizar a quien presta dinero
   const resultUser = await users.findOneAndUpdate(
-    { id, accountAvailable: { $gte: doc.quantity } },
+    { id: lender_id, account_available: { $gte: doc.quantity } },
     {
       $inc: {
-        accountAvailable: -doc.quantity,
-        accountTotal: -doc.quantity,
+        account_available: -doc.quantity,
+        account_total: -doc.quantity,
       },
     },
     { returnDocument: "after" }
@@ -56,12 +56,12 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     return;
   }
   publishUser(resultUser);
-  const { quantity, goal, id_loan, id_borrower, term, ROI } = doc;
-  const _id_loan = new ObjectId(id_loan);
+  const { quantity, goal, loan_id, borrower_id, term, ROI } = doc;
+  const loan_oid = new ObjectId(loan_id);
   //Aumentar propiedad raised de la deuda si no se sobrepasa la propiedad goal
   const resultLoan = await loans.findOneAndUpdate(
     {
-      _id: _id_loan,
+      _id: loan_oid,
       raised: { $lte: goal - quantity },
     },
     {
@@ -79,9 +79,9 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   if (!resultLoan) {
     //Actualizar a quien presta dinero
     const result = await users.findOneAndUpdate(
-      { id },
+      { id: lender_id },
       {
-        $inc: { accountAvailable: quantity, accountTotal: quantity },
+        $inc: { account_available: quantity, account_total: quantity },
       },
       { returnDocument: "after" }
     );
@@ -95,12 +95,12 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   const transactionOperation: WithId<TransactionMongo>[] = [
     {
       _id: new ObjectId(),
-      id_user: id,
+      user_id: lender_id,
       type: "invest" as const,
       quantity: -quantity,
       created_at: now,
-      _id_loan,
-      id_borrower,
+      loan_oid: loan_oid,
+      borrower_id,
     },
   ];
   interface InvestmentsOperations {
@@ -115,21 +115,21 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   const investmentsOperations: InvestmentsOperations[] = [];
   investmentsOperations.push({
     filter: {
-      _id_loan,
-      id_lender: id,
+      loan_oid,
+      lender_id,
     },
     update: {
       $inc: { quantity },
       $setOnInsert: {
-        id_lender: id,
-        id_borrower,
-        _id_loan,
+        lender_id,
+        borrower_id,
+        loan_oid,
         created_at: now,
         updated_at: now,
         status: completed ? "up to date" : "financing",
         payments: 0,
         term,
-        ROI,
+        roi: ROI,
         moratory: 0,
         interest_to_earn: 0,
         amortize: 0,
@@ -142,7 +142,7 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       returnDocument: "after",
     },
     filterUser: {
-      id,
+      id: lender_id,
     },
     optionsUser: () => ({
       returnDocument: "after",
@@ -164,7 +164,7 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   //Si raised es igual a goal: añadir fondos a quien pidio prestado
   const creditBorrowerTransaction = {
     _id: new ObjectId(),
-    id_user: resultLoan.id_user,
+    user_id: resultLoan.user_id,
     type: "credit" as const,
     quantity: resultLoan.goal,
     created_at: now,
@@ -173,11 +173,11 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
   if (completed) {
     //Actualizar a quien pidio dinero prestado
     const user = await users.findOneAndUpdate(
-      { id: resultLoan.id_user },
+      { id: resultLoan.user_id },
       {
         $inc: {
-          accountAvailable: resultLoan.goal,
-          accountTotal: resultLoan.goal,
+          account_available: resultLoan.goal,
+          account_total: resultLoan.goal,
         },
       },
       {
@@ -188,39 +188,42 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       publishUser(user);
     }
     //Obtener todas las inversiones del prestamo completado
-    const investmentsResults = await investments.find({ _id_loan }).toArray();
+    const investmentsResults = await investments.find({ loan_oid }).toArray();
     if (investmentsResults.length === 0) {
       investmentsResults.push({
         _id: new ObjectId(),
         quantity: 0,
-        id_lender: id,
-        id_borrower,
-        _id_loan,
+        lender_id,
+        borrower_id,
+        loan_oid,
         created_at: now,
         updated_at: now,
         status: completed ? "up to date" : "financing",
         payments: 0,
         term,
-        ROI,
+        roi: ROI,
         moratory: 0,
         interest_to_earn: 0,
         amortize: 0,
         paid_already: 0,
         to_be_paid: 0,
+        status_type: "on_going",
       });
     }
     //Calcular intereses por cada prestamo de cada inversionista
     for (const inv of investmentsResults) {
-      if (id_loan === inv._id_loan.toHexString() && id === inv.id_lender) {
+      if (
+        loan_id === inv.loan_oid.toHexString() &&
+        lender_id === inv.lender_id
+      ) {
         inv.quantity += quantity;
       }
-      const TEM = Math.pow(1 + inv.ROI / 100, 1 / 12) - 1;
+      const TEM = Math.pow(1 + inv.roi / 100, 1 / 12) - 1;
       const amortize = Math.floor(
         inv.quantity / ((1 - Math.pow(1 / (1 + TEM), inv.term)) / TEM)
       );
       const amortizes = amortize * inv.term;
       const interest_to_earn = amortizes - inv.quantity;
-
       //Añadir intereses a la cuenta de cada usuario que presto dinero
       const invOperation: InvestmentsOperations = {
         filter: {
@@ -236,12 +239,12 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
         },
         invest: inv,
         filterUser: {
-          id: inv.id_lender,
+          id: inv.lender_id,
         },
         updateUser: () => ({
           $inc: {
-            accountToBePaid: amortizes,
-            accountTotal: amortizes,
+            account_to_be_paid: amortizes,
+            account_total: amortizes,
           },
         }),
         optionsUser: () => ({
@@ -252,7 +255,10 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
       inv.amortize = amortize;
       inv.to_be_paid = amortizes;
       inv.status = "up to date";
-      if (id_loan === inv._id_loan.toHexString() && id === inv.id_lender) {
+      if (
+        loan_id === inv.loan_oid.toHexString() &&
+        lender_id === inv.lender_id
+      ) {
         investmentsOperations[0].update.$set = {
           interest_to_earn,
           amortize,
@@ -260,21 +266,21 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
           status: "up to date",
         };
         investmentsOperations[0].update.$setOnInsert = {
-          id_lender: id,
-          id_borrower,
-          _id_loan,
+          lender_id,
+          borrower_id,
+          loan_oid,
           created_at: now,
           updated_at: now,
           payments: 0,
           term,
-          ROI,
+          roi: ROI,
           moratory: 0,
           paid_already: 0,
         };
         investmentsOperations[0].updateUser = () => ({
           $inc: {
-            accountToBePaid: amortizes,
-            accountTotal: amortizes,
+            account_to_be_paid: amortizes,
+            account_total: amortizes,
           },
         });
       } else {
@@ -284,7 +290,7 @@ export const sendLend = async (msg: ConsumeMessage, db: Db, ch: Channel) => {
     //Si raised es igual a goal: Actualizar scheduledPayments y status
     const updatedLoan = await loans.findOneAndUpdate(
       {
-        _id: _id_loan,
+        _id: loan_oid,
       },
       {
         $set: {

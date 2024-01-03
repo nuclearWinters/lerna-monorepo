@@ -5,10 +5,8 @@ import {
   GraphQLID,
   GraphQLList,
   GraphQLInputObjectType,
-  GraphQLInt,
-  GraphQLFloat,
 } from "graphql";
-import { Context, ADD_LEND } from "../types";
+import { Context } from "../types";
 import { MXNScalarType } from "../Nodes";
 
 interface Input {
@@ -16,9 +14,6 @@ interface Input {
     quantity: number;
     borrower_id: string;
     loan_gid: string;
-    goal: number;
-    term: number;
-    ROI: number;
   }[];
 }
 
@@ -37,15 +32,6 @@ export const GraphQLLendList = new GraphQLInputObjectType({
     },
     borrower_id: {
       type: new GraphQLNonNull(GraphQLString),
-    },
-    goal: {
-      type: new GraphQLNonNull(MXNScalarType),
-    },
-    term: {
-      type: new GraphQLNonNull(GraphQLInt),
-    },
-    ROI: {
-      type: new GraphQLNonNull(GraphQLFloat),
     },
   },
 });
@@ -69,33 +55,41 @@ export const AddLendsMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { lends: newLends }: Input,
-    { id, ch }: Context
+    { id, producer }: Context
   ): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("No valid access token.");
       }
-      //Crear lista de elementos con datos en el input
-      const docs = newLends.map(
-        ({ loan_gid, quantity, borrower_id, goal, term, ROI }) => {
-          const id_loan = fromGlobalId(loan_gid).id;
-          //Tasa efectiva mensual
-          const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
-          return {
-            id_lender: id,
-            id_borrower: borrower_id,
-            quantity,
-            id_loan,
-            goal,
-            raised: 0,
-            term,
-            ROI,
-            TEM,
-          };
-        }
-      );
-      for (const lend of docs) {
-        ch.sendToQueue(ADD_LEND, Buffer.from(JSON.stringify(lend)));
+      for (const lend of newLends) {
+        const { id: loan_id } = fromGlobalId(lend.loan_gid);
+        await producer.send({
+          topic: "user-transaction",
+          messages: [
+            {
+              key: id,
+              value: JSON.stringify({
+                user_id: id,
+                quantity: lend.quantity,
+                loan_id: lend,
+                nextTopic: "loan-transaction",
+                nextKey: loan_id,
+                nextValue: JSON.stringify({
+                  quantity: lend.quantity,
+                  lender_id: id,
+                  loan_id,
+                  nextTopic: "add-lends",
+                  nextKey: id,
+                  nextValue: JSON.stringify({
+                    quantity: lend.quantity,
+                    loan_id,
+                    lender_id: id,
+                  }),
+                }),
+              }),
+            },
+          ],
+        });
       }
       return { error: "" };
     } catch (e) {

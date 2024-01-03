@@ -65,16 +65,18 @@ describe("rabbitMQ tests", () => {
       {
         _id: lender_oid,
         id: "wHHR1SUBT0dspoF4YUO31",
-        accountAvailable: 100000,
-        accountToBePaid: 0,
-        accountTotal: 100000,
+        account_available: 100000,
+        account_to_be_paid: 0,
+        account_total: 100000,
+        account_withheld: 0,
       },
       {
         _id: borrower_oid,
         id: "wHHR1SUBT0dspoF4YUO32",
-        accountAvailable: 100000,
-        accountToBePaid: 0,
-        accountTotal: 100000,
+        account_available: 100000,
+        account_to_be_paid: 0,
+        account_total: 100000,
+        account_withheld: 0,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -83,29 +85,31 @@ describe("rabbitMQ tests", () => {
     await loans.insertMany([
       {
         _id: loan1_oid,
-        id_user: "wHHR1SUBT0dspoF4YUO32",
+        user_id: "wHHR1SUBT0dspoF4YUO32",
         score: "AAA",
-        ROI: 10,
+        roi: 10,
         goal: 50000,
         term: 2,
         raised: 0,
         expiry: now,
         status: "financing",
-        scheduledPayments: null,
         pending: 50000,
+        payments_done: 0,
+        payments_delayed: 0,
       },
       {
         _id: loan2_oid,
-        id_user: "wHHR1SUBT0dspoF4YUO32",
+        user_id: "wHHR1SUBT0dspoF4YUO32",
         score: "AAA",
-        ROI: 10,
+        roi: 10,
         goal: 50000,
         term: 2,
         raised: 0,
         expiry: now,
         status: "financing",
-        scheduledPayments: null,
         pending: 50000,
+        payments_done: 0,
+        payments_delayed: 0,
       },
     ]);
     const transactions =
@@ -114,10 +118,10 @@ describe("rabbitMQ tests", () => {
       {
         content: Buffer.from(
           JSON.stringify({
-            id_lender: "wHHR1SUBT0dspoF4YUO31",
-            id_borrower: "wHHR1SUBT0dspoF4YUO32",
+            lender_id: "wHHR1SUBT0dspoF4YUO31",
+            borrower_id: "wHHR1SUBT0dspoF4YUO32",
             quantity: 10000,
-            id_loan: loan1_oid.toHexString(),
+            loan_id: loan1_oid.toHexString(),
             goal: 50000,
             raised: 0,
             term: 2,
@@ -133,10 +137,10 @@ describe("rabbitMQ tests", () => {
       {
         content: Buffer.from(
           JSON.stringify({
-            id_lender: "wHHR1SUBT0dspoF4YUO31",
-            id_borrower: "wHHR1SUBT0dspoF4YUO32",
+            lender_id: "wHHR1SUBT0dspoF4YUO31",
+            borrower_id: "wHHR1SUBT0dspoF4YUO32",
             quantity: 5000,
-            id_loan: loan2_oid.toHexString(),
+            loan_id: loan2_oid.toHexString(),
             goal: 50000,
             raised: 0,
             term: 2,
@@ -154,12 +158,13 @@ describe("rabbitMQ tests", () => {
     expect(user).toEqual({
       _id: lender_oid,
       id: "wHHR1SUBT0dspoF4YUO31",
-      accountAvailable: 85000,
-      accountToBePaid: 0,
-      accountTotal: 85000,
+      account_available: 85000,
+      account_to_be_paid: 0,
+      account_total: 85000,
+      account_withheld: 0,
     });
     const allTransactions = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
     expect(allTransactions.length).toBe(2);
     expect(
@@ -168,8 +173,8 @@ describe("rabbitMQ tests", () => {
           ? {
               type: transaction.type,
               quantity: transaction.quantity,
-              id_borrower: transaction.id_borrower,
-              _id_loan: transaction._id_loan?.toHexString(),
+              borrower_id: transaction.borrower_id,
+              loan_oid: transaction.loan_oid?.toHexString(),
             }
           : {};
       })
@@ -177,18 +182,18 @@ describe("rabbitMQ tests", () => {
       {
         type: "invest",
         quantity: -10000,
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        _id_loan: loan1_oid.toHexString(),
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        loan_oid: loan1_oid.toHexString(),
       },
       {
         type: "invest",
         quantity: -5000,
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        _id_loan: loan2_oid.toHexString(),
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        loan_oid: loan2_oid.toHexString(),
       },
     ]);
     const allLoans = await loans
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO32" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO32" })
       .toArray();
     expect(allLoans.length).toBe(2);
     expect(
@@ -211,7 +216,7 @@ describe("rabbitMQ tests", () => {
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ id_lender: "wHHR1SUBT0dspoF4YUO31" })
+      .find({ lender_id: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
     expect(allInvestments.length).toBe(2);
     expect(
@@ -224,7 +229,7 @@ describe("rabbitMQ tests", () => {
     ).toEqual([
       {
         quantity: 10000,
-        ROI: 10,
+        roi: 10,
         payments: 0,
         moratory: 0,
         term: 2,
@@ -232,9 +237,9 @@ describe("rabbitMQ tests", () => {
         to_be_paid: 0,
         paid_already: 0,
         amortize: 0,
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        id_lender: "wHHR1SUBT0dspoF4YUO31",
-        _id_loan: loan1_oid,
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        lender_id: "wHHR1SUBT0dspoF4YUO31",
+        loan_oid: loan1_oid,
         status: "financing",
         _id: "",
         updated_at: "",
@@ -242,7 +247,7 @@ describe("rabbitMQ tests", () => {
       },
       {
         quantity: 5000,
-        ROI: 10,
+        roi: 10,
         moratory: 0,
         term: 2,
         payments: 0,
@@ -250,9 +255,9 @@ describe("rabbitMQ tests", () => {
         to_be_paid: 0,
         paid_already: 0,
         amortize: 0,
-        _id_loan: loan2_oid,
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        id_lender: "wHHR1SUBT0dspoF4YUO31",
+        loan_oid: loan2_oid,
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        lender_id: "wHHR1SUBT0dspoF4YUO31",
         status: "financing",
         _id: "",
         updated_at: "",
@@ -263,10 +268,10 @@ describe("rabbitMQ tests", () => {
       {
         content: Buffer.from(
           JSON.stringify({
-            id_lender: "wHHR1SUBT0dspoF4YUO31",
-            id_borrower: "wHHR1SUBT0dspoF4YUO32",
+            lender_id: "wHHR1SUBT0dspoF4YUO31",
+            borrower_id: "wHHR1SUBT0dspoF4YUO32",
             quantity: 40000,
-            id_loan: loan1_oid.toHexString(),
+            loan_id: loan1_oid.toHexString(),
             goal: 50000,
             raised: 0,
             term: 2,
@@ -282,10 +287,10 @@ describe("rabbitMQ tests", () => {
       {
         content: Buffer.from(
           JSON.stringify({
-            id_lender: "wHHR1SUBT0dspoF4YUO31",
-            id_borrower: "wHHR1SUBT0dspoF4YUO32",
+            lender_id: "wHHR1SUBT0dspoF4YUO31",
+            borrower_id: "wHHR1SUBT0dspoF4YUO32",
             quantity: 45000,
-            id_loan: loan2_oid.toHexString(),
+            loan_id: loan2_oid.toHexString(),
             goal: 50000,
             raised: 0,
             term: 2,
@@ -303,9 +308,10 @@ describe("rabbitMQ tests", () => {
     expect(user2).toEqual({
       _id: lender_oid,
       id: "wHHR1SUBT0dspoF4YUO31",
-      accountAvailable: 0,
-      accountToBePaid: 101196,
-      accountTotal: 101196,
+      account_available: 0,
+      account_to_be_paid: 101196,
+      account_total: 101196,
+      account_withheld: 0,
     });
     const user3 = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO32",
@@ -313,12 +319,13 @@ describe("rabbitMQ tests", () => {
     expect(user3).toEqual({
       _id: borrower_oid,
       id: "wHHR1SUBT0dspoF4YUO32",
-      accountAvailable: 200000,
-      accountToBePaid: 0,
-      accountTotal: 200000,
+      account_available: 200000,
+      account_to_be_paid: 0,
+      account_total: 200000,
+      account_withheld: 0,
     });
     const allTransactions2 = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO31" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
     expect(allTransactions2.length).toBe(4);
     expect(
@@ -327,8 +334,8 @@ describe("rabbitMQ tests", () => {
           ? {
               type: transaction.type,
               quantity: transaction.quantity,
-              id_borrower: transaction.id_borrower,
-              _id_loan: transaction._id_loan?.toHexString(),
+              borrower_id: transaction.borrower_id,
+              loan_oid: transaction.loan_oid?.toHexString(),
             }
           : {};
       })
@@ -336,47 +343,43 @@ describe("rabbitMQ tests", () => {
       {
         type: "invest",
         quantity: -10000,
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        _id_loan: loan1_oid.toHexString(),
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        loan_oid: loan1_oid.toHexString(),
       },
       {
         type: "invest",
         quantity: -5000,
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        _id_loan: loan2_oid.toHexString(),
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        loan_oid: loan2_oid.toHexString(),
       },
       {
         type: "invest",
         quantity: -40000,
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        _id_loan: loan1_oid.toHexString(),
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        loan_oid: loan1_oid.toHexString(),
       },
       {
         type: "invest",
         quantity: -45000,
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        _id_loan: loan2_oid.toHexString(),
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        loan_oid: loan2_oid.toHexString(),
       },
     ]);
     const allLoans2 = await loans
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO32" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO32" })
       .toArray();
     expect(allLoans2.length).toBe(2);
     expect(
       allLoans2.map((loan) => ({
         raised: loan.raised,
         status: loan.status,
-        scheduledPayments: loan.scheduledPayments?.map((payment) => ({
-          amortize: payment.amortize,
-          status: payment.status,
-        })),
         pending: loan.pending,
       }))
     ).toEqual([
       {
         raised: 50000,
         status: "to be paid",
-        scheduledPayments: [
+        /*scheduledPayments: [
           {
             amortize: 25299,
             status: "to be paid",
@@ -385,13 +388,13 @@ describe("rabbitMQ tests", () => {
             amortize: 25299,
             status: "to be paid",
           },
-        ],
+        ],*/
         pending: 0,
       },
       {
         raised: 50000,
         status: "to be paid",
-        scheduledPayments: [
+        /*scheduledPayments: [
           {
             amortize: 25299,
             status: "to be paid",
@@ -400,13 +403,13 @@ describe("rabbitMQ tests", () => {
             amortize: 25299,
             status: "to be paid",
           },
-        ],
+        ],*/
         pending: 0,
       },
     ]);
     const investments2 = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments2 = await investments2
-      .find({ id_lender: "wHHR1SUBT0dspoF4YUO31" })
+      .find({ lender_id: "wHHR1SUBT0dspoF4YUO31" })
       .toArray();
     expect(allInvestments2.length).toBe(2);
     expect(
@@ -418,11 +421,11 @@ describe("rabbitMQ tests", () => {
       }))
     ).toEqual([
       {
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        id_lender: "wHHR1SUBT0dspoF4YUO31",
-        _id_loan: loan1_oid,
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        lender_id: "wHHR1SUBT0dspoF4YUO31",
+        loan_oid: loan1_oid,
         quantity: 50000,
-        ROI: 10,
+        roi: 10,
         moratory: 0,
         term: 2,
         payments: 0,
@@ -437,7 +440,7 @@ describe("rabbitMQ tests", () => {
       },
       {
         quantity: 50000,
-        ROI: 10,
+        roi: 10,
         moratory: 0,
         term: 2,
         payments: 0,
@@ -445,10 +448,10 @@ describe("rabbitMQ tests", () => {
         to_be_paid: 50598,
         amortize: 25299,
         paid_already: 0,
-        _id_loan: loan2_oid,
+        loan_oid: loan2_oid,
         status: "up to date",
-        id_borrower: "wHHR1SUBT0dspoF4YUO32",
-        id_lender: "wHHR1SUBT0dspoF4YUO31",
+        borrower_id: "wHHR1SUBT0dspoF4YUO32",
+        lender_id: "wHHR1SUBT0dspoF4YUO31",
         _id: "",
         updated_at: "",
         created_at: "",
@@ -463,32 +466,35 @@ describe("rabbitMQ tests", () => {
       {
         _id: new ObjectId("400000000000000000000004"),
         id: "wHHR1SUBT0dspoF4YUO33",
-        accountAvailable: 10000,
-        accountToBePaid: 0,
-        accountTotal: 10000,
+        account_available: 10000,
+        account_to_be_paid: 0,
+        account_total: 10000,
+        account_withheld: 0,
       },
       {
         _id: new ObjectId("400000000000000000000005"),
         id: "wHHR1SUBT0dspoF4YUO34",
-        accountAvailable: 10000,
-        accountToBePaid: 0,
-        accountTotal: 10000,
+        account_available: 10000,
+        account_to_be_paid: 0,
+        account_total: 10000,
+        account_withheld: 0,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertMany([
       {
         _id: new ObjectId("400000000000000000000002"),
-        id_user: "wHHR1SUBT0dspoF4YUO34",
+        user_id: "wHHR1SUBT0dspoF4YUO34",
         score: "AAA",
-        ROI: 10,
+        roi: 10,
         goal: 50000,
         term: 2,
         raised: 0,
         expiry: now,
         status: "financing",
-        scheduledPayments: null,
         pending: 50000,
+        payments_done: 0,
+        payments_delayed: 0,
       },
     ]);
     const transactions =
@@ -497,10 +503,10 @@ describe("rabbitMQ tests", () => {
       {
         content: Buffer.from(
           JSON.stringify({
-            id_lender: "wHHR1SUBT0dspoF4YUO33",
-            id_borrower: "wHHR1SUBT0dspoF4YUO34",
+            lender_id: "wHHR1SUBT0dspoF4YUO33",
+            borrower_id: "wHHR1SUBT0dspoF4YUO34",
             quantity: 15000,
-            id_loan: "400000000000000000000002",
+            loan_id: "400000000000000000000002",
             goal: 50000,
             raised: 0,
             term: 2,
@@ -515,19 +521,23 @@ describe("rabbitMQ tests", () => {
     const user = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO33",
     });
+    if (!user) {
+      throw new Error("User not found.");
+    }
     expect(user).toEqual({
       _id: new ObjectId("400000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO33",
-      accountAvailable: 10000,
-      accountToBePaid: 0,
-      accountTotal: 10000,
+      account_available: 10000,
+      account_to_be_paid: 0,
+      account_total: 10000,
+      account_withheld: 0,
     });
     const allTransactions = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO33" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO33" })
       .toArray();
     expect(allTransactions.length).toBe(0);
     const allLoans = await loans
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO34" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO34" })
       .toArray();
     expect(allLoans.length).toBe(1);
     expect(
@@ -545,7 +555,7 @@ describe("rabbitMQ tests", () => {
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ id_lender: "wHHR1SUBT0dspoF4YUO33" })
+      .find({ lender_id: "wHHR1SUBT0dspoF4YUO33" })
       .toArray();
     expect(allInvestments.length).toBe(0);
   });
@@ -557,32 +567,35 @@ describe("rabbitMQ tests", () => {
       {
         _id: new ObjectId("500000000000000000000004"),
         id: "wHHR1SUBT0dspoF4YUO35",
-        accountAvailable: 10000,
-        accountToBePaid: 0,
-        accountTotal: 10000,
+        account_available: 10000,
+        account_to_be_paid: 0,
+        account_total: 10000,
+        account_withheld: 0,
       },
       {
         _id: new ObjectId("500000000000000000000005"),
         id: "wHHR1SUBT0dspoF4YUO36",
-        accountAvailable: 10000,
-        accountToBePaid: 0,
-        accountTotal: 10000,
+        account_available: 10000,
+        account_to_be_paid: 0,
+        account_total: 10000,
+        account_withheld: 0,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertMany([
       {
         _id: new ObjectId("500000000000000000000002"),
-        id_user: "wHHR1SUBT0dspoF4YUO36",
+        user_id: "wHHR1SUBT0dspoF4YUO36",
         score: "AAA",
-        ROI: 10,
+        roi: 10,
         goal: 50000,
         term: 2,
         raised: 50000,
         expiry: now,
         status: "to be paid",
-        scheduledPayments: null,
         pending: 0,
+        payments_done: 0,
+        payments_delayed: 0,
       },
     ]);
     const transactions =
@@ -591,10 +604,10 @@ describe("rabbitMQ tests", () => {
       {
         content: Buffer.from(
           JSON.stringify({
-            id_lender: "wHHR1SUBT0dspoF4YUO35",
-            id_borrower: "wHHR1SUBT0dspoF4YUO36",
+            lender_id: "wHHR1SUBT0dspoF4YUO35",
+            borrower_id: "wHHR1SUBT0dspoF4YUO36",
             quantity: 5000,
-            id_loan: "500000000000000000000002",
+            loan_id: "500000000000000000000002",
             goal: 50000,
             raised: 0,
             term: 2,
@@ -612,16 +625,17 @@ describe("rabbitMQ tests", () => {
     expect(user).toEqual({
       _id: new ObjectId("500000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO35",
-      accountAvailable: 10000,
-      accountToBePaid: 0,
-      accountTotal: 10000,
+      account_available: 10000,
+      account_to_be_paid: 0,
+      account_total: 10000,
+      account_withheld: 0,
     });
     const allTransactions = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO35" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO35" })
       .toArray();
     expect(allTransactions.length).toBe(0);
     const allLoans = await loans
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO36" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO36" })
       .toArray();
     expect(allLoans.length).toBe(1);
     expect(
@@ -639,7 +653,7 @@ describe("rabbitMQ tests", () => {
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ id_lender: "wHHR1SUBT0dspoF4YUO35" })
+      .find({ lender_id: "wHHR1SUBT0dspoF4YUO35" })
       .toArray();
     expect(allInvestments.length).toBe(0);
   });
@@ -651,45 +665,49 @@ describe("rabbitMQ tests", () => {
       {
         _id: new ObjectId("600000000000000000000004"),
         id: "wHHR1SUBT0dspoF4YUO37",
-        accountAvailable: 10000,
-        accountToBePaid: 0,
-        accountTotal: 10000,
+        account_available: 10000,
+        account_to_be_paid: 0,
+        account_total: 10000,
+        account_withheld: 0,
       },
       {
         _id: new ObjectId("600000000000000000000005"),
         id: "wHHR1SUBT0dspoF4YUO38",
-        accountAvailable: 10000,
-        accountToBePaid: 0,
-        accountTotal: 10000,
+        account_available: 10000,
+        account_to_be_paid: 0,
+        account_total: 10000,
+        account_withheld: 0,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
     await loans.insertMany([
       {
         _id: new ObjectId("600000000000000000000002"),
-        id_user: "wHHR1SUBT0dspoF4YUO38",
+        user_id: "wHHR1SUBT0dspoF4YUO38",
         score: "AAA",
-        ROI: 10,
+        roi: 10,
         goal: 50000,
         term: 2,
         raised: 50000,
         expiry: now,
         status: "to be paid",
-        scheduledPayments: null,
         pending: 0,
+        payments_done: 0,
+        payments_delayed: 0,
       },
       {
         _id: new ObjectId("600000000000000000000003"),
-        id_user: "wHHR1SUBT0dspoF4YUO38",
+        user_id: "wHHR1SUBT0dspoF4YUO38",
         score: "AAA",
-        ROI: 10,
+        roi: 10,
         goal: 50000,
         term: 2,
         raised: 0,
         expiry: now,
         status: "financing",
-        scheduledPayments: null,
         pending: 50000,
+        payments_done: 0,
+        payments_delayed: 0,
       },
     ]);
     const transactions =
@@ -698,10 +716,10 @@ describe("rabbitMQ tests", () => {
       {
         content: Buffer.from(
           JSON.stringify({
-            id_lender: "wHHR1SUBT0dspoF4YUO37",
-            id_borrower: "wHHR1SUBT0dspoF4YUO38",
+            lender_id: "wHHR1SUBT0dspoF4YUO37",
+            borrower_id: "wHHR1SUBT0dspoF4YUO38",
             quantity: 5000,
-            id_loan: "600000000000000000000002",
+            loan_id: "600000000000000000000002",
             goal: 50000,
             raised: 0,
             term: 2,
@@ -717,10 +735,10 @@ describe("rabbitMQ tests", () => {
       {
         content: Buffer.from(
           JSON.stringify({
-            id_lender: "wHHR1SUBT0dspoF4YUO37",
-            id_borrower: "wHHR1SUBT0dspoF4YUO38",
+            lender_id: "wHHR1SUBT0dspoF4YUO37",
+            borrower_id: "wHHR1SUBT0dspoF4YUO38",
             quantity: 5000,
-            id_loan: "600000000000000000000003",
+            loan_id: "600000000000000000000003",
             goal: 50000,
             raised: 0,
             term: 2,
@@ -738,12 +756,13 @@ describe("rabbitMQ tests", () => {
     expect(user).toEqual({
       _id: new ObjectId("600000000000000000000004"),
       id: "wHHR1SUBT0dspoF4YUO37",
-      accountAvailable: 5000,
-      accountToBePaid: 0,
-      accountTotal: 5000,
+      account_available: 5000,
+      account_to_be_paid: 0,
+      account_total: 5000,
+      account_withheld: 0,
     });
     const allTransactions = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO37" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO37" })
       .toArray();
     expect(allTransactions.length).toBe(1);
     expect(
@@ -752,8 +771,8 @@ describe("rabbitMQ tests", () => {
           ? {
               type: transaction.type,
               quantity: transaction.quantity,
-              id_borrower: transaction.id_borrower,
-              _id_loan: transaction._id_loan?.toHexString(),
+              borrower_id: transaction.borrower_id,
+              loan_oid: transaction.loan_oid?.toHexString(),
             }
           : {};
       })
@@ -761,12 +780,12 @@ describe("rabbitMQ tests", () => {
       {
         type: "invest",
         quantity: -5000,
-        id_borrower: "wHHR1SUBT0dspoF4YUO38",
-        _id_loan: "600000000000000000000003",
+        borrower_id: "wHHR1SUBT0dspoF4YUO38",
+        loan_oid: "600000000000000000000003",
       },
     ]);
     const allLoans = await loans
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO38" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO38" })
       .toArray();
     expect(allLoans.length).toBe(2);
     expect(
@@ -789,7 +808,7 @@ describe("rabbitMQ tests", () => {
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ id_lender: "wHHR1SUBT0dspoF4YUO37" })
+      .find({ lender_id: "wHHR1SUBT0dspoF4YUO37" })
       .toArray();
     expect(allInvestments.length).toBe(1);
     expect(
@@ -801,9 +820,9 @@ describe("rabbitMQ tests", () => {
       }))
     ).toEqual([
       {
-        _id_loan: new ObjectId("600000000000000000000003"),
+        loan_oid: new ObjectId("600000000000000000000003"),
         quantity: 5000,
-        ROI: 10,
+        roi: 10,
         payments: 0,
         moratory: 0,
         term: 2,
@@ -811,8 +830,8 @@ describe("rabbitMQ tests", () => {
         to_be_paid: 0,
         paid_already: 0,
         amortize: 0,
-        id_borrower: "wHHR1SUBT0dspoF4YUO38",
-        id_lender: "wHHR1SUBT0dspoF4YUO37",
+        borrower_id: "wHHR1SUBT0dspoF4YUO38",
+        lender_id: "wHHR1SUBT0dspoF4YUO37",
         status: "financing",
         created_at: "",
         updated_at: "",
@@ -830,16 +849,18 @@ describe("rabbitMQ tests", () => {
       {
         _id: lender_oid,
         id: "wHHR1SUBT0dspoF4YUO91",
-        accountAvailable: 100000,
-        accountToBePaid: 0,
-        accountTotal: 100000,
+        account_available: 100000,
+        account_to_be_paid: 0,
+        account_total: 100000,
+        account_withheld: 0,
       },
       {
         _id: borrower_oid,
         id: "wHHR1SUBT0dspoF4YUO92",
-        accountAvailable: 100000,
-        accountToBePaid: 0,
-        accountTotal: 100000,
+        account_available: 100000,
+        account_to_be_paid: 0,
+        account_total: 100000,
+        account_withheld: 0,
       },
     ]);
     const loans = dbInstance.collection<LoanMongo>("loans");
@@ -848,29 +869,31 @@ describe("rabbitMQ tests", () => {
     await loans.insertMany([
       {
         _id: loan1_oid,
-        id_user: "wHHR1SUBT0dspoF4YUO92",
+        user_id: "wHHR1SUBT0dspoF4YUO92",
         score: "AAA",
-        ROI: 10,
+        roi: 10,
         goal: 50000,
         term: 2,
         raised: 0,
         expiry: now,
         status: "financing",
-        scheduledPayments: null,
         pending: 50000,
+        payments_done: 0,
+        payments_delayed: 0,
       },
       {
         _id: loan2_oid,
-        id_user: "wHHR1SUBT0dspoF4YUO92",
+        user_id: "wHHR1SUBT0dspoF4YUO92",
         score: "AAA",
-        ROI: 10,
+        roi: 10,
         goal: 50000,
         term: 2,
         raised: 0,
         expiry: now,
         status: "financing",
-        scheduledPayments: null,
         pending: 50000,
+        payments_done: 0,
+        payments_delayed: 0,
       },
     ]);
     const transactions =
@@ -879,10 +902,10 @@ describe("rabbitMQ tests", () => {
       {
         content: Buffer.from(
           JSON.stringify({
-            id_lender: "wHHR1SUBT0dspoF4YUO91",
-            id_borrower: "wHHR1SUBT0dspoF4YUO92",
+            lender_id: "wHHR1SUBT0dspoF4YUO91",
+            borrower_id: "wHHR1SUBT0dspoF4YUO92",
             quantity: 50000,
-            id_loan: loan1_oid.toHexString(),
+            loan_id: loan1_oid.toHexString(),
             goal: 50000,
             raised: 0,
             term: 2,
@@ -900,9 +923,10 @@ describe("rabbitMQ tests", () => {
     expect(borrower).toEqual({
       _id: borrower_oid,
       id: "wHHR1SUBT0dspoF4YUO92",
-      accountAvailable: 150000,
-      accountToBePaid: 0,
-      accountTotal: 150000,
+      account_available: 150000,
+      account_to_be_paid: 0,
+      account_total: 150000,
+      account_withheld: 0,
     });
     const lender = await users.findOne({
       id: "wHHR1SUBT0dspoF4YUO91",
@@ -910,15 +934,16 @@ describe("rabbitMQ tests", () => {
     expect(lender).toEqual({
       _id: lender_oid,
       id: "wHHR1SUBT0dspoF4YUO91",
-      accountAvailable: 50000,
-      accountToBePaid: 50598,
-      accountTotal: 100598,
+      account_available: 50000,
+      account_to_be_paid: 50598,
+      account_total: 100598,
+      account_withheld: 0,
     });
     const allTransactionsBorrower = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO92" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO92" })
       .toArray();
     const allTransactionsLender = await transactions
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO91" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO91" })
       .toArray();
     expect(allTransactionsLender.length).toBe(1);
     expect(
@@ -927,8 +952,8 @@ describe("rabbitMQ tests", () => {
           ? {
               type: transaction.type,
               quantity: transaction.quantity,
-              id_borrower: transaction.id_borrower,
-              _id_loan: transaction._id_loan?.toHexString(),
+              borrower_id: transaction.borrower_id,
+              loan_oid: transaction.loan_oid?.toHexString(),
             }
           : {};
       })
@@ -936,8 +961,8 @@ describe("rabbitMQ tests", () => {
       {
         type: "invest",
         quantity: -50000,
-        id_borrower: "wHHR1SUBT0dspoF4YUO92",
-        _id_loan: loan1_oid.toHexString(),
+        borrower_id: "wHHR1SUBT0dspoF4YUO92",
+        loan_oid: loan1_oid.toHexString(),
       },
     ]);
     expect(allTransactionsBorrower.length).toBe(1);
@@ -957,7 +982,7 @@ describe("rabbitMQ tests", () => {
       },
     ]);
     const allLoans = await loans
-      .find({ id_user: "wHHR1SUBT0dspoF4YUO92" })
+      .find({ user_id: "wHHR1SUBT0dspoF4YUO92" })
       .toArray();
     expect(allLoans.length).toBe(2);
     expect(
@@ -980,7 +1005,7 @@ describe("rabbitMQ tests", () => {
     ]);
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const allInvestments = await investments
-      .find({ id_lender: "wHHR1SUBT0dspoF4YUO91" })
+      .find({ lender_id: "wHHR1SUBT0dspoF4YUO91" })
       .toArray();
     expect(allInvestments.length).toBe(1);
     expect(
@@ -993,7 +1018,7 @@ describe("rabbitMQ tests", () => {
     ).toEqual([
       {
         quantity: 50000,
-        ROI: 10,
+        roi: 10,
         payments: 0,
         moratory: 0,
         term: 2,
@@ -1001,9 +1026,9 @@ describe("rabbitMQ tests", () => {
         to_be_paid: 50598,
         paid_already: 0,
         amortize: 25299,
-        id_borrower: "wHHR1SUBT0dspoF4YUO92",
-        id_lender: "wHHR1SUBT0dspoF4YUO91",
-        _id_loan: loan1_oid,
+        borrower_id: "wHHR1SUBT0dspoF4YUO92",
+        lender_id: "wHHR1SUBT0dspoF4YUO91",
+        loan_oid: loan1_oid,
         status: "up to date",
         _id: "",
         updated_at: "",

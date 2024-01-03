@@ -1,4 +1,4 @@
-import { Channel } from "amqplib";
+import { Producer } from "kafkajs";
 import { ObjectId, Collection } from "mongodb";
 
 export interface Context {
@@ -8,7 +8,6 @@ export interface Context {
   transactions: Collection<TransactionMongo>;
   accessToken: string | undefined;
   refreshToken: string | undefined;
-  ch: Channel;
   id?: string;
   validAccessToken?: string;
   isBorrower: boolean;
@@ -17,13 +16,14 @@ export interface Context {
   logins?: unknown;
   authusers?: unknown;
   sessions?: unknown;
+  producer: Producer;
 }
 
 export interface UserMongo {
-  _id?: ObjectId;
-  accountAvailable: number;
-  accountToBePaid: number;
-  accountTotal: number;
+  account_available: number;
+  account_to_be_paid: number;
+  account_total: number;
+  account_withheld: number;
   id: string;
 }
 
@@ -52,17 +52,17 @@ export type TransactionMongo =
 
 export interface InvestmentTransactionMongo {
   _id?: ObjectId;
-  id_user: string;
+  user_id: string;
   type: TransactionInvestMongoType;
   quantity: number;
-  id_borrower: string;
-  _id_loan: ObjectId;
+  borrower_id: string;
+  loan_oid: ObjectId;
   created_at: Date;
 }
 
 export interface MoneyTransactionMongo {
   _id?: ObjectId;
-  id_user: string;
+  user_id: string;
   type: TransactionMongoType;
   quantity: number;
   created_at: Date;
@@ -75,46 +75,52 @@ export type ILoanStatus =
   | "waiting for approval"
   | "past due";
 
-export type IScheduledPaymentsStatus = "paid" | "to be paid" | "delayed";
+export type ScheduledPaymentsStatus = "paid" | "to be paid" | "delayed";
 
-export interface IScheduledPayments {
+export interface ScheduledPaymentsMongo {
+  _id?: ObjectId;
+  loan_oid: ObjectId;
   amortize: number;
-  status: IScheduledPaymentsStatus;
-  scheduledDate: Date;
+  status: ScheduledPaymentsStatus;
+  scheduled_date: Date;
 }
 
-export interface IScheduledPaymentsRedis {
+export interface IScheduledPaymentsMongoRedis {
+  _id: string;
+  loan_oid: string;
   amortize: number;
-  status: IScheduledPaymentsStatus;
-  scheduledDate: string;
+  status: ScheduledPaymentsStatus;
+  scheduled_date: string;
 }
 
 export interface LoanMongo {
   _id?: ObjectId;
-  id_user: string;
+  user_id: string;
   score: string;
-  ROI: number;
+  roi: number;
   goal: number;
   term: number;
   raised: number;
   expiry: Date;
   status: ILoanStatus;
-  scheduledPayments: IScheduledPayments[] | null;
   pending: number;
+  payments_done: number;
+  payments_delayed: number;
 }
 
 export interface LoanMongoRedis {
   _id: string;
-  id_user: string;
+  user_id: string;
   score: string;
-  ROI: number;
+  roi: number;
   goal: number;
   term: number;
   raised: number;
   expiry: string;
   status: ILoanStatus;
-  scheduledPayments: IScheduledPaymentsRedis[] | null;
   pending: number;
+  payments_done: number;
+  payments_delayed: number;
 }
 
 export type IInvestmentStatus =
@@ -124,16 +130,19 @@ export type IInvestmentStatus =
   | "past due"
   | "paid";
 
+export type IInvestmentStatusType = "on_going" | "over";
+
 export interface InvestmentMongo {
   _id?: ObjectId;
-  id_borrower: string;
-  id_lender: string;
-  _id_loan: ObjectId;
+  borrower_id: string;
+  lender_id: string;
+  loan_oid: ObjectId;
   quantity: number;
   created_at: Date;
   updated_at: Date;
   status: IInvestmentStatus;
-  ROI: number;
+  status_type: IInvestmentStatusType;
+  roi: number;
   term: number;
   payments: number;
   moratory: number;
@@ -145,14 +154,14 @@ export interface InvestmentMongo {
 
 export interface InvestmentMongoRedis {
   _id: string;
-  id_borrower: string;
-  id_lender: string;
-  _id_loan: string;
+  borrower_id: string;
+  lender_id: string;
+  loan_oid: string;
   quantity: number;
   created_at: string;
   updated_at: string;
   status: IInvestmentStatus;
-  ROI: number;
+  roi: number;
   term: number;
   payments: number;
   moratory: number;
@@ -170,5 +179,3 @@ export interface DecodeJWT {
   iat: number;
   exp: number;
 }
-
-export const ADD_LEND = "ADD_LEND";

@@ -41,27 +41,29 @@ export const AddLoanMutation = mutationWithClientMutationId({
       const expiry = add(new Date(), { months: 3 });
       const docLoan = {
         _id: _id_loan,
-        id_user: id,
+        user_id: id,
         score: "AAA",
         raised: 0,
         expiry,
-        ROI: 17.0,
+        roi: 17.0,
         status: "waiting for approval" as const,
-        scheduledPayments: null,
         pending: loan.goal,
+        payments_delayed: 0,
+        payments_done: 0,
         ...loan,
       };
       await loans.insertOne(docLoan);
       publishMyLoanInsert({
         _id: _id_loan,
-        id_user: id,
+        user_id: id,
         score: "AAA",
         raised: 0,
         expiry,
-        ROI: 17.0,
+        roi: 17.0,
         status: "waiting for approval",
-        scheduledPayments: null,
         pending: loan.goal,
+        payments_delayed: 0,
+        payments_done: 0,
         ...loan,
       });
       return {

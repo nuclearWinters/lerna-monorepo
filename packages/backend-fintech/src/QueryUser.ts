@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 import { GraphQLNonNull } from "graphql";
 import { GraphQLUser } from "./Nodes";
 import { Context, UserMongo } from "./types";
@@ -20,11 +19,11 @@ const QueryUser = {
       return user;
     } catch (e) {
       return {
-        _id: new ObjectId("000000000000000000000000"),
-        accountAvailable: 0,
-        accountToBePaid: 0,
+        account_available: 0,
+        account_to_be_paid: 0,
         id: "",
-        accountTotal: 0,
+        account_total: 0,
+        account_withheld: 0,
       };
     }
   },

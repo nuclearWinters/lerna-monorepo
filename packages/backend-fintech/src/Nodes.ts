@@ -29,13 +29,13 @@ import {
   TransactionMongo,
   ILoanStatus,
   IInvestmentStatus,
-  IScheduledPayments,
-  IScheduledPaymentsStatus,
   TransactionMongoType,
   UserMongo,
   InvestmentTransactionMongo,
   MoneyTransactionMongo,
   TransactionInvestMongoType,
+  ScheduledPaymentsMongo,
+  ScheduledPaymentsStatus,
 } from "./types";
 import { base64, unbase64 } from "./utils";
 import { userAuthFields, DateScalarType } from "backend-auth";
@@ -193,11 +193,11 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
       case "User":
         if (!userId) {
           return {
-            _id: new ObjectId("000000000000000000000000"),
-            accountAvailable: 0,
-            accountToBePaid: 0,
+            account_available: 0,
+            account_to_be_paid: 0,
             id: "",
-            accountTotal: 0,
+            account_total: 0,
+            account_withheld: 0,
             type,
           };
         }
@@ -222,18 +222,18 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
     id: globalIdField("Investment", ({ _id }): string =>
       typeof _id === "string" ? _id : _id.toHexString()
     ),
-    id_borrower: {
+    borrower_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_borrower }): string => id_borrower,
+      resolve: ({ borrower_id }): string => borrower_id,
     },
-    id_lender: {
+    lender_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_lender }): string => id_lender,
+      resolve: ({ lender_id }): string => lender_id,
     },
-    _id_loan: {
+    loan_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ _id_loan }): string =>
-        typeof _id_loan === "string" ? _id_loan : _id_loan.toHexString(),
+      resolve: ({ loan_oid }): string =>
+        typeof loan_oid === "string" ? loan_oid : loan_oid.toHexString(),
     },
     quantity: {
       type: new GraphQLNonNull(MXNScalarType),
@@ -241,7 +241,7 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
     },
     ROI: {
       type: new GraphQLNonNull(GraphQLInt),
-      resolve: ({ ROI }): number => ROI,
+      resolve: ({ roi }): number => roi,
     },
     payments: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -302,17 +302,17 @@ export const GraphQLInvestTransaction = new GraphQLObjectType<
     id: globalIdField("Transaction", ({ _id }): string => {
       return typeof _id === "string" ? _id : _id.toHexString();
     }),
-    id_user: {
+    user_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_user }): string => id_user,
+      resolve: ({ user_id }): string => user_id,
     },
-    id_borrower: {
+    borrower_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_borrower }): string => id_borrower,
+      resolve: ({ borrower_id }): string => borrower_id,
     },
-    _id_loan: {
+    loan_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ _id_loan }): string => _id_loan?.toHexString(),
+      resolve: ({ loan_oid }): string => loan_oid?.toHexString(),
     },
     quantity: {
       type: new GraphQLNonNull(MXNScalarType),
@@ -341,9 +341,9 @@ export const GraphQLMoneyTransaction = new GraphQLObjectType<
     id: globalIdField("Transaction", ({ _id }): string => {
       return typeof _id === "string" ? _id : _id.toHexString();
     }),
-    id_user: {
+    user_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_user }): string => id_user,
+      resolve: ({ user_id }): string => user_id,
     },
     quantity: {
       type: new GraphQLNonNull(MXNScalarType),
@@ -382,7 +382,7 @@ const {
 });
 
 export const GraphQLScheduledPayments =
-  new GraphQLObjectType<IScheduledPayments>({
+  new GraphQLObjectType<ScheduledPaymentsMongo>({
     name: "ScheduledPayments",
     fields: {
       amortize: {
@@ -391,14 +391,14 @@ export const GraphQLScheduledPayments =
       },
       status: {
         type: new GraphQLNonNull(LoanScheduledPaymentStatus),
-        resolve: ({ status }): IScheduledPaymentsStatus => status,
+        resolve: ({ status }): ScheduledPaymentsStatus => status,
       },
       scheduledDate: {
         type: new GraphQLNonNull(DateScalarType),
-        resolve: ({ scheduledDate }): Date =>
-          typeof scheduledDate === "string"
-            ? new Date(scheduledDate)
-            : scheduledDate,
+        resolve: ({ scheduled_date }): Date =>
+          typeof scheduled_date === "string"
+            ? new Date(scheduled_date)
+            : scheduled_date,
       },
     },
   });
@@ -409,9 +409,9 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
     id: globalIdField("Loan", ({ _id }): string =>
       typeof _id === "string" ? _id : _id.toHexString()
     ),
-    id_user: {
+    user_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id_user }): string => id_user,
+      resolve: ({ user_id }): string => user_id,
     },
     score: {
       type: new GraphQLNonNull(GraphQLString),
@@ -419,7 +419,7 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
     },
     ROI: {
       type: new GraphQLNonNull(GraphQLFloat),
-      resolve: ({ ROI }): number => ROI,
+      resolve: ({ roi }): number => roi,
     },
     goal: {
       type: new GraphQLNonNull(MXNScalarType),
@@ -442,11 +442,6 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
       type: new GraphQLNonNull(LoanStatus),
       resolve: ({ status }): ILoanStatus => status,
     },
-    scheduledPayments: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLScheduledPayments)),
-      resolve: ({ scheduledPayments }): IScheduledPayments[] | null =>
-        scheduledPayments,
-    },
     pending: {
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ pending }): number => pending,
@@ -468,24 +463,22 @@ const { connectionType: LoanConnection, edgeType: GraphQLLoanEdge } =
 const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
   name: "User",
   fields: {
-    id: globalIdField("User", ({ _id }): string =>
-      typeof _id === "string" ? _id : _id.toHexString()
-    ),
-    accountId: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id }): string => id,
-    },
+    id: globalIdField("User"),
     accountAvailable: {
       type: new GraphQLNonNull(MXNScalarType),
-      resolve: ({ accountAvailable }): number => accountAvailable,
+      resolve: ({ account_available }): number => account_available,
     },
     accountToBePaid: {
       type: new GraphQLNonNull(MXNScalarType),
-      resolve: ({ accountToBePaid }): number => accountToBePaid,
+      resolve: ({ account_to_be_paid }): number => account_to_be_paid,
     },
     accountTotal: {
       type: new GraphQLNonNull(MXNScalarType),
-      resolve: ({ accountTotal }): number => accountTotal,
+      resolve: ({ account_total }): number => account_total,
+    },
+    accountWithheld: {
+      type: new GraphQLNonNull(MXNScalarType),
+      resolve: ({ account_withheld }): number => account_withheld,
     },
     myLoans: {
       type: new GraphQLNonNull(LoanConnection),
@@ -518,7 +511,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
             query._id = { $lt: new ObjectId(loan_id) };
           }
           if (isBorrower) {
-            query.id_user = id;
+            query.user_id = id;
           }
           const result = await loans
             .find(query)
@@ -570,7 +563,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
           const query: Filter<InvestmentMongo> = {
-            id_lender: id,
+            lender_id: id,
           };
           if (investment_id) {
             query._id = { $lt: new ObjectId(investment_id) };
@@ -625,7 +618,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
           const query: Filter<TransactionMongo> = {
-            id_user: id,
+            user_id: id,
           };
           if (transaction_id) {
             query._id = { $lt: new ObjectId(transaction_id) };
