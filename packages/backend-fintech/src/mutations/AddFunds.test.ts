@@ -53,13 +53,15 @@ describe("AddFunds tests", () => {
       (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
       {}
     );
+    dbInstance = client.db(
+      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
+    );
     const kafka = new Kafka({
       clientId: "my-app",
       brokers: ["kafka:9092"],
     });
     producer = kafka.producer();
     await producer.connect();
-    dbInstance = client.db("fintech");
     app.locals.db = dbInstance;
     app.locals.producer = producer;
   });

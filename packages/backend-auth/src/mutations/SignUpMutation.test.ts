@@ -20,7 +20,9 @@ describe("SignUpMutation tests", () => {
       (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
       {}
     );
-    dbInstance = client.db("auth");
+    dbInstance = client.db(
+      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
+    );
     app.locals.authdb = dbInstance;
     app.locals.ch = { sendToQueue: jest.fn() };
     app.locals.rdb = { get: jest.fn() };

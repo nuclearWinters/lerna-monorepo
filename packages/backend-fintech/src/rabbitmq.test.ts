@@ -47,7 +47,9 @@ describe("rabbitMQ tests", () => {
       (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
       {}
     );
-    dbInstance = client.db("fintech");
+    dbInstance = client.db(
+      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
+    );
     conn = await amqp.connect("amqp://rabbitmq:5672");
     ch = await conn.createChannel();
   });
