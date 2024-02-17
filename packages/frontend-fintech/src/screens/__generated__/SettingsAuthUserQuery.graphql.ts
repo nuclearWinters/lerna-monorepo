@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c361b50b813b0b4958512138bd95d6a3>>
+ * @generated SignedSource<<c02d495be830032481bc5a1d175ac109>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,6 @@ export type SettingsAuthUserQuery$data = {
   readonly authUser: {
     readonly CURP: string;
     readonly RFC: string;
-    readonly accountId: string;
     readonly apellidoMaterno: string;
     readonly apellidoPaterno: string;
     readonly clabe: string;
@@ -45,73 +44,66 @@ v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "accountId",
+  "name": "name",
   "storageKey": null
 },
 v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "name",
+  "name": "apellidoPaterno",
   "storageKey": null
 },
 v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "apellidoPaterno",
+  "name": "apellidoMaterno",
   "storageKey": null
 },
 v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "apellidoMaterno",
+  "name": "RFC",
   "storageKey": null
 },
 v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "RFC",
+  "name": "CURP",
   "storageKey": null
 },
 v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "CURP",
+  "name": "clabe",
   "storageKey": null
 },
 v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "clabe",
+  "name": "mobile",
   "storageKey": null
 },
 v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "mobile",
+  "name": "email",
   "storageKey": null
 },
 v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "email",
-  "storageKey": null
-},
-v10 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
   "name": "language",
   "storageKey": null
 },
-v11 = [
+v10 = [
   {
     "kind": "Literal",
     "name": "after",
@@ -123,35 +115,35 @@ v11 = [
     "value": 5
   }
 ],
-v12 = {
+v11 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "applicationName",
   "storageKey": null
 },
-v13 = {
+v12 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "address",
   "storageKey": null
 },
-v14 = {
+v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v15 = {
+v14 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "cursor",
   "storageKey": null
 },
-v16 = {
+v15 = {
   "alias": null,
   "args": null,
   "concreteType": "PageInfo",
@@ -201,7 +193,6 @@ return {
           (v7/*: any*/),
           (v8/*: any*/),
           (v9/*: any*/),
-          (v10/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
@@ -243,10 +234,9 @@ return {
           (v7/*: any*/),
           (v8/*: any*/),
           (v9/*: any*/),
-          (v10/*: any*/),
           {
             "alias": null,
-            "args": (v11/*: any*/),
+            "args": (v10/*: any*/),
             "concreteType": "LoginsConnection",
             "kind": "LinkedField",
             "name": "logins",
@@ -269,7 +259,7 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
-                      (v12/*: any*/),
+                      (v11/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -277,22 +267,22 @@ return {
                         "name": "time",
                         "storageKey": null
                       },
-                      (v13/*: any*/),
-                      (v14/*: any*/)
+                      (v12/*: any*/),
+                      (v13/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v15/*: any*/)
+                  (v14/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v16/*: any*/)
+              (v15/*: any*/)
             ],
             "storageKey": "logins(after:\"\",first:5)"
           },
           {
             "alias": null,
-            "args": (v11/*: any*/),
+            "args": (v10/*: any*/),
             "filters": null,
             "handle": "connection",
             "key": "Settings_user_logins",
@@ -301,7 +291,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v11/*: any*/),
+            "args": (v10/*: any*/),
             "concreteType": "SessionsConnection",
             "kind": "LinkedField",
             "name": "sessions",
@@ -331,7 +321,7 @@ return {
                         "name": "expirationDate",
                         "storageKey": null
                       },
-                      (v12/*: any*/),
+                      (v11/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -346,7 +336,7 @@ return {
                         "name": "deviceName",
                         "storageKey": null
                       },
-                      (v13/*: any*/),
+                      (v12/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -354,21 +344,21 @@ return {
                         "name": "lastTimeAccessed",
                         "storageKey": null
                       },
-                      (v14/*: any*/)
+                      (v13/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v15/*: any*/)
+                  (v14/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v16/*: any*/)
+              (v15/*: any*/)
             ],
             "storageKey": "sessions(after:\"\",first:5)"
           },
           {
             "alias": null,
-            "args": (v11/*: any*/),
+            "args": (v10/*: any*/),
             "filters": null,
             "handle": "connection",
             "key": "Settings_user_sessions",
@@ -381,16 +371,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "84a4d86c47e100e3f40f9ebbbb99ec11",
+    "cacheID": "65a10a7fa633410c9e7f6b1564f0fbec",
     "id": null,
     "metadata": {},
     "name": "SettingsAuthUserQuery",
     "operationKind": "query",
-    "text": "query SettingsAuthUserQuery {\n  authUser {\n    id\n    accountId\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    email\n    language\n    ...Settings_logins_user\n    ...Settings_sessions_user\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SessionRow_session on Session {\n  id\n  applicationName\n  type\n  deviceName\n  address\n  lastTimeAccessed\n}\n\nfragment Settings_logins_user on AuthUser {\n  logins(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Settings_sessions_user on AuthUser {\n  sessions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        expirationDate\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsAuthUserQuery {\n  authUser {\n    id\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    email\n    language\n    ...Settings_logins_user\n    ...Settings_sessions_user\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SessionRow_session on Session {\n  id\n  applicationName\n  type\n  deviceName\n  address\n  lastTimeAccessed\n}\n\nfragment Settings_logins_user on AuthUser {\n  logins(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Settings_sessions_user on AuthUser {\n  sessions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        expirationDate\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e35a36702f5c2d87f846307a86cd2435";
+(node as any).hash = "b54df73e3add1b00cea007130c180435";
 
 export default node;

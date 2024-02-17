@@ -34,7 +34,6 @@ const AppUserQuery = graphql`
     }
     authUser {
       id
-      accountId
       name
       apellidoPaterno
       apellidoMaterno

@@ -350,7 +350,6 @@ type LoginsConnection {
 
 type AuthUser implements Node {
   id: ID!
-  accountId: String!
   name: String!
   apellidoPaterno: String!
   apellidoMaterno: String!

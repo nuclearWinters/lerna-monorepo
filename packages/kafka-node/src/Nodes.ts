@@ -36,7 +36,7 @@ import {
   IInvestmentStatusType,
 } from "./types";
 import { base64, unbase64 } from "./utils";
-import { userAuthFields, DateScalarType } from "backend-auth";
+import { DateScalarType } from "backend-auth";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatusType;
@@ -454,10 +454,6 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
   name: "User",
   fields: {
     id: globalIdField("User"),
-    accountId: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id }): string => id,
-    },
     accountAvailable: {
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ account_available }): number => account_available,
@@ -719,12 +715,6 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
       },
     },
   },
-  interfaces: [nodeInterface],
-});
-
-export const GraphQLAuthUser = new GraphQLObjectType({
-  name: "AuthUser",
-  fields: userAuthFields,
   interfaces: [nodeInterface],
 });
 

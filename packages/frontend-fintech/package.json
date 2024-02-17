@@ -91,11 +91,11 @@
   },
   "relay": {
     "src": "./src",
-    "schema": "./schema.graphql",
-    "customScalars": {
+    "customScalarTypes": {
       "Date": "Int",
       "MXN": "string"
     },
+    "schema": "./schema.graphql",
     "language": "typescript"
   }
 }

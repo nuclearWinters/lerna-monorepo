@@ -225,7 +225,7 @@ export const AddInvestments: FC<Props> = (props) => {
                   <CustomButton
                     text={t("Prestar")}
                     onClick={() => {
-                      if (!authUser.accountId) {
+                      if (authUser.id === "QXV0aFVzZXI6") {
                         return navigate.push("/login");
                       }
                       commit({

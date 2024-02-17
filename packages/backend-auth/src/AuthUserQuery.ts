@@ -324,7 +324,7 @@ const QueryUser = {
       return user;
     } catch (e) {
       return {
-        _id: new ObjectId("000000000000000000000000"),
+        _id: new ObjectId(),
         email: "",
         password: "",
         language: "default",

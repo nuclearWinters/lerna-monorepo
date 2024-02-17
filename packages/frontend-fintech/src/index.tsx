@@ -11,7 +11,7 @@ const styles = stylex.create({
     color: "orange",
     height: "100px",
     width: "100px",
-    backgroundColor: "lightgray",
+    backgroundColor: "red",
   },
   highlighted: {
     color: "rebeccapurple",

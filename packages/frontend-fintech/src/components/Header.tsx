@@ -25,7 +25,7 @@ export const Header: FC = () => {
     AppUserQuery,
     preloadQuery
   );
-  const isLogged = !!user.accountId;
+  const isLogged = user.id !== "VXNlcjo=";
   const navigate = useNavigation();
   const navigateTo = (path: string) => () => {
     navigate.push(path);

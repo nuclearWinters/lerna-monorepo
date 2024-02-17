@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9dbd380f8157370153605e016280abc7>>
+ * @generated SignedSource<<6b18733b28836a4bf5de6719588c4499>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,6 @@ export type AppUserQuery$data = {
   readonly authUser: {
     readonly CURP: string;
     readonly RFC: string;
-    readonly accountId: string;
     readonly apellidoMaterno: string;
     readonly apellidoPaterno: string;
     readonly clabe: string;
@@ -83,13 +82,6 @@ v1 = [
     "plural": false,
     "selections": [
       (v0/*: any*/),
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "accountId",
-        "storageKey": null
-      },
       {
         "alias": null,
         "args": null,
@@ -196,16 +188,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "60bf324e68f8aed5cc92d22b546659ad",
+    "cacheID": "f9818f0933393e14439cfbd07c8b0afb",
     "id": null,
     "metadata": {},
     "name": "AppUserQuery",
     "operationKind": "query",
-    "text": "query AppUserQuery {\n  user {\n    id\n    accountAvailable\n    accountTotal\n  }\n  authUser {\n    id\n    accountId\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    isLender\n    isBorrower\n    isSupport\n    language\n    email\n  }\n}\n"
+    "text": "query AppUserQuery {\n  user {\n    id\n    accountAvailable\n    accountTotal\n  }\n  authUser {\n    id\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    isLender\n    isBorrower\n    isSupport\n    language\n    email\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "50977a7d665a828ad68f0c19479f1cec";
+(node as any).hash = "22725bc677dd548269be807a00910213";
 
 export default node;

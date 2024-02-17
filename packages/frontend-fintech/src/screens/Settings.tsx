@@ -38,7 +38,6 @@ const settingsFragment = graphql`
   query SettingsAuthUserQuery {
     authUser {
       id
-      accountId
       name
       apellidoPaterno
       apellidoMaterno
