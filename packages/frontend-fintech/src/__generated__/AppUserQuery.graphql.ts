@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2fb528e2c041948a5e80b8795c8d5b17>>
+ * @generated SignedSource<<9dbd380f8157370153605e016280abc7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -30,7 +30,6 @@ export type AppUserQuery$data = {
   };
   readonly user: {
     readonly accountAvailable: string;
-    readonly accountId: string;
     readonly accountTotal: string;
     readonly id: string;
   };
@@ -48,14 +47,7 @@ var v0 = {
   "name": "id",
   "storageKey": null
 },
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "accountId",
-  "storageKey": null
-},
-v2 = [
+v1 = [
   {
     "alias": null,
     "args": null,
@@ -78,8 +70,7 @@ v2 = [
         "kind": "ScalarField",
         "name": "accountTotal",
         "storageKey": null
-      },
-      (v1/*: any*/)
+      }
     ],
     "storageKey": null
   },
@@ -92,7 +83,13 @@ v2 = [
     "plural": false,
     "selections": [
       (v0/*: any*/),
-      (v1/*: any*/),
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "accountId",
+        "storageKey": null
+      },
       {
         "alias": null,
         "args": null,
@@ -187,7 +184,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "AppUserQuery",
-    "selections": (v2/*: any*/),
+    "selections": (v1/*: any*/),
     "type": "Query",
     "abstractKey": null
   },
@@ -196,19 +193,19 @@ return {
     "argumentDefinitions": [],
     "kind": "Operation",
     "name": "AppUserQuery",
-    "selections": (v2/*: any*/)
+    "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "51903b4e00d528c2018255a02f05e1c2",
+    "cacheID": "60bf324e68f8aed5cc92d22b546659ad",
     "id": null,
     "metadata": {},
     "name": "AppUserQuery",
     "operationKind": "query",
-    "text": "query AppUserQuery {\n  user {\n    id\n    accountAvailable\n    accountTotal\n    accountId\n  }\n  authUser {\n    id\n    accountId\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    isLender\n    isBorrower\n    isSupport\n    language\n    email\n  }\n}\n"
+    "text": "query AppUserQuery {\n  user {\n    id\n    accountAvailable\n    accountTotal\n  }\n  authUser {\n    id\n    accountId\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    isLender\n    isBorrower\n    isSupport\n    language\n    email\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "731e1f39e5216498049df8b45890cd0e";
+(node as any).hash = "50977a7d665a828ad68f0c19479f1cec";
 
 export default node;

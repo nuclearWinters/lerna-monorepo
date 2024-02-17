@@ -10,7 +10,7 @@ import {
 } from "relay-runtime";
 import { API_GATEWAY, REALTIME_GATEWAY } from "utils";
 import { createClient, Sink } from "graphql-ws";
-import decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { Decode } from "screens/LogIn";
 
 export const subscriptionsClient = createClient({
@@ -38,7 +38,7 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
   const data = await response.json();
   const accesstoken = response.headers.get("accessToken");
   if (accesstoken && sessionStorage.getItem("accessToken") !== accesstoken) {
-    const decoded = decode<Decode>(accesstoken);
+    const decoded = jwtDecode<Decode>(accesstoken);
     sessionStorage.setItem("accessToken", accesstoken);
     sessionStorage.setItem("userData", JSON.stringify(decoded));
   }

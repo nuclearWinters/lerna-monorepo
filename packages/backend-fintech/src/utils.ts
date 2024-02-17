@@ -36,7 +36,6 @@ export const jwt = {
 
 export const getContext = async (req: Request): Promise<Context> => {
   const db = req.app.locals.db as Db;
-  const authdb = req.app.locals.authdb as Db;
   const producer = req.app.locals.producer as Producer;
   const accessToken = req.headers.authorization || "";
   const refreshToken = req.cookies?.refreshToken || "";
@@ -49,9 +48,6 @@ export const getContext = async (req: Request): Promise<Context> => {
     loans: db.collection<LoanMongo>("loans"),
     investments: db.collection<InvestmentMongo>("investments"),
     transactions: db.collection<TransactionMongo>("transactions"),
-    logins: authdb?.collection("logins"),
-    authusers: authdb?.collection("users"),
-    sessions: authdb?.collection("sessions"),
     accessToken,
     refreshToken,
     id,

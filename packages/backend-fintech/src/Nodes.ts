@@ -38,7 +38,7 @@ import {
   ScheduledPaymentsStatus,
 } from "./types";
 import { base64, unbase64 } from "./utils";
-import { userAuthFields, DateScalarType } from "backend-auth";
+import { DateScalarType } from "backend-auth";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatus[];
@@ -699,12 +699,6 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       },
     },
   },
-  interfaces: [nodeInterface],
-});
-
-export const GraphQLAuthUser = new GraphQLObjectType({
-  name: "AuthUser",
-  fields: userAuthFields,
   interfaces: [nodeInterface],
 });
 

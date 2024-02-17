@@ -296,7 +296,6 @@ type TransactionEdge {
 
 type User implements Node {
   id: ID!
-  accountId: String!
   accountAvailable: MXN!
   accountToBePaid: MXN!
   accountTotal: MXN!

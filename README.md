@@ -29,7 +29,7 @@ A test app that allows users to lend money to other users and receive interests 
 
 **Communication Protocols:**
 
-- RabbitMQ
+- Kafka
 - GRPC
 - GraphQL
 

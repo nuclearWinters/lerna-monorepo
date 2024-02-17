@@ -1,5 +1,5 @@
 import { app } from "./app";
-import { schemaFromExecutor } from "@graphql-tools/wrap";
+import { schemaFromExecutor, wrapSchema } from "@graphql-tools/wrap";
 import { stitchSchemas } from "@graphql-tools/stitch";
 import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
 import {
@@ -17,9 +17,11 @@ import {
   renderGraphiQL,
   shouldRenderGraphiQL,
 } from "graphql-helix";
-import ws, { WebSocketServer, CloseEvent } from "ws";
+import ws, { Server as WebSocketServer, CloseEvent } from "ws";
 import cookie from "cookie";
 import { ObjMap } from "graphql/jsutils/ObjMap";
+import { delegateToSchema } from "@graphql-tools/delegate";
+import { fromGlobalId } from "graphql-relay";
 
 const httpExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
@@ -127,18 +129,45 @@ const makeGatewaySchema = async () => {
     "http://backend-fintech:4000/graphql",
     "ws://backend-fintech:4000/graphql"
   );
-  const auth = httpExecutor("http://host.docker.internal:8001");
+  const auth = httpExecutor("http://backend-auth:4002/graphql");
+  const schemaFintech = wrapSchema({
+    schema: await schemaFromExecutor(fintech),
+    executor: fintech,
+  });
+  const schemaAuth = wrapSchema({
+    schema: await schemaFromExecutor(auth),
+    executor: auth,
+  });
   const gatewaySchema = stitchSchemas({
-    subschemas: [
-      {
-        schema: await schemaFromExecutor(fintech),
-        executor: fintech,
+    subschemas: [schemaFintech, schemaAuth],
+    resolvers: {
+      Query: {
+        node: {
+          resolve(_, args, context, info) {
+            const { type } = fromGlobalId(args.id);
+            if (type === "AuthUser") {
+              return delegateToSchema({
+                schema: schemaAuth,
+                operation: OperationTypeNode.QUERY,
+                fieldName: "node",
+                args,
+                context,
+                info,
+              });
+            } else {
+              return delegateToSchema({
+                schema: schemaFintech,
+                operation: OperationTypeNode.QUERY,
+                fieldName: "node",
+                args,
+                context,
+                info,
+              });
+            }
+          },
+        },
       },
-      {
-        schema: await schemaFromExecutor(auth),
-        executor: auth,
-      },
-    ],
+    },
   });
   return gatewaySchema;
 };

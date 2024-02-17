@@ -5,6 +5,7 @@ const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { VanillaExtractPlugin } = require("@vanilla-extract/webpack-plugin");
+const StylexPlugin = require("@stylexjs/webpack-plugin");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -12,6 +13,7 @@ module.exports = {
   mode: isDevelopment ? "development" : "production",
   entry: "./src/index.tsx",
   output: {
+    clean: true,
     path: path.resolve(__dirname, "./build"),
     filename: "bundle.js",
     publicPath: "/",
@@ -50,6 +52,24 @@ module.exports = {
     extensions: [".tsx", ".ts", ".jsx", ".js"],
   },
   plugins: [
+    new StylexPlugin({
+      filename: "styles.[contenthash].css",
+      // get webpack mode and set value for dev
+      dev: isDevelopment,
+      // Use statically generated CSS files and not runtime injected CSS.
+      // Even in development.
+      runtimeInjection: false,
+      // optional. default: 'x'
+      classNamePrefix: "x",
+      // Required for CSS variable support
+      unstable_moduleResolution: {
+        // type: 'commonJS' | 'haste'
+        // default: 'commonJS'
+        type: "commonJS",
+        // The absolute path to the root directory of your project
+        rootDir: __dirname,
+      },
+    }),
     new webpack.EnvironmentPlugin({
       API_GATEWAY: null,
       REALTIME_GATEWAY: null,

@@ -53,7 +53,7 @@ services:
     depends_on:
       - mongo-fintech
       - backend-auth
-      - rabbitmq
+      - kafka-node
 
   backend-auth:
     container_name: backend-auth
@@ -61,14 +61,14 @@ services:
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/backend-auth
-    command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "npm", "run", "start"]
+    command: ["./wait-for-it.sh", "kafka-node:9092", "--", "npm", "run", "start"]
     ports:
       - "4002:4002"
       - "1983:1983"
     depends_on:
       - mongo-fintech
       - redis-auth
-      - rabbitmq
+      - kafka-node
 
   frontend-fintech:
     container_name: frontend-fintech
@@ -102,12 +102,3 @@ services:
     logging:
       driver: none
 
-  rabbitmq:
-    container_name: rabbitmq
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-      - "25672:25672"
-    logging:
-      driver: none

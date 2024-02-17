@@ -10,7 +10,7 @@ import {
 } from "./types";
 import { jwt } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
-import { WebSocketServer } from "ws";
+import { Server as WebSocketServer } from "ws";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
 import { AuthServer } from "./grpc";
 import { AuthService } from "./proto/auth_grpc_pb";
@@ -29,7 +29,6 @@ const producer = kafka.producer();
 
 MongoClient.connect(MONGO_DB, {}).then(async (client) => {
   const db = client.db("fintech");
-  const authdb = client.db("auth");
   const consumer = kafka.consumer({ groupId: "test-group" });
   const loans = db.collection<LoanMongo>("loans");
   const investments = db.collection<InvestmentMongo>("investments");
@@ -38,7 +37,6 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
   const scheduledPayments =
     db.collection<ScheduledPaymentsMongo>("scheduledPayments");
   app.locals.db = db;
-  app.locals.authdb = authdb;
   app.locals.producer = producer;
   await producer.connect();
   checkEveryDay(() => dayFunction(db, producer));

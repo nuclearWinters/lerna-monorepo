@@ -31,7 +31,6 @@ const AppUserQuery = graphql`
       id
       accountAvailable
       accountTotal
-      accountId
     }
     authUser {
       id
