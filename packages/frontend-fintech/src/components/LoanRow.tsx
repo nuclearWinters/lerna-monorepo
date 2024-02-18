@@ -7,28 +7,17 @@ import {
 } from "react-relay/hooks";
 import { LoanRowMutation } from "./__generated__/LoanRowMutation.graphql";
 import { LoanRowRefetchQuery } from "./__generated__/LoanRowRefetchQuery.graphql";
-import {
-  LoanRow_loan$key,
-  LoanScheduledPaymentStatus,
-} from "./__generated__/LoanRow_loan.graphql";
+import { LoanRow_loan$key } from "./__generated__/LoanRow_loan.graphql";
 import { useTranslation } from "utils";
-import { Rows } from "./Rows";
-import { Columns } from "./Colums";
-import { TableColumnName } from "./TableColumnName";
-import { Space } from "./Space";
-import { Languages } from "__generated__/Routes_query.graphql";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { LoanRowUpdateSubscription } from "./__generated__/LoanRowUpdateSubscription.graphql";
 import dayjs from "dayjs";
-import es from "dayjs/locale/es";
-import en from "dayjs/locale/en";
 import {
   FaPlusSquare,
   FaClipboard,
   FaSyncAlt,
   FaThumbsUp,
 } from "react-icons/fa";
-import { customColumn } from "./Column.css";
 import {
   baseLoanRowBorrowerIcon,
   baseLoanRowBorrowerIconBox,
@@ -43,13 +32,13 @@ import {
   baseLoanRowStatus,
   customLoanRowStatusBox,
 } from "./LoanRow.css";
-import { customRows } from "./Rows.css";
-import { customSpace } from "./Space.css";
+import { ScheduledPaymentRow } from "./ScheduledPaymentRow";
+import { Languages } from "__generated__/AppUserQuery.graphql";
 
 const loanRowRefetchableFragment = graphql`
   fragment LoanRow_loan on Loan @refetchable(queryName: "LoanRowRefetchQuery") {
     id
-    id_user
+    user_id
     score
     ROI
     goal
@@ -57,11 +46,6 @@ const loanRowRefetchableFragment = graphql`
     raised
     expiry
     status
-    scheduledPayments {
-      amortize
-      status
-      scheduledDate
-    }
     pending
     pendingCents
   }
@@ -71,7 +55,7 @@ const subscriptionLoansUpdate = graphql`
   subscription LoanRowUpdateSubscription($gid: ID!) {
     loans_subscribe_update(gid: $gid) {
       id
-      id_user
+      user_id
       score
       ROI
       goal
@@ -79,11 +63,6 @@ const subscriptionLoansUpdate = graphql`
       raised
       expiry
       status
-      scheduledPayments {
-        amortize
-        status
-        scheduledDate
-      }
       pending
       pendingCents
     }
@@ -154,39 +133,7 @@ export const LoanRow: FC<Props> = ({
     }
   };
 
-  const statuPaymentsColor = (status: LoanScheduledPaymentStatus) => {
-    switch (status) {
-      case "DELAYED":
-        return customLoanRowStatusBox["scheduledPaymentsDelayed"];
-      case "PAID":
-        return customLoanRowStatusBox["scheduledPaymentsPaid"];
-      case "TO_BE_PAID":
-        return customLoanRowStatusBox["scheduledPaymentsToBePaid"];
-      default:
-        return customLoanRowStatusBox["default"];
-    }
-  };
-
-  const getStatusPayment = (status: LoanScheduledPaymentStatus) => {
-    switch (status) {
-      case "PAID":
-        return t("Pagado");
-      case "TO_BE_PAID":
-        return t("Por pagar");
-      case "DELAYED":
-        return t("Atrasado");
-      default:
-        return "";
-    }
-  };
-
   const [showSubTable, setShowSubTable] = useState(false);
-
-  const columns = [
-    { key: "amortize", title: t("Pago amortización") },
-    { key: "status", title: t("Estatus") },
-    { key: "scheduledDate", title: t("Fecha de pago") },
-  ];
 
   const configLoansUpdate = useMemo<
     GraphQLSubscriptionConfig<LoanRowUpdateSubscription>
@@ -205,28 +152,21 @@ export const LoanRow: FC<Props> = ({
   const now = dayjs();
   const expiry = dayjs(data.expiry);
 
-  const languageEnum =
-    language === "DEFAULT"
-      ? navigator.language.includes("es")
-        ? "ES"
-        : "EN"
-      : language === "ES"
-      ? "ES"
-      : "EN";
-
   return (
     <>
       <div className={baseLoanRowContainer}>
         {isBorrower && (
           <div className={baseLoanRowBorrowerIconBox}>
-            {data.scheduledPayments && (
-              <FaPlusSquare
-                onClick={() => {
-                  setShowSubTable((state) => !state);
-                }}
-                className={baseLoanRowBorrowerIcon}
-              />
-            )}
+            {data.status === "PAID" ||
+              data.status === "PAST_DUE" ||
+              (data.status === "TO_BE_PAID" && (
+                <FaPlusSquare
+                  onClick={() => {
+                    setShowSubTable((state) => !state);
+                  }}
+                  className={baseLoanRowBorrowerIcon}
+                />
+              ))}
           </div>
         )}
         <div className={baseLoanRowClipboard}>
@@ -240,7 +180,7 @@ export const LoanRow: FC<Props> = ({
         <div className={baseLoanRowClipboard}>
           <FaClipboard
             onClick={() => {
-              navigator.clipboard.writeText(data.id_user);
+              navigator.clipboard.writeText(data.user_id);
             }}
             className={baseLoanRowIcon}
           />
@@ -284,7 +224,7 @@ export const LoanRow: FC<Props> = ({
                       {
                         loan_gid: data.id,
                         quantity: val,
-                        borrower_id: data.id_user,
+                        borrower_id: data.user_id,
                         goal: data.goal,
                         term: data.term,
                         ROI: data.ROI,
@@ -353,40 +293,7 @@ export const LoanRow: FC<Props> = ({
         </div>
       </div>
       {showSubTable && (
-        <Rows className={customRows["flex1"]}>
-          <Columns>
-            <Space className={customSpace["w50"]} />
-            {columns.map((column) => (
-              <TableColumnName key={column.key}>{column.title}</TableColumnName>
-            ))}
-          </Columns>
-          {data.scheduledPayments?.map((payment) => {
-            return (
-              <Columns
-                key={String(payment.scheduledDate)}
-                className={customColumn["columnLoanRow"]}
-              >
-                <Space className={customSpace["w50"]} />
-                <div className={baseLoanRowCell}>{payment.amortize}</div>
-                <div className={baseLoanRowStatus}>
-                  <div className={statuPaymentsColor(payment.status)}>
-                    {getStatusPayment(payment.status)}
-                  </div>
-                </div>
-                <div className={baseLoanRowCell}>
-                  {dayjs(payment.scheduledDate)
-                    .locale(languageEnum === "ES" ? es : en)
-                    .format(
-                      languageEnum === "ES"
-                        ? "D [de] MMMM [del] YYYY [a las] h:mm a"
-                        : "D MMMM[,] YYYY [at] h:mm a"
-                    )}
-                </div>
-              </Columns>
-            );
-          })}
-          <Space className={customSpace["h30"]} />
-        </Rows>
+        <ScheduledPaymentRow loan_id={data.id} language={language} />
       )}
     </>
   );

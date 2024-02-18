@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1f9ca602dc5fde4061d5012a8ed29066>>
+ * @generated SignedSource<<001ce1f0961b2de953e6f882fdce5186>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -41,14 +41,7 @@ v1 = [
     "name": "first",
     "value": 5
   }
-],
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "status",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -121,7 +114,7 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "id_user",
+                        "name": "user_id",
                         "storageKey": null
                       },
                       {
@@ -166,31 +159,11 @@ return {
                         "name": "expiry",
                         "storageKey": null
                       },
-                      (v2/*: any*/),
                       {
                         "alias": null,
                         "args": null,
-                        "concreteType": "ScheduledPayments",
-                        "kind": "LinkedField",
-                        "name": "scheduledPayments",
-                        "plural": true,
-                        "selections": [
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "amortize",
-                            "storageKey": null
-                          },
-                          (v2/*: any*/),
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "scheduledDate",
-                            "storageKey": null
-                          }
-                        ],
+                        "kind": "ScalarField",
+                        "name": "status",
                         "storageKey": null
                       },
                       {
@@ -270,12 +243,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c9f7e4abbefcf4aa726f625c37920cd7",
+    "cacheID": "8b6c1a5eed5dc810f7714be93a7f234a",
     "id": null,
     "metadata": {},
     "name": "MyLoansQuery",
     "operationKind": "query",
-    "text": "query MyLoansQuery {\n  user {\n    id\n    ...MyLoans_user\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user on User {\n  myLoans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyLoansQuery {\n  user {\n    id\n    ...MyLoans_user\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user on User {\n  myLoans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

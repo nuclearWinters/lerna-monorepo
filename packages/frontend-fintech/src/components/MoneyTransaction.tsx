@@ -23,7 +23,7 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
     graphql`
       fragment MoneyTransaction_transaction on MoneyTransaction {
         id
-        id_user
+        user_id
         type
         quantity
         created_at

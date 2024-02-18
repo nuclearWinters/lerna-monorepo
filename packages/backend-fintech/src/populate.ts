@@ -4,8 +4,9 @@ import {
   InvestmentMongo,
   LoanMongo,
   UserMongo,
+  ScheduledPaymentsMongo,
 } from "./types";
-import { addMonths } from "date-fns";
+import { addMonths, startOfMonth } from "date-fns";
 
 MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
   async (client) => {
@@ -18,6 +19,8 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     const investments = db.collection<InvestmentMongo>("investments");
     await investments.deleteMany({});
     const transactions = db.collection<TransactionMongo>("transactions");
+    const scheduledPayments =
+      db.collection<ScheduledPaymentsMongo>("scheduledPayments");
     await transactions.deleteMany({});
     const _id_transaction_1 = new ObjectId("607bd608ef9719001cf38120");
     const _id_transaction_2 = new ObjectId("607bd608ef9719001cf38121");
@@ -110,38 +113,6 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         status: "paid",
         payments_delayed: 0,
         payments_done: 0,
-        /*scheduledPayments: [
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), -6)),
-            amortize: 1744326,
-            status: "paid",
-          },
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), -5)),
-            amortize: 1744326,
-            status: "paid",
-          },
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), -4)),
-            amortize: 1744326,
-            status: "paid",
-          },
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), -3)),
-            amortize: 1744326,
-            status: "paid",
-          },
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), -2)),
-            amortize: 1744326,
-            status: "paid",
-          },
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), -1)),
-            amortize: 1744326,
-            status: "paid",
-          },
-        ],*/
         pending: 0,
       },
       {
@@ -210,36 +181,89 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         goal: 5000000,
         term: 5,
         status: "to be paid",
-        /*scheduledPayments: [
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), 1)),
-            amortize: 1039853,
-            status: "to be paid",
-          },
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), 2)),
-            amortize: 1039853,
-            status: "to be paid",
-          },
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), 3)),
-            amortize: 1039853,
-            status: "to be paid",
-          },
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), 4)),
-            amortize: 1039853,
-            status: "to be paid",
-          },
-          {
-            scheduledDate: startOfMonth(addMonths(new Date(), 5)),
-            amortize: 1039853,
-            status: "to be paid",
-          },
-        ],*/
         pending: 0,
         payments_delayed: 0,
         payments_done: 0,
+      },
+    ]);
+
+    await scheduledPayments.insertMany([
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        scheduled_date: startOfMonth(addMonths(new Date(), 1)),
+        amortize: 1039853,
+        status: "to be paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        scheduled_date: startOfMonth(addMonths(new Date(), 2)),
+        amortize: 1039853,
+        status: "to be paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        scheduled_date: startOfMonth(addMonths(new Date(), 3)),
+        amortize: 1039853,
+        status: "to be paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        scheduled_date: startOfMonth(addMonths(new Date(), 4)),
+        amortize: 1039853,
+        status: "to be paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        scheduled_date: startOfMonth(addMonths(new Date(), 5)),
+        amortize: 1039853,
+        status: "to be paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        scheduled_date: startOfMonth(addMonths(new Date(), -6)),
+        amortize: 1744326,
+        status: "paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        scheduled_date: startOfMonth(addMonths(new Date(), -5)),
+        amortize: 1744326,
+        status: "paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        scheduled_date: startOfMonth(addMonths(new Date(), -4)),
+        amortize: 1744326,
+        status: "paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        scheduled_date: startOfMonth(addMonths(new Date(), -3)),
+        amortize: 1744326,
+        status: "paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        scheduled_date: startOfMonth(addMonths(new Date(), -2)),
+        amortize: 1744326,
+        status: "paid",
+      },
+      {
+        _id: new ObjectId(),
+        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        scheduled_date: startOfMonth(addMonths(new Date(), -1)),
+        amortize: 1744326,
+        status: "paid",
       },
     ]);
 

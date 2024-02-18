@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d00e02f6cec11a5e7046ab2267d27510>>
+ * @generated SignedSource<<078363f30c0dfc44a0174baac3436723>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -114,14 +114,14 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "id_borrower",
+                        "name": "borrower_id",
                         "storageKey": null
                       },
                       {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "_id_loan",
+                        "name": "loan_id",
                         "storageKey": null
                       },
                       {
@@ -266,12 +266,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "45f4860b5216ff90d432eaa24ca12b24",
+    "cacheID": "417e801172d161612fabf295e0fdb267",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsUserQuery",
     "operationKind": "query",
-    "text": "query MyInvestmentsUserQuery {\n  user {\n    id\n    ...MyInvestments_user\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  id_borrower\n  _id_loan\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsUserQuery {\n  user {\n    id\n    ...MyInvestments_user\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestments_user on User {\n  investments(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

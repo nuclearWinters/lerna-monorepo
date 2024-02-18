@@ -4,6 +4,7 @@ import {
   LoanMongo,
   TransactionMongo,
   InvestmentMongo,
+  ScheduledPaymentsMongo,
 } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT, Context } from "./types";
@@ -48,6 +49,8 @@ export const getContext = async (req: Request): Promise<Context> => {
     loans: db.collection<LoanMongo>("loans"),
     investments: db.collection<InvestmentMongo>("investments"),
     transactions: db.collection<TransactionMongo>("transactions"),
+    scheduledPayments:
+      db.collection<ScheduledPaymentsMongo>("scheduledPayments"),
     accessToken,
     refreshToken,
     id,

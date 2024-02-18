@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9dbf6a0586353831c95c07154234b3c3>>
+ * @generated SignedSource<<4987f0aa86a59d927cb98a56044e2f82>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,9 +14,9 @@ import { FragmentRefs } from "relay-runtime";
 export type MoneyTransaction_transaction$data = {
   readonly created_at: Int;
   readonly id: string;
-  readonly id_user: string;
   readonly quantity: string;
   readonly type: TransactionType;
+  readonly user_id: string;
   readonly " $fragmentType": "MoneyTransaction_transaction";
 };
 export type MoneyTransaction_transaction$key = {
@@ -41,7 +41,7 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "id_user",
+      "name": "user_id",
       "storageKey": null
     },
     {
@@ -70,6 +70,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "6453efe797ecc1389b60be36ecb53255";
+(node as any).hash = "cdea304e3bf531f87d2ad9cf5bc5845e";
 
 export default node;

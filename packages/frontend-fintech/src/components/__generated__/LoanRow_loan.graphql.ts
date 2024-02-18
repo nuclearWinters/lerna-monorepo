@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4ffa99468bd16d432a831e71d04c975b>>
+ * @generated SignedSource<<9d21baaf2262292686bf2868e53dfa5f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,6 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
-export type LoanScheduledPaymentStatus = "DELAYED" | "PAID" | "TO_BE_PAID" | "%future added value";
 export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type LoanRow_loan$data = {
@@ -17,18 +16,13 @@ export type LoanRow_loan$data = {
   readonly expiry: Int;
   readonly goal: string;
   readonly id: string;
-  readonly id_user: string;
   readonly pending: string;
   readonly pendingCents: number;
   readonly raised: string;
-  readonly scheduledPayments: ReadonlyArray<{
-    readonly amortize: string;
-    readonly scheduledDate: Int;
-    readonly status: LoanScheduledPaymentStatus;
-  }> | null | undefined;
   readonly score: string;
   readonly status: LoanStatus;
   readonly term: number;
+  readonly user_id: string;
   readonly " $fragmentType": "LoanRow_loan";
 };
 export type LoanRow_loan$key = {
@@ -36,15 +30,7 @@ export type LoanRow_loan$key = {
   readonly " $fragmentSpreads": FragmentRefs<"LoanRow_loan">;
 };
 
-const node: ReaderFragment = (function(){
-var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "status",
-  "storageKey": null
-};
-return {
+const node: ReaderFragment = {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": {
@@ -73,7 +59,7 @@ return {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "id_user",
+      "name": "user_id",
       "storageKey": null
     },
     {
@@ -118,31 +104,11 @@ return {
       "name": "expiry",
       "storageKey": null
     },
-    (v0/*: any*/),
     {
       "alias": null,
       "args": null,
-      "concreteType": "ScheduledPayments",
-      "kind": "LinkedField",
-      "name": "scheduledPayments",
-      "plural": true,
-      "selections": [
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "amortize",
-          "storageKey": null
-        },
-        (v0/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "scheduledDate",
-          "storageKey": null
-        }
-      ],
+      "kind": "ScalarField",
+      "name": "status",
       "storageKey": null
     },
     {
@@ -163,8 +129,7 @@ return {
   "type": "Loan",
   "abstractKey": null
 };
-})();
 
-(node as any).hash = "69923bcac15fc0ac98ab7b3c948e328a";
+(node as any).hash = "d915b4b9563f99cdca35108581ab27a2";
 
 export default node;

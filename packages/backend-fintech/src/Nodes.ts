@@ -385,6 +385,12 @@ export const GraphQLScheduledPayments =
   new GraphQLObjectType<ScheduledPaymentsMongo>({
     name: "ScheduledPayments",
     fields: {
+      id: globalIdField("ScheduledPayments", ({ _id }): string =>
+        typeof _id === "string" ? _id : _id.toHexString()
+      ),
+      loan_id: globalIdField("Loan", ({ loan_oid }): string =>
+        typeof loan_oid === "string" ? loan_oid : loan_oid.toHexString()
+      ),
       amortize: {
         type: new GraphQLNonNull(MXNScalarType),
         resolve: ({ amortize }): number => amortize,

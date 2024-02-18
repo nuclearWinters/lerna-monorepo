@@ -6,6 +6,7 @@ export interface Context {
   loans: Collection<LoanMongo>;
   investments: Collection<InvestmentMongo>;
   transactions: Collection<TransactionMongo>;
+  scheduledPayments: Collection<ScheduledPaymentsMongo>;
   accessToken: string | undefined;
   refreshToken: string | undefined;
   id?: string;

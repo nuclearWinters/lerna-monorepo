@@ -1,1 +1,1 @@
-export { userAuthFields, DateScalarType } from "./AuthUserQuery";
+export { DateScalarType } from "./AuthUserQuery";

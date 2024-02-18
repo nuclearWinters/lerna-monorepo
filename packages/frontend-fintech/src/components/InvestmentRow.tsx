@@ -18,8 +18,8 @@ const investmentRowRefetchableFragment = graphql`
   fragment InvestmentRow_investment on Investment
   @refetchable(queryName: "InvestmentRowRefetchQuery") {
     id
-    id_borrower
-    _id_loan
+    borrower_id
+    loan_id
     quantity
     created_at
     updated_at
@@ -89,7 +89,7 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
       <div className={baseInvestmentRowClipboard}>
         <FaClipboard
           onClick={() => {
-            navigator.clipboard.writeText(data.id_borrower);
+            navigator.clipboard.writeText(data.borrower_id);
           }}
           className={baseInvestmentRowIcon}
         />
@@ -97,7 +97,7 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
       <div className={baseInvestmentRowClipboard}>
         <FaClipboard
           onClick={() => {
-            navigator.clipboard.writeText(data._id_loan);
+            navigator.clipboard.writeText(data.loan_id);
           }}
           className={baseInvestmentRowIcon}
         />

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ddd8affd80617352005ecd59ec3ab953>>
+ * @generated SignedSource<<d62674fbc219cae5f655283e2dad1b09>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -75,14 +75,7 @@ v4 = [
     "name": "first",
     "variableName": "count"
   }
-],
-v5 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "status",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -169,7 +162,7 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "id_user",
+                            "name": "user_id",
                             "storageKey": null
                           },
                           {
@@ -214,31 +207,11 @@ return {
                             "name": "expiry",
                             "storageKey": null
                           },
-                          (v5/*: any*/),
                           {
                             "alias": null,
                             "args": null,
-                            "concreteType": "ScheduledPayments",
-                            "kind": "LinkedField",
-                            "name": "scheduledPayments",
-                            "plural": true,
-                            "selections": [
-                              {
-                                "alias": null,
-                                "args": null,
-                                "kind": "ScalarField",
-                                "name": "amortize",
-                                "storageKey": null
-                              },
-                              (v5/*: any*/),
-                              {
-                                "alias": null,
-                                "args": null,
-                                "kind": "ScalarField",
-                                "name": "scheduledDate",
-                                "storageKey": null
-                              }
-                            ],
+                            "kind": "ScalarField",
+                            "name": "status",
                             "storageKey": null
                           },
                           {
@@ -316,12 +289,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d4b9224bcffc7390b7edaee6b064152f",
+    "cacheID": "b22db04cf92d5ebf038df71971117b60",
     "id": null,
     "metadata": {},
     "name": "MyLoansPaginationUser",
     "operationKind": "query",
-    "text": "query MyLoansPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyLoans_user_1G22uz\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user_1G22uz on User {\n  myLoans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyLoansPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyLoans_user_1G22uz\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n  pendingCents\n}\n\nfragment MyLoans_user_1G22uz on User {\n  myLoans(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

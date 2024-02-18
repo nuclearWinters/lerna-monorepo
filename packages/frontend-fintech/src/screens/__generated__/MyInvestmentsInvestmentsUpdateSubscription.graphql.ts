@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7d4bbc08a10135d9ab46f28196725417>>
+ * @generated SignedSource<<f28082493c268a89558790176d9ba73e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,12 +14,12 @@ export type MyInvestmentsInvestmentsUpdateSubscription$variables = Record<Proper
 export type MyInvestmentsInvestmentsUpdateSubscription$data = {
   readonly investments_subscribe_update: {
     readonly ROI: number;
-    readonly _id_loan: string;
+    readonly borrower_id: string;
     readonly created_at: Int;
     readonly id: string;
-    readonly id_borrower: string;
-    readonly id_lender: string;
     readonly interest_to_earn: string;
+    readonly lender_id: string;
+    readonly loan_id: string;
     readonly moratory: string;
     readonly paid_already: string;
     readonly payments: number;
@@ -56,21 +56,21 @@ var v0 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "id_borrower",
+        "name": "borrower_id",
         "storageKey": null
       },
       {
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "id_lender",
+        "name": "lender_id",
         "storageKey": null
       },
       {
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "_id_loan",
+        "name": "loan_id",
         "storageKey": null
       },
       {
@@ -172,16 +172,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "a8a2962404b499d62874dc8df8b39dd2",
+    "cacheID": "c315341adb434eef30fc33f9c06cac21",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsInvestmentsUpdateSubscription",
     "operationKind": "subscription",
-    "text": "subscription MyInvestmentsInvestmentsUpdateSubscription {\n  investments_subscribe_update {\n    id\n    id_borrower\n    id_lender\n    _id_loan\n    quantity\n    ROI\n    payments\n    term\n    moratory\n    created_at\n    updated_at\n    status\n    interest_to_earn\n    paid_already\n    to_be_paid\n  }\n}\n"
+    "text": "subscription MyInvestmentsInvestmentsUpdateSubscription {\n  investments_subscribe_update {\n    id\n    borrower_id\n    lender_id\n    loan_id\n    quantity\n    ROI\n    payments\n    term\n    moratory\n    created_at\n    updated_at\n    status\n    interest_to_earn\n    paid_already\n    to_be_paid\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3619dad285fabce091c558a875d88bcc";
+(node as any).hash = "786781690506356754d16eb55fa165e3";
 
 export default node;

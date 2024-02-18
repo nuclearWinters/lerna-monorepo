@@ -24,12 +24,14 @@ import {
   shouldRenderGraphiQL,
 } from "graphql-helix";
 import cookieParser from "cookie-parser";
+import { QueryScheduledPayments } from "./QueryScheduledPayments";
 
 const Query = new GraphQLObjectType({
   name: "Query",
   fields: {
     user: QueryUser,
     node: nodeField,
+    scheduledPaymentsbyLoanId: QueryScheduledPayments,
   },
 });
 

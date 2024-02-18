@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<198cb869c8bf6054c92a3cea60bc120b>>
+ * @generated SignedSource<<62f10af5cea59f7e8c46042e7c575ef7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,6 @@
 // @ts-nocheck
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
-export type LoanScheduledPaymentStatus = "DELAYED" | "PAID" | "TO_BE_PAID" | "%future added value";
 export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 export type MyLoansMyLoansSubscription$variables = {
   connections: ReadonlyArray<string>;
@@ -22,18 +21,13 @@ export type MyLoansMyLoansSubscription$data = {
       readonly expiry: Int;
       readonly goal: string;
       readonly id: string;
-      readonly id_user: string;
       readonly pending: string;
       readonly pendingCents: number;
       readonly raised: string;
-      readonly scheduledPayments: ReadonlyArray<{
-        readonly amortize: string;
-        readonly scheduledDate: Int;
-        readonly status: LoanScheduledPaymentStatus;
-      }> | null | undefined;
       readonly score: string;
       readonly status: LoanStatus;
       readonly term: number;
+      readonly user_id: string;
     } | null | undefined;
   };
 };
@@ -51,13 +45,6 @@ var v0 = [
   }
 ],
 v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "status",
-  "storageKey": null
-},
-v2 = {
   "alias": null,
   "args": null,
   "concreteType": "LoanEdge",
@@ -84,7 +71,7 @@ v2 = {
           "alias": null,
           "args": null,
           "kind": "ScalarField",
-          "name": "id_user",
+          "name": "user_id",
           "storageKey": null
         },
         {
@@ -129,31 +116,11 @@ v2 = {
           "name": "expiry",
           "storageKey": null
         },
-        (v1/*: any*/),
         {
           "alias": null,
           "args": null,
-          "concreteType": "ScheduledPayments",
-          "kind": "LinkedField",
-          "name": "scheduledPayments",
-          "plural": true,
-          "selections": [
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "amortize",
-              "storageKey": null
-            },
-            (v1/*: any*/),
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "scheduledDate",
-              "storageKey": null
-            }
-          ],
+          "kind": "ScalarField",
+          "name": "status",
           "storageKey": null
         },
         {
@@ -190,7 +157,7 @@ return {
     "metadata": null,
     "name": "MyLoansMyLoansSubscription",
     "selections": [
-      (v2/*: any*/)
+      (v1/*: any*/)
     ],
     "type": "Subscription",
     "abstractKey": null
@@ -201,7 +168,7 @@ return {
     "kind": "Operation",
     "name": "MyLoansMyLoansSubscription",
     "selections": [
-      (v2/*: any*/),
+      (v1/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -221,16 +188,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "74a3e634fcc49f3b2f8732e84b70ce3e",
+    "cacheID": "6bc3d2073efef3efd4a4df619d0ec638",
     "id": null,
     "metadata": {},
     "name": "MyLoansMyLoansSubscription",
     "operationKind": "subscription",
-    "text": "subscription MyLoansMyLoansSubscription {\n  my_loans_subscribe_insert {\n    node {\n      id\n      id_user\n      score\n      ROI\n      goal\n      term\n      raised\n      expiry\n      status\n      scheduledPayments {\n        amortize\n        status\n        scheduledDate\n      }\n      pending\n      pendingCents\n    }\n    cursor\n  }\n}\n"
+    "text": "subscription MyLoansMyLoansSubscription {\n  my_loans_subscribe_insert {\n    node {\n      id\n      user_id\n      score\n      ROI\n      goal\n      term\n      raised\n      expiry\n      status\n      pending\n      pendingCents\n    }\n    cursor\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "494102b5c5b677fbc885a920f70f202e";
+(node as any).hash = "be42e0b4919853f3ba3ac622a0f67707";
 
 export default node;

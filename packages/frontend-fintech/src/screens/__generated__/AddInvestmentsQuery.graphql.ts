@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<dd6a3e28b132e8d984922e5069758166>>
+ * @generated SignedSource<<fcbbbd5cdbde6bdb0ea67f5d1624e004>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -52,13 +52,6 @@ v2 = {
   "args": null,
   "kind": "ScalarField",
   "name": "id",
-  "storageKey": null
-},
-v3 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "status",
   "storageKey": null
 };
 return {
@@ -132,7 +125,7 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "id_user",
+                        "name": "user_id",
                         "storageKey": null
                       },
                       {
@@ -177,31 +170,11 @@ return {
                         "name": "expiry",
                         "storageKey": null
                       },
-                      (v3/*: any*/),
                       {
                         "alias": null,
                         "args": null,
-                        "concreteType": "ScheduledPayments",
-                        "kind": "LinkedField",
-                        "name": "scheduledPayments",
-                        "plural": true,
-                        "selections": [
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "amortize",
-                            "storageKey": null
-                          },
-                          (v3/*: any*/),
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "scheduledDate",
-                            "storageKey": null
-                          }
-                        ],
+                        "kind": "ScalarField",
+                        "name": "status",
                         "storageKey": null
                       },
                       {
@@ -284,12 +257,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "6af8fad9a6ac47e2812a3cd4fdce24df",
+    "cacheID": "0ffce4d6d74997b9075109eb9153b492",
     "id": null,
     "metadata": {},
     "name": "AddInvestmentsQuery",
     "operationKind": "query",
-    "text": "query AddInvestmentsQuery {\n  user {\n    ...AddInvestments_user\n    id\n  }\n}\n\nfragment AddInvestments_user on User {\n  loansFinancing(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
+    "text": "query AddInvestmentsQuery {\n  user {\n    ...AddInvestments_user\n    id\n  }\n}\n\nfragment AddInvestments_user on User {\n  loansFinancing(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n  pendingCents\n}\n"
   }
 };
 })();

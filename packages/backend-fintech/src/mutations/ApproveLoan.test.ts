@@ -135,7 +135,7 @@ describe("ApproveLoan tests", () => {
     expect(
       allLoans.map((loan) => ({
         ROI: loan.roi,
-        id_user: loan.user_id,
+        user_id: loan.user_id,
         goal: loan.goal,
         raised: loan.raised,
         score: loan.score,
@@ -145,7 +145,7 @@ describe("ApproveLoan tests", () => {
     ).toEqual([
       {
         ROI: 17,
-        id_user: borrower_id,
+        user_id: borrower_id,
         goal: 100000,
         raised: 0,
         score: "AAA",

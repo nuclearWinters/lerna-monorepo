@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<50e064741966251aee5e317e347ab12b>>
+ * @generated SignedSource<<367a088dcab0610fab14b91545a7e1fd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,11 +13,11 @@ export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DU
 import { FragmentRefs } from "relay-runtime";
 export type InvestmentRow_investment$data = {
   readonly ROI: number;
-  readonly _id_loan: string;
+  readonly borrower_id: string;
   readonly created_at: Int;
   readonly id: string;
-  readonly id_borrower: string;
   readonly interest_to_earn: string;
+  readonly loan_id: string;
   readonly moratory: string;
   readonly paid_already: string;
   readonly payments: number;
@@ -62,14 +62,14 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "id_borrower",
+      "name": "borrower_id",
       "storageKey": null
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "_id_loan",
+      "name": "loan_id",
       "storageKey": null
     },
     {
@@ -154,6 +154,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "439d5f1814bee68f42b0c2be7b84b36a";
+(node as any).hash = "1cb15992ac67c5ae1cdae6add7abd428";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cf5003032c0cbc0d1857a68b0726f051>>
+ * @generated SignedSource<<85f1627b4bd4ca6446d8d6b5f68c74ff>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -204,12 +204,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "87ece76398187a506838d0ee07d2d171",
+    "cacheID": "4f06fb66db42a49b19f781c609600d9c",
     "id": null,
     "metadata": {},
     "name": "MyTransactionsTransactionsSubscription",
     "operationKind": "subscription",
-    "text": "subscription MyTransactionsTransactionsSubscription {\n  transactions_subscribe_insert {\n    node {\n      __typename\n      ... on InvestTransaction {\n        ...InvestmentTransaction_transaction\n        __module_operation_MyTransactionsTransactionsSubscription: js(module: \"InvestmentTransaction_transaction$normalization.graphql\", id: \"MyTransactionsTransactionsSubscription.transactions_subscribe_insert.node\")\n        __module_component_MyTransactionsTransactionsSubscription: js(module: \"InvestmentTransaction\", id: \"MyTransactionsTransactionsSubscription.transactions_subscribe_insert.node\")\n        id\n      }\n      ... on MoneyTransaction {\n        ...MoneyTransaction_transaction\n        __module_operation_MyTransactionsTransactionsSubscription: js(module: \"MoneyTransaction_transaction$normalization.graphql\", id: \"MyTransactionsTransactionsSubscription.transactions_subscribe_insert.node\")\n        __module_component_MyTransactionsTransactionsSubscription: js(module: \"MoneyTransaction\", id: \"MyTransactionsTransactionsSubscription.transactions_subscribe_insert.node\")\n        id\n      }\n    }\n    cursor\n  }\n}\n\nfragment InvestmentTransaction_transaction on InvestTransaction {\n  id\n  id_user\n  type\n  quantity\n  created_at\n  id_borrower\n  _id_loan\n}\n\nfragment MoneyTransaction_transaction on MoneyTransaction {\n  id\n  id_user\n  type\n  quantity\n  created_at\n}\n"
+    "text": "subscription MyTransactionsTransactionsSubscription {\n  transactions_subscribe_insert {\n    node {\n      __typename\n      ... on InvestTransaction {\n        ...InvestmentTransaction_transaction\n        __module_operation_MyTransactionsTransactionsSubscription: js(module: \"InvestmentTransaction_transaction$normalization.graphql\", id: \"MyTransactionsTransactionsSubscription.transactions_subscribe_insert.node\")\n        __module_component_MyTransactionsTransactionsSubscription: js(module: \"InvestmentTransaction\", id: \"MyTransactionsTransactionsSubscription.transactions_subscribe_insert.node\")\n        id\n      }\n      ... on MoneyTransaction {\n        ...MoneyTransaction_transaction\n        __module_operation_MyTransactionsTransactionsSubscription: js(module: \"MoneyTransaction_transaction$normalization.graphql\", id: \"MyTransactionsTransactionsSubscription.transactions_subscribe_insert.node\")\n        __module_component_MyTransactionsTransactionsSubscription: js(module: \"MoneyTransaction\", id: \"MyTransactionsTransactionsSubscription.transactions_subscribe_insert.node\")\n        id\n      }\n    }\n    cursor\n  }\n}\n\nfragment InvestmentTransaction_transaction on InvestTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n  borrower_id\n  loan_id\n}\n\nfragment MoneyTransaction_transaction on MoneyTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n}\n"
   }
 };
 })();

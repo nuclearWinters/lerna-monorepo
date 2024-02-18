@@ -44,7 +44,7 @@ const subscriptionMyLoans = graphql`
     my_loans_subscribe_insert @prependEdge(connections: $connections) {
       node {
         id
-        id_user
+        user_id
         score
         ROI
         goal
@@ -52,11 +52,6 @@ const subscriptionMyLoans = graphql`
         raised
         expiry
         status
-        scheduledPayments {
-          amortize
-          status
-          scheduledDate
-        }
         pending
         pendingCents
       }
@@ -134,7 +129,7 @@ export const MyLoans: FC<Props> = (props) => {
 
   const columns = [
     { key: "id", title: t("ID") },
-    { key: "id_user", title: t("Solicitante") },
+    { key: "user_id", title: t("Solicitante") },
     { key: "score", title: t("Calif.") },
     { key: "ROI", title: t("Retorno anual") },
     { key: "goal", title: t("Monto") },

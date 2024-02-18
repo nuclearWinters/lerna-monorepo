@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<768528cdd4accdbbec8c9bc0daa25237>>
+ * @generated SignedSource<<7c48224598022b605ae7fcaa9db9ba2e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -37,14 +37,7 @@ v1 = [
     "name": "id",
     "variableName": "id"
   }
-],
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "status",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -107,7 +100,7 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "id_user",
+                "name": "user_id",
                 "storageKey": null
               },
               {
@@ -152,31 +145,11 @@ return {
                 "name": "expiry",
                 "storageKey": null
               },
-              (v2/*: any*/),
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "ScheduledPayments",
-                "kind": "LinkedField",
-                "name": "scheduledPayments",
-                "plural": true,
-                "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "amortize",
-                    "storageKey": null
-                  },
-                  (v2/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "scheduledDate",
-                    "storageKey": null
-                  }
-                ],
+                "kind": "ScalarField",
+                "name": "status",
                 "storageKey": null
               },
               {
@@ -203,16 +176,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "55a21f33bf504e50310f809e71e42b7b",
+    "cacheID": "f442b471ca545f6bacd9dedfb129d602",
     "id": null,
     "metadata": {},
     "name": "LoanRowRefetchQuery",
     "operationKind": "query",
-    "text": "query LoanRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...LoanRow_loan\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  id_user\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  scheduledPayments {\n    amortize\n    status\n    scheduledDate\n  }\n  pending\n  pendingCents\n}\n"
+    "text": "query LoanRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...LoanRow_loan\n    id\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n  pendingCents\n}\n"
   }
 };
 })();
 
-(node as any).hash = "69923bcac15fc0ac98ab7b3c948e328a";
+(node as any).hash = "d915b4b9563f99cdca35108581ab27a2";
 
 export default node;

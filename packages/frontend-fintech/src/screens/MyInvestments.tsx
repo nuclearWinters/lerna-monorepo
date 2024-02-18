@@ -38,9 +38,9 @@ const subscriptionInvestments = graphql`
       @prependEdge(connections: $connections) {
       node {
         id
-        id_borrower
-        id_lender
-        _id_loan
+        borrower_id
+        lender_id
+        loan_id
         quantity
         ROI
         payments
@@ -62,9 +62,9 @@ const subscriptionInvestmentsUpdate = graphql`
   subscription MyInvestmentsInvestmentsUpdateSubscription {
     investments_subscribe_update {
       id
-      id_borrower
-      id_lender
-      _id_loan
+      borrower_id
+      lender_id
+      loan_id
       quantity
       ROI
       payments
@@ -129,8 +129,8 @@ export const MyInvestments: FC<Props> = (props) => {
 
   const columns = [
     { key: "id", title: t("ID") },
-    { key: "id_borrower", title: t("ID deudor") },
-    { key: "_id_loan", title: t("ID deuda") },
+    { key: "borrower_id", title: t("ID deudor") },
+    { key: "loan_id", title: t("ID deuda") },
     { key: "quantity", title: t("Cantidad") },
     { key: "status", title: t("Estatus") },
     { key: "paid", title: t("Pagado") },

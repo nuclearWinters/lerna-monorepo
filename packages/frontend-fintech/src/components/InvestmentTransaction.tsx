@@ -26,12 +26,12 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
     graphql`
       fragment InvestmentTransaction_transaction on InvestTransaction {
         id
-        id_user
+        user_id
         type
         quantity
         created_at
-        id_borrower
-        _id_loan
+        borrower_id
+        loan_id
       }
     `,
     transaction
@@ -41,7 +41,7 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
 
   const isEs = t("Pago mensual") === "Pago mensual";
 
-  const { id_borrower, _id_loan } = data;
+  const { borrower_id, loan_id } = data;
   const substraction = data.quantity.includes("-") ? "#CD5C5C" : "#50C878";
 
   const getStatus = (type: TransactionType) => {
@@ -75,14 +75,14 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
           {t("Prestado a")}{" "}
           <FaUserCircle
             onClick={() => {
-              navigator.clipboard.writeText(id_borrower);
+              navigator.clipboard.writeText(borrower_id);
             }}
             className={baseMyTransactionsIcon}
           />{" "}
           {t("al fondo")}:{" "}
           <FaFileContract
             onClick={() => {
-              navigator.clipboard.writeText(_id_loan);
+              navigator.clipboard.writeText(loan_id);
             }}
             className={baseMyTransactionsIcon}
           />

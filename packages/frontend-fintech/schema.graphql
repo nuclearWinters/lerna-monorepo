@@ -139,6 +139,7 @@ type Query {
   user: User!
   authUser: AuthUser!
   node(id: ID!): Node
+  scheduledPaymentsbyLoanId(id: ID!): [ScheduledPayments]
 }
 
 type Subscription {
@@ -170,9 +171,9 @@ type PageInfo {
 
 type Investment implements Node {
   id: ID!
-  id_borrower: String!
-  id_lender: String!
-  _id_loan: String!
+  borrower_id: String!
+  lender_id: String!
+  loan_id: String!
   quantity: MXN!
   ROI: Float!
   payments: Int!
@@ -203,6 +204,8 @@ enum LoanScheduledPaymentStatus {
 }
 
 type ScheduledPayments {
+  id: ID!
+  loan_id: ID!
   amortize: MXN!
   status: LoanScheduledPaymentStatus!
   scheduledDate: Date!
@@ -210,7 +213,7 @@ type ScheduledPayments {
 
 type Loan implements Node {
   id: ID!
-  id_user: String!
+  user_id: String!
   score: String!
   ROI: Int!
   goal: MXN!
@@ -218,7 +221,6 @@ type Loan implements Node {
   raised: MXN!
   expiry: Date!
   status: LoanStatus!
-  scheduledPayments: [ScheduledPayments!]
   pending: MXN!
   pendingCents: Int!
 }
@@ -266,9 +268,9 @@ union Transaction = InvestTransaction | MoneyTransaction
 
 type InvestTransaction {
   id: ID!
-  id_user: String!
-  id_borrower: String!
-  _id_loan: String!
+  user_id: String!
+  borrower_id: String!
+  loan_id: String!
   type: TransactionType!
   quantity: MXN!
   created_at: Date!
@@ -277,7 +279,7 @@ type InvestTransaction {
 
 type MoneyTransaction {
   id: ID!
-  id_user: String!
+  user_id: String!
   type: TransactionType!
   quantity: MXN!
   created_at: Date!
