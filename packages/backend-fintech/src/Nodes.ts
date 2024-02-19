@@ -169,27 +169,6 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   async (globalId, { users, loans, investments, id: userId }) => {
     const { type, id } = fromGlobalId(globalId);
     switch (type) {
-      case "AuthUser":
-        if (!userId) {
-          return {
-            _id: new ObjectId("000000000000000000000000"),
-            email: "",
-            password: "",
-            language: "default",
-            name: "",
-            apellidoPaterno: "",
-            apellidoMaterno: "",
-            RFC: "",
-            CURP: "",
-            clabe: "",
-            mobile: "",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-            id: "",
-          };
-        }
-        return { ...(await users.findOne({ _id: new ObjectId(id) })), type };
       case "User":
         if (!userId) {
           return {
@@ -201,7 +180,7 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
             type,
           };
         }
-        return { ...(await users.findOne({ _id: new ObjectId(id) })), type };
+        return { ...(await users.findOne({ id })), type };
       case "Loan":
         return { ...(await loans.findOne({ _id: new ObjectId(id) })), type };
       case "Investment":

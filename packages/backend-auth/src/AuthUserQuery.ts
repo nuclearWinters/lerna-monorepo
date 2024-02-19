@@ -29,7 +29,6 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
       case "AuthUser":
         if (!userId) {
           return {
-            _id: new ObjectId(),
             email: "",
             password: "",
             language: "default",
@@ -324,7 +323,6 @@ const QueryUser = {
       return user;
     } catch (e) {
       return {
-        _id: new ObjectId(),
         email: "",
         password: "",
         language: "default",

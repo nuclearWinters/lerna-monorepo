@@ -44,7 +44,6 @@ export interface UserSessions {
 }
 
 export interface UserMongo {
-  _id?: ObjectId;
   email: string;
   password: string;
   isLender: boolean;

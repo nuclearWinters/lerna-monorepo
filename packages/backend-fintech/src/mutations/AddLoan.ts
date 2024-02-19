@@ -37,10 +37,10 @@ export const AddLoanMutation = mutationWithClientMutationId({
       if (!id) {
         throw new Error("No valid access token.");
       }
-      const _id_loan = new ObjectId();
+      const loan_oid = new ObjectId();
       const expiry = add(new Date(), { months: 3 });
       const docLoan = {
-        _id: _id_loan,
+        _id: loan_oid,
         user_id: id,
         score: "AAA",
         raised: 0,
@@ -54,7 +54,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
       };
       await loans.insertOne(docLoan);
       publishMyLoanInsert({
-        _id: _id_loan,
+        _id: loan_oid,
         user_id: id,
         score: "AAA",
         raised: 0,

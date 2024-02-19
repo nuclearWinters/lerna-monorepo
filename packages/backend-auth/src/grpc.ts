@@ -30,25 +30,31 @@ export const AuthServer: IAuthServer = {
       const accessToken = call.request.getAccesstoken();
       const isBlacklisted = await ctx?.rdb?.get(refreshToken);
       if (accessToken) {
-        const userAccess = jwt.verify(accessToken, ACCESSSECRET);
-        if (!userAccess) {
-          throw new Error("El token esta corrompido.");
-        }
-        if (isBlacklisted) {
-          const time = new Date(Number(isBlacklisted) * 1000);
-          const issuedTime = addMinutes(new Date(userAccess.exp * 1000), -3);
-          const loggedAfter = isAfter(issuedTime, time);
-          if (!loggedAfter) {
-            throw new Error("El usuario esta bloqueado.");
+        try {
+          const userAccess = jwt.verify(accessToken, ACCESSSECRET);
+          if (!userAccess) {
+            throw new Error("El token esta corrompido.");
+          }
+          if (isBlacklisted) {
+            const time = new Date(Number(isBlacklisted) * 1000);
+            const issuedTime = addMinutes(new Date(userAccess.exp * 1000), -3);
+            const loggedAfter = isAfter(issuedTime, time);
+            if (!loggedAfter) {
+              throw new Error("El usuario esta bloqueado.");
+            }
+          }
+          const payload = new JWTMiddlewarePayload();
+          payload.setValidaccesstoken(accessToken);
+          payload.setId(userAccess.id);
+          payload.setIsborrower(userAccess.isBorrower);
+          payload.setIslender(userAccess.isLender);
+          payload.setIssupport(userAccess.isSupport);
+          return callback(null, payload);
+        } catch (e) {
+          if (e instanceof Error && e.name !== "TokenExpiredError") {
+            throw e;
           }
         }
-        const payload = new JWTMiddlewarePayload();
-        payload.setValidaccesstoken(accessToken);
-        payload.setId(userAccess.id);
-        payload.setIsborrower(userAccess.isBorrower);
-        payload.setIslender(userAccess.isLender);
-        payload.setIssupport(userAccess.isSupport);
-        return callback(null, payload);
       }
       const user = jwt.verify(refreshToken, REFRESHSECRET);
       if (!user) {
