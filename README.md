@@ -1,4 +1,4 @@
-# Relay GraphQL Gateway Monorepo
+# Monorepo with a GraphQL Gateway and Relay specifications
 
 This project explores microservices as a monorepository.
 
