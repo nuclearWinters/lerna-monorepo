@@ -7,7 +7,7 @@ import { ObjectId } from "mongodb";
 const QueryScheduledPayments = {
   type: new GraphQLList(GraphQLScheduledPayments),
   args: {
-    id: {
+    loan_gid: {
       type: new GraphQLNonNull(GraphQLID),
     },
   },
@@ -17,9 +17,9 @@ const QueryScheduledPayments = {
     { scheduledPayments }: Context
   ): Promise<ScheduledPaymentsMongo[]> => {
     try {
-      const { id: loan_id } = args as { id: string };
-      const id = unbase64(loan_id);
-      const loan_oid = new ObjectId(id);
+      const { loan_gid } = args as { loan_gid: string };
+      const loan_id = unbase64(loan_gid);
+      const loan_oid = new ObjectId(loan_id);
       const scheduledPaymentsList = await scheduledPayments
         .find({ loan_oid })
         .toArray();
