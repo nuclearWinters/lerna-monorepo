@@ -1,17 +1,23 @@
 # Lerna GraphQL Relay API Gateway Typescript Monorepo
 
-This project explore microservices with a monorepo approach.
+This project explores microservices as a monorepository.
 
-These microservices use GraphQL with Relay specifications and can be requested by using the Gateway
+These microservices expose GraphQL schemas with Relay specifications and are merged into one in the GraphQL Gateway so the React app onyl need to fetch data from one endpoint.
 
-Docker-compose will build up all microservices and manage images.
+Docker will run all microservices locally.
 
-A test app that allows users to lend money to other users and receive interests in the future.
+This app is about lending money and earning interest.
 
-**Languages:**
+**Programming Languages:**
 
 - Javascript
 - Typescript
+
+**Communications:**
+
+- Kafka
+- gRPC
+- GraphQL
 
 **Specifications:**
 
@@ -27,12 +33,6 @@ A test app that allows users to lend money to other users and receive interests 
 - Jest
 - Babel
 
-**Communication Protocols:**
-
-- Kafka
-- GRPC
-- GraphQL
-
 **Dependencies:**
 
 - lerna
@@ -41,8 +41,8 @@ A test app that allows users to lend money to other users and receive interests 
 - graphql-ws
 - jsonwebtokens
 - @grpc/grpc-js
-- amqplib
-- cron
+- kafkajs
+- node-cron
 - mongodb
 - react
 - supertest
@@ -56,10 +56,10 @@ A test app that allows users to lend money to other users and receive interests 
 
 - Docker
 
-To set up the project in dev mode:
+To set up the project locally:
 
-1. Run `make setup`
+1. Run `make up` in root folder
 
-2. Run `make up`
+2. Run `npm run populate` on backend-auth and backend-fintech root folders
 
-3. Run `npm run populate` on backend-auth and backend-fintech root folder projects
+There is also a microservice refatored in Rust and another that uses Cassandra as the database (not finished)
