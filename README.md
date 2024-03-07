@@ -1,4 +1,4 @@
-# Lerna GraphQL Relay API Gateway Typescript Monorepo
+# Relay GraphQL Gateway Monorepo
 
 This project explores microservices as a monorepository.
 
@@ -32,6 +32,7 @@ This app is about lending money and earning interest.
 - Eslint
 - Jest
 - Babel
+- Typescript
 
 **Dependencies:**
 
