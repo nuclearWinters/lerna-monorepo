@@ -1,8 +1,9 @@
 {
   "eslint.workingDirectories": [
     "packages/frontend-fintech",
-    "packages/backend-fintech",
-    "packages/backend-auth",
+    "packages/backend-fintech-mongo",
+    "packages/backend-auth-node",
+    "packages/kafka-mongo",
     "packages/relay-gateway"
   ],
   "editor.formatOnSave": true,

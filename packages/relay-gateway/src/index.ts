@@ -129,7 +129,7 @@ const makeGatewaySchema = async () => {
     "http://backend-fintech:4000/graphql",
     "ws://backend-fintech:4000/graphql"
   );
-  const auth = httpExecutor("http://backend-auth:4002/graphql");
+  const auth = httpExecutor("http://backend-auth-node:4002/graphql");
   const schemaFintech = wrapSchema({
     schema: await schemaFromExecutor(fintech),
     executor: fintech,

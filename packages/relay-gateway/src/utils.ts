@@ -20,7 +20,7 @@ export const setExtensionsContext = (
 };
 
 export const client = new AuthClient(
-  `backend-auth:1983`,
+  `backend-auth-node:1983`,
   credentials.createInsecure()
 );
 
