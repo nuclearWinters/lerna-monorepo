@@ -163,7 +163,8 @@ impl Mutation {
                 match valid {
                     true => {
                         let mut con: tokio::sync::MutexGuard<RedisConnection> = ctx.data::<Arc<Mutex<RedisConnection>>>()?.lock().await;
-                        let black_listed_user: RedisResult<String> = con.get(user._id.to_hex());
+                        let id: String = user.id;
+                        let black_listed_user: RedisResult<String> = con.get(id.to_owned());
                         match black_listed_user {
                             Ok(_black_listed_user) => Some(SignInPayload {
                                 error: String::from("El usuario estará bloqueado."),
@@ -178,7 +179,7 @@ impl Mutation {
                                 let since_the_epoch_access: i64 = since_the_epoch + 180;
                                 let since_the_epoch_refresh: i64 = since_the_epoch + 900;
                                 let my_claims_refresh: Claims = Claims {
-                                    id: user.id.to_owned(),
+                                    id: id.to_owned(),
                                     is_borrower: user.is_borrower,
                                     is_lender: user.is_lender,
                                     is_support: user.is_support,
@@ -186,7 +187,7 @@ impl Mutation {
                                     exp: since_the_epoch_refresh,
                                 };
                                 let my_claims_access: Claims = Claims {
-                                    id: user.id.to_owned(),
+                                    id: id.to_owned(),
                                     is_borrower: user.is_borrower,
                                     is_lender: user.is_lender,
                                     is_support: user.is_support,
@@ -208,7 +209,7 @@ impl Mutation {
                                             application_name: String::from("Lerna Monorepo"),
                                             address: request_context.ip.to_owned(),
                                             time: DateTime::now(),
-                                            user_id: user.id.to_owned()
+                                            user_id: id.to_owned()
                                         };
                                         auth_logins.insert_one(new_login, None).await?;
                                         let parser: Parser = Parser::new();
@@ -236,7 +237,7 @@ impl Mutation {
                                                 application_name: String::from("Lerna Monorepo"),
                                                 device_name,
                                                 address: request_context.ip.to_owned(),
-                                                user_id: user.id.to_owned(),
+                                                user_id: id.to_owned(),
                                                 device_type,
                                                 expiration_date: DateTime::from_millis(since_the_epoch_refresh * 1000)
                                             },
@@ -463,14 +464,13 @@ impl Mutation {
         Ok(match user {
             Some(user) => {
                 let mut node_id: String = "AuthUser:".to_owned();
-                let hex: String = user._id.to_hex();
+                let hex: String = user.id;
                 node_id.push_str(&hex);
                 Some(UpdateUserPayload {
                     error: String::from(""),
                     client_mutation_id: None,
                     auth_user: Some(AuthUser {
                         id: ID::from(general_purpose::STANDARD.encode(node_id)),
-                        account_id: user.id,
                         name: user.name,
                         apellido_paterno: user.apellido_paterno,
                         apellido_materno: user.apellido_materno,
@@ -722,7 +722,6 @@ impl Languages {
 
 struct AuthUser {
     id: ID,
-    account_id: String,
     name: String,
     apellido_paterno: String,
     apellido_materno: String,
@@ -741,9 +740,6 @@ struct AuthUser {
 impl AuthUser {
     async fn id(&self) -> &ID {
         &self.id
-    }
-    async fn account_id(&self) -> &String {
-        &self.account_id
     }
     async fn name(&self) -> &String {
         &self.name
@@ -1114,13 +1110,13 @@ pub struct AuthService {
 
 impl Default for AuthService {
     fn default() -> Self {
-        let uri: &str = "mongodb://127.0.0.1:27017";
+        let uri: &str = "mongodb://mongo-fintech:27017";
         let mut client_options: ClientOptions = executor::block_on(ClientOptions::parse(uri)).unwrap();
         let server_api: ServerApi = ServerApi::builder().version(ServerApiVersion::V1).build();
         client_options.server_api = Some(server_api);
         let client: Client = Client::with_options(client_options).unwrap();
         let db: Database = client.database("auth");
-        let redis_client: RedisClient = RedisClient::open("redis://127.0.0.1/").unwrap();
+        let redis_client: RedisClient = RedisClient::open("redis://redis-auth/").unwrap();
         let redis_connection: RedisConnection = redis_client.get_connection().unwrap();
         AuthService {
             redis: Arc::new(Mutex::new(redis_connection)),
@@ -1257,10 +1253,9 @@ impl Query {
   async fn auth_user(&self, ctx: &Context<'_>) -> GraphQLResult<AuthUser> {
     let request_context: &RequestContext = ctx.data::<RequestContext>()?;
     if request_context.id.is_empty() {
-        let data: &str = "AuthUser:000000000000000000000000";
+        let data: &str = "AuthUser:";
         let no_user: AuthUser = AuthUser {
             id: ID::from(general_purpose::STANDARD.encode(data)),
-            account_id: String::from(""),
             name: String::from(""),
             apellido_paterno: String::from(""),
             apellido_materno: String::from(""),
@@ -1283,12 +1278,11 @@ impl Query {
     match user {
         Some(user) => {
             let mut data: String = "AuthUser:".to_owned();
-            let hex: String = user._id.to_hex();
+            let hex: String = user.id;
             data.push_str(&hex);
             Ok(
                 AuthUser {
                     id: ID::from(general_purpose::STANDARD.encode(data)),
-                    account_id: user.id,
                     name: user.name,
                     apellido_paterno: user.apellido_paterno,
                     apellido_materno: user.apellido_materno,
@@ -1306,10 +1300,9 @@ impl Query {
 
         }
         None => {
-            let data: &str = "AuthUser:000000000000000000000000";
+            let data: &str = "AuthUser:";
             let no_user: AuthUser = AuthUser {
                 id: ID::from(general_purpose::STANDARD.encode(data)),
-                account_id: String::from(""),
                 name: String::from(""),
                 apellido_paterno: String::from(""),
                 apellido_materno: String::from(""),
@@ -1338,7 +1331,7 @@ struct RequestContext {
 
 #[tokio::main]
 async fn main() -> GraphQLResult<()> {
-    let uri: &str = "mongodb://127.0.0.1:27017";
+    let uri: &str = "mongodb://mongo-fintech:27017";
     let mut client_options = ClientOptions::parse(uri).await?;    
     let server_api: ServerApi = ServerApi::builder().version(ServerApiVersion::V1).build();
     client_options.server_api = Some(server_api);
@@ -1347,9 +1340,9 @@ async fn main() -> GraphQLResult<()> {
     let auth_users: Collection<AuthUserMongo> = db.collection::<AuthUserMongo>("users");
     let auth_sessions: Collection<SessionsMongo> = db.collection::<SessionsMongo>("sessions");
     let auth_logins: Collection<LoginsMongo> = db.collection::<LoginsMongo>("logins");
-    let redis_client: RedisClient = RedisClient::open("redis://127.0.0.1/")?;
+    let redis_client: RedisClient = RedisClient::open("redis://redis-auth/")?;
     let redis_connection: RedisConnection = redis_client.get_connection()?;
-    let grpc_client: AuthClient<Channel> = AuthClient::connect("http://127.0.0.1:1984").await?;
+    let grpc_client: AuthClient<Channel> = AuthClient::connect("http://backend-auth:1983").await?;
     let schema: Schema<Query, Mutation, EmptySubscription> = Schema::build(Query, Mutation, EmptySubscription)
         .data(auth_users)
         .data(auth_sessions)
@@ -1358,7 +1351,7 @@ async fn main() -> GraphQLResult<()> {
         .data(Arc::new(Mutex::new(redis_connection)))
         .finish();
 
-    println!("GraphiQL IDE: http://localhost:8001");
+    println!("GraphiQL IDE: http://localhost:8001/graphql");
 
     let graphql_post = async_graphql_warp::graphql(schema)
     .and(warp::header::optional::<String>("Authorization"))
@@ -1413,10 +1406,10 @@ async fn main() -> GraphQLResult<()> {
         },
     );
 
-    let graphiql = warp::path::end().and(warp::get()).map(|| {
+    let graphiql = warp::path("graphql").and(warp::get()).map(|| {
         HttpResponse::builder()
             .header("content-type", "text/html")
-            .body(GraphiQLSource::build().endpoint("/").finish())
+            .body(GraphiQLSource::build().endpoint("/graphql").finish())
     });
 
     let routes = graphiql
@@ -1442,7 +1435,7 @@ async fn main() -> GraphQLResult<()> {
         .add_service(AuthServer::new(auth_service))
         .serve(addr);
     
-    let warp_service = warp::serve(routes).run(([127, 0, 0, 1], 8001));
+    let warp_service = warp::serve(routes).run(([0, 0, 0, 0], 8001));
 
     future::join(warp_service, grpc_service).await;
 
