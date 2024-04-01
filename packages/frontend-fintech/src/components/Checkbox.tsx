@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { checkboxStyle } from "./Checkbox.css";
+import * as stylex from "@stylexjs/stylex";
 
 interface Props
   extends React.DetailedHTMLProps<
@@ -11,9 +11,16 @@ interface Props
   label: string;
 }
 
+export const checkboxStyle = stylex.create({
+  base: {
+    fontSize: "20px",
+    color: "rgb(62,62,62)",
+  },
+});
+
 export const Checkbox: FC<Props> = ({ label, name, ...props }) => {
   return (
-    <label className={checkboxStyle}>
+    <label {...stylex.props(checkboxStyle.base)}>
       {label}
       <input name={name} type="checkbox" {...props} />
     </label>

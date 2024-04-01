@@ -1,10 +1,6 @@
 import React, { FC } from "react";
-import { Link } from "yarr";
-import {
-  baseAccountLinkIcon,
-  customAccountLinkBox,
-  customAccountLinkTitle,
-} from "./AccountLink.css";
+import { Link } from "react-router-dom";
+import * as stylex from "@stylexjs/stylex";
 
 interface Props {
   title: string;
@@ -13,25 +9,69 @@ interface Props {
   location: string;
 }
 
+export const accountLinkBox = stylex.create({
+  base: {
+    height: "80px",
+    display: "flex",
+    borderBottomWidth: "1px",
+    borderBottomColor: "rgb(225,225,225)",
+    borderBottomStyle: "solid",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    cursor: "pointer",
+  },
+  selected: {
+    backgroundColor: "rgba(221,221,221,0.48)",
+    boxShadow: "rgba(134,134,134,0.75) 0px 1px 7px 0px inset",
+  },
+  notSelected: {
+    backgroundColor: "white",
+    boxShadow: "unset",
+  },
+});
+
+export const accountLinkIcon = stylex.create({
+  base: {
+    position: "absolute",
+    left: "0px",
+    top: "0px",
+    bottom: "0px",
+    width: "4px",
+    backgroundColor: "rgb(255,90,96)",
+  },
+});
+
+export const accountLinkTitle = stylex.create({
+  base: {
+    fontSize: "16px",
+  },
+  selected: {
+    color: "rgb(255,90,96)",
+  },
+  notSelected: {
+    color: "rgb(62,62,62)",
+  },
+});
+
 export const AccountLink: FC<Props> = ({ title, icon, path, location }) => {
   const selected = path === location;
   return (
     <Link
       to={path}
-      className={
-        selected
-          ? customAccountLinkBox["selected"]
-          : customAccountLinkBox["notSelected"]
-      }
+      {...stylex.props(
+        accountLinkBox.base,
+        selected ? accountLinkBox.selected : accountLinkBox.notSelected
+      )}
     >
-      {selected && <div className={baseAccountLinkIcon} />}
+      {selected && <div {...stylex.props(accountLinkIcon.base)} />}
       {icon}
       <div
-        className={
-          selected
-            ? customAccountLinkTitle["selected"]
-            : customAccountLinkTitle["notSelected"]
-        }
+        {...stylex.props(
+          accountLinkTitle.base,
+          selected ? accountLinkTitle.selected : accountLinkTitle.notSelected
+        )}
       >
         {title}
       </div>

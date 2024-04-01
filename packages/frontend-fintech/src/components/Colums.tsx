@@ -1,11 +1,23 @@
 import React, { FC, ReactNode } from "react";
-import { baseColumn } from "./Column.css";
+import * as stylex from "@stylexjs/stylex";
 
 interface Props {
-  className?: string;
+  styleX?: stylex.StyleXStyles[];
   children: ReactNode;
 }
 
-export const Columns: FC<Props> = ({ className, children }) => {
-  return <div className={className || baseColumn}>{children}</div>;
+export const baseColumn = stylex.create({
+  base: {
+    display: "flex",
+  },
+  columnJustifyCenter: {
+    justifyContent: "center",
+  },
+  columnLoanRow: {
+    marginBottom: "6px",
+  },
+});
+
+export const Columns: FC<Props> = ({ styleX, children }) => {
+  return <div {...stylex.props(styleX || baseColumn.base)}>{children}</div>;
 };

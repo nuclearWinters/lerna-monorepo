@@ -1,11 +1,28 @@
 import React, { FC, ReactNode } from "react";
-import { baseWrapperBig } from "./WrapperBig.css";
+import * as stylex from "@stylexjs/stylex";
 
 interface Props {
-  className?: string;
+  styleX?: stylex.StyleXStyles[];
   children: ReactNode;
 }
 
-export const WrapperBig: FC<Props> = ({ children, className }) => {
-  return <div className={className || baseWrapperBig}>{children}</div>;
+export const baseWrapperBig = stylex.create({
+  base: {
+    backgroundColor: "white",
+    margin: "30px 20px",
+    borderRadius: "8px",
+    borderStyle: "solid",
+    borderWidth: "1px",
+    borderColor: "rgb(203,203,203)",
+    display: "flex",
+    flexDirection: "column",
+    flex: "1",
+  },
+  settings: {
+    margin: "30px 60px",
+  },
+});
+
+export const WrapperBig: FC<Props> = ({ children, styleX }) => {
+  return <div {...stylex.props(styleX || baseWrapperBig.base)}>{children}</div>;
 };

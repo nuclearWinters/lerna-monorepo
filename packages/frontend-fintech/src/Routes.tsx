@@ -1,23 +1,128 @@
-import { loadQuery, PreloadedQuery } from "react-relay/hooks";
+import { createBrowserRouter, defer, redirect } from "react-router-dom";
+import React from "react";
+import { graphql, loadQuery } from "react-relay";
 import { RelayEnvironment } from "RelayEnvironment";
-import SettingsAuthUserQuery from "./screens/__generated__/SettingsAuthUserQuery.graphql";
-import AccountUserQuery from "./screens/__generated__/AccountUserQuery.graphql";
-import MyInvestmentsUserQuery from "./screens/__generated__/MyInvestmentsUserQuery.graphql";
-import MyTransactionsQuery from "./screens/__generated__/MyTransactionsQuery.graphql";
-import AddInvestmentsQuery from "./screens/__generated__/AddInvestmentsQuery.graphql";
-import MyLoansQuery from "./screens/__generated__/MyLoansQuery.graphql";
-import { RouteConfig } from "yarr";
-import { Decode } from "./screens/LogIn";
+import { HeaderAuth } from "pages/Header/Header";
+import { Decode } from "pages/LogIn/LogIn";
+import { MyTransactionsLoader } from "pages/MyTransactions";
+import MyTransactionsQuery from "./pages/MyTransactions/__generated__/MyTransactionsQuery.graphql";
+import AccountUserQuery from "./pages/Account/__generated__/AccountUserQuery.graphql";
+import AddInvestmentsQuery from "./pages/AddInvestments/__generated__/AddInvestmentsQuery.graphql";
+import ApproveLoansQuery from "./pages/ApproveLoan/__generated__/ApproveLoansQuery.graphql";
+import SettingsAuthUserQuery from "./pages/Settings/__generated__/SettingsAuthUserQuery.graphql";
+import MyInvestmentsQuery from "./pages/MyInvestments/__generated__/MyInvestmentsUserQuery.graphql";
+import MyLoansQuery from "./pages/MyLoans/__generated__/MyLoansQuery.graphql";
+import { AccountLoader } from "pages/Account";
+import { AddFundsLoader } from "pages/AddFunds";
+import { RetireFundsLoader } from "pages/RetireFunds";
+import { AddInvestmentsLoader } from "pages/AddInvestments";
+import { AddLoanLoader } from "pages/AddLoan";
+import { ApproveLoanLoader } from "pages/ApproveLoan";
+import * as stylex from "@stylexjs/stylex";
+import { MyLoansLoader } from "pages/MyLoans";
+import { LogInLoader } from "pages/LogIn";
+import { SignUpLoader } from "pages/SignUp";
+import { MyInvestmentsLoader } from "pages/MyInvestments";
 
-export type IRouteConfig = RouteConfig<
-  string,
-  string,
-  {
-    params: {};
-    search: {};
-    preloaded: { query: PreloadedQuery<any>; id?: string };
-  }
->[];
+export const baseRoutes = stylex.create({
+  base: {
+    flexDirection: "row",
+    height: "100vh",
+    width: "100vw",
+    display: "grid",
+    gridTemplateColumns: "126px 1fr",
+    gridAutoRows: "60px 1fr",
+  },
+});
+
+export const baseRoutesHeaderLogged = stylex.create({
+  base: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+});
+
+export const baseRoutesHeaderNotLogged = stylex.create({
+  base: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
+export const baseRoutesContent = stylex.create({
+  base: {
+    flex: "1",
+    display: "flex",
+    backgroundColor: "rgb(248,248,248)",
+    gridRowStart: "2",
+    gridRowEnd: "2",
+    gridColumnStart: "2",
+    gridColumnEnd: "3",
+  },
+});
+
+export const baseRoutesLink = stylex.create({
+  base: {
+    textAlign: "end",
+    textDecoration: "none",
+    color: "black",
+    marginLeft: "10px",
+  },
+});
+
+export const baseRoutesIconUser = stylex.create({
+  base: {
+    fontSize: "28px",
+    margin: "12px 0px 12px 0px",
+  },
+  logged: {
+    color: "rgba(255,90,96,0.5)",
+  },
+  notLogged: {
+    color: "rgb(140,140,140)",
+  },
+});
+
+export const baseHeader = stylex.create({
+  base: {
+    gridColumnStart: "2",
+    gridColumnEnd: "2",
+    gridRowStart: "1",
+    gridRowEnd: "2",
+  },
+  fallback: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
+
+export const baseSider = stylex.create({
+  base: {
+    gridRowStart: "1",
+    gridRowEnd: "3",
+    gridColumnStart: "1",
+    gridColumnEnd: "1",
+    display: "flex",
+  },
+});
+
+export const baseRoutesIconLogout = stylex.create({
+  base: {
+    margin: "0px 10px",
+    cursor: "pointer",
+    color: "rgb(62,62,62)",
+    fontSize: "28px",
+  },
+});
+
+export const baseRoutesIcon = stylex.create({
+  base: {
+    fontSize: "28px",
+  },
+});
 
 export const getUserDataCache = (): Decode | null => {
   const userData = sessionStorage.getItem("userData");
@@ -25,33 +130,6 @@ export const getUserDataCache = (): Decode | null => {
     return JSON.parse(userData);
   }
   return null;
-};
-
-type inputUser = "lender" | "borrower" | "support";
-
-const redirectPage = (
-  allowedUsers: inputUser[],
-  path: string
-): string | null => {
-  const data = getUserDataCache();
-  if (data) {
-    if (
-      (allowedUsers.includes("borrower") && data.isBorrower) ||
-      (allowedUsers.includes("lender") && data.isLender) ||
-      (allowedUsers.includes("support") && data.isSupport)
-    ) {
-      return null;
-    } else {
-      if (data.isBorrower) {
-        return defaultBorrower;
-      } else if (data.isLender) {
-        return defaultLender;
-      } else {
-        return defaultSupport;
-      }
-    }
-  }
-  return `/login?redirectTo=${path}`;
 };
 
 export const supportPages = ["/approveLoan", "/settings"];
@@ -80,235 +158,206 @@ export const lenderPages = [
   "/settings",
 ];
 
-export const routes: IRouteConfig = [
+export const authUserQuery = graphql`
+  query RoutesQuery {
+    user {
+      id
+      accountAvailable
+      accountTotal
+    }
+    authUser {
+      id
+      name
+      apellidoPaterno
+      apellidoMaterno
+      RFC
+      CURP
+      clabe
+      mobile
+      isLender
+      isBorrower
+      isSupport
+      language
+      email
+    }
+  }
+`;
+
+const authQuery = loadQuery(RelayEnvironment, authUserQuery, {});
+
+export const router = createBrowserRouter([
   {
-    component: async () => {
-      const module = await import("./screens/LogIn");
-      return module.LogIn;
-    },
-    path: "/login",
-    redirectRules: () => {
-      const data = getUserDataCache();
-      if (data?.isBorrower) {
-        return defaultBorrower;
-      }
-      if (data?.isSupport) {
-        return defaultSupport;
-      }
-      if (data?.isLender) {
-        return defaultSupport;
-      }
-      return null;
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/SignUp");
-      return module.SignUp;
-    },
-    path: "/register",
-    redirectRules: () => {
-      const data = getUserDataCache();
-      if (data?.isBorrower) {
-        return defaultBorrower;
-      }
-      if (data?.isSupport) {
-        return defaultSupport;
-      }
-      if (data?.isLender) {
-        return defaultSupport;
-      }
-      return null;
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/Account");
-      return module.Account;
-    },
-    path: "/account",
-    preload: () => ({
-      query: loadQuery(RelayEnvironment, AccountUserQuery, {}),
-    }),
-    redirectRules: () => {
-      const data = getUserDataCache();
-      if (!data) {
-        return "/login?redirectTo=account";
-      }
-      if (data?.isSupport) {
-        return defaultSupport;
-      }
-      return null;
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/Settings");
-      return module.Settings;
-    },
-    path: "/settings",
-    preload: () => ({
-      query: loadQuery(RelayEnvironment, SettingsAuthUserQuery, {}),
-    }),
-    redirectRules: () => {
-      const data = getUserDataCache();
-      if (!data) {
-        return "/login?redirectTo=settings";
-      }
-      return null;
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/MyInvestments");
-      return module.MyInvestments;
-    },
-    path: "/myInvestments",
-    preload: () => {
-      return {
-        query: loadQuery(
-          RelayEnvironment,
-          MyInvestmentsUserQuery,
-          {},
-          { fetchPolicy: "network-only" }
-        ),
-      };
-    },
-    redirectRules: () => {
-      const data = getUserDataCache();
-      if (!data) {
-        return "/login?redirectTo=myInvestments";
-      }
-      if (data.isBorrower) {
-        return defaultBorrower;
-      }
-      if (data.isSupport) {
-        return defaultSupport;
-      }
-      return null;
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/MyTransactions");
-      return module.MyTransactions;
-    },
-    path: "/myTransactions",
-    preload: () => {
-      return {
-        query: loadQuery(
-          RelayEnvironment,
-          MyTransactionsQuery,
-          {},
-          { fetchPolicy: "network-only" }
-        ),
-      };
-    },
-    redirectRules: () => {
-      const data = getUserDataCache();
-      if (!data) {
-        return "/login?redirectTo=myTransactions";
-      }
-      if (data.isSupport) {
-        return defaultSupport;
-      }
-      return null;
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/AddFunds");
-      return module.AddFunds;
-    },
-    path: "/addFunds",
-    redirectRules: () => {
-      const data = getUserDataCache();
-      if (!data) {
-        return "/login?redirectTo=addFunds";
-      }
-      if (data.isSupport) {
-        return defaultSupport;
-      }
-      return null;
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/RetireFunds");
-      return module.RetireFunds;
-    },
-    path: "/retireFunds",
-    redirectRules: () => {
-      return redirectPage(["lender", "borrower"], "/retireFunds");
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/AddInvestments");
-      return module.AddInvestments;
-    },
-    path: "/addInvestments",
-    preload: () => ({
-      query: loadQuery(RelayEnvironment, AddInvestmentsQuery, {}),
-    }),
-    redirectRules: () => {
-      return redirectPage(["lender"], "/addInvestments");
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/MyLoans");
-      return module.MyLoans;
-    },
-    path: "/approveLoan",
-    preload: () => ({
-      query: loadQuery(RelayEnvironment, MyLoansQuery, {}),
-    }),
-    redirectRules: () => {
-      return redirectPage(["support"], "/approveLoan");
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/MyLoans");
-      return module.MyLoans;
-    },
-    path: "/myLoans",
-    preload: () => ({
-      query: loadQuery(RelayEnvironment, MyLoansQuery, {}),
-    }),
-    redirectRules: () => {
-      return redirectPage(["borrower"], "/myLoans");
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/AddLoan");
-      return module.AddLoan;
-    },
-    path: "/addLoan",
-    redirectRules: () => {
-      return redirectPage(["borrower"], "/addLoan");
-    },
-  },
-  {
-    component: async () => {
-      const module = await import("./screens/Blank");
-      return module.Blank;
-    },
     path: "/",
-    redirectRules: () => {
-      const data = getUserDataCache();
-      if (data?.isBorrower) {
-        return defaultBorrower;
-      }
-      if (data?.isSupport) {
-        return defaultSupport;
-      }
-      if (data?.isLender) {
-        return defaultSupport;
-      }
-      return "/login";
+    element: <HeaderAuth />,
+    errorElement: <div>Error</div>,
+    loader: async () => {
+      return {
+        query: authQuery,
+      };
     },
+    children: [
+      {
+        path: "/login",
+        element: <LogInLoader />,
+        loader: async () => {
+          const data = getUserDataCache();
+          if (data?.isBorrower) {
+            return redirect(defaultBorrower);
+          }
+          if (data?.isSupport) {
+            return redirect(defaultSupport);
+          }
+          if (data?.isLender) {
+            return redirect(defaultLender);
+          }
+          const page = import("pages/LogIn/LogIn");
+          return defer({ page });
+        },
+      },
+      {
+        path: "/register",
+        element: <SignUpLoader />,
+        loader: async () => {
+          const data = getUserDataCache();
+          if (data?.isBorrower) {
+            return redirect(defaultBorrower);
+          }
+          if (data?.isSupport) {
+            return redirect(defaultSupport);
+          }
+          if (data?.isLender) {
+            return redirect(defaultLender);
+          }
+          const page = import("pages/SignUp/SignUp");
+          return defer({ page });
+        },
+      },
+      {
+        path: "/settings",
+        element: <AccountLoader />,
+        loader: async () => {
+          const page = import("pages/Settings/Settings");
+          const query = loadQuery(
+            RelayEnvironment,
+            SettingsAuthUserQuery,
+            {},
+            { fetchPolicy: "network-only" }
+          );
+          return defer({ page, query });
+        },
+      },
+      {
+        path: "/account",
+        element: <AccountLoader />,
+        loader: async () => {
+          const data = getUserDataCache();
+          if (data?.isSupport) {
+            return redirect(defaultSupport);
+          }
+          const page = import("pages/Account/Account");
+          const query = loadQuery(
+            RelayEnvironment,
+            AccountUserQuery,
+            {},
+            { fetchPolicy: "network-only" }
+          );
+          return defer({ page, query });
+        },
+      },
+      {
+        path: "/myTransactions",
+        element: <MyTransactionsLoader />,
+        loader: async () => {
+          const page = import("pages/MyTransactions/MyTransactions");
+          const query = loadQuery(
+            RelayEnvironment,
+            MyTransactionsQuery,
+            {},
+            { fetchPolicy: "network-only" }
+          );
+          return defer({ page, query });
+        },
+      },
+      {
+        path: "/addFunds",
+        element: <AddFundsLoader />,
+        loader: async () => {
+          const page = import("pages/AddFunds/AddFunds");
+          return defer({ page });
+        },
+      },
+      {
+        path: "/retireFunds",
+        element: <RetireFundsLoader />,
+        loader: async () => {
+          const page = import("pages/RetireFunds/RetireFunds");
+          return defer({ page });
+        },
+      },
+      {
+        path: "/addInvestments",
+        element: <AddInvestmentsLoader />,
+        loader: async () => {
+          const page = import("pages/AddInvestments/AddInvestments");
+          const query = loadQuery(
+            RelayEnvironment,
+            AddInvestmentsQuery,
+            {},
+            { fetchPolicy: "network-only" }
+          );
+          return defer({ page, query, authQuery });
+        },
+      },
+      {
+        path: "/addLoan",
+        element: <AddLoanLoader />,
+        loader: async () => {
+          const page = import("pages/AddLoan/AddLoan");
+          return defer({ page });
+        },
+      },
+      {
+        path: "/approveLoan",
+        element: <ApproveLoanLoader />,
+        loader: async () => {
+          const page = import("pages/ApproveLoan/ApproveLoan");
+          const query = loadQuery(
+            RelayEnvironment,
+            ApproveLoansQuery,
+            {},
+            { fetchPolicy: "network-only" }
+          );
+          return defer({ page, query, authQuery });
+        },
+      },
+      {
+        path: "/myLoans",
+        element: <MyLoansLoader />,
+        loader: async () => {
+          const page = import("pages/MyLoans/MyLoans");
+          const query = loadQuery(
+            RelayEnvironment,
+            MyLoansQuery,
+            {},
+            { fetchPolicy: "network-only" }
+          );
+          return defer({ page, query, authQuery });
+        },
+      },
+      {
+        path: "/myInvestments",
+        element: <MyInvestmentsLoader />,
+        loader: async () => {
+          const page = import("pages/MyInvestments/MyInvestments");
+          const query = loadQuery(
+            RelayEnvironment,
+            MyInvestmentsQuery,
+            {},
+            { fetchPolicy: "network-only" }
+          );
+          return defer({ page, query });
+        },
+      },
+    ],
   },
-];
+]);

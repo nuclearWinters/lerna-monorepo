@@ -39,10 +39,10 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       if (!id) {
-        throw new Error("No valid access token.");
+        throw new Error("Unauthenticated");
       }
       if (!isSupport) {
-        throw new Error("User is not support.");
+        throw new Error("Unauthorized");
       }
       const { id: loan_id } = fromGlobalId(loan_gid);
       const loan = await loans.findOneAndUpdate(

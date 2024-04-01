@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a3af5725464d9f5b89ab1cfb7320578a>>
+ * @generated SignedSource<<cb8371b3a35020a96c5753e55cc5ea88>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type LoanScheduledPaymentStatus = "DELAYED" | "PAID" | "TO_BE_PAID" | "%future added value";
 export type ScheduledPaymentRowQuery$variables = {
-  id: string;
+  loan_gid: string;
 };
 export type ScheduledPaymentRowQuery$data = {
   readonly scheduledPaymentsbyLoanId: ReadonlyArray<{
@@ -32,7 +32,7 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "id"
+    "name": "loan_gid"
   }
 ],
 v1 = [
@@ -41,8 +41,8 @@ v1 = [
     "args": [
       {
         "kind": "Variable",
-        "name": "id",
-        "variableName": "id"
+        "name": "loan_gid",
+        "variableName": "loan_gid"
       }
     ],
     "concreteType": "ScheduledPayments",
@@ -107,16 +107,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "892b0b7cb2372e8cefa31a23a068985e",
+    "cacheID": "cf31722bae61dfad16168680dadfcde6",
     "id": null,
     "metadata": {},
     "name": "ScheduledPaymentRowQuery",
     "operationKind": "query",
-    "text": "query ScheduledPaymentRowQuery(\n  $id: ID!\n) {\n  scheduledPaymentsbyLoanId(id: $id) {\n    id\n    loan_id\n    amortize\n    status\n    scheduledDate\n  }\n}\n"
+    "text": "query ScheduledPaymentRowQuery(\n  $loan_gid: ID!\n) {\n  scheduledPaymentsbyLoanId(loan_gid: $loan_gid) {\n    id\n    loan_id\n    amortize\n    status\n    scheduledDate\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ec2294b26d1eb79b9dfef17582fbef28";
+(node as any).hash = "3217501e0c13b104a2d2b95a1b316f3c";
 
 export default node;

@@ -1,63 +1,18 @@
-import React, { createContext, FC, useState, Suspense } from "react";
-import {
-  graphql,
-  RelayEnvironmentProvider,
-  loadQuery,
-} from "react-relay/hooks";
+import React, { createContext, FC, useState } from "react";
+import { RelayEnvironmentProvider } from "react-relay/hooks";
 import { RelayEnvironment } from "./RelayEnvironment";
-import { AppUserQuery as AppUserQueryType } from "./__generated__/AppUserQuery.graphql";
-import { routes } from "./Routes";
-import { Spinner } from "components/Spinner";
-import {
-  createBrowserRouter,
-  RouteConfig,
-  RouteRenderer,
-  RouterProvider,
-} from "yarr";
-import { baseApp } from "App.css";
-import { Languages } from "__generated__/Routes_query.graphql";
-import {
-  baseRoutes,
-  baseRoutesContent,
-  baseSider,
-  customHeader,
-} from "Routes.css";
-import { Sider } from "components/Sider";
-import { Header } from "components/Header";
+import { Languages } from "__generated__/AppUserQuery.graphql";
+import { RouterProvider } from "react-router";
+import { router } from "Routes";
+import * as stylex from "@stylexjs/stylex";
 
-const AppUserQuery = graphql`
-  query AppUserQuery {
-    user {
-      id
-      accountAvailable
-      accountTotal
-    }
-    authUser {
-      id
-      name
-      apellidoPaterno
-      apellidoMaterno
-      RFC
-      CURP
-      clabe
-      mobile
-      isLender
-      isBorrower
-      isSupport
-      language
-      email
-    }
-  }
-`;
-
-export const preloadQuery = loadQuery<AppUserQueryType>(
-  RelayEnvironment,
-  AppUserQuery,
-  {}
-);
-
-const router = createBrowserRouter<RouteConfig<string, string, any>[]>({
-  routes,
+export const baseApp = stylex.create({
+  base: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgb(248,248,248)",
+  },
 });
 
 export const LanguageContext = createContext<
@@ -69,41 +24,7 @@ export const App: FC = () => {
   return (
     <LanguageContext.Provider value={[language, setLanguage]}>
       <RelayEnvironmentProvider environment={RelayEnvironment}>
-        <RouterProvider router={router}>
-          <div className={baseRoutes}>
-            <Suspense
-              fallback={
-                <div className={baseSider}>
-                  <Spinner />
-                </div>
-              }
-            >
-              <Sider />
-            </Suspense>
-            <Suspense
-              fallback={
-                <div className={customHeader["fallback"]}>
-                  <Spinner />
-                </div>
-              }
-            >
-              <Header />
-            </Suspense>
-            <Suspense
-              fallback={
-                <div className={baseApp}>
-                  <Spinner />
-                </div>
-              }
-            >
-              <RouteRenderer
-                routeWrapper={({ Route }) => (
-                  <div className={baseRoutesContent}>{Route}</div>
-                )}
-              />
-            </Suspense>
-          </div>
-        </RouterProvider>
+        <RouterProvider router={router} />
       </RelayEnvironmentProvider>
     </LanguageContext.Provider>
   );

@@ -15,7 +15,7 @@ const QueryUser = {
       );
       const user = result.first();
       if (!user) {
-        throw new Error("El usuario no existe.");
+        throw new Error("User do not exists");
       }
       return {
         id: user.get("id"),

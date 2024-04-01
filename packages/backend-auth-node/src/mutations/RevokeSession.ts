@@ -49,7 +49,7 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       if (!id) {
-        throw new Error("Sin usuario.");
+        throw new Error("Unauthenticated");
       }
       const { id: session_id } = fromGlobalId(sessionId);
       const now = new Date();

@@ -1,7 +1,7 @@
 import { app } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { TransactionMongo } from "./types";
+import { TransactionMongo, UserMongo } from "./types";
 import { jwt } from "./utils";
 
 jest.mock("graphql-redis-subscriptions", () => ({
@@ -40,6 +40,14 @@ describe("QueryTransactions tests", () => {
   it("test TransactionsConnection valid access token", async () => {
     const transactions =
       dbInstance.collection<TransactionMongo>("transactions");
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertOne({
+      id: "wHHR1SUBT0dspoF4YUO15",
+      account_total: 0,
+      account_available: 0,
+      account_to_be_paid: 0,
+      account_withheld: 0,
+    });
     await transactions.insertMany([
       {
         user_id: "wHHR1SUBT0dspoF4YUO15",

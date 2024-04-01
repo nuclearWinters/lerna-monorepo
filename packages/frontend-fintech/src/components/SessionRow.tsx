@@ -5,17 +5,18 @@ import {
   useRefetchableFragment,
 } from "react-relay/hooks";
 import dayjs from "dayjs";
+import { SessionRow_session$key } from "./__generated__/SessionRow_session.graphql";
+import { SessionRowRefetchQuery } from "./__generated__/SessionRowRefetchQuery.graphql";
+import { SessionRowRevokeSessionMutation } from "./__generated__/SessionRowRevokeSessionMutation.graphql";
+import { FaTrashAlt } from "@react-icons/all-files/fa/FaTrashAlt";
+import { Spinner } from "./Spinner";
+import * as stylex from "@stylexjs/stylex";
 import {
   baseLoanRowCell,
   baseLoanRowClipboard,
   baseLoanRowContainer,
   baseLoanRowIcon,
-} from "./LoanRow.css";
-import { SessionRow_session$key } from "./__generated__/SessionRow_session.graphql";
-import { SessionRowRefetchQuery } from "./__generated__/SessionRowRefetchQuery.graphql";
-import { SessionRowRevokeSessionMutation } from "./__generated__/SessionRowRevokeSessionMutation.graphql";
-import { FaTrashAlt } from "react-icons/fa";
-import { Spinner } from "./Spinner";
+} from "./LoanRow";
 
 const loginRowRefetchableFragment = graphql`
   fragment SessionRow_session on Session
@@ -54,19 +55,19 @@ export const SessionRow: FC<Props> = ({ session }) => {
     `);
 
   return (
-    <div className={baseLoanRowContainer}>
-      <div className={baseLoanRowCell}>{data.applicationName}</div>
-      <div className={baseLoanRowCell}>{data.type}</div>
-      <div className={baseLoanRowCell}>{data.deviceName}</div>
-      <div className={baseLoanRowCell}>
+    <div {...stylex.props(baseLoanRowContainer.base)}>
+      <div {...stylex.props(baseLoanRowCell.base)}>{data.applicationName}</div>
+      <div {...stylex.props(baseLoanRowCell.base)}>{data.type}</div>
+      <div {...stylex.props(baseLoanRowCell.base)}>{data.deviceName}</div>
+      <div {...stylex.props(baseLoanRowCell.base)}>
         {dayjs(data.lastTimeAccessed).format("DD[/]MM[/]YYYY h:mm a")}
       </div>
-      <div className={baseLoanRowCell}>{data.address}</div>
+      <div {...stylex.props(baseLoanRowCell.base)}>{data.address}</div>
       {isInFlightRevokeSession ? (
         <Spinner />
       ) : (
         <div
-          className={baseLoanRowClipboard}
+          {...stylex.props(baseLoanRowClipboard.base)}
           onClick={() => {
             commitRevokeSession({
               variables: { input: { sessionId: data.id } },
@@ -78,7 +79,7 @@ export const SessionRow: FC<Props> = ({ session }) => {
             });
           }}
         >
-          <FaTrashAlt className={baseLoanRowIcon} />
+          <FaTrashAlt {...stylex.props(baseLoanRowIcon.base)} />
         </div>
       )}
     </div>

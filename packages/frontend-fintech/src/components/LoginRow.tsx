@@ -1,12 +1,13 @@
 import React, { FC } from "react";
 import { graphql, useRefetchableFragment } from "react-relay/hooks";
 import dayjs from "dayjs";
-import { baseLoanRowCell, baseLoanRowContainer } from "./LoanRow.css";
 import { LoginRowRefetchQuery } from "./__generated__/LoginRowRefetchQuery.graphql";
 import { LoginRow_login$key } from "./__generated__/LoginRow_login.graphql";
-import { Languages } from "screens/__generated__/SettingsMutation.graphql";
 import es from "dayjs/locale/es";
 import en from "dayjs/locale/en";
+import { Languages } from "__generated__/AppUserQuery.graphql";
+import { baseLoanRowCell, baseLoanRowContainer } from "./LoanRow";
+import * as stylex from "@stylexjs/stylex";
 
 const loginRowRefetchableFragment = graphql`
   fragment LoginRow_login on Login
@@ -29,9 +30,9 @@ export const LoginRow: FC<Props> = ({ login, language }) => {
   >(loginRowRefetchableFragment, login);
 
   return (
-    <div className={baseLoanRowContainer}>
-      <div className={baseLoanRowCell}>{data.applicationName}</div>
-      <div className={baseLoanRowCell}>
+    <div {...stylex.props(baseLoanRowContainer.base)}>
+      <div {...stylex.props(baseLoanRowCell.base)}>{data.applicationName}</div>
+      <div {...stylex.props(baseLoanRowCell.base)}>
         {dayjs(data.time)
           .locale(language === "ES" ? es : en)
           .format(
@@ -40,7 +41,7 @@ export const LoginRow: FC<Props> = ({ login, language }) => {
               : "D MMMM[,] YYYY [at] h:mm a"
           )}
       </div>
-      <div className={baseLoanRowCell}>{data.address}</div>
+      <div {...stylex.props(baseLoanRowCell.base)}>{data.address}</div>
     </div>
   );
 };

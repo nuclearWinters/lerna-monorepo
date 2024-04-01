@@ -35,7 +35,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       if (!id) {
-        throw new Error("No valid access token.");
+        throw new Error("Unauthenticated");
       }
       const loan_oid = new ObjectId();
       const expiry = add(new Date(), { months: 3 });

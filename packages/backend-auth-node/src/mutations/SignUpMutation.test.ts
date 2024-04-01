@@ -107,9 +107,7 @@ describe("SignUpMutation tests", () => {
         operationName: "signUpMutation",
       })
       .set("Accept", "application/json");
-    expect(response.body.data.signUp.error).toBe(
-      "El email ya esta siendo usado."
-    );
+    expect(response.body.data.signUp.error).toBe("Email already in use");
     expect(response.body.data.signUp.refreshToken).toBeFalsy();
     const user = await users.findOne({ email: "anrp1@gmail.com" });
     expect({ ...user, _id: "", password: "" }).toEqual({

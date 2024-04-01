@@ -52,7 +52,7 @@ export const UpdateUserMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       if (!id) {
-        throw new Error("No valid access token.");
+        throw new Error("Unauthenticated");
       }
       const result = await authusers.findOneAndUpdate(
         { id },
@@ -60,7 +60,7 @@ export const UpdateUserMutation = mutationWithClientMutationId({
         { returnDocument: "after" }
       );
       if (!result) {
-        throw new Error("No user found.");
+        throw new Error("User do not exists");
       }
       return {
         error: "",

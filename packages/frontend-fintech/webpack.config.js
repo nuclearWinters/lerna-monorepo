@@ -1,13 +1,11 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
-const BundleAnalyzerPlugin =
-  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { VanillaExtractPlugin } = require("@vanilla-extract/webpack-plugin");
 const StylexPlugin = require("@stylexjs/webpack-plugin");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
+const isProduction = !isDevelopment;
+const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
 
 module.exports = {
   mode: isDevelopment ? "development" : "production",
@@ -15,29 +13,31 @@ module.exports = {
   output: {
     clean: true,
     path: path.resolve(__dirname, "./build"),
-    filename: "bundle.js",
+    filename: isProduction
+      ? "static/js/[name].[contenthash:8].js"
+      : isDevelopment && "static/js/bundle.js",
     publicPath: "/",
+    assetModuleFilename: "static/media/[name].[hash][ext]",
   },
+  devtool: isProduction
+    ? shouldUseSourceMap
+      ? "source-map"
+      : false
+    : isDevelopment && "cheap-module-source-map",
   module: {
     rules: [
+      shouldUseSourceMap && {
+        enforce: "pre",
+        exclude: /@babel(?:\/|\\{1,2})runtime/,
+        test: /\.(js|mjs|jsx|ts|tsx|css)$/,
+        loader: require.resolve("source-map-loader"),
+      },
       {
         test: /\.(js|ts)x?$/,
         exclude: /node_modules/,
         use: [
           {
             loader: "babel-loader",
-          },
-        ],
-      },
-      {
-        test: /\.vanilla\.css$/i,
-        use: [
-          MiniCssExtractPlugin.loader,
-          {
-            loader: require.resolve("css-loader"),
-            options: {
-              url: false, // Required as image imports should be handled via JS/TS import statements
-            },
           },
         ],
       },
@@ -53,20 +53,12 @@ module.exports = {
   },
   plugins: [
     new StylexPlugin({
-      filename: "styles.[contenthash].css",
-      // get webpack mode and set value for dev
+      filename: "static/css/styles.[contenthash].css",
       dev: isDevelopment,
-      // Use statically generated CSS files and not runtime injected CSS.
-      // Even in development.
       runtimeInjection: false,
-      // optional. default: 'x'
       classNamePrefix: "x",
-      // Required for CSS variable support
       unstable_moduleResolution: {
-        // type: 'commonJS' | 'haste'
-        // default: 'commonJS'
         type: "commonJS",
-        // The absolute path to the root directory of your project
         rootDir: __dirname,
       },
     }),
@@ -74,13 +66,10 @@ module.exports = {
       API_GATEWAY: null,
       REALTIME_GATEWAY: null,
     }),
-    new MiniCssExtractPlugin({ filename: "styles.css" }),
-    new VanillaExtractPlugin(),
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: path.resolve(__dirname, "public", "index.html"),
     }),
-    new BundleAnalyzerPlugin(),
   ],
   devServer: {
     port: 8000,

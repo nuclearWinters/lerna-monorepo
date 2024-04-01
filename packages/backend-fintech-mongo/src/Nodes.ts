@@ -465,63 +465,102 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       type: new GraphQLNonNull(MXNScalarType),
       resolve: ({ account_withheld }): number => account_withheld,
     },
+    approveLoans: {
+      type: new GraphQLNonNull(LoanConnection),
+      args: forwardConnectionArgs,
+      resolve: async (
+        _root: unknown,
+        args: unknown,
+        { loans, id, isSupport }: Context
+      ): Promise<Connection<LoanMongo>> => {
+        const { after, first } = args as ConnectionArguments;
+        if (!id) {
+          throw new Error("Unauthenticated");
+        }
+        if (!isSupport) {
+          throw new Error("Unauthorized");
+        }
+        const loan_id = unbase64(after || "");
+        const limit = first ? first + 1 : 0;
+        if (limit <= 0) {
+          throw new Error("Se requiere que 'first' sea un entero positivo");
+        }
+        const query: Filter<LoanMongo> = {
+          status: "waiting for approval",
+        };
+        if (loan_id) {
+          query._id = { $lt: new ObjectId(loan_id) };
+        }
+        const result = await loans
+          .find(query)
+          .limit(limit)
+          .sort({ $natural: -1 })
+          .toArray();
+        const edgesMapped = result.map((loan) => {
+          return {
+            cursor: base64(loan._id.toHexString()),
+            node: loan,
+          };
+        });
+        const edges = edgesMapped.slice(0, first || 5);
+        return {
+          edges,
+          pageInfo: {
+            startCursor: edges[0]?.cursor || null,
+            endCursor: edges[edges.length - 1]?.cursor || null,
+            hasPreviousPage: false,
+            hasNextPage: edgesMapped.length > (first || 0),
+          },
+        };
+      },
+    },
     myLoans: {
       type: new GraphQLNonNull(LoanConnection),
       args: forwardConnectionArgs,
       resolve: async (
         _root: unknown,
         args: unknown,
-        { loans, isBorrower, id, isLender, isSupport }: Context
+        { loans, isBorrower, id }: Context
       ): Promise<Connection<LoanMongo>> => {
         const { after, first } = args as ConnectionArguments;
-        try {
-          if (isLender || !id) {
-            throw new Error("Do not return anything to lenders");
-          }
-          if (!id) {
-            throw new Error("Do not return anything to not registered user");
-          }
-          const loan_id = unbase64(after || "");
-          const limit = first ? first + 1 : 0;
-          if (limit <= 0) {
-            throw new Error("Se requiere que 'first' sea un entero positivo");
-          }
-          const query: Filter<LoanMongo> = {};
-          if (isSupport) {
-            query.status = {
-              $in: ["waiting for approval"],
-            };
-          }
-          if (loan_id) {
-            query._id = { $lt: new ObjectId(loan_id) };
-          }
-          if (isBorrower) {
-            query.user_id = id;
-          }
-          const result = await loans
-            .find(query)
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray();
-          const edgesMapped = result.map((loan) => {
-            return {
-              cursor: base64(loan._id.toHexString()),
-              node: loan,
-            };
-          });
-          const edges = edgesMapped.slice(0, first || 5);
-          return {
-            edges,
-            pageInfo: {
-              startCursor: edges[0]?.cursor || null,
-              endCursor: edges[edges.length - 1]?.cursor || null,
-              hasPreviousPage: false,
-              hasNextPage: edgesMapped.length > (first || 0),
-            },
-          };
-        } catch (e) {
-          return connectionFromArray([], { first, after });
+        if (!id) {
+          throw new Error("Unauthenticated");
         }
+        if (!isBorrower) {
+          throw new Error("Unauthorized");
+        }
+        const loan_id = unbase64(after || "");
+        const limit = first ? first + 1 : 0;
+        if (limit <= 0) {
+          throw new Error("Se requiere que 'first' sea un entero positivo");
+        }
+        const query: Filter<LoanMongo> = {
+          user_id: id,
+        };
+        if (loan_id) {
+          query._id = { $lt: new ObjectId(loan_id) };
+        }
+        const result = await loans
+          .find(query)
+          .limit(limit)
+          .sort({ $natural: -1 })
+          .toArray();
+        const edgesMapped = result.map((loan) => {
+          return {
+            cursor: base64(loan._id.toHexString()),
+            node: loan,
+          };
+        });
+        const edges = edgesMapped.slice(0, first || 5);
+        return {
+          edges,
+          pageInfo: {
+            startCursor: edges[0]?.cursor || null,
+            endCursor: edges[edges.length - 1]?.cursor || null,
+            hasPreviousPage: false,
+            hasNextPage: edgesMapped.length > (first || 0),
+          },
+        };
       },
     },
     investments: {
@@ -538,48 +577,44 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
         { investments, id }: Context
       ): Promise<Connection<InvestmentMongo>> => {
         const { status, first, after } = args as ArgsInvestments;
-        try {
-          if (!id) {
-            throw new Error("Do not return anything to not registered user");
-          }
-          const investment_id = unbase64(after || "");
-          const limit = first ? first + 1 : 0;
-          if (limit <= 0) {
-            throw new Error("Se requiere que 'first' sea un entero positivo");
-          }
-          const query: Filter<InvestmentMongo> = {
-            lender_id: id,
-          };
-          if (investment_id) {
-            query._id = { $lt: new ObjectId(investment_id) };
-          }
-          if (status) {
-            query.status = { $in: status };
-          }
-          const result = await investments
-            .find(query)
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray();
-          const edgesMapped = result.map((investment) => {
-            return {
-              cursor: base64(investment._id.toHexString()),
-              node: investment,
-            };
-          });
-          const edges = edgesMapped.slice(0, first || 5);
-          return {
-            edges,
-            pageInfo: {
-              startCursor: edges[0]?.cursor || null,
-              endCursor: edges[edges.length - 1]?.cursor || null,
-              hasPreviousPage: false,
-              hasNextPage: edgesMapped.length > (first || 0),
-            },
-          };
-        } catch (e) {
-          return connectionFromArray([], { first, after });
+        if (!id) {
+          throw new Error("Unauthenticated");
         }
+        const investment_id = unbase64(after || "");
+        const limit = first ? first + 1 : 0;
+        if (limit <= 0) {
+          throw new Error("Se requiere que 'first' sea un entero positivo");
+        }
+        const query: Filter<InvestmentMongo> = {
+          lender_id: id,
+        };
+        if (investment_id) {
+          query._id = { $lt: new ObjectId(investment_id) };
+        }
+        if (status) {
+          query.status = { $in: status };
+        }
+        const result = await investments
+          .find(query)
+          .limit(limit)
+          .sort({ $natural: -1 })
+          .toArray();
+        const edgesMapped = result.map((investment) => {
+          return {
+            cursor: base64(investment._id.toHexString()),
+            node: investment,
+          };
+        });
+        const edges = edgesMapped.slice(0, first || 5);
+        return {
+          edges,
+          pageInfo: {
+            startCursor: edges[0]?.cursor || null,
+            endCursor: edges[edges.length - 1]?.cursor || null,
+            hasPreviousPage: false,
+            hasNextPage: edgesMapped.length > (first || 0),
+          },
+        };
       },
     },
     transactions: {
@@ -593,45 +628,41 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
         { transactions, id }: Context
       ): Promise<Connection<TransactionMongo>> => {
         const { first, after } = args as ConnectionArguments;
-        try {
-          if (!id) {
-            throw new Error("Do not return anything to not registered user");
-          }
-          const transaction_id = unbase64(after || "");
-          const limit = first ? first + 1 : 0;
-          if (limit <= 0) {
-            throw new Error("Se requiere que 'first' sea un entero positivo");
-          }
-          const query: Filter<TransactionMongo> = {
-            user_id: id,
-          };
-          if (transaction_id) {
-            query._id = { $lt: new ObjectId(transaction_id) };
-          }
-          const result = await transactions
-            .find(query)
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray();
-          const edgesMapped = result.map((transaction) => {
-            return {
-              cursor: base64(transaction._id.toHexString()),
-              node: transaction,
-            };
-          });
-          const edges = edgesMapped.slice(0, first || 5);
-          return {
-            edges,
-            pageInfo: {
-              startCursor: edges[0]?.cursor || null,
-              endCursor: edges[edges.length - 1]?.cursor || null,
-              hasPreviousPage: false,
-              hasNextPage: edgesMapped.length > (first || 0),
-            },
-          };
-        } catch (e) {
-          return connectionFromArray([], { first, after });
+        if (!id) {
+          throw new Error("Unauthenticated");
         }
+        const transaction_id = unbase64(after || "");
+        const limit = first ? first + 1 : 0;
+        if (limit <= 0) {
+          throw new Error("Se requiere que 'first' sea un entero positivo");
+        }
+        const query: Filter<TransactionMongo> = {
+          user_id: id,
+        };
+        if (transaction_id) {
+          query._id = { $lt: new ObjectId(transaction_id) };
+        }
+        const result = await transactions
+          .find(query)
+          .limit(limit)
+          .sort({ $natural: -1 })
+          .toArray();
+        const edgesMapped = result.map((transaction) => {
+          return {
+            cursor: base64(transaction._id.toHexString()),
+            node: transaction,
+          };
+        });
+        const edges = edgesMapped.slice(0, first || 5);
+        return {
+          edges,
+          pageInfo: {
+            startCursor: edges[0]?.cursor || null,
+            endCursor: edges[edges.length - 1]?.cursor || null,
+            hasPreviousPage: false,
+            hasNextPage: edgesMapped.length > (first || 0),
+          },
+        };
       },
     },
     loansFinancing: {
@@ -650,9 +681,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
           const query: Filter<LoanMongo> = {
-            status: {
-              $in: ["financing"],
-            },
+            status: "financing",
           };
           if (loan_id) {
             query._id = { $lt: new ObjectId(loan_id) };

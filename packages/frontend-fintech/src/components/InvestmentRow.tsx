@@ -4,15 +4,91 @@ import { InvestmentRowRefetchQuery } from "./__generated__/InvestmentRowRefetchQ
 import { InvestmentRow_investment$key } from "./__generated__/InvestmentRow_investment.graphql";
 import dayjs from "dayjs";
 import { useTranslation } from "utils";
-import { FaClipboard, FaSyncAlt } from "react-icons/fa";
-import {
-  baseInvestmentRowBox,
-  baseInvestmentRowCell,
-  baseInvestmentRowClipboard,
-  baseInvestmentRowIcon,
-  baseInvestmentRowStatus,
-  customInvestmentRowStatusBar,
-} from "./InvestmentRow.css";
+import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
+import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
+import * as stylex from "@stylexjs/stylex";
+
+export const baseInvestmentRowBox = stylex.create({
+  base: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: "8px",
+  },
+});
+
+export const baseInvestmentRowClipboard = stylex.create({
+  base: {
+    flex: "1",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    backgroundColor: "white",
+    padding: "10px 0px",
+    textAlign: "center",
+    color: "#333",
+    cursor: "pointer",
+  },
+});
+
+export const baseInvestmentRowCell = stylex.create({
+  base: {
+    flex: "1",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    backgroundColor: "white",
+    padding: "10px 0px",
+    textAlign: "center",
+    color: "#333",
+  },
+});
+
+export const baseInvestmentRowStatus = stylex.create({
+  base: {
+    flex: "1",
+    backgroundColor: "white",
+    color: "#333",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
+
+export const baseInvestmentRowIcon = stylex.create({
+  base: {
+    fontSize: "18px",
+    color: "rgb(90,96,255)",
+  },
+});
+
+export const baseInvestmentRowStatusBar = stylex.create({
+  base: {
+    margin: "4px",
+    borderRadius: "4px",
+    textAlign: "center",
+    flex: "1",
+    padding: "3px 0px",
+    color: "white",
+  },
+  delayPayment: {
+    backgroundColor: "#FF9F00",
+  },
+  financing: {
+    backgroundColor: "#4F7942",
+  },
+  paid: {
+    backgroundColor: "#046307",
+  },
+  pastDue: {
+    backgroundColor: "#CA3435",
+  },
+  upToDate: {
+    backgroundColor: "#44d43b",
+  },
+  default: {
+    backgroundColor: "white",
+  },
+});
 
 const investmentRowRefetchableFragment = graphql`
   fragment InvestmentRow_investment on Investment
@@ -63,66 +139,72 @@ export const InvestmentRow: FC<Props> = ({ investment }) => {
   const statusStyle = () => {
     switch (data.status) {
       case "DELAY_PAYMENT":
-        return customInvestmentRowStatusBar["delayPayment"];
+        return baseInvestmentRowStatusBar.delayPayment;
       case "FINANCING":
-        return customInvestmentRowStatusBar["financing"];
+        return baseInvestmentRowStatusBar.financing;
       case "PAID":
-        return customInvestmentRowStatusBar["paid"];
+        return baseInvestmentRowStatusBar.paid;
       case "PAST_DUE":
-        return customInvestmentRowStatusBar["pastDue"];
+        return baseInvestmentRowStatusBar.pastDue;
       case "UP_TO_DATE":
-        return customInvestmentRowStatusBar["upToDate"];
+        return baseInvestmentRowStatusBar.upToDate;
       default:
-        return customInvestmentRowStatusBar["default"];
+        return baseInvestmentRowStatusBar.default;
     }
   };
   return (
-    <div className={baseInvestmentRowBox}>
-      <div className={baseInvestmentRowClipboard}>
+    <div {...stylex.props(baseInvestmentRowBox.base)}>
+      <div {...stylex.props(baseInvestmentRowClipboard.base)}>
         <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(data.id);
           }}
-          className={baseInvestmentRowIcon}
+          {...stylex.props(baseInvestmentRowIcon.base)}
         />
       </div>
-      <div className={baseInvestmentRowClipboard}>
+      <div {...stylex.props(baseInvestmentRowClipboard.base)}>
         <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(data.borrower_id);
           }}
-          className={baseInvestmentRowIcon}
+          {...stylex.props(baseInvestmentRowIcon.base)}
         />
       </div>
-      <div className={baseInvestmentRowClipboard}>
+      <div {...stylex.props(baseInvestmentRowClipboard.base)}>
         <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(data.loan_id);
           }}
-          className={baseInvestmentRowIcon}
+          {...stylex.props(baseInvestmentRowIcon.base)}
         />
       </div>
-      <div className={baseInvestmentRowCell}>{data.quantity}</div>
-      <div className={baseInvestmentRowStatus}>
-        <div className={statusStyle()}>{status()}</div>
+      <div {...stylex.props(baseInvestmentRowCell.base)}>{data.quantity}</div>
+      <div {...stylex.props(baseInvestmentRowStatus.base)}>
+        <div {...stylex.props(baseInvestmentRowStatusBar.base, statusStyle())}>
+          {status()}
+        </div>
       </div>
-      <div className={baseInvestmentRowCell}>{data.paid_already}</div>
-      <div className={baseInvestmentRowCell}>{data.to_be_paid}</div>
-      <div className={baseInvestmentRowCell}>{data.interest_to_earn}</div>
-      <div className={baseInvestmentRowCell}>{data.moratory}</div>
-      <div className={baseInvestmentRowCell}>
+      <div {...stylex.props(baseInvestmentRowCell.base)}>
+        {data.paid_already}
+      </div>
+      <div {...stylex.props(baseInvestmentRowCell.base)}>{data.to_be_paid}</div>
+      <div {...stylex.props(baseInvestmentRowCell.base)}>
+        {data.interest_to_earn}
+      </div>
+      <div {...stylex.props(baseInvestmentRowCell.base)}>{data.moratory}</div>
+      <div {...stylex.props(baseInvestmentRowCell.base)}>
         {dayjs(data.updated_at).format("DD/MM/YYYY")}
       </div>
-      <div className={baseInvestmentRowCell}>
+      <div {...stylex.props(baseInvestmentRowCell.base)}>
         {dayjs(data.created_at).format("DD/MM/YYYY")}
       </div>
       <div
-        className={baseInvestmentRowClipboard}
+        {...stylex.props(baseInvestmentRowClipboard.base)}
         onClick={() => {
           refetch({}, { fetchPolicy: "network-only" });
         }}
       >
-        <FaSyncAlt className={baseInvestmentRowIcon} />
+        <FaSyncAlt {...stylex.props(baseInvestmentRowIcon.base)} />
       </div>
     </div>
   );

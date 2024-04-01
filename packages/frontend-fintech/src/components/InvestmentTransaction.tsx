@@ -1,21 +1,87 @@
 import { useFragment, graphql } from "react-relay";
-import {
-  baseMyTransactionsBar,
-  baseMyTransactionsBox,
-  baseMyTransactionsDate,
-  baseMyTransactionsDescription,
-  baseMyTransactionsIcon,
-  customMyTransactionsQuantity,
-  customMyTransactionsStatus,
-} from "screens/MyTransactions.css";
-import { TransactionType } from "__generated__/RoutesTransactionsSubscription.graphql";
-import { FaFileContract, FaUserCircle } from "react-icons/fa";
+import { FaFileContract } from "@react-icons/all-files/fa/FaFileContract";
+import { FaUserCircle } from "@react-icons/all-files/fa/FaUserCircle";
 import { useTranslation } from "utils";
 import es from "dayjs/locale/es";
 import en from "dayjs/locale/en";
 import dayjs from "dayjs";
 import React, { FC } from "react";
-import { InvestmentTransaction_transaction$key } from "./__generated__/InvestmentTransaction_transaction.graphql";
+import {
+  InvestmentTransaction_transaction$key,
+  TransactionType,
+} from "./__generated__/InvestmentTransaction_transaction.graphql";
+import * as stylex from "@stylexjs/stylex";
+
+export const baseMyTransactionsIcon = stylex.create({
+  base: {
+    fontSize: "18px",
+    color: "rgba(255,90,96,0.5)",
+    margin: "0px 4px",
+    cursor: "pointer",
+  },
+});
+
+export const baseMyTransactionsBox = stylex.create({
+  base: {
+    display: "flex",
+    flex: "1",
+    flexDirection: "row",
+    borderBottomColor: "rgb(203,203,203)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: "1px",
+  },
+});
+
+export const baseMyTransactionsBar = stylex.create({
+  base: {
+    flex: "1",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    margin: "12px 0px",
+  },
+});
+
+export const baseMyTransactionsStatus = stylex.create({
+  base: {
+    fontSize: "18px",
+  },
+  substraction: {
+    color: "#CD5C5C",
+  },
+  addition: {
+    color: "#50C878",
+  },
+});
+
+export const baseMyTransactionsQuantity = stylex.create({
+  base: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "20px",
+    fontWeight: "bold",
+  },
+  substraction: {
+    color: "#CD5C5C",
+  },
+  addition: {
+    color: "#50C878",
+  },
+});
+
+export const baseMyTransactionsDescription = stylex.create({
+  base: {
+    fontSize: "16px",
+    padding: "4px 0px",
+  },
+});
+
+export const baseMyTransactionsDate = stylex.create({
+  base: {
+    letterSpacing: "1px",
+  },
+});
 
 interface Props {
   transaction: InvestmentTransaction_transaction$key;
@@ -60,34 +126,35 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
   };
 
   return (
-    <div className={baseMyTransactionsBox} key={data.id}>
-      <div className={baseMyTransactionsBar}>
+    <div {...stylex.props(baseMyTransactionsBox.base)}>
+      <div {...stylex.props(baseMyTransactionsBar.base)}>
         <div
-          className={
+          {...stylex.props(
+            baseMyTransactionsStatus.base,
             substraction
-              ? customMyTransactionsStatus["substraction"]
-              : customMyTransactionsStatus["addition"]
-          }
+              ? baseMyTransactionsStatus.substraction
+              : baseMyTransactionsStatus.addition
+          )}
         >
           {getStatus(data.type)}
         </div>
-        <div className={baseMyTransactionsDescription}>
+        <div {...stylex.props(baseMyTransactionsDescription.base)}>
           {t("Prestado a")}{" "}
           <FaUserCircle
             onClick={() => {
               navigator.clipboard.writeText(borrower_id);
             }}
-            className={baseMyTransactionsIcon}
+            {...stylex.props(baseMyTransactionsIcon.base)}
           />{" "}
           {t("al fondo")}:{" "}
           <FaFileContract
             onClick={() => {
               navigator.clipboard.writeText(loan_id);
             }}
-            className={baseMyTransactionsIcon}
+            {...stylex.props(baseMyTransactionsIcon.base)}
           />
         </div>
-        <div className={baseMyTransactionsDate}>
+        <div {...stylex.props(baseMyTransactionsDate.base)}>
           {dayjs(data.created_at)
             .locale(isEs ? es : en)
             .format(
@@ -98,11 +165,12 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
         </div>
       </div>
       <div
-        className={
+        {...stylex.props(
+          baseMyTransactionsQuantity.base,
           substraction
-            ? customMyTransactionsQuantity["substraction"]
-            : customMyTransactionsQuantity["addition"]
-        }
+            ? baseMyTransactionsQuantity.substraction
+            : baseMyTransactionsQuantity.addition
+        )}
       >
         {data.quantity}
       </div>

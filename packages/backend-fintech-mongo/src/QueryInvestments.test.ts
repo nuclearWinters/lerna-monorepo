@@ -1,7 +1,7 @@
 import { app } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { InvestmentMongo } from "./types";
+import { InvestmentMongo, UserMongo } from "./types";
 import { jwt } from "./utils";
 
 jest.mock("graphql-redis-subscriptions", () => ({
@@ -39,6 +39,14 @@ describe("QueryInvestments tests", () => {
 
   it("test InvestmentConnection valid access token", async () => {
     const investments = dbInstance.collection<InvestmentMongo>("investments");
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertOne({
+      id: "wHHR1SUBT0dspoF4YUO16",
+      account_total: 0,
+      account_available: 0,
+      account_to_be_paid: 0,
+      account_withheld: 0,
+    });
     const invest1_oid = new ObjectId();
     const invest2_oid = new ObjectId();
     const invest3_oid = new ObjectId();

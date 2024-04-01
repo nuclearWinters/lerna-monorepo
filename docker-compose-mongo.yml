@@ -52,7 +52,6 @@ services:
       - backend-auth-node
 
   kafka-mongo:
-    container_name: kafka-mongo
     image: node:18
     volumes:
       - .:/usr/src/service
@@ -62,6 +61,9 @@ services:
     depends_on:
       - mongo-fintech
       - kafka
+    deploy:
+      mode: replicated
+      replicas: 2
 
   backend-fintech:
     container_name: backend-fintech

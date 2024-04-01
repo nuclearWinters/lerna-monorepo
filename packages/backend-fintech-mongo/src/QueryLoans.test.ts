@@ -1,7 +1,7 @@
 import { app } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { LoanMongo } from "./types";
+import { LoanMongo, UserMongo } from "./types";
 import { jwt } from "./utils";
 
 jest.mock("graphql-redis-subscriptions", () => ({
@@ -39,6 +39,14 @@ describe("QueryLoans tests", () => {
 
   it("test LoanConnection valid access token", async () => {
     const loans = dbInstance.collection<LoanMongo>("loans");
+    const users = dbInstance.collection<UserMongo>("users");
+    await users.insertOne({
+      id: "wHHR1SUBT0dspoF4YUO23",
+      account_total: 0,
+      account_available: 0,
+      account_to_be_paid: 0,
+      account_withheld: 0,
+    });
     const loan1_oid = new ObjectId();
     const loan2_oid = new ObjectId();
     const loan3_oid = new ObjectId();
@@ -131,7 +139,7 @@ describe("QueryLoans tests", () => {
           }
         )
       )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO23`);
+      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO23;isBorrower=true;`);
     expect(response.body.data.user.myLoans.edges.length).toBe(2);
     expect(response.body.data.user.myLoans.edges[0].cursor).toBeTruthy();
     expect(response.body.data.user.myLoans.edges[0].node.id).toBeTruthy();

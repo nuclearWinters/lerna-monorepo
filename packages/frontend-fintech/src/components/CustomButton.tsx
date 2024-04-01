@@ -1,6 +1,5 @@
-import { Button } from "./Button";
+import { Button, button } from "./Button";
 import React, { FC } from "react";
-import { customButton } from "./CustomButton.css";
 
 interface IProps
   extends React.DetailedHTMLProps<
@@ -8,7 +7,7 @@ interface IProps
     HTMLButtonElement
   > {
   text: string;
-  color?: keyof typeof customButton;
+  color?: "primary" | "secondary" | "logIn" | "signUp" | "warning";
 }
 
 export const CustomButton: FC<IProps> = ({
@@ -21,8 +20,18 @@ export const CustomButton: FC<IProps> = ({
     <Button
       {...props}
       onClick={onClick}
-      className={customButton[color]}
       text={text}
+      styleX={
+        color === "primary"
+          ? [button.base, button.custom, button.primary]
+          : color === "secondary"
+            ? [button.base, button.custom, button.secondary]
+            : color === "logIn"
+              ? [button.base, button.auth, button.logIn]
+              : color === "signUp"
+                ? [button.base, button.auth, button.signUp]
+                : [button.base, button.custom, button.warning]
+      }
     />
   );
 };

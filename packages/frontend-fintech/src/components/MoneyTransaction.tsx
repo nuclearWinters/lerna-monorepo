@@ -1,18 +1,19 @@
 import { useFragment, graphql } from "react-relay";
-import {
-  baseMyTransactionsBar,
-  baseMyTransactionsBox,
-  baseMyTransactionsDate,
-  customMyTransactionsQuantity,
-  customMyTransactionsStatus,
-} from "screens/MyTransactions.css";
-import { TransactionType } from "__generated__/RoutesTransactionsSubscription.graphql";
 import { useTranslation } from "utils";
 import es from "dayjs/locale/es";
 import en from "dayjs/locale/en";
 import dayjs from "dayjs";
 import React, { FC } from "react";
 import { MoneyTransaction_transaction$key } from "./__generated__/MoneyTransaction_transaction.graphql";
+import { TransactionType } from "./__generated__/InvestmentTransaction_transaction.graphql";
+import {
+  baseMyTransactionsBar,
+  baseMyTransactionsBox,
+  baseMyTransactionsDate,
+  baseMyTransactionsQuantity,
+  baseMyTransactionsStatus,
+} from "./InvestmentTransaction";
+import * as stylex from "@stylexjs/stylex";
 
 interface Props {
   transaction: MoneyTransaction_transaction$key;
@@ -54,18 +55,19 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
   };
 
   return (
-    <div className={baseMyTransactionsBox} key={data.id}>
-      <div className={baseMyTransactionsBar}>
+    <div {...stylex.props(baseMyTransactionsBox.base)}>
+      <div {...stylex.props(baseMyTransactionsBar.base)}>
         <div
-          className={
+          {...stylex.props(
+            baseMyTransactionsStatus.base,
             substraction
-              ? customMyTransactionsStatus["substraction"]
-              : customMyTransactionsStatus["addition"]
-          }
+              ? baseMyTransactionsStatus.substraction
+              : baseMyTransactionsStatus.addition
+          )}
         >
           {getStatus(data.type)}
         </div>
-        <div className={baseMyTransactionsDate}>
+        <div {...stylex.props(baseMyTransactionsDate.base)}>
           {dayjs(data.created_at)
             .locale(isEs ? es : en)
             .format(
@@ -76,11 +78,12 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
         </div>
       </div>
       <div
-        className={
+        {...stylex.props(
+          baseMyTransactionsQuantity.base,
           substraction
-            ? customMyTransactionsQuantity["substraction"]
-            : customMyTransactionsQuantity["addition"]
-        }
+            ? baseMyTransactionsQuantity.substraction
+            : baseMyTransactionsQuantity.addition
+        )}
       >
         {data.quantity}
       </div>

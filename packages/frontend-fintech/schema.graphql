@@ -139,7 +139,7 @@ type Query {
   user: User!
   authUser: AuthUser!
   node(id: ID!): Node
-  scheduledPaymentsbyLoanId(id: ID!): [ScheduledPayments]
+  scheduledPaymentsbyLoanId(loan_gid: ID!): [ScheduledPayments]
 }
 
 type Subscription {
@@ -301,6 +301,7 @@ type User implements Node {
   accountAvailable: MXN!
   accountToBePaid: MXN!
   accountTotal: MXN!
+  approveLoans(after: String, first: Int): LoanConnection
   myLoans(after: String, first: Int): LoanConnection
   transactions(after: String, first: Int): TransactionConnection
   investments(

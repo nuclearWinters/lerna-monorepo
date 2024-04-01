@@ -63,7 +63,7 @@ export const SignUpMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       const user = await authusers.findOne({ email });
-      if (user) throw new Error("El email ya esta siendo usado.");
+      if (user) throw new Error("Email already in use");
       const hash_password = await bcrypt.hash(password, 12);
       const id = nanoid();
       await authusers.insertOne({

@@ -46,13 +46,13 @@ export const SignInMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       const user = await authusers.findOne({ email });
-      if (!user) throw new Error("El usuario no existe.");
+      if (!user) throw new Error("User do not exists");
       const blacklistedUser = await rdb.get(user._id.toHexString());
       if (blacklistedUser) {
-        throw new Error("El usuario estará bloqueado.");
+        throw new Error("User is suspended");
       }
       const hash = await bcrypt.compare(password, user.password);
-      if (!hash) throw new Error("La contraseña no coincide.");
+      if (!hash) throw new Error("Incorrect password");
       const now = new Date();
       now.setMilliseconds(0);
       const nowTime = now.getTime() / 1000;

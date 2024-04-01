@@ -91,7 +91,7 @@ describe("SignInMutation tests", () => {
         operationName: "signInMutation",
       })
       .set("Accept", "application/json");
-    expect(response.body.data.signIn.error).toBe("El usuario no existe.");
+    expect(response.body.data.signIn.error).toBe("User do not exists");
     expect(response.headers["set-cookie"]).toBeFalsy();
   });
 
@@ -113,7 +113,7 @@ describe("SignInMutation tests", () => {
         operationName: "signInMutation",
       })
       .set("Accept", "application/json");
-    expect(response.body.data.signIn.error).toBe("La contraseña no coincide.");
+    expect(response.body.data.signIn.error).toBe("Incorrect password");
     expect(response.headers["set-cookie"]).toBeFalsy();
   });
 });

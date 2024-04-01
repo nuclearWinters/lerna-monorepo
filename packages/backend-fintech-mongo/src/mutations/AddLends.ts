@@ -59,7 +59,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       if (!id) {
-        throw new Error("No valid access token.");
+        throw new Error("Unauthenticated");
       }
       for (const lend of newLends) {
         const { id: loan_id } = fromGlobalId(lend.loan_gid);

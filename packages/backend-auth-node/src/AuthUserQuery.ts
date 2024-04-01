@@ -209,7 +209,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
         const { after, first } = args as ConnectionArguments;
         try {
           if (!id) {
-            throw new Error("Do not return anything to not registered user");
+            throw new Error("Unauthenticated");
           }
           const sessions_id = unbase64(after || "");
           const limit = first ? first + 1 : 0;
@@ -260,7 +260,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
         const { first, after } = args as ConnectionArguments;
         try {
           if (!id) {
-            throw new Error("Do not return anything to not registered user");
+            throw new Error("Unauthenticated");
           }
           const logins_id = unbase64(after || "");
           const limit = first ? first + 1 : 0;
@@ -310,35 +310,16 @@ const QueryUser = {
     _args: unknown,
     { authusers, id }: Context
   ): Promise<UserMongo> => {
-    try {
-      if (!id) {
-        throw new Error("El usuario no ha iniciado sesion.");
-      }
-      const user = await authusers.findOne({
-        id,
-      });
-      if (!user) {
-        throw new Error("El usuario no existe.");
-      }
-      return user;
-    } catch (e) {
-      return {
-        email: "",
-        password: "",
-        language: "default",
-        name: "",
-        apellidoPaterno: "",
-        apellidoMaterno: "",
-        RFC: "",
-        CURP: "",
-        clabe: "",
-        mobile: "",
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        id: "",
-      };
+    if (!id) {
+      throw new Error("Unauthenticated");
     }
+    const user = await authusers.findOne({
+      id,
+    });
+    if (!user) {
+      throw new Error("User do not exist");
+    }
+    return user;
   },
 };
 

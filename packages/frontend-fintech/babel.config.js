@@ -2,7 +2,7 @@ const styleXPlugin = require("@stylexjs/babel-plugin");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-const plugins = ["relay", "@vanilla-extract/babel-plugin"];
+const plugins = ["relay"];
 
 if (isDevelopment) {
   plugins.push([

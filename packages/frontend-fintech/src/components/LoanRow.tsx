@@ -12,28 +12,169 @@ import { useTranslation } from "utils";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { LoanRowUpdateSubscription } from "./__generated__/LoanRowUpdateSubscription.graphql";
 import dayjs from "dayjs";
-import {
-  FaPlusSquare,
-  FaClipboard,
-  FaSyncAlt,
-  FaThumbsUp,
-} from "react-icons/fa";
-import {
-  baseLoanRowBorrowerIcon,
-  baseLoanRowBorrowerIconBox,
-  baseLoanRowCell,
-  baseLoanRowClipboard,
-  baseLoanRowContainer,
-  baseLoanRowIcon,
-  baseLoanRowInput,
-  baseLoanRowInputBox,
-  baseLoanRowScore,
-  baseLoanRowScoreCircle,
-  baseLoanRowStatus,
-  customLoanRowStatusBox,
-} from "./LoanRow.css";
+import { FaPlusSquare } from "@react-icons/all-files/fa/FaPlusSquare";
+import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
+import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
+import { FaThumbsUp } from "@react-icons/all-files/fa/FaThumbsUp";
 import { ScheduledPaymentRow } from "./ScheduledPaymentRow";
 import { Languages } from "__generated__/AppUserQuery.graphql";
+import * as stylex from "@stylexjs/stylex";
+
+export const baseLoanRowIcon = stylex.create({
+  base: {
+    fontSize: "18px",
+    color: "rgb(255,90,96)",
+  },
+});
+
+export const baseLoanRowBorrowerIconBox = stylex.create({
+  base: {
+    width: "30px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
+export const baseLoanRowBorrowerIcon = stylex.create({
+  base: {
+    fontSize: "18px",
+    color: "rgb(62,62,62)",
+    cursor: "pointer",
+    backgroundColor: "rgb(245,245,245)",
+  },
+});
+
+export const baseLoanRowCell = stylex.create({
+  base: {
+    flex: "1",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    backgroundColor: "white",
+    padding: "10px 0px",
+    textAlign: "center",
+    color: "#333",
+  },
+});
+
+export const baseLoanRowInputBox = stylex.create({
+  base: {
+    flex: "1",
+    backgroundColor: "white",
+    alignItems: "center",
+    color: "#333",
+    display: "flex",
+  },
+});
+
+export const baseLoanRowInput = stylex.create({
+  base: {
+    margin: "4px",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "#999",
+    borderRadius: "4px",
+    padding: "4px",
+    width: "100%",
+  },
+});
+
+export const baseLoanRowClipboard = stylex.create({
+  base: {
+    flex: "1",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    backgroundColor: "white",
+    padding: "10px 0px",
+    textAlign: "center",
+    color: "#333",
+    cursor: "pointer",
+  },
+});
+
+export const baseLoanRowScore = stylex.create({
+  base: {
+    flex: "1",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    backgroundColor: "white",
+    textAlign: "center",
+    color: "#333",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
+export const baseLoanRowScoreCircle = stylex.create({
+  base: {
+    borderRadius: "100%",
+    backgroundColor: "rgb(102,141,78)",
+    width: "30px",
+    height: "30px",
+    fontSize: "10px",
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
+export const baseLoanRowContainer = stylex.create({
+  base: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: "8px",
+  },
+});
+
+export const baseLoanRowStatus = stylex.create({
+  base: {
+    flex: "1",
+    backgroundColor: "white",
+    color: "#333",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
+
+export const baseLoanRowStatusBox = stylex.create({
+  base: {
+    padding: "4px",
+    borderRadius: "4px",
+    textAlign: "center",
+    flex: "1",
+    color: "white",
+  },
+  financing: {
+    backgroundColor: "#4F7942",
+  },
+  default: {
+    backgroundColor: "#FF9F00",
+  },
+  scheduledPaymentsDelayed: {
+    backgroundColor: "#FF9F00",
+    maxWidth: "200px",
+  },
+  scheduledPaymentsPaid: {
+    backgroundColor: "#44d43b",
+    maxWidth: "200px",
+  },
+  scheduledPaymentsToBePaid: {
+    backgroundColor: "#046307",
+    maxWidth: "200px",
+  },
+  scheduledPaymentsDefault: {
+    backgroundColor: "white",
+    maxWidth: "200px",
+  },
+});
 
 const loanRowRefetchableFragment = graphql`
   fragment LoanRow_loan on Loan @refetchable(queryName: "LoanRowRefetchQuery") {
@@ -154,9 +295,9 @@ export const LoanRow: FC<Props> = ({
 
   return (
     <>
-      <div className={baseLoanRowContainer}>
+      <div {...stylex.props(baseLoanRowContainer.base)}>
         {isBorrower && (
-          <div className={baseLoanRowBorrowerIconBox}>
+          <div {...stylex.props(baseLoanRowBorrowerIconBox.base)}>
             {data.status === "PAID" ||
               data.status === "PAST_DUE" ||
               (data.status === "TO_BE_PAID" && (
@@ -164,46 +305,46 @@ export const LoanRow: FC<Props> = ({
                   onClick={() => {
                     setShowSubTable((state) => !state);
                   }}
-                  className={baseLoanRowBorrowerIcon}
+                  {...stylex.props(baseLoanRowBorrowerIcon.base)}
                 />
               ))}
           </div>
         )}
-        <div className={baseLoanRowClipboard}>
+        <div {...stylex.props(baseLoanRowClipboard.base)}>
           <FaClipboard
             onClick={() => {
               navigator.clipboard.writeText(data.id);
             }}
-            className={baseLoanRowIcon}
+            {...stylex.props(baseLoanRowIcon.base)}
           />
         </div>
-        <div className={baseLoanRowClipboard}>
+        <div {...stylex.props(baseLoanRowClipboard.base)}>
           <FaClipboard
             onClick={() => {
               navigator.clipboard.writeText(data.user_id);
             }}
-            className={baseLoanRowIcon}
+            {...stylex.props(baseLoanRowIcon.base)}
           />
         </div>
-        <div className={baseLoanRowScore}>
-          <div className={baseLoanRowScoreCircle}>{data.score}</div>
+        <div {...stylex.props(baseLoanRowScore.base)}>
+          <div {...stylex.props(baseLoanRowScoreCircle.base)}>{data.score}</div>
         </div>
-        <div className={baseLoanRowCell}>{data.ROI}%</div>
-        <div className={baseLoanRowCell}>{data.goal}</div>
-        <div className={baseLoanRowCell}>
+        <div {...stylex.props(baseLoanRowCell.base)}>{data.ROI}%</div>
+        <div {...stylex.props(baseLoanRowCell.base)}>{data.goal}</div>
+        <div {...stylex.props(baseLoanRowCell.base)}>
           {data.term} {t("meses")}
         </div>
-        <div className={baseLoanRowCell}>{data.pending}</div>
-        <div className={baseLoanRowCell}>
+        <div {...stylex.props(baseLoanRowCell.base)}>{data.pending}</div>
+        <div {...stylex.props(baseLoanRowCell.base)}>
           {expiry.diff(now, "months") || expiry.diff(now, "days")} {t("meses")}
         </div>
         {isLender ? (
-          <div className={baseLoanRowInputBox}>
+          <div {...stylex.props(baseLoanRowInputBox.base)}>
             $
             <input
               type="text"
               name={data.id}
-              className={baseLoanRowInput}
+              {...stylex.props(baseLoanRowInput.base)}
               value={value}
               onChange={(e) => {
                 const val = e.target.value.replace("e", "");
@@ -257,7 +398,7 @@ export const LoanRow: FC<Props> = ({
           </div>
         ) : isSupport && data.status === "WAITING_FOR_APPROVAL" ? (
           <div
-            className={baseLoanRowClipboard}
+            {...stylex.props(baseLoanRowClipboard.base)}
             onClick={() => {
               commitApproveLoan({
                 variables: {
@@ -268,32 +409,33 @@ export const LoanRow: FC<Props> = ({
               });
             }}
           >
-            <FaThumbsUp className={baseLoanRowIcon} />
+            <FaThumbsUp {...stylex.props(baseLoanRowIcon.base)} />
           </div>
         ) : (
-          <div className={baseLoanRowStatus}>
+          <div {...stylex.props(baseLoanRowStatus.base)}>
             <div
-              className={
+              {...stylex.props(
+                baseLoanRowStatusBox.base,
                 data.status === "FINANCING"
-                  ? customLoanRowStatusBox["financing"]
-                  : customLoanRowStatusBox["default"]
-              }
+                  ? baseLoanRowStatusBox.financing
+                  : baseLoanRowStatusBox.default
+              )}
             >
               {getStatus()}
             </div>
           </div>
         )}
         <div
-          className={baseLoanRowClipboard}
+          {...stylex.props(baseLoanRowClipboard.base)}
           onClick={() => {
             refetch({}, { fetchPolicy: "network-only" });
           }}
         >
-          <FaSyncAlt className={baseLoanRowIcon} />
+          <FaSyncAlt {...stylex.props(baseLoanRowIcon.base)} />
         </div>
       </div>
       {showSubTable && (
-        <ScheduledPaymentRow loan_id={data.id} language={language} />
+        <ScheduledPaymentRow loan_gid={data.id} language={language} />
       )}
     </>
   );

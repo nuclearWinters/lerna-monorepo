@@ -1,16 +1,8 @@
 import React, { FC } from "react";
-import { Columns } from "./Colums";
-import { Rows } from "./Rows";
-import { customRows } from "./Rows.css";
-import { Space } from "./Space";
-import { customSpace } from "./Space.css";
+import { Columns, baseColumn } from "./Colums";
+import { Rows, baseRows } from "./Rows";
+import { Space, customSpace } from "./Space";
 import { TableColumnName } from "./TableColumnName";
-import { customColumn } from "./Column.css";
-import {
-  baseLoanRowCell,
-  baseLoanRowStatus,
-  customLoanRowStatusBox,
-} from "./LoanRow.css";
 import dayjs from "dayjs";
 import { graphql } from "relay-runtime";
 import { useLazyLoadQuery } from "react-relay";
@@ -22,11 +14,17 @@ import {
   ScheduledPaymentRowQuery,
 } from "./__generated__/ScheduledPaymentRowQuery.graphql";
 import { Languages } from "__generated__/AppUserQuery.graphql";
+import {
+  baseLoanRowCell,
+  baseLoanRowStatus,
+  baseLoanRowStatusBox,
+} from "./LoanRow";
+import * as stylex from "@stylexjs/stylex";
 
 export const ScheduledPaymentRow: FC<{
-  loan_id: string;
+  loan_gid: string;
   language: Languages;
-}> = ({ loan_id, language }) => {
+}> = ({ loan_gid, language }) => {
   const { t } = useTranslation();
   const columns = [
     { key: "amortize", title: t("Pago amortización") },
@@ -35,8 +33,8 @@ export const ScheduledPaymentRow: FC<{
   ];
   const data = useLazyLoadQuery<ScheduledPaymentRowQuery>(
     graphql`
-      query ScheduledPaymentRowQuery($id: ID!) {
-        scheduledPaymentsbyLoanId(id: $id) {
+      query ScheduledPaymentRowQuery($loan_gid: ID!) {
+        scheduledPaymentsbyLoanId(loan_gid: $loan_gid) {
           id
           loan_id
           amortize
@@ -45,7 +43,7 @@ export const ScheduledPaymentRow: FC<{
         }
       }
     `,
-    { id: loan_id },
+    { loan_gid },
     { fetchPolicy: "store-or-network" }
   );
   const getStatusPayment = (status: LoanScheduledPaymentStatus) => {
@@ -73,19 +71,19 @@ export const ScheduledPaymentRow: FC<{
   const statuPaymentsColor = (status: LoanScheduledPaymentStatus) => {
     switch (status) {
       case "DELAYED":
-        return customLoanRowStatusBox["scheduledPaymentsDelayed"];
+        return baseLoanRowStatusBox.scheduledPaymentsDelayed;
       case "PAID":
-        return customLoanRowStatusBox["scheduledPaymentsPaid"];
+        return baseLoanRowStatusBox.scheduledPaymentsPaid;
       case "TO_BE_PAID":
-        return customLoanRowStatusBox["scheduledPaymentsToBePaid"];
+        return baseLoanRowStatusBox.scheduledPaymentsToBePaid;
       default:
-        return customLoanRowStatusBox["default"];
+        return baseLoanRowStatusBox.default;
     }
   };
   return (
-    <Rows className={customRows["flex1"]}>
+    <Rows styleX={[baseRows.base, baseRows.flex1]}>
       <Columns>
-        <Space className={customSpace["w50"]} />
+        <Space styleX={customSpace.w50} />
         {columns.map((column) => (
           <TableColumnName key={column.key}>{column.title}</TableColumnName>
         ))}
@@ -97,16 +95,23 @@ export const ScheduledPaymentRow: FC<{
         return (
           <Columns
             key={String(payment?.scheduledDate)}
-            className={customColumn["columnLoanRow"]}
+            styleX={[baseColumn.base, baseColumn.columnLoanRow]}
           >
-            <Space className={customSpace["w50"]} />
-            <div className={baseLoanRowCell}>{payment?.amortize}</div>
-            <div className={baseLoanRowStatus}>
-              <div className={statuPaymentsColor(payment.status)}>
+            <Space styleX={customSpace.w50} />
+            <div {...stylex.props(baseLoanRowCell.base)}>
+              {payment?.amortize}
+            </div>
+            <div {...stylex.props(baseLoanRowStatus.base)}>
+              <div
+                {...stylex.props(
+                  baseLoanRowStatusBox.base,
+                  statuPaymentsColor(payment.status)
+                )}
+              >
                 {getStatusPayment(payment.status)}
               </div>
             </div>
-            <div className={baseLoanRowCell}>
+            <div {...stylex.props(baseLoanRowCell.base)}>
               {dayjs(payment.scheduledDate)
                 .locale(languageEnum === "ES" ? es : en)
                 .format(
@@ -118,7 +123,7 @@ export const ScheduledPaymentRow: FC<{
           </Columns>
         );
       })}
-      <Space className={customSpace["h30"]} />
+      <Space styleX={customSpace.h30} />
     </Rows>
   );
 };

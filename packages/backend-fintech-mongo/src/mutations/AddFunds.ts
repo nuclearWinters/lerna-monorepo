@@ -30,7 +30,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
   ): Promise<Payload> => {
     try {
       if (!id) {
-        throw new Error("No valid access token.");
+        throw new Error("Unauthenticated");
       }
       if (quantity === 0) {
         throw new Error("La cantidad no puede ser cero.");

@@ -1,11 +1,28 @@
 import React, { FC } from "react";
 import logo from "assets/logo.png";
-import { baseIconBox, baseIconImg } from "./Icon.css";
+import * as stylex from "@stylexjs/stylex";
+
+export const baseIconImg = stylex.create({
+  base: {
+    height: "70px",
+    alignSelf: "center",
+  },
+});
+
+export const baseIconBox = stylex.create({
+  base: {
+    display: "flex",
+    flexDirection: "column",
+    borderBottomColor: "rgb(225,225,225)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: "1px",
+  },
+});
 
 export const Icon: FC = () => {
   return (
-    <div className={baseIconBox}>
-      <img src={logo} alt="presta dinero" className={baseIconImg} />
+    <div {...stylex.props(baseIconBox.base)}>
+      <img src={logo} alt="presta dinero" {...stylex.props(baseIconImg.base)} />
     </div>
   );
 };

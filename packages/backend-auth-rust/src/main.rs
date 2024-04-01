@@ -257,14 +257,14 @@ impl Mutation {
                         }
                     },
                     false => Some(SignInPayload {
-                        error: String::from("La contraseña no coincide."),
+                        error: String::from("Incorrect password"),
                         client_mutation_id: None,
                     })
                 }
             },
             None => {
                 Some(SignInPayload {
-                    error: String::from("El usuario no existe."),
+                    error: String::from("User do not exists"),
                     client_mutation_id: None,
                 })
             }
@@ -314,7 +314,7 @@ impl Mutation {
         let user: Option<AuthUserMongo> = auth_users.find_one(filter, None).await?;
         Ok(match user {
             Some(_user) => Some(SignUpPayload {
-                error: String::from("El email ya esta siendo usado."),
+                error: String::from("Email already in use"),
                 client_mutation_id: None,
             }),
             None => {
@@ -505,7 +505,7 @@ impl Mutation {
             Ok(data) => data,
             Err(_err) => {
                 return Ok(Some(ExtendSessionPayload {
-                    error: String::from("El usuario no existe."),
+                    error: String::from("User do not exists"),
                     client_mutation_id: None,
                 }))
             }

@@ -28,11 +28,14 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
     { rdb, refreshToken, id, res }: Context
   ): Promise<Payload> => {
     try {
-      if (!refreshToken || !id) {
-        throw new Error("No hay refreshToken o accessToken.");
+      if (!id) {
+        throw new Error("Unauthenticated");
+      }
+      if (!refreshToken) {
+        throw new Error("Do not have Refresh Token");
       }
       const user = jwt.verify(refreshToken, REFRESHSECRET);
-      if (!user) throw new Error("El usuario no existe.");
+      if (!user) throw new Error("User do not exists");
 
       const blacklistedUserTime = await rdb?.get(refreshToken);
       if (blacklistedUserTime) {
@@ -40,7 +43,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
         const issuedTime = addMinutes(new Date(user.exp * 1000), -3);
         const loggedAfter = isAfter(issuedTime, time);
         if (!loggedAfter) {
-          throw new Error("El usuario esta bloqueado.");
+          throw new Error("User is suspended");
         }
       }
       const { isBorrower, isLender, isSupport } = user;
