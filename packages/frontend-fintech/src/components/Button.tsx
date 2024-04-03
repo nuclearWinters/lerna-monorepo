@@ -1,9 +1,9 @@
-import React, { FC, ReactNode } from "react";
+import { ButtonHTMLAttributes, DetailedHTMLProps, FC, ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
 
 interface IProps
-  extends React.DetailedHTMLProps<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends DetailedHTMLProps<
+    ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
   > {
   text: string;

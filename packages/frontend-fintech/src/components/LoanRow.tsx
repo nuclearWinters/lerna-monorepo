@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from "react";
+import { Dispatch, FC, SetStateAction, useMemo, useState } from "react";
 import {
   graphql,
   useMutation,
@@ -8,7 +8,7 @@ import {
 import { LoanRowMutation } from "./__generated__/LoanRowMutation.graphql";
 import { LoanRowRefetchQuery } from "./__generated__/LoanRowRefetchQuery.graphql";
 import { LoanRow_loan$key } from "./__generated__/LoanRow_loan.graphql";
-import { useTranslation } from "utils";
+import { useTranslation } from "../utils";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { LoanRowUpdateSubscription } from "./__generated__/LoanRowUpdateSubscription.graphql";
 import dayjs from "dayjs";
@@ -17,7 +17,7 @@ import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
 import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
 import { FaThumbsUp } from "@react-icons/all-files/fa/FaThumbsUp";
 import { ScheduledPaymentRow } from "./ScheduledPaymentRow";
-import { Languages } from "__generated__/AppUserQuery.graphql";
+import { Languages } from "../__generated__/AppUserQuery.graphql";
 import * as stylex from "@stylexjs/stylex";
 
 export const baseLoanRowIcon = stylex.create({
@@ -216,8 +216,8 @@ type Props = {
   isSupport: boolean;
   isBorrower: boolean;
   value: string;
-  setLends: React.Dispatch<
-    React.SetStateAction<
+  setLends: Dispatch<
+    SetStateAction<
       {
         loan_gid: string;
         quantity: string;

@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { Component, ReactNode } from "react";
 import { NavigateFunction } from "react-router-dom";
 
 interface RelayError {
@@ -22,7 +22,7 @@ type Props = {
   pathname: string;
 };
 
-export class ErrorBoundaryFallback extends React.Component<Props, State> {
+export class ErrorBoundaryFallback extends Component<Props, State> {
   state = { errorMessage: "" };
   static getDerivedStateFromError(error: unknown): State {
     if (isRelayError(error)) {

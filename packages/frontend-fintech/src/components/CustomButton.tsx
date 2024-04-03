@@ -1,9 +1,9 @@
 import { Button, button } from "./Button";
-import React, { FC } from "react";
+import { ButtonHTMLAttributes, DetailedHTMLProps, FC } from "react";
 
 interface IProps
-  extends React.DetailedHTMLProps<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends DetailedHTMLProps<
+    ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
   > {
   text: string;

@@ -1,7 +1,7 @@
-import React from "react";
+//@ts-ignore
 import MatchContainer from "react-relay/lib/relay-hooks/MatchContainer";
-import moduleLoader from "RelayEnvironment";
 import ErrorBoundary from "./ErrorBoundary";
+import moduleLoader from "./RelayEnvironment";
 
 export default function RelayMatchContainer({ match }: { match: any }) {
   return (

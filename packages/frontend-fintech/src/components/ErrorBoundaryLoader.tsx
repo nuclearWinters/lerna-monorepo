@@ -1,5 +1,5 @@
-import { getUserDataCache } from "Routes";
-import React, { ReactNode } from "react";
+import { getUserDataCache } from "../utils";
+import { Component, ReactNode } from "react";
 import { NavigateFunction } from "react-router-dom";
 
 interface RelayError {
@@ -18,7 +18,7 @@ const isRelayError = (object: any): object is RelayError => {
 type State = { errorMessage: string };
 type Props = { children: ReactNode; navigate: NavigateFunction };
 
-export class ErrorBoundaryLoader extends React.Component<Props, State> {
+export class ErrorBoundaryLoader extends Component<Props, State> {
   state = { errorMessage: "" };
   static getDerivedStateFromError(error: unknown): State {
     if (isRelayError(error)) {

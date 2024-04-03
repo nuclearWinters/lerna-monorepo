@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import * as stylex from "@stylexjs/stylex";
 
 interface Props {

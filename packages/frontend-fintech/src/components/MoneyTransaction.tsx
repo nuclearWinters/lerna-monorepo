@@ -1,9 +1,9 @@
 import { useFragment, graphql } from "react-relay";
-import { useTranslation } from "utils";
+import { useTranslation } from "../utils";
 import es from "dayjs/locale/es";
 import en from "dayjs/locale/en";
 import dayjs from "dayjs";
-import React, { FC } from "react";
+import { FC } from "react";
 import { MoneyTransaction_transaction$key } from "./__generated__/MoneyTransaction_transaction.graphql";
 import { TransactionType } from "./__generated__/InvestmentTransaction_transaction.graphql";
 import {

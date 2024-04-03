@@ -1,9 +1,9 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { graphql, useRefetchableFragment } from "react-relay/hooks";
 import { InvestmentRowRefetchQuery } from "./__generated__/InvestmentRowRefetchQuery.graphql";
 import { InvestmentRow_investment$key } from "./__generated__/InvestmentRow_investment.graphql";
 import dayjs from "dayjs";
-import { useTranslation } from "utils";
+import { useTranslation } from "../utils";
 import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
 import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
 import * as stylex from "@stylexjs/stylex";

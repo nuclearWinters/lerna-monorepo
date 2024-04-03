@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import logo from "assets/logo.png";
 import * as stylex from "@stylexjs/stylex";
 

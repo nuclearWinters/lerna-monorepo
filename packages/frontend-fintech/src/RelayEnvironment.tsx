@@ -8,10 +8,9 @@ import {
   Observable,
   GraphQLResponse,
 } from "relay-runtime";
-import { API_GATEWAY, REALTIME_GATEWAY } from "utils";
+import { API_GATEWAY, REALTIME_GATEWAY, Decode } from "./utils";
 import { createClient, Sink } from "graphql-ws";
 import { jwtDecode } from "jwt-decode";
-import { Decode } from "screens/LogIn";
 
 export const subscriptionsClient = createClient({
   url: REALTIME_GATEWAY,

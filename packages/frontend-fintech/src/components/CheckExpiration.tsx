@@ -1,9 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
-import { useLogout } from "utils";
+import { useLogout, getUserDataCache } from "../utils";
 import { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
 import { useIdleTimer } from "react-idle-timer";
-import { getUserDataCache } from "Routes";
 
 export const CheckExpiration: FC = () => {
   const logout = useLogout();

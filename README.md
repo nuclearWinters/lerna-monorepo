@@ -2,7 +2,7 @@
 
 This project explores microservices as a monorepository.
 
-These microservices expose GraphQL schemas with Relay specifications and are merged into one in the GraphQL Gateway so the React app only need to fetch data from one endpoint.
+These microservices expose GraphQL schemas with Relay specifications and are merged into one in the GraphQL Gateway so the  app only need to fetch data from one endpoint.
 
 Docker will run all microservices locally.
 

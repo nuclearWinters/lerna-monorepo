@@ -1,10 +1,10 @@
-import React, { createContext, FC, useState } from "react";
+import { createContext, Dispatch, FC, SetStateAction, useState } from "react";
 import { RelayEnvironmentProvider } from "react-relay/hooks";
 import { RelayEnvironment } from "./RelayEnvironment";
-import { Languages } from "__generated__/AppUserQuery.graphql";
 import { RouterProvider } from "react-router";
-import { router } from "Routes";
+import { router } from "./router";
 import * as stylex from "@stylexjs/stylex";
+import { Languages } from "./__generated__/AppUserQuery.graphql";
 
 export const baseApp = stylex.create({
   base: {
@@ -16,7 +16,7 @@ export const baseApp = stylex.create({
 });
 
 export const LanguageContext = createContext<
-  [Languages, React.Dispatch<React.SetStateAction<Languages>>]
+  [Languages, Dispatch<SetStateAction<Languages>>]
 >(["EN", () => {}]);
 
 export const App: FC = () => {

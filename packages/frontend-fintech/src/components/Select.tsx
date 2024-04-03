@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { ChangeEvent, FC } from "react";
 import * as stylex from "@stylexjs/stylex";
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
     value: string;
     label: string;
   }[];
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
 }
 
 export const baseSelect = stylex.create({

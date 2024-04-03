@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from "react";
+import { FC, ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
 
 export const baseTableColumnName = stylex.create({

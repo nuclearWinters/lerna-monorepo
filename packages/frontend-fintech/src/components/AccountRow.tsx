@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { FaPlusCircle } from "@react-icons/all-files/fa/FaPlusCircle";
 import * as stylex from "@stylexjs/stylex";
 

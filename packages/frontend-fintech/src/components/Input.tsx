@@ -1,9 +1,9 @@
-import React, { FC } from "react";
+import { DetailedHTMLProps, FC, InputHTMLAttributes } from "react";
 import * as stylex from "@stylexjs/stylex";
 
 interface Props
-  extends React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
+  extends DetailedHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
   > {}
 

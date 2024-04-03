@@ -4,11 +4,11 @@ import {
   usePreloadedQuery,
   useSubscription,
 } from "react-relay/hooks";
-import { Icon } from "components/Icon";
-import { AccountInfo } from "components/AccountInfo";
-import { AccountLink } from "components/AccountLink";
-import { Rows } from "components/Rows";
-import { useTranslation } from "utils";
+import { Icon } from "../components/Icon";
+import { AccountInfo } from "../components/AccountInfo";
+import { AccountLink } from "../components/AccountLink";
+import { Rows } from "../components/Rows";
+import { authUserQuery, useTranslation } from "../utils";
 import { FaFileAlt } from "@react-icons/all-files/fa/FaFileAlt";
 import { FaCartPlus } from "@react-icons/all-files/fa/FaCartPlus";
 import { FaFunnelDollar } from "@react-icons/all-files/fa/FaFunnelDollar";
@@ -18,13 +18,28 @@ import { FaUserAlt } from "@react-icons/all-files/fa/FaUserAlt";
 import { FaHandHolding } from "@react-icons/all-files/fa/FaHandHolding";
 import { FaFolder } from "@react-icons/all-files/fa/FaFolder";
 import { FaExchangeAlt } from "@react-icons/all-files/fa/FaExchangeAlt";
-import React, { FC, useEffect, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { SiderUserSubscription } from "./__generated__/SiderUserSubscription.graphql";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import { AppUserQuery } from "../__generated__/AppUserQuery.graphql";
-import { authUserQuery, baseRoutesIcon, baseSider } from "Routes";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
+
+export const baseRoutesIcon = stylex.create({
+  base: {
+    fontSize: "28px",
+  },
+});
+
+export const baseSider = stylex.create({
+  base: {
+    gridRowStart: "1",
+    gridRowEnd: "3",
+    gridColumnStart: "1",
+    gridColumnEnd: "1",
+    display: "flex",
+  },
+});
 
 const subscriptionUser = graphql`
   subscription SiderUserSubscription {

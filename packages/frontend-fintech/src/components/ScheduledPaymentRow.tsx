@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Columns, baseColumn } from "./Colums";
 import { Rows, baseRows } from "./Rows";
 import { Space, customSpace } from "./Space";
@@ -6,14 +6,14 @@ import { TableColumnName } from "./TableColumnName";
 import dayjs from "dayjs";
 import { graphql } from "relay-runtime";
 import { useLazyLoadQuery } from "react-relay";
-import { useTranslation } from "utils";
+import { useTranslation } from "../utils";
 import es from "dayjs/locale/es";
 import en from "dayjs/locale/en";
 import {
   LoanScheduledPaymentStatus,
   ScheduledPaymentRowQuery,
 } from "./__generated__/ScheduledPaymentRowQuery.graphql";
-import { Languages } from "__generated__/AppUserQuery.graphql";
+import { Languages } from "../__generated__/AppUserQuery.graphql";
 import {
   baseLoanRowCell,
   baseLoanRowStatus,

@@ -1,13 +1,33 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { graphql, useRefetchableFragment } from "react-relay/hooks";
 import dayjs from "dayjs";
 import { LoginRowRefetchQuery } from "./__generated__/LoginRowRefetchQuery.graphql";
 import { LoginRow_login$key } from "./__generated__/LoginRow_login.graphql";
 import es from "dayjs/locale/es";
 import en from "dayjs/locale/en";
-import { Languages } from "__generated__/AppUserQuery.graphql";
-import { baseLoanRowCell, baseLoanRowContainer } from "./LoanRow";
 import * as stylex from "@stylexjs/stylex";
+import { Languages } from "../__generated__/AppUserQuery.graphql";
+
+export const baseLoanRowCell = stylex.create({
+  base: {
+    flex: "1",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    backgroundColor: "white",
+    padding: "10px 0px",
+    textAlign: "center",
+    color: "#333",
+  },
+});
+
+export const baseLoanRowContainer = stylex.create({
+  base: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: "8px",
+  },
+});
 
 const loginRowRefetchableFragment = graphql`
   fragment LoginRow_login on Login

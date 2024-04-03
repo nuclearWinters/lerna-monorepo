@@ -466,7 +466,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       resolve: ({ account_withheld }): number => account_withheld,
     },
     approveLoans: {
-      type: new GraphQLNonNull(LoanConnection),
+      type: LoanConnection,
       args: forwardConnectionArgs,
       resolve: async (
         _root: unknown,
@@ -515,7 +515,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       },
     },
     myLoans: {
-      type: new GraphQLNonNull(LoanConnection),
+      type: LoanConnection,
       args: forwardConnectionArgs,
       resolve: async (
         _root: unknown,
@@ -564,7 +564,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       },
     },
     investments: {
-      type: new GraphQLNonNull(InvestmentConnection),
+      type: InvestmentConnection,
       args: {
         status: {
           type: new GraphQLList(new GraphQLNonNull(InvestmentStatus)),
@@ -618,7 +618,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       },
     },
     transactions: {
-      type: new GraphQLNonNull(TransactionConnection),
+      type: TransactionConnection,
       args: {
         ...forwardConnectionArgs,
       },
@@ -666,7 +666,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       },
     },
     loansFinancing: {
-      type: new GraphQLNonNull(LoanConnection),
+      type: LoanConnection,
       args: forwardConnectionArgs,
       resolve: async (
         _root: unknown,

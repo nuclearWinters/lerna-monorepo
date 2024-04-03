@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
-import { ModuleLoaderError } from "RelayMatchContainer";
+import { Component, ReactNode } from "react";
+import { ModuleLoaderError } from "./RelayMatchContainer";
 
-export default class ErrorBoundary extends React.Component<
+export default class ErrorBoundary extends Component<
   {
     shouldCatchError?: (error: ModuleLoaderError) => boolean;
     renderError: (error: ModuleLoaderError, resetError: () => void) => any;

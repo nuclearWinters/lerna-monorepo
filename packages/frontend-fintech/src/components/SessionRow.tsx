@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import {
   graphql,
   useMutation,
@@ -11,12 +11,48 @@ import { SessionRowRevokeSessionMutation } from "./__generated__/SessionRowRevok
 import { FaTrashAlt } from "@react-icons/all-files/fa/FaTrashAlt";
 import { Spinner } from "./Spinner";
 import * as stylex from "@stylexjs/stylex";
-import {
-  baseLoanRowCell,
-  baseLoanRowClipboard,
-  baseLoanRowContainer,
-  baseLoanRowIcon,
-} from "./LoanRow";
+
+export const baseLoanRowIcon = stylex.create({
+  base: {
+    fontSize: "18px",
+    color: "rgb(255,90,96)",
+  },
+});
+
+export const baseLoanRowCell = stylex.create({
+  base: {
+    flex: "1",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    backgroundColor: "white",
+    padding: "10px 0px",
+    textAlign: "center",
+    color: "#333",
+  },
+});
+
+export const baseLoanRowClipboard = stylex.create({
+  base: {
+    flex: "1",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    backgroundColor: "white",
+    padding: "10px 0px",
+    textAlign: "center",
+    color: "#333",
+    cursor: "pointer",
+  },
+});
+
+export const baseLoanRowContainer = stylex.create({
+  base: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: "8px",
+  },
+});
 
 const loginRowRefetchableFragment = graphql`
   fragment SessionRow_session on Session

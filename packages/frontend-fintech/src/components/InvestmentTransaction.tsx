@@ -1,16 +1,16 @@
 import { useFragment, graphql } from "react-relay";
 import { FaFileContract } from "@react-icons/all-files/fa/FaFileContract";
 import { FaUserCircle } from "@react-icons/all-files/fa/FaUserCircle";
-import { useTranslation } from "utils";
 import es from "dayjs/locale/es";
 import en from "dayjs/locale/en";
 import dayjs from "dayjs";
-import React, { FC } from "react";
+import { FC } from "react";
 import {
   InvestmentTransaction_transaction$key,
   TransactionType,
 } from "./__generated__/InvestmentTransaction_transaction.graphql";
 import * as stylex from "@stylexjs/stylex";
+import { useTranslation } from "../utils";
 
 export const baseMyTransactionsIcon = stylex.create({
   base: {

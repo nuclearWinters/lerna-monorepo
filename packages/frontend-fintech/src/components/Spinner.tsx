@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { FaSpinner } from "@react-icons/all-files/fa/FaSpinner";
 import * as stylex from "@stylexjs/stylex";
 

@@ -1,8 +1,17 @@
-import { LanguageContext } from "App";
-import { resources } from "i18n";
+import { LanguageContext } from "./App";
+import { resources } from "./i18n";
 import { useContext } from "react";
 import { graphql, useMutation } from "react-relay";
-import { utilsLogOutMutation } from "__generated__/utilsLogOutMutation.graphql";
+import { utilsLogOutMutation } from "./__generated__/utilsLogOutMutation.graphql";
+
+export interface Decode {
+  id: string;
+  isBorrower: boolean;
+  isLender: boolean;
+  isSupport: boolean;
+  refreshTokenExpireTime: number;
+  exp: number;
+}
 
 export const useLogout = () => {
   const [commit] = useMutation<utilsLogOutMutation>(graphql`
@@ -46,3 +55,62 @@ export const useTranslation = () => {
   };
   return { t, changeLanguage };
 };
+
+export const getUserDataCache = (): Decode | null => {
+  const userData = sessionStorage.getItem("userData");
+  if (userData) {
+    return JSON.parse(userData);
+  }
+  return null;
+};
+
+export const supportPages = ["/approveLoan", "/settings"];
+
+export const borrowerPages = [
+  "/account",
+  "/addLoan",
+  "/myLoans",
+  "/addFunds",
+  "/retireFunds",
+  "/settings",
+  "/myTransactions",
+];
+
+export const defaultSupport = "/approveLoan";
+export const defaultBorrower = "/myLoans";
+export const defaultLender = "/addInvestments";
+
+export const lenderPages = [
+  "/account",
+  "/addInvestments",
+  "/addFunds",
+  "/retireFunds",
+  "/myInvestments",
+  "/myTransactions",
+  "/settings",
+];
+
+export const authUserQuery = graphql`
+  query utilsQuery {
+    user {
+      id
+      accountAvailable
+      accountTotal
+    }
+    authUser {
+      id
+      name
+      apellidoPaterno
+      apellidoMaterno
+      RFC
+      CURP
+      clabe
+      mobile
+      isLender
+      isBorrower
+      isSupport
+      language
+      email
+    }
+  }
+`;
