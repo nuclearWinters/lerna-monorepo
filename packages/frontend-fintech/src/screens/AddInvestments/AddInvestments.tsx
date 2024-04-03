@@ -21,12 +21,7 @@ import { Columns, baseColumn } from "../../components/Colums";
 import { TableColumnName } from "../../components/TableColumnName";
 import { Table } from "../../components/Table";
 import { authUserQuery, useTranslation } from "../../utils";
-import { AddInvestmentsPaginationQuery } from "./__generated__/AddInvestmentsPaginationQuery.graphql";
-import { AddInvestments_user$key } from "./__generated__/AddInvestments_user.graphql";
-import { AddInvestmentsQuery } from "./__generated__/AddInvestmentsQuery.graphql";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
-import { AddInvestmentsLoansSubscription } from "./__generated__/AddInvestmentsLoansSubscription.graphql";
-import { AppUserQuery } from "../../__generated__/AppUserQuery.graphql";
 import { useNavigate } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
 import {
@@ -34,6 +29,12 @@ import {
   addInvestmentPaginationFragment,
   subscriptionLoans,
 } from "./AddInvestmentsQueries";
+import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
+import { RedirectContainer } from "../../components/RedirectContainer";
+import { AddInvestmentsQueriesQuery } from "./__generated__/AddInvestmentsQueriesQuery.graphql";
+import { AddInvestmentsQueriesPaginationQuery } from "./__generated__/AddInvestmentsQueriesPaginationQuery.graphql";
+import { AddInvestmentsQueries_user$key } from "./__generated__/AddInvestmentsQueries_user.graphql";
+import { AddInvestmentsQueriesLoansSubscription } from "./__generated__/AddInvestmentsQueriesLoansSubscription.graphql";
 
 export const baseAddInvestmentsTotal = stylex.create({
   base: {
@@ -55,8 +56,8 @@ export const basePrestarWrapper = stylex.create({
 });
 
 type Props = {
-  query: PreloadedQuery<AddInvestmentsQuery, {}>;
-  authQuery: PreloadedQuery<AppUserQuery, {}>;
+  query: PreloadedQuery<AddInvestmentsQueriesQuery, {}>;
+  authQuery: PreloadedQuery<utilsQuery, {}>;
 };
 
 interface ILends {
@@ -71,9 +72,8 @@ interface ILends {
 export const AddInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
   const { user, __id } = usePreloadedQuery(addInvestmentFragment, props.query);
-  const {
-    authUser: { isLender, isSupport, isBorrower, language, id },
-  } = usePreloadedQuery(authUserQuery, props.authQuery);
+  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
+  const id = authUser?.id;
   const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {
@@ -83,8 +83,8 @@ export const AddInvestments: FC<Props> = (props) => {
   `);
   const navigate = useNavigate();
   const { data, loadNext, refetch } = usePaginationFragment<
-    AddInvestmentsPaginationQuery,
-    AddInvestments_user$key
+    AddInvestmentsQueriesPaginationQuery,
+    AddInvestmentsQueries_user$key
   >(addInvestmentPaginationFragment, user);
 
   const columns = [
@@ -120,7 +120,7 @@ export const AddInvestments: FC<Props> = (props) => {
     {}
   );
   const configLoans = useMemo<
-    GraphQLSubscriptionConfig<AddInvestmentsLoansSubscription>
+    GraphQLSubscriptionConfig<AddInvestmentsQueriesLoansSubscription>
   >(
     () => ({
       variables: {
@@ -130,7 +130,17 @@ export const AddInvestments: FC<Props> = (props) => {
     }),
     [connectionLoanID]
   );
-  useSubscription<AddInvestmentsLoansSubscription>(configLoans);
+  useSubscription<AddInvestmentsQueriesLoansSubscription>(configLoans);
+
+  if (!authUser || !user) {
+    return null;
+  }
+
+  if (!data?.loansFinancing) {
+    return <RedirectContainer />;
+  }
+
+  const { isLender, isSupport, isBorrower, language } = authUser;
 
   return (
     <Main>

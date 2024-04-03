@@ -27,6 +27,7 @@ import {
   transactionsFragment,
   transactionsPaginationFragment,
 } from "./MyTransactionsQueries";
+import { RedirectContainer } from "../../components/RedirectContainer";
 
 type Props = {
   query: PreloadedQuery<MyTransactionsQuery, {}>;
@@ -56,6 +57,14 @@ export const MyTransactions: FC<Props> = (props) => {
     [connectionTransactionID]
   );
   useSubscription<MyTransactionsTransactionsSubscription>(configTransactions);
+
+  if (!user) {
+    return null;
+  }
+
+  if (data.transactions === null) {
+    return <RedirectContainer />;
+  }
 
   return (
     <Main>

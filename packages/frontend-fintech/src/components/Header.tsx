@@ -1,12 +1,13 @@
-import { authUserQuery, useLogout } from "../utils";
+import { authUserQuery, useLogout, useTranslation } from "../utils";
 import { CheckExpiration } from "../components/CheckExpiration";
 import { FaUserCircle } from "@react-icons/all-files/fa/FaUserCircle";
 import { FaSignOutAlt } from "@react-icons/all-files/fa/FaSignOutAlt";
 import { FC } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
-import { AppUserQuery } from "../__generated__/AppUserQuery.graphql";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
+import { utilsQuery } from "../__generated__/utilsQuery.graphql";
+import { CustomButton } from "./CustomButton";
 
 export const baseRoutesHeaderLogged = stylex.create({
   base: {
@@ -52,6 +53,14 @@ export const baseHeader = stylex.create({
   },
 });
 
+export const baseRoutesHeaderNotLogged = stylex.create({
+  base: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
 export const baseRoutesIconLogout = stylex.create({
   base: {
     margin: "0px 10px",
@@ -61,24 +70,50 @@ export const baseRoutesIconLogout = stylex.create({
   },
 });
 
-export const Header: FC<{ query: PreloadedQuery<AppUserQuery, {}> }> = ({
+export const Header: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
   query,
 }) => {
   const { authUser } = usePreloadedQuery(authUserQuery, query);
   const logout = useLogout();
-  return (
+  const navigate = useNavigate();
+  const navigateTo = (path: string) => () => {
+    navigate(path);
+  };
+  const { t } = useTranslation();
+  return authUser ? (
     <div {...stylex.props(baseHeader.base)}>
       <CheckExpiration />
       <div {...stylex.props(baseRoutesHeaderLogged.base)}>
         <FaUserCircle {...stylex.props(baseRoutesIconUser.base)} />
         <Link to="/settings" {...stylex.props(baseRoutesLink.base)}>
-          {`${authUser.name || ""} ${authUser.apellidoPaterno || ""} ${
-            authUser.apellidoMaterno || ""
+          {`${authUser?.name || ""} ${authUser?.apellidoPaterno || ""} ${
+            authUser?.apellidoMaterno || ""
           }`.toUpperCase()}
         </Link>
         <FaSignOutAlt
           onClick={logout}
           {...stylex.props(baseRoutesIconLogout.base)}
+        />
+      </div>
+    </div>
+  ) : (
+    <div {...stylex.props(baseHeader.base)}>
+      <div {...stylex.props(baseRoutesHeaderNotLogged.base)}>
+        <FaUserCircle
+          {...stylex.props(
+            baseRoutesIconUser.base,
+            baseRoutesIconUser.notLogged
+          )}
+        />
+        <CustomButton
+          text={t("Iniciar sesión")}
+          color="logIn"
+          onClick={navigateTo("/login")}
+        />
+        <CustomButton
+          text={t("Crear cuenta")}
+          color="signUp"
+          onClick={navigateTo("/register")}
         />
       </div>
     </div>

@@ -21,9 +21,9 @@ import { FaExchangeAlt } from "@react-icons/all-files/fa/FaExchangeAlt";
 import { FC, useEffect, useMemo } from "react";
 import { SiderUserSubscription } from "./__generated__/SiderUserSubscription.graphql";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
-import { AppUserQuery } from "../__generated__/AppUserQuery.graphql";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
+import { utilsQuery } from "../__generated__/utilsQuery.graphql";
 
 export const baseRoutesIcon = stylex.create({
   base: {
@@ -52,14 +52,18 @@ const subscriptionUser = graphql`
   }
 `;
 
-export const Sider: FC<{ query: PreloadedQuery<AppUserQuery, {}> }> = ({
+export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
   query,
 }) => {
   const { t } = useTranslation();
-  const {
-    user,
-    authUser: { isBorrower, isSupport, isLender },
-  } = usePreloadedQuery<AppUserQuery>(authUserQuery, query);
+  const { user, authUser } = usePreloadedQuery<utilsQuery>(
+    authUserQuery,
+    query
+  );
+
+  const isBorrower = authUser?.isBorrower;
+  const isSupport = authUser?.isSupport;
+  const isLender = authUser?.isLender;
 
   const configUser = useMemo<GraphQLSubscriptionConfig<SiderUserSubscription>>(
     () => ({
@@ -87,7 +91,14 @@ export const Sider: FC<{ query: PreloadedQuery<AppUserQuery, {}> }> = ({
     }
   }, [isBorrower, isLender, isSupport, location, navigate]);
 
-  return (
+  useEffect(() => {
+    if (!user) {
+      const isLoggedPage = !["/login", "/register", "/"].includes(location);
+      navigate(`/login${isLoggedPage ? `?redirectTo=${location}` : ""}`);
+    }
+  }, [user, navigate, location]);
+
+  return user ? (
     <div {...stylex.props(baseSider.base)}>
       <Rows>
         {isBorrower ? (
@@ -221,5 +232,7 @@ export const Sider: FC<{ query: PreloadedQuery<AppUserQuery, {}> }> = ({
         )}
       </Rows>
     </div>
+  ) : (
+    <div {...stylex.props(baseSider.base)} />
   );
 };

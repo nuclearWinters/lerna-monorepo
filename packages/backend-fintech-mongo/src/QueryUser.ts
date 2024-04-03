@@ -1,9 +1,8 @@
-import { GraphQLNonNull } from "graphql";
 import { GraphQLUser } from "./Nodes";
 import { Context, UserMongo } from "./types";
 
 const QueryUser = {
-  type: new GraphQLNonNull(GraphQLUser),
+  type: GraphQLUser,
   resolve: async (
     _root: unknown,
     _args: unknown,

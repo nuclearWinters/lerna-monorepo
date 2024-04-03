@@ -17,8 +17,8 @@ import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
 import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
 import { FaThumbsUp } from "@react-icons/all-files/fa/FaThumbsUp";
 import { ScheduledPaymentRow } from "./ScheduledPaymentRow";
-import { Languages } from "../__generated__/AppUserQuery.graphql";
 import * as stylex from "@stylexjs/stylex";
+import { Languages } from "../__generated__/utilsQuery.graphql";
 
 export const baseLoanRowIcon = stylex.create({
   base: {

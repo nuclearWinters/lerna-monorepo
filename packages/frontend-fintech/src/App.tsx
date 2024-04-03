@@ -4,7 +4,7 @@ import { RelayEnvironment } from "./RelayEnvironment";
 import { RouterProvider } from "react-router";
 import { router } from "./router";
 import * as stylex from "@stylexjs/stylex";
-import { Languages } from "./__generated__/AppUserQuery.graphql";
+import { Languages } from "./__generated__/utilsQuery.graphql";
 
 export const baseApp = stylex.create({
   base: {

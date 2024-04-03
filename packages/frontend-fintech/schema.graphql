@@ -136,8 +136,8 @@ type Mutation {
 }
 
 type Query {
-  user: User!
-  authUser: AuthUser!
+  user: User
+  authUser: AuthUser
   node(id: ID!): Node
   scheduledPaymentsbyLoanId(loan_gid: ID!): [ScheduledPayments]
 }

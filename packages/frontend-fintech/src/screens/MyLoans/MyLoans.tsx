@@ -15,22 +15,23 @@ import { Space, customSpace } from "../../components/Space";
 import { Columns, baseColumn } from "../../components/Colums";
 import { TableColumnName } from "../../components/TableColumnName";
 import { Table } from "../../components/Table";
-import { MyLoans_user$key } from "./__generated__/MyLoans_user.graphql";
-import { MyLoansPaginationUser } from "./__generated__/MyLoansPaginationUser.graphql";
 import { authUserQuery, useTranslation } from "../../utils";
-import { MyLoansQuery } from "./__generated__/MyLoansQuery.graphql";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
-import { MyLoansMyLoansSubscription } from "./__generated__/MyLoansMyLoansSubscription.graphql";
-import { AppUserQuery } from "../../__generated__/AppUserQuery.graphql";
 import {
   myLoansFragment,
   myLoansPaginationFragment,
   subscriptionMyLoans,
 } from "./MyLoansQueries";
+import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
+import { RedirectContainer } from "../../components/RedirectContainer";
+import { MyLoansQueriesPaginationUser } from "./__generated__/MyLoansQueriesPaginationUser.graphql";
+import { MyLoansQueries_user$key } from "./__generated__/MyLoansQueries_user.graphql";
+import { MyLoansQueriesQuery } from "./__generated__/MyLoansQueriesQuery.graphql";
+import { MyLoansQueriesSubscription } from "./__generated__/MyLoansQueriesSubscription.graphql";
 
 type Props = {
-  query: PreloadedQuery<MyLoansQuery, {}>;
-  authQuery: PreloadedQuery<AppUserQuery, {}>;
+  query: PreloadedQuery<MyLoansQueriesQuery, {}>;
+  authQuery: PreloadedQuery<utilsQuery, {}>;
 };
 
 interface ILends {
@@ -47,20 +48,18 @@ export const MyLoans: FC<Props> = (props) => {
   const { user } = usePreloadedQuery(myLoansFragment, props.query);
   const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
   const { data, loadNext, refetch } = usePaginationFragment<
-    MyLoansPaginationUser,
-    MyLoans_user$key
+    MyLoansQueriesPaginationUser,
+    MyLoansQueries_user$key
   >(myLoansPaginationFragment, user);
 
-  const { isLender, isSupport, isBorrower, language } = authUser;
-
   const connectionMyLoansID = ConnectionHandler.getConnectionID(
-    user.id,
+    user?.id || "",
     "MyLoans_user_myLoans",
     {}
   );
 
   const configMyLoans = useMemo<
-    GraphQLSubscriptionConfig<MyLoansMyLoansSubscription>
+    GraphQLSubscriptionConfig<MyLoansQueriesSubscription>
   >(
     () => ({
       variables: {
@@ -70,7 +69,7 @@ export const MyLoans: FC<Props> = (props) => {
     }),
     [connectionMyLoansID]
   );
-  useSubscription<MyLoansMyLoansSubscription>(configMyLoans);
+  useSubscription<MyLoansQueriesSubscription>(configMyLoans);
 
   const columns = [
     { key: "id", title: t("ID") },
@@ -94,6 +93,16 @@ export const MyLoans: FC<Props> = (props) => {
     }
     return lend.quantity;
   };
+
+  if (!authUser || !user) {
+    return null;
+  }
+
+  if (!data?.myLoans) {
+    return <RedirectContainer />;
+  }
+
+  const { isLender, isSupport, isBorrower, language } = authUser;
 
   return (
     <Main>

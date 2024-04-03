@@ -1,17 +1,9 @@
-import {
-  Outlet,
-  useLoaderData,
-  useNavigate,
-  useLocation,
-} from "react-router-dom";
+import { Outlet, useLoaderData } from "react-router-dom";
 import { Header } from "../../components/Header";
 import { FC, Suspense } from "react";
 import { Spinner } from "../../components/Spinner";
 import { Sider } from "../../components/Sider";
 import * as stylex from "@stylexjs/stylex";
-import { ErrorBoundaryFallback } from "../../components/ErrorBoundaryFallback";
-import { HeaderNotLogged } from "../../components/HeaderNotLogged";
-import { SiderNotLogged } from "../../components/SiderNotLogged";
 
 export const baseApp = stylex.create({
   base: {
@@ -71,8 +63,6 @@ export const baseSider = stylex.create({
 
 export const HeaderAuth: FC = () => {
   const { query } = useLoaderData() as any;
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
   return (
     <>
       <div {...stylex.props(baseRoutes.base)}>
@@ -83,13 +73,7 @@ export const HeaderAuth: FC = () => {
             </div>
           }
         >
-          <ErrorBoundaryFallback
-            navigate={navigate}
-            fallback={<SiderNotLogged />}
-            pathname={pathname}
-          >
-            <Sider query={query} />
-          </ErrorBoundaryFallback>
+          <Sider query={query} />
         </Suspense>
         <Suspense
           fallback={
@@ -98,13 +82,7 @@ export const HeaderAuth: FC = () => {
             </div>
           }
         >
-          <ErrorBoundaryFallback
-            navigate={navigate}
-            fallback={<HeaderNotLogged />}
-            pathname={pathname}
-          >
-            <Header query={query} />
-          </ErrorBoundaryFallback>
+          <Header query={query} />
         </Suspense>
         <Suspense
           fallback={

@@ -16,13 +16,8 @@ import { Columns, baseColumn } from "../../components/Colums";
 import { Table } from "../../components/Table";
 import { Rows, baseRows } from "../../components/Rows";
 import { TableColumnName } from "../../components/TableColumnName";
-import { MyInvestmentsPaginationUser } from "./__generated__/MyInvestmentsPaginationUser.graphql";
-import { MyInvestments_user$key } from "./__generated__/MyInvestments_user.graphql";
 import { useTranslation } from "../../utils";
-import { MyInvestmentsUserQuery } from "./__generated__/MyInvestmentsUserQuery.graphql";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
-import { MyInvestmentsInvestmentsSubscription } from "./__generated__/MyInvestmentsInvestmentsSubscription.graphql";
-import { MyInvestmentsInvestmentsUpdateSubscription } from "./__generated__/MyInvestmentsInvestmentsUpdateSubscription.graphql";
 import { InvestmentStatus } from "../../components/__generated__/InvestmentRow_investment.graphql";
 import {
   myInvestmentsFragment,
@@ -30,17 +25,23 @@ import {
   subscriptionInvestments,
   subscriptionInvestmentsUpdate,
 } from "./MyInvestmentsQueries";
+import { RedirectContainer } from "../../components/RedirectContainer";
+import { MyInvestmentsQueriesSubscription } from "./__generated__/MyInvestmentsQueriesSubscription.graphql";
+import { MyInvestmentsQueriesUpdateSubscription } from "./__generated__/MyInvestmentsQueriesUpdateSubscription.graphql";
+import { MyInvestmentsQueriesPaginationUser } from "./__generated__/MyInvestmentsQueriesPaginationUser.graphql";
+import { MyInvestmentsQueries_user$key } from "./__generated__/MyInvestmentsQueries_user.graphql";
+import { MyInvestmentsQueriesQuery } from "./__generated__/MyInvestmentsQueriesQuery.graphql";
 
 type Props = {
-  query: PreloadedQuery<MyInvestmentsUserQuery, {}>;
+  query: PreloadedQuery<MyInvestmentsQueriesQuery, {}>;
 };
 
 export const MyInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
   const { user } = usePreloadedQuery(myInvestmentsFragment, props.query);
   const { data, loadNext, refetch } = usePaginationFragment<
-    MyInvestmentsPaginationUser,
-    MyInvestments_user$key
+    MyInvestmentsQueriesPaginationUser,
+    MyInvestmentsQueries_user$key
   >(myInvestmentsPaginationFragment, user);
 
   const columns = [
@@ -71,14 +72,14 @@ export const MyInvestments: FC<Props> = (props) => {
   }, [investmentStatus]);
 
   const connectionInvestmentID = ConnectionHandler.getConnectionID(
-    user.id,
+    user?.id || "",
     "MyInvestments_user_investments",
     {
       status,
     }
   );
   const configInvestments = useMemo<
-    GraphQLSubscriptionConfig<MyInvestmentsInvestmentsSubscription>
+    GraphQLSubscriptionConfig<MyInvestmentsQueriesSubscription>
   >(
     () => ({
       variables: {
@@ -90,7 +91,7 @@ export const MyInvestments: FC<Props> = (props) => {
     [status, connectionInvestmentID]
   );
   const configInvestmentsUpdate = useMemo<
-    GraphQLSubscriptionConfig<MyInvestmentsInvestmentsUpdateSubscription>
+    GraphQLSubscriptionConfig<MyInvestmentsQueriesUpdateSubscription>
   >(
     () => ({
       variables: {},
@@ -98,10 +99,18 @@ export const MyInvestments: FC<Props> = (props) => {
     }),
     []
   );
-  useSubscription<MyInvestmentsInvestmentsSubscription>(configInvestments);
-  useSubscription<MyInvestmentsInvestmentsUpdateSubscription>(
+  useSubscription<MyInvestmentsQueriesSubscription>(configInvestments);
+  useSubscription<MyInvestmentsQueriesUpdateSubscription>(
     configInvestmentsUpdate
   );
+
+  if (!user) {
+    return null;
+  }
+
+  if (!data?.investments) {
+    return <RedirectContainer />;
+  }
 
   return (
     <Main>

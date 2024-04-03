@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c9d1d78e57f94a7cdee45825b7b4a6f2>>
+ * @generated SignedSource<<66f0bebec8e08ff6b3ae269f4be092b6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type ApproveLoanQueriesQuery$data = {
   readonly user: {
     readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"ApproveLoanQueries_user">;
-  };
+  } | null | undefined;
 };
 export type ApproveLoanQueriesQuery = {
   response: ApproveLoanQueriesQuery$data;

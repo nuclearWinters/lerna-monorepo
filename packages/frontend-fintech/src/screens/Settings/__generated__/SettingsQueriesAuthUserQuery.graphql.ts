@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<729ee594ac372e2e1e08298990d04b9b>>
+ * @generated SignedSource<<ffb6107347a8626c29c01ba5e8282665>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -25,7 +25,7 @@ export type SettingsQueriesAuthUserQuery$data = {
     readonly mobile: string;
     readonly name: string;
     readonly " $fragmentSpreads": FragmentRefs<"SettingsQueries_logins_user" | "SettingsQueries_sessions_user">;
-  };
+  } | null | undefined;
 };
 export type SettingsQueriesAuthUserQuery = {
   response: SettingsQueriesAuthUserQuery$data;

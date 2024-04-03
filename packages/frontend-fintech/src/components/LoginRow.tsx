@@ -6,7 +6,7 @@ import { LoginRow_login$key } from "./__generated__/LoginRow_login.graphql";
 import es from "dayjs/locale/es";
 import en from "dayjs/locale/en";
 import * as stylex from "@stylexjs/stylex";
-import { Languages } from "../__generated__/AppUserQuery.graphql";
+import { Languages } from "../__generated__/utilsQuery.graphql";
 
 export const baseLoanRowCell = stylex.create({
   base: {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2c466ba328ef51d6f26dc2ad95043f50>>
+ * @generated SignedSource<<673d235d36bbeb35630c535ad5d52b37>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type MyInvestmentsQueriesQuery$data = {
   readonly user: {
     readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"MyInvestmentsQueries_user">;
-  };
+  } | null | undefined;
 };
 export type MyInvestmentsQueriesQuery = {
   response: MyInvestmentsQueriesQuery$data;

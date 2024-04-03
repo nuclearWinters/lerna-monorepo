@@ -304,7 +304,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
 });
 
 const QueryUser = {
-  type: new GraphQLNonNull(GraphQLAuthUser),
+  type: GraphQLAuthUser,
   resolve: async (
     _root: unknown,
     _args: unknown,

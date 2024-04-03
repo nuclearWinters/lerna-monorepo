@@ -1,5 +1,6 @@
 import { FC, useMemo, useState } from "react";
 import {
+  ConnectionHandler,
   PreloadedQuery,
   usePaginationFragment,
   usePreloadedQuery,
@@ -16,21 +17,22 @@ import { Columns, baseColumn } from "../../components/Colums";
 import { TableColumnName } from "../../components/TableColumnName";
 import { Table } from "../../components/Table";
 import { authUserQuery, useTranslation } from "../../utils";
-import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
-import { AppUserQuery } from "../../__generated__/AppUserQuery.graphql";
-import { ApproveLoansQuery } from "./__generated__/ApproveLoansQuery.graphql";
-import { ApproveLoansPaginationUser } from "./__generated__/ApproveLoansPaginationUser.graphql";
-import { ApproveLoans_user$key } from "./__generated__/ApproveLoans_user.graphql";
-import { ApproveLoansSubscription } from "./__generated__/ApproveLoansSubscription.graphql";
 import {
   ApproveLoansQueriesPaginationFragment,
   approveLoansFragment,
   subscriptionApproveLoans,
 } from "./ApproveLoanQueries";
+import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
+import { RedirectContainer } from "../../components/RedirectContainer";
+import { ApproveLoansQueriesPaginationUser } from "./__generated__/ApproveLoansQueriesPaginationUser.graphql";
+import { ApproveLoanQueries_user$key } from "./__generated__/ApproveLoanQueries_user.graphql";
+import { ApproveLoanQueriesQuery } from "./__generated__/ApproveLoanQueriesQuery.graphql";
+import { ApproveLoanQueriesSubscription } from "./__generated__/ApproveLoanQueriesSubscription.graphql";
+import { GraphQLSubscriptionConfig } from "relay-runtime";
 
 type Props = {
-  query: PreloadedQuery<ApproveLoansQuery, {}>;
-  authQuery: PreloadedQuery<AppUserQuery, {}>;
+  query: PreloadedQuery<ApproveLoanQueriesQuery, {}>;
+  authQuery: PreloadedQuery<utilsQuery, {}>;
 };
 
 interface ILends {
@@ -47,20 +49,18 @@ export const ApproveLoans: FC<Props> = (props) => {
   const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
   const { user } = usePreloadedQuery(approveLoansFragment, props.query);
   const { data, loadNext, refetch } = usePaginationFragment<
-    ApproveLoansPaginationUser,
-    ApproveLoans_user$key
+    ApproveLoansQueriesPaginationUser,
+    ApproveLoanQueries_user$key
   >(ApproveLoansQueriesPaginationFragment, user);
 
-  const { isLender, isSupport, isBorrower, language } = authUser;
-
   const connectionApproveLoansID = ConnectionHandler.getConnectionID(
-    user.id,
-    "ApproveLoans_user_ApproveLoans",
+    user?.id || "",
+    "ApproveLoansQueries_user_approveLoans",
     {}
   );
 
   const configApproveLoans = useMemo<
-    GraphQLSubscriptionConfig<ApproveLoansSubscription>
+    GraphQLSubscriptionConfig<ApproveLoanQueriesSubscription>
   >(
     () => ({
       variables: {
@@ -70,7 +70,8 @@ export const ApproveLoans: FC<Props> = (props) => {
     }),
     [connectionApproveLoansID]
   );
-  useSubscription<ApproveLoansSubscription>(configApproveLoans);
+
+  useSubscription<ApproveLoanQueriesSubscription>(configApproveLoans);
 
   const columns = [
     { key: "id", title: t("ID") },
@@ -94,6 +95,16 @@ export const ApproveLoans: FC<Props> = (props) => {
     }
     return lend.quantity;
   };
+
+  if (!authUser || !user) {
+    return null;
+  }
+
+  if (!data?.approveLoans) {
+    return <RedirectContainer />;
+  }
+
+  const { isLender, isSupport, isBorrower, language } = authUser;
 
   return (
     <Main>

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<09ba9d99d8161e26300f95ff7c30ddb5>>
+ * @generated SignedSource<<bcd0a68c4527f8b3e81c60b6c924c18e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -26,12 +26,12 @@ export type utilsQuery$data = {
     readonly language: Languages;
     readonly mobile: string;
     readonly name: string;
-  };
+  } | null | undefined;
   readonly user: {
     readonly accountAvailable: string;
     readonly accountTotal: string;
     readonly id: string;
-  };
+  } | null | undefined;
 };
 export type utilsQuery = {
   response: utilsQuery$data;

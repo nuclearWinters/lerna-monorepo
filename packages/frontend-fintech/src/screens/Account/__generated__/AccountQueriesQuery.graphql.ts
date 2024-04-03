@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<74c2bba6cd3363a6bc1a0b996b4c55e6>>
+ * @generated SignedSource<<33ff8726bfd51521aae2b7a93d0427cd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type AccountQueriesQuery$data = {
     readonly accountAvailable: string;
     readonly accountToBePaid: string;
     readonly accountTotal: string;
-  };
+  } | null | undefined;
 };
 export type AccountQueriesQuery = {
   response: AccountQueriesQuery$data;

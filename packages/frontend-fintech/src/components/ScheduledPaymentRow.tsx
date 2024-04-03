@@ -13,13 +13,13 @@ import {
   LoanScheduledPaymentStatus,
   ScheduledPaymentRowQuery,
 } from "./__generated__/ScheduledPaymentRowQuery.graphql";
-import { Languages } from "../__generated__/AppUserQuery.graphql";
 import {
   baseLoanRowCell,
   baseLoanRowStatus,
   baseLoanRowStatusBox,
 } from "./LoanRow";
 import * as stylex from "@stylexjs/stylex";
+import { Languages } from "../__generated__/utilsQuery.graphql";
 
 export const ScheduledPaymentRow: FC<{
   loan_gid: string;
