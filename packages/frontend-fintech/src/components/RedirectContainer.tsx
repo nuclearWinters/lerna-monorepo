@@ -1,15 +1,22 @@
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserDataCache } from "../utils";
 
-export const RedirectContainer = () => {
+export const RedirectContainer: FC<{
+  allowed: ("borrower" | "lender" | "support")[];
+  isSupport: boolean;
+  isLender: boolean;
+  isBorrower: boolean;
+}> = ({ allowed, isBorrower, isLender, isSupport }) => {
   const navigate = useNavigate();
   useEffect(() => {
-    const userData = getUserDataCache();
-    if (userData) {
-      if (userData.isBorrower) {
+    const isAllowed =
+      (allowed.includes("borrower") && isBorrower) ||
+      (allowed.includes("lender") && isLender) ||
+      (allowed.includes("support") && isSupport);
+    if (!isAllowed) {
+      if (isBorrower) {
         navigate("/myLoans");
-      } else if (userData.isSupport) {
+      } else if (isSupport) {
         navigate("/approveLoan");
       } else {
         navigate("/addInvestments");

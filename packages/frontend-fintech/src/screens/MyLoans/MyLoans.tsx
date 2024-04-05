@@ -98,11 +98,18 @@ export const MyLoans: FC<Props> = (props) => {
     return null;
   }
 
-  if (!data?.myLoans) {
-    return <RedirectContainer />;
-  }
-
   const { isLender, isSupport, isBorrower, language } = authUser;
+
+  if (isLender || isSupport) {
+    return (
+      <RedirectContainer
+        allowed={["borrower"]}
+        isBorrower={isBorrower}
+        isLender={isLender}
+        isSupport={isSupport}
+      />
+    );
+  }
 
   return (
     <Main>
@@ -118,26 +125,24 @@ export const MyLoans: FC<Props> = (props) => {
                 </TableColumnName>
               ))}
             </Columns>
-            {data.myLoans &&
-              data.myLoans.edges &&
-              data.myLoans.edges.map((edge) => {
-                if (edge && edge.node) {
-                  const value = getValue(edge.node.id);
-                  return (
-                    <LoanRow
-                      key={edge.node.id}
-                      setLends={setLends}
-                      loan={edge.node}
-                      value={value}
-                      isLender={isLender}
-                      isSupport={isSupport}
-                      isBorrower={isBorrower}
-                      language={language}
-                    />
-                  );
-                }
-                return null;
-              })}
+            {data?.myLoans?.edges?.map((edge) => {
+              if (edge?.node) {
+                const value = getValue(edge.node.id);
+                return (
+                  <LoanRow
+                    key={edge.node.id}
+                    setLends={setLends}
+                    loan={edge.node}
+                    value={value}
+                    isLender={isLender}
+                    isSupport={isSupport}
+                    isBorrower={isBorrower}
+                    language={language}
+                  />
+                );
+              }
+              return null;
+            })}
           </Rows>
         </Table>
         <Space styleX={customSpace.h20} />

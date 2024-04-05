@@ -8,8 +8,10 @@ import {
   usePaginationFragment,
   usePreloadedQuery,
 } from "react-relay/hooks";
-import { SettingsMutation } from "./__generated__/SettingsMutation.graphql";
-import { SettingsAuthUserQuery } from "./__generated__/SettingsAuthUserQuery.graphql";
+import {
+  Languages,
+  SettingsMutation,
+} from "./__generated__/SettingsMutation.graphql";
 import { Label } from "../../components/Label";
 import { CustomButton } from "../../components/CustomButton";
 import { WrapperBig, baseWrapperBig } from "../../components/WrapperBig";
@@ -23,8 +25,6 @@ import { Select } from "../../components/Select";
 import { useTranslation } from "../../utils";
 import { SettingsSessionsPaginationUser } from "./__generated__/SettingsSessionsPaginationUser.graphql";
 import { SettingsLoginsPaginationUser } from "./__generated__/SettingsLoginsPaginationUser.graphql";
-import { Settings_logins_user$key } from "./__generated__/Settings_logins_user.graphql";
-import { Settings_sessions_user$key } from "./__generated__/Settings_sessions_user.graphql";
 import { Table } from "../../components/Table";
 import { TableColumnName } from "../../components/TableColumnName";
 import { LoginRow } from "../../components/LoginRow";
@@ -34,6 +34,9 @@ import {
   settingsLoginsPaginationFragment,
   settingsSessionsPaginationFragment,
 } from "./SettingsQueries";
+import { SettingsQueriesAuthUserQuery } from "./__generated__/SettingsQueriesAuthUserQuery.graphql";
+import { SettingsQueries_logins_user$key } from "./__generated__/SettingsQueries_logins_user.graphql";
+import { SettingsQueries_sessions_user$key } from "./__generated__/SettingsQueries_sessions_user.graphql";
 
 export const baseSettingsForm = stylex.create({
   base: {
@@ -46,7 +49,7 @@ export const baseSettingsForm = stylex.create({
 });
 
 type Props = {
-  query: PreloadedQuery<SettingsAuthUserQuery, {}>;
+  query: PreloadedQuery<SettingsQueriesAuthUserQuery, {}>;
 };
 
 export const Settings: FC<Props> = (props) => {
@@ -70,23 +73,23 @@ export const Settings: FC<Props> = (props) => {
       }
     }
   `);
-  const { authUser: user } = usePreloadedQuery(settingsFragment, props.query);
+  const { authUser } = usePreloadedQuery(settingsFragment, props.query);
   const originLang =
-    user.language === "DEFAULT"
+    authUser?.language === "DEFAULT"
       ? navigator.language.includes("es")
         ? "ES"
         : "EN"
-      : user.language;
+      : authUser?.language ?? "DEFAULT";
   const [formUser, setFormUser] = useState({
-    name: user.name,
-    apellidoMaterno: user.apellidoMaterno,
-    apellidoPaterno: user.apellidoPaterno,
-    CURP: user.CURP,
-    RFC: user.RFC,
-    mobile: user.mobile,
-    clabe: user.clabe,
-    email: user.email,
-    language: originLang,
+    name: authUser?.name || "",
+    apellidoMaterno: authUser?.apellidoMaterno || "",
+    apellidoPaterno: authUser?.apellidoPaterno || "",
+    CURP: authUser?.CURP || "",
+    RFC: authUser?.RFC || "",
+    mobile: authUser?.mobile || "",
+    clabe: authUser?.clabe || "",
+    email: authUser?.email || "",
+    language: originLang as Languages,
   });
   const handleFormUser = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -112,13 +115,13 @@ export const Settings: FC<Props> = (props) => {
   };
   const { data: loginsData, loadNext: loginsLoadNext } = usePaginationFragment<
     SettingsLoginsPaginationUser,
-    Settings_logins_user$key
-  >(settingsLoginsPaginationFragment, user);
+    SettingsQueries_logins_user$key
+  >(settingsLoginsPaginationFragment, authUser);
   const { data: sessionsData, loadNext: sessionsLoadNext } =
     usePaginationFragment<
       SettingsSessionsPaginationUser,
-      Settings_sessions_user$key
-    >(settingsSessionsPaginationFragment, user);
+      SettingsQueries_sessions_user$key
+    >(settingsSessionsPaginationFragment, authUser);
   const columnsSessions = [
     { key: "applicationName", title: t("Aplicacion") },
     { key: "type", title: t("Tipo de dispositivo") },
@@ -132,6 +135,11 @@ export const Settings: FC<Props> = (props) => {
     { key: "time", title: t("Fecha") },
     { key: "address", title: t("IP") },
   ];
+
+  if (!authUser) {
+    return null;
+  }
+
   return (
     <Main>
       <WrapperBig styleX={[baseWrapperBig.base, baseWrapperBig.settings]}>
@@ -236,7 +244,7 @@ export const Settings: FC<Props> = (props) => {
                     variables: {
                       input: {
                         ...formUser,
-                        language: formUser.language,
+                        language: formUser?.language,
                       },
                     },
                   });
@@ -252,14 +260,14 @@ export const Settings: FC<Props> = (props) => {
                   changeLanguage(originLang);
                   isChanged.current = false;
                   setFormUser({
-                    name: user.name,
-                    apellidoMaterno: user.apellidoMaterno,
-                    apellidoPaterno: user.apellidoPaterno,
-                    CURP: user.CURP,
-                    RFC: user.RFC,
-                    mobile: user.mobile,
-                    clabe: user.clabe,
-                    email: user.email,
+                    name: authUser.name,
+                    apellidoMaterno: authUser.apellidoMaterno,
+                    apellidoPaterno: authUser.apellidoPaterno,
+                    CURP: authUser.CURP,
+                    RFC: authUser.RFC,
+                    mobile: authUser.mobile,
+                    clabe: authUser.clabe,
+                    email: authUser.email,
                     language: originLang,
                   });
                 }}

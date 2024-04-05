@@ -14,7 +14,7 @@ import { Space, customSpace } from "../../components/Space";
 import { Columns, baseColumn } from "../../components/Colums";
 import { MyTransactionsPaginationUser } from "./__generated__/MyTransactionsPaginationUser.graphql";
 import { MyTransactions_user$key } from "./__generated__/MyTransactions_user.graphql";
-import { useTranslation } from "../../utils";
+import { authUserQuery, useTranslation } from "../../utils";
 import { MyTransactionsQuery } from "./__generated__/MyTransactionsQuery.graphql";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import { MyTransactionsTransactionsSubscription } from "./__generated__/MyTransactionsTransactionsSubscription.graphql";
@@ -28,14 +28,17 @@ import {
   transactionsPaginationFragment,
 } from "./MyTransactionsQueries";
 import { RedirectContainer } from "../../components/RedirectContainer";
+import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
 
 type Props = {
   query: PreloadedQuery<MyTransactionsQuery, {}>;
+  authQuery: PreloadedQuery<utilsQuery, {}>;
 };
 
 export const MyTransactions: FC<Props> = (props) => {
   const { t } = useTranslation();
   const { user } = usePreloadedQuery(transactionsFragment, props.query);
+  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
   const { data, loadNext, refetch } = usePaginationFragment<
     MyTransactionsPaginationUser,
     MyTransactions_user$key
@@ -58,12 +61,21 @@ export const MyTransactions: FC<Props> = (props) => {
   );
   useSubscription<MyTransactionsTransactionsSubscription>(configTransactions);
 
-  if (!user) {
+  if (!user || !authUser) {
     return null;
   }
 
-  if (data.transactions === null) {
-    return <RedirectContainer />;
+  const { isLender, isSupport, isBorrower } = authUser;
+
+  if (isSupport) {
+    return (
+      <RedirectContainer
+        allowed={["lender", "borrower"]}
+        isBorrower={isBorrower}
+        isLender={isLender}
+        isSupport={isSupport}
+      />
+    );
   }
 
   return (

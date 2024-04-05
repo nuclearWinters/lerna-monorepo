@@ -16,7 +16,7 @@ import { Columns, baseColumn } from "../../components/Colums";
 import { Table } from "../../components/Table";
 import { Rows, baseRows } from "../../components/Rows";
 import { TableColumnName } from "../../components/TableColumnName";
-import { useTranslation } from "../../utils";
+import { authUserQuery, useTranslation } from "../../utils";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import { InvestmentStatus } from "../../components/__generated__/InvestmentRow_investment.graphql";
 import {
@@ -31,14 +31,17 @@ import { MyInvestmentsQueriesUpdateSubscription } from "./__generated__/MyInvest
 import { MyInvestmentsQueriesPaginationUser } from "./__generated__/MyInvestmentsQueriesPaginationUser.graphql";
 import { MyInvestmentsQueries_user$key } from "./__generated__/MyInvestmentsQueries_user.graphql";
 import { MyInvestmentsQueriesQuery } from "./__generated__/MyInvestmentsQueriesQuery.graphql";
+import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
 
 type Props = {
   query: PreloadedQuery<MyInvestmentsQueriesQuery, {}>;
+  authQuery: PreloadedQuery<utilsQuery, {}>;
 };
 
 export const MyInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
   const { user } = usePreloadedQuery(myInvestmentsFragment, props.query);
+  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
   const { data, loadNext, refetch } = usePaginationFragment<
     MyInvestmentsQueriesPaginationUser,
     MyInvestmentsQueries_user$key
@@ -104,12 +107,21 @@ export const MyInvestments: FC<Props> = (props) => {
     configInvestmentsUpdate
   );
 
-  if (!user) {
+  if (!user || !authUser) {
     return null;
   }
 
-  if (!data?.investments) {
-    return <RedirectContainer />;
+  const { isLender, isSupport, isBorrower } = authUser;
+
+  if (isSupport || isBorrower) {
+    return (
+      <RedirectContainer
+        allowed={["lender"]}
+        isBorrower={isBorrower}
+        isLender={isLender}
+        isSupport={isSupport}
+      />
+    );
   }
 
   return (
@@ -161,16 +173,14 @@ export const MyInvestments: FC<Props> = (props) => {
                 </TableColumnName>
               ))}
             </Columns>
-            {data.investments &&
-              data.investments.edges &&
-              data.investments.edges.map((edge) => {
-                if (edge && edge.node) {
-                  return (
-                    <InvestmentRow key={edge.node.id} investment={edge.node} />
-                  );
-                }
-                return null;
-              })}
+            {data?.investments?.edges?.map((edge) => {
+              if (edge?.node) {
+                return (
+                  <InvestmentRow key={edge.node.id} investment={edge.node} />
+                );
+              }
+              return null;
+            })}
           </Rows>
         </Table>
         <Space styleX={customSpace.h20} />

@@ -1,5 +1,10 @@
 import { ChangeEvent, FC, useState } from "react";
-import { graphql, useMutation } from "react-relay/hooks";
+import {
+  PreloadedQuery,
+  graphql,
+  useMutation,
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { Spinner } from "../../components/Spinner";
 import { Label } from "../../components/Label";
 import { CustomButton } from "../../components/CustomButton";
@@ -9,11 +14,18 @@ import { FormSmall } from "../../components/FormSmall";
 import { Title } from "../../components/Title";
 import { Input } from "../../components/Input";
 import { Space, customSpace } from "../../components/Space";
-import { useTranslation } from "../../utils";
+import { authUserQuery, useTranslation } from "../../utils";
 import { RetireFundsMutation } from "./__generated__/RetireFundsMutation.graphql";
+import { RedirectContainer } from "../../components/RedirectContainer";
+import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
 
-export const RetireFunds: FC = () => {
+type Props = {
+  authQuery: PreloadedQuery<utilsQuery, {}>;
+};
+
+export const RetireFunds: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
   const [commit, isInFlight] = useMutation<RetireFundsMutation>(graphql`
     mutation RetireFundsMutation($input: AddFundsInput!) {
       addFunds(input: $input) {
@@ -37,6 +49,24 @@ export const RetireFunds: FC = () => {
       return Number(state).toFixed(2);
     });
   };
+
+  if (!authUser) {
+    return null;
+  }
+
+  const { isLender, isSupport, isBorrower } = authUser;
+
+  if (isSupport) {
+    return (
+      <RedirectContainer
+        allowed={["lender", "borrower"]}
+        isBorrower={isBorrower}
+        isLender={isLender}
+        isSupport={isSupport}
+      />
+    );
+  }
+
   return (
     <Main>
       <WrapperSmall>

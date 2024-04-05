@@ -61,10 +61,6 @@ export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
     query
   );
 
-  const isBorrower = authUser?.isBorrower;
-  const isSupport = authUser?.isSupport;
-  const isLender = authUser?.isLender;
-
   const configUser = useMemo<GraphQLSubscriptionConfig<SiderUserSubscription>>(
     () => ({
       variables: {},
@@ -79,26 +75,30 @@ export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isDefaultPath = location === "/";
-    if (isDefaultPath) {
-      if (isBorrower) {
-        navigate("/myLoans");
-      } else if (isLender) {
-        navigate("/myInvestments");
-      } else if (isSupport) {
-        navigate("/approveLoan");
-      }
-    }
-  }, [isBorrower, isLender, isSupport, location, navigate]);
-
-  useEffect(() => {
-    if (!user) {
+    if (!authUser) {
       const isLoggedPage = !["/login", "/register", "/"].includes(location);
       navigate(`/login${isLoggedPage ? `?redirectTo=${location}` : ""}`);
+    } else {
+      const isNotLoggedPage = ["/login", "/register", "/"].includes(location);
+      if (isNotLoggedPage) {
+        if (authUser.isBorrower) {
+          navigate("/myLoans");
+        } else if (authUser.isLender) {
+          navigate("/myInvestments");
+        } else if (authUser.isSupport) {
+          navigate("/approveLoan");
+        }
+      }
     }
-  }, [user, navigate, location]);
+  }, [authUser, navigate, location]);
 
-  return user ? (
+  if (!user || !authUser) {
+    return <div {...stylex.props(baseSider.base)} />;
+  }
+
+  const { isBorrower, isSupport, isLender } = authUser;
+
+  return (
     <div {...stylex.props(baseSider.base)}>
       <Rows>
         {isBorrower ? (
@@ -173,7 +173,7 @@ export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
               location={location}
             />
           </>
-        ) : (
+        ) : isLender ? (
           <>
             <Icon />
             <AccountInfo
@@ -229,10 +229,8 @@ export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
               location={location}
             />
           </>
-        )}
+        ) : null}
       </Rows>
     </div>
-  ) : (
-    <div {...stylex.props(baseSider.base)} />
   );
 };

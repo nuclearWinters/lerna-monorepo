@@ -136,11 +136,18 @@ export const AddInvestments: FC<Props> = (props) => {
     return null;
   }
 
-  if (!data?.loansFinancing) {
-    return <RedirectContainer />;
-  }
-
   const { isLender, isSupport, isBorrower, language } = authUser;
+
+  if (isBorrower || isSupport) {
+    return (
+      <RedirectContainer
+        allowed={["lender"]}
+        isBorrower={isBorrower}
+        isLender={isLender}
+        isSupport={isSupport}
+      />
+    );
+  }
 
   return (
     <Main>
@@ -156,26 +163,24 @@ export const AddInvestments: FC<Props> = (props) => {
                 </TableColumnName>
               ))}
             </Columns>
-            {data.loansFinancing &&
-              data.loansFinancing.edges &&
-              data.loansFinancing.edges.map((edge) => {
-                if (edge && edge.node) {
-                  const value = getValue(edge.node.id);
-                  return (
-                    <LoanRow
-                      key={edge.node.id}
-                      setLends={setLends}
-                      loan={edge.node}
-                      value={value}
-                      isLender={isLender}
-                      isSupport={isSupport}
-                      isBorrower={isBorrower}
-                      language={language}
-                    />
-                  );
-                }
-                return null;
-              })}
+            {data?.loansFinancing?.edges?.map((edge) => {
+              if (edge && edge.node) {
+                const value = getValue(edge.node.id);
+                return (
+                  <LoanRow
+                    key={edge.node.id}
+                    setLends={setLends}
+                    loan={edge.node}
+                    value={value}
+                    isLender={isLender}
+                    isSupport={isSupport}
+                    isBorrower={isBorrower}
+                    language={language}
+                  />
+                );
+              }
+              return null;
+            })}
           </Rows>
           {isLender && (
             <Rows styleX={[baseRows.base, baseRows.lender]}>
