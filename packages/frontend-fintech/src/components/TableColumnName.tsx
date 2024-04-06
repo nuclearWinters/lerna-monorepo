@@ -3,7 +3,7 @@ import * as stylex from "@stylexjs/stylex";
 
 export const baseTableColumnName = stylex.create({
   base: {
-    flex: "1",
+    //flex: "1",
     textAlign: "center",
     color: "rgb(62,62,62)",
     padding: "4px 0px",
@@ -11,5 +11,5 @@ export const baseTableColumnName = stylex.create({
 });
 
 export const TableColumnName: FC<{ children: ReactNode }> = ({ children }) => {
-  return <div {...stylex.props(baseTableColumnName.base)}>{children}</div>;
+  return <th {...stylex.props(baseTableColumnName.base)}>{children}</th>;
 };

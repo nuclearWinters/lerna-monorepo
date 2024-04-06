@@ -261,7 +261,6 @@ enum LoanStatus {
 enum Languages {
   EN
   ES
-  DEFAULT
 }
 
 union Transaction = InvestTransaction | MoneyTransaction
@@ -301,15 +300,17 @@ type User implements Node {
   accountAvailable: MXN!
   accountToBePaid: MXN!
   accountTotal: MXN!
-  approveLoans(after: String, first: Int): LoanConnection
-  myLoans(after: String, first: Int): LoanConnection
-  transactions(after: String, first: Int): TransactionConnection
+  accountWithheld: MXN!
+  approveLoans(after: String, first: Int, reset: Float!): LoanConnection
+  myLoans(after: String, first: Int, reset: Float!): LoanConnection
+  transactions(after: String, first: Int, reset: Float!): TransactionConnection
   investments(
     after: String
     first: Int
     status: [InvestmentStatus!]
+    reset: Float!
   ): InvestmentsConnection
-  loansFinancing(after: String, first: Int): LoanConnection
+  loansFinancing(after: String, first: Int, reset: Float!): LoanConnection
 }
 
 type Session implements Node {
@@ -365,8 +366,8 @@ type AuthUser implements Node {
   isSupport: Boolean!
   language: Languages!
   email: String!
-  logins(after: String, first: Int): LoginsConnection
-  sessions(after: String, first: Int): SessionsConnection
+  logins(after: String, first: Int, reset: Float): LoginsConnection
+  sessions(after: String, first: Int, reset: Float): SessionsConnection
 }
 
 scalar Date

@@ -4,14 +4,17 @@ import * as stylex from "@stylexjs/stylex";
 export const baseWrapperSmall = stylex.create({
   base: {
     backgroundColor: "white",
-    margin: "30px 0px",
+    margin: {
+      default: "30px auto 0px auto",
+      "@media (max-width: 800px)": "30px",
+    },
     borderRadius: "8px",
     borderWidth: "1px",
     borderColor: "rgb(203,203,203)",
     borderStyle: "solid",
     display: "flex",
     flexDirection: "column",
-    width: "600px",
+    maxWidth: "600px",
   },
 });
 

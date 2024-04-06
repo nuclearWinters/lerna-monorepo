@@ -10,6 +10,21 @@ interface IProps
   color?: "primary" | "secondary" | "logIn" | "signUp" | "warning";
 }
 
+const getStyle = (color: string) => {
+  switch (color) {
+    case "primary":
+      return [button.base, button.custom, button.primary];
+    case "secondary":
+      return [button.base, button.custom, button.secondary];
+    case "logIn":
+      return [button.base, button.auth, button.logIn];
+    case "signUp":
+      return [button.base, button.auth, button.signUp];
+    default:
+      return [button.base, button.custom, button.warning];
+  }
+};
+
 export const CustomButton: FC<IProps> = ({
   onClick,
   text,
@@ -17,21 +32,6 @@ export const CustomButton: FC<IProps> = ({
   ...props
 }) => {
   return (
-    <Button
-      {...props}
-      onClick={onClick}
-      text={text}
-      styleX={
-        color === "primary"
-          ? [button.base, button.custom, button.primary]
-          : color === "secondary"
-            ? [button.base, button.custom, button.secondary]
-            : color === "logIn"
-              ? [button.base, button.auth, button.logIn]
-              : color === "signUp"
-                ? [button.base, button.auth, button.signUp]
-                : [button.base, button.custom, button.warning]
-      }
-    />
+    <Button {...props} onClick={onClick} text={text} styleX={getStyle(color)} />
   );
 };

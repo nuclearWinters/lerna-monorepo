@@ -9,7 +9,7 @@ import * as stylex from "@stylexjs/stylex";
 import { utilsQuery } from "../__generated__/utilsQuery.graphql";
 import { CustomButton } from "./CustomButton";
 
-export const baseRoutesHeaderLogged = stylex.create({
+const baseRoutesHeaderLogged = stylex.create({
   base: {
     display: "flex",
     alignItems: "center",
@@ -17,7 +17,7 @@ export const baseRoutesHeaderLogged = stylex.create({
   },
 });
 
-export const baseRoutesLink = stylex.create({
+const baseRoutesLink = stylex.create({
   base: {
     textAlign: "end",
     textDecoration: "none",
@@ -26,7 +26,7 @@ export const baseRoutesLink = stylex.create({
   },
 });
 
-export const baseRoutesIconUser = stylex.create({
+const baseRoutesIconUser = stylex.create({
   base: {
     fontSize: "28px",
     margin: "12px 0px 12px 0px",
@@ -39,21 +39,22 @@ export const baseRoutesIconUser = stylex.create({
   },
 });
 
-export const baseHeader = stylex.create({
+const baseHeader = stylex.create({
   base: {
     gridColumnStart: "2",
     gridColumnEnd: "2",
     gridRowStart: "1",
     gridRowEnd: "2",
   },
-  fallback: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+  notLogged: {
+    gridColumnStart: "1",
+    gridColumnEnd: "3",
+    gridRowStart: "1",
+    gridRowEnd: "2",
   },
 });
 
-export const baseRoutesHeaderNotLogged = stylex.create({
+const baseRoutesHeaderNotLogged = stylex.create({
   base: {
     display: "flex",
     alignItems: "center",
@@ -61,7 +62,7 @@ export const baseRoutesHeaderNotLogged = stylex.create({
   },
 });
 
-export const baseRoutesIconLogout = stylex.create({
+const baseRoutesIconLogout = stylex.create({
   base: {
     margin: "0px 10px",
     cursor: "pointer",
@@ -97,7 +98,7 @@ export const Header: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
       </div>
     </div>
   ) : (
-    <div {...stylex.props(baseHeader.base)}>
+    <div {...stylex.props(baseHeader.notLogged)}>
       <div {...stylex.props(baseRoutesHeaderNotLogged.base)}>
         <FaUserCircle
           {...stylex.props(

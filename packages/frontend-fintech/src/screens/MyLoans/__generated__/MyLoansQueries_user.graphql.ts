@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ac9c90f226bf9a1cdcce063a090a1f1e>>
+ * @generated SignedSource<<1fb1473c259371189858b105c07a5ccc>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,14 +9,24 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type MyLoansQueries_user$data = {
   readonly id: string;
   readonly myLoans: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly ROI: number;
+        readonly expiry: Int;
+        readonly goal: string;
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"LoanRow_loan">;
+        readonly pending: string;
+        readonly raised: string;
+        readonly score: string;
+        readonly status: LoanStatus;
+        readonly term: number;
+        readonly user_id: string;
+        readonly " $fragmentSpreads": FragmentRefs<"MyLoansQueriesRowRefetch_loan">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   } | null | undefined;
@@ -49,6 +59,11 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": 0,
+      "kind": "LocalArgument",
+      "name": "reset"
     }
   ],
   "kind": "Fragment",
@@ -84,7 +99,13 @@ return {
   "selections": [
     {
       "alias": "myLoans",
-      "args": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "reset",
+          "variableName": "reset"
+        }
+      ],
       "concreteType": "LoanConnection",
       "kind": "LinkedField",
       "name": "__MyLoansQueries_user_myLoans_connection",
@@ -108,9 +129,72 @@ return {
               "selections": [
                 (v1/*: any*/),
                 {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "user_id",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "score",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "ROI",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "goal",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "term",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "raised",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "expiry",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "status",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "pending",
+                  "storageKey": null
+                },
+                {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "LoanRow_loan"
+                  "name": "MyLoansQueriesRowRefetch_loan"
                 },
                 {
                   "alias": null,
@@ -167,6 +251,6 @@ return {
 };
 })();
 
-(node as any).hash = "6e53bed6e8d222b9a6860c1ca749a5f2";
+(node as any).hash = "c2879493df556d5631e0bc4caf0fea14";
 
 export default node;

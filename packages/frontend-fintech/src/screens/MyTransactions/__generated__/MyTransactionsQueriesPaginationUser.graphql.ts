@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2029ffd7a24b5824f8511b4bafcb996d>>
+ * @generated SignedSource<<dadbd09a60f3d3ce05b03220c623bc94>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,61 +12,70 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type MyTransactionsPaginationUser$variables = {
+export type MyTransactionsQueriesPaginationUser$variables = {
   count?: number | null | undefined;
   cursor?: string | null | undefined;
   id: string;
+  reset?: number | null | undefined;
 };
-export type MyTransactionsPaginationUser$data = {
+export type MyTransactionsQueriesPaginationUser$data = {
   readonly node: {
     readonly " $fragmentSpreads": FragmentRefs<"MyTransactionsQueries_user">;
   } | null | undefined;
 };
-export type MyTransactionsPaginationUser = {
-  response: MyTransactionsPaginationUser$data;
-  variables: MyTransactionsPaginationUser$variables;
+export type MyTransactionsQueriesPaginationUser = {
+  response: MyTransactionsQueriesPaginationUser$data;
+  variables: MyTransactionsQueriesPaginationUser$variables;
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": 5,
-    "kind": "LocalArgument",
-    "name": "count"
-  },
-  {
-    "defaultValue": "",
-    "kind": "LocalArgument",
-    "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": 5,
+  "kind": "LocalArgument",
+  "name": "count"
+},
+v1 = {
+  "defaultValue": "",
+  "kind": "LocalArgument",
+  "name": "cursor"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v3 = {
+  "defaultValue": 0,
+  "kind": "LocalArgument",
+  "name": "reset"
+},
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v2 = {
+v5 = {
+  "kind": "Variable",
+  "name": "reset",
+  "variableName": "reset"
+},
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v8 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -76,18 +85,24 @@ v4 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
-  }
+  },
+  (v5/*: any*/)
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/),
+      (v3/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
-    "name": "MyTransactionsPaginationUser",
+    "name": "MyTransactionsQueriesPaginationUser",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -104,7 +119,8 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
-              }
+              },
+              (v5/*: any*/)
             ],
             "kind": "FragmentSpread",
             "name": "MyTransactionsQueries_user"
@@ -118,26 +134,31 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v3/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Operation",
-    "name": "MyTransactionsPaginationUser",
+    "name": "MyTransactionsQueriesPaginationUser",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
+          (v6/*: any*/),
+          (v7/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v8/*: any*/),
                 "concreteType": "TransactionConnection",
                 "kind": "LinkedField",
                 "name": "transactions",
@@ -159,7 +180,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v2/*: any*/),
+                          (v6/*: any*/),
                           {
                             "kind": "InlineFragment",
                             "selections": [
@@ -170,7 +191,7 @@ return {
                                 "fragmentPropName": "transaction",
                                 "kind": "ModuleImport"
                               },
-                              (v3/*: any*/)
+                              (v7/*: any*/)
                             ],
                             "type": "InvestTransaction",
                             "abstractKey": null
@@ -185,7 +206,7 @@ return {
                                 "fragmentPropName": "transaction",
                                 "kind": "ModuleImport"
                               },
-                              (v3/*: any*/)
+                              (v7/*: any*/)
                             ],
                             "type": "MoneyTransaction",
                             "abstractKey": null
@@ -245,10 +266,12 @@ return {
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
-                "filters": null,
+                "args": (v8/*: any*/),
+                "filters": [
+                  "reset"
+                ],
                 "handle": "connection",
-                "key": "MyTransactions_user_transactions",
+                "key": "MyTransactionsQueries_user_transactions",
                 "kind": "LinkedHandle",
                 "name": "transactions"
               }
@@ -262,16 +285,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a18cfa80a2f38b939473c25ec95490eb",
+    "cacheID": "c4c8cc42f6f36174207c1b6dfc4adfae",
     "id": null,
     "metadata": {},
-    "name": "MyTransactionsPaginationUser",
+    "name": "MyTransactionsQueriesPaginationUser",
     "operationKind": "query",
-    "text": "query MyTransactionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyTransactionsQueries_user_1G22uz\n    id\n  }\n}\n\nfragment InvestmentTransaction_transaction on InvestTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n  borrower_id\n  loan_id\n}\n\nfragment MoneyTransaction_transaction on MoneyTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n}\n\nfragment MyTransactionsQueries_user_1G22uz on User {\n  transactions(first: $count, after: $cursor) {\n    edges {\n      node {\n        __typename\n        ... on InvestTransaction {\n          ...InvestmentTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"InvestmentTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"InvestmentTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n        ... on MoneyTransaction {\n          ...MoneyTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"MoneyTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"MoneyTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyTransactionsQueriesPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyTransactionsQueries_user_3sPmgd\n    id\n  }\n}\n\nfragment InvestmentTransaction_transaction on InvestTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n  borrower_id\n  loan_id\n}\n\nfragment MoneyTransaction_transaction on MoneyTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n}\n\nfragment MyTransactionsQueries_user_3sPmgd on User {\n  transactions(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        __typename\n        ... on InvestTransaction {\n          ...InvestmentTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"InvestmentTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"InvestmentTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n        ... on MoneyTransaction {\n          ...MoneyTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"MoneyTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"MoneyTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "cbbcd437936991af82124464545d12c2";
+(node as any).hash = "f2d900130175437da6b19c2f43ddbd8b";
 
 export default node;

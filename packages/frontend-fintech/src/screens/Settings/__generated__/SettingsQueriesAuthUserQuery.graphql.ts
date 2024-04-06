@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ffb6107347a8626c29c01ba5e8282665>>
+ * @generated SignedSource<<cda78d480310c686e73e22d872bc4c7b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
+export type Languages = "EN" | "ES" | "%future added value";
 export type SettingsQueriesAuthUserQuery$variables = Record<PropertyKey, never>;
 export type SettingsQueriesAuthUserQuery$data = {
   readonly authUser: {
@@ -113,6 +113,11 @@ v10 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
+  },
+  {
+    "kind": "Literal",
+    "name": "reset",
+    "value": 0
   }
 ],
 v11 = {
@@ -167,7 +172,10 @@ v15 = {
     }
   ],
   "storageKey": null
-};
+},
+v16 = [
+  "reset"
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -278,12 +286,12 @@ return {
               },
               (v15/*: any*/)
             ],
-            "storageKey": "logins(after:\"\",first:5)"
+            "storageKey": "logins(after:\"\",first:5,reset:0)"
           },
           {
             "alias": null,
             "args": (v10/*: any*/),
-            "filters": null,
+            "filters": (v16/*: any*/),
             "handle": "connection",
             "key": "Settings_user_logins",
             "kind": "LinkedHandle",
@@ -354,12 +362,12 @@ return {
               },
               (v15/*: any*/)
             ],
-            "storageKey": "sessions(after:\"\",first:5)"
+            "storageKey": "sessions(after:\"\",first:5,reset:0)"
           },
           {
             "alias": null,
             "args": (v10/*: any*/),
-            "filters": null,
+            "filters": (v16/*: any*/),
             "handle": "connection",
             "key": "Settings_user_sessions",
             "kind": "LinkedHandle",
@@ -371,12 +379,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "431939505b1b01190276dc9d64f9b502",
+    "cacheID": "4832e5aee459803b2af726e569fbfeb9",
     "id": null,
     "metadata": {},
     "name": "SettingsQueriesAuthUserQuery",
     "operationKind": "query",
-    "text": "query SettingsQueriesAuthUserQuery {\n  authUser {\n    id\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    email\n    language\n    ...SettingsQueries_logins_user\n    ...SettingsQueries_sessions_user\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SessionRow_session on Session {\n  id\n  applicationName\n  type\n  deviceName\n  address\n  lastTimeAccessed\n}\n\nfragment SettingsQueries_logins_user on AuthUser {\n  logins(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment SettingsQueries_sessions_user on AuthUser {\n  sessions(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        expirationDate\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsQueriesAuthUserQuery {\n  authUser {\n    id\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    email\n    language\n    ...SettingsQueries_logins_user\n    ...SettingsQueries_sessions_user\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SessionRow_session on Session {\n  id\n  applicationName\n  type\n  deviceName\n  address\n  lastTimeAccessed\n}\n\nfragment SettingsQueries_logins_user on AuthUser {\n  logins(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment SettingsQueries_sessions_user on AuthUser {\n  sessions(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        expirationDate\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

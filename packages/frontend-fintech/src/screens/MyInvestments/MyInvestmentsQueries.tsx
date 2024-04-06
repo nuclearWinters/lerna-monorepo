@@ -66,9 +66,10 @@ export const myInvestmentsPaginationFragment = graphql`
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
     status: { type: "[InvestmentStatus!]", defaultValue: null }
+    reset: { type: "Float", defaultValue: 0 }
   )
   @refetchable(queryName: "MyInvestmentsQueriesPaginationUser") {
-    investments(first: $count, after: $cursor, status: $status)
+    investments(first: $count, after: $cursor, status: $status, reset: $reset)
       @connection(key: "MyInvestmentsQueries_user_investments") {
       edges {
         node {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<29f5af10b4ca0c9db0b4536eb22127c9>>
+ * @generated SignedSource<<3e3750817cdbe6797612cf8c245381ae>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,8 +14,16 @@ export type ApproveLoanQueries_user$data = {
   readonly approveLoans: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly ROI: number;
+        readonly expiry: Int;
+        readonly goal: string;
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"LoanRow_loan">;
+        readonly pending: string;
+        readonly raised: string;
+        readonly score: string;
+        readonly term: number;
+        readonly user_id: string;
+        readonly " $fragmentSpreads": FragmentRefs<"ApproveLoanQueriesRowRefetch_loan">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   } | null | undefined;
@@ -49,6 +57,11 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": 0,
+      "kind": "LocalArgument",
+      "name": "reset"
     }
   ],
   "kind": "Fragment",
@@ -84,7 +97,13 @@ return {
   "selections": [
     {
       "alias": "approveLoans",
-      "args": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "reset",
+          "variableName": "reset"
+        }
+      ],
       "concreteType": "LoanConnection",
       "kind": "LinkedField",
       "name": "__ApproveLoansQueries_user_approveLoans_connection",
@@ -108,9 +127,65 @@ return {
               "selections": [
                 (v1/*: any*/),
                 {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "user_id",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "score",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "ROI",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "goal",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "term",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "raised",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "expiry",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "pending",
+                  "storageKey": null
+                },
+                {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "LoanRow_loan"
+                  "name": "ApproveLoanQueriesRowRefetch_loan"
                 },
                 {
                   "alias": null,
@@ -167,6 +242,6 @@ return {
 };
 })();
 
-(node as any).hash = "720036050040f94acc2e33a11ef6b495";
+(node as any).hash = "73f688173c5ce7775d044071d784292e";
 
 export default node;

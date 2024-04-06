@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<36448a6852c2861bec7e921266fbf0fb>>
+ * @generated SignedSource<<5e647e7db231834d6aaefe8ac91ec5dd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -42,6 +42,11 @@ v1 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
+  },
+  {
+    "kind": "Literal",
+    "name": "reset",
+    "value": 0
   }
 ];
 return {
@@ -199,14 +204,16 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": "transactions(after:\"\",first:5)"
+            "storageKey": "transactions(after:\"\",first:5,reset:0)"
           },
           {
             "alias": null,
             "args": (v1/*: any*/),
-            "filters": null,
+            "filters": [
+              "reset"
+            ],
             "handle": "connection",
-            "key": "MyTransactions_user_transactions",
+            "key": "MyTransactionsQueries_user_transactions",
             "kind": "LinkedHandle",
             "name": "transactions"
           }
@@ -216,12 +223,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a32e9218ec20568dcb483aa2678859bf",
+    "cacheID": "e3508091b0033db0277f8d17a641b57a",
     "id": null,
     "metadata": {},
     "name": "MyTransactionsQueriesQuery",
     "operationKind": "query",
-    "text": "query MyTransactionsQueriesQuery {\n  user {\n    id\n    ...MyTransactionsQueries_user\n  }\n}\n\nfragment InvestmentTransaction_transaction on InvestTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n  borrower_id\n  loan_id\n}\n\nfragment MoneyTransaction_transaction on MoneyTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n}\n\nfragment MyTransactionsQueries_user on User {\n  transactions(first: 5, after: \"\") {\n    edges {\n      node {\n        __typename\n        ... on InvestTransaction {\n          ...InvestmentTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"InvestmentTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"InvestmentTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n        ... on MoneyTransaction {\n          ...MoneyTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"MoneyTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"MoneyTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyTransactionsQueriesQuery {\n  user {\n    id\n    ...MyTransactionsQueries_user\n  }\n}\n\nfragment InvestmentTransaction_transaction on InvestTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n  borrower_id\n  loan_id\n}\n\nfragment MoneyTransaction_transaction on MoneyTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n}\n\nfragment MyTransactionsQueries_user on User {\n  transactions(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        __typename\n        ... on InvestTransaction {\n          ...InvestmentTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"InvestmentTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"InvestmentTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n        ... on MoneyTransaction {\n          ...MoneyTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"MoneyTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"MoneyTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

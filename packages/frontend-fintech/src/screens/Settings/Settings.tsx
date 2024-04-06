@@ -1,6 +1,6 @@
 import * as stylex from "@stylexjs/stylex";
 import { Spinner } from "../../components/Spinner";
-import { ChangeEvent, FC, useRef, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import {
   graphql,
   PreloadedQuery,
@@ -8,10 +8,7 @@ import {
   usePaginationFragment,
   usePreloadedQuery,
 } from "react-relay/hooks";
-import {
-  Languages,
-  SettingsMutation,
-} from "./__generated__/SettingsMutation.graphql";
+import { SettingsMutation } from "./__generated__/SettingsMutation.graphql";
 import { Label } from "../../components/Label";
 import { CustomButton } from "../../components/CustomButton";
 import { WrapperBig, baseWrapperBig } from "../../components/WrapperBig";
@@ -22,7 +19,7 @@ import { Space, customSpace } from "../../components/Space";
 import { Rows, baseRows } from "../../components/Rows";
 import { Columns, baseColumn } from "../../components/Colums";
 import { Select } from "../../components/Select";
-import { useTranslation } from "../../utils";
+import { Languages, useTranslation } from "../../utils";
 import { SettingsSessionsPaginationUser } from "./__generated__/SettingsSessionsPaginationUser.graphql";
 import { SettingsLoginsPaginationUser } from "./__generated__/SettingsLoginsPaginationUser.graphql";
 import { Table } from "../../components/Table";
@@ -74,12 +71,7 @@ export const Settings: FC<Props> = (props) => {
     }
   `);
   const { authUser } = usePreloadedQuery(settingsFragment, props.query);
-  const originLang =
-    authUser?.language === "DEFAULT"
-      ? navigator.language.includes("es")
-        ? "ES"
-        : "EN"
-      : authUser?.language ?? "DEFAULT";
+  const originLang = authUser?.language as Languages;
   const [formUser, setFormUser] = useState({
     name: authUser?.name || "",
     apellidoMaterno: authUser?.apellidoMaterno || "",
@@ -94,20 +86,13 @@ export const Settings: FC<Props> = (props) => {
   const handleFormUser = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const name = e.target.name;
-    if (!isChanged.current) {
-      isChanged.current = true;
-    }
     setFormUser((state) => {
       return { ...state, [name]: value };
     });
   };
-  const isChanged = useRef(false);
   const handleSelectUser = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as "EN" | "ES";
     const name = e.target.name;
-    if (!isChanged.current) {
-      isChanged.current = true;
-    }
     changeLanguage(value);
     setFormUser((state) => {
       return { ...state, [name]: value };
@@ -242,33 +227,8 @@ export const Settings: FC<Props> = (props) => {
                 onClick={() => {
                   commit({
                     variables: {
-                      input: {
-                        ...formUser,
-                        language: formUser?.language,
-                      },
+                      input: formUser,
                     },
-                  });
-                }}
-              />
-            )}
-            <Space styleX={customSpace.w30} />
-            {isChanged.current && (
-              <CustomButton
-                text={t("Restaurar")}
-                color="secondary"
-                onClick={() => {
-                  changeLanguage(originLang);
-                  isChanged.current = false;
-                  setFormUser({
-                    name: authUser.name,
-                    apellidoMaterno: authUser.apellidoMaterno,
-                    apellidoPaterno: authUser.apellidoPaterno,
-                    CURP: authUser.CURP,
-                    RFC: authUser.RFC,
-                    mobile: authUser.mobile,
-                    clabe: authUser.clabe,
-                    email: authUser.email,
-                    language: originLang,
                   });
                 }}
               />

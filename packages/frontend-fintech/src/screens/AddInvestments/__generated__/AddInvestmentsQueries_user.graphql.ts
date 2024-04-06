@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6cf6787df67413cbe2b6a26c8a85387e>>
+ * @generated SignedSource<<a3a8172b2a0ca6d84b6594586221dc36>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,11 +13,19 @@ import { FragmentRefs } from "relay-runtime";
 export type AddInvestmentsQueries_user$data = {
   readonly id: string;
   readonly loansFinancing: {
-    readonly __id: string;
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly ROI: number;
+        readonly expiry: Int;
+        readonly goal: string;
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"LoanRow_loan">;
+        readonly pending: string;
+        readonly pendingCents: number;
+        readonly raised: string;
+        readonly score: string;
+        readonly term: number;
+        readonly user_id: string;
+        readonly " $fragmentSpreads": FragmentRefs<"AddInvestmentsQueriesRowRefetch_loan">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   } | null | undefined;
@@ -50,6 +58,11 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": 0,
+      "kind": "LocalArgument",
+      "name": "reset"
     }
   ],
   "kind": "Fragment",
@@ -85,7 +98,13 @@ return {
   "selections": [
     {
       "alias": "loansFinancing",
-      "args": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "reset",
+          "variableName": "reset"
+        }
+      ],
       "concreteType": "LoanConnection",
       "kind": "LinkedField",
       "name": "__AddInvestmentsQueries_query_loansFinancing_connection",
@@ -109,9 +128,72 @@ return {
               "selections": [
                 (v1/*: any*/),
                 {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "user_id",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "score",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "ROI",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "goal",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "term",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "raised",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "expiry",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "pending",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "pendingCents",
+                  "storageKey": null
+                },
+                {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "LoanRow_loan"
+                  "name": "AddInvestmentsQueriesRowRefetch_loan"
                 },
                 {
                   "alias": null,
@@ -157,18 +239,6 @@ return {
             }
           ],
           "storageKey": null
-        },
-        {
-          "kind": "ClientExtension",
-          "selections": [
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "__id",
-              "storageKey": null
-            }
-          ]
         }
       ],
       "storageKey": null
@@ -180,6 +250,6 @@ return {
 };
 })();
 
-(node as any).hash = "756168f9d8ec612dd988af7ff43f4dcf";
+(node as any).hash = "296f1d9b462343561c624af58c70cb70";
 
 export default node;

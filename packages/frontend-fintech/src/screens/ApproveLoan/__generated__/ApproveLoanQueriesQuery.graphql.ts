@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<66f0bebec8e08ff6b3ae269f4be092b6>>
+ * @generated SignedSource<<ac4f677f983ca09f1e80f4b9467047f0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -40,6 +40,11 @@ v1 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
+  },
+  {
+    "kind": "Literal",
+    "name": "reset",
+    "value": 0
   }
 ];
 return {
@@ -163,13 +168,6 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "status",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
                         "name": "pending",
                         "storageKey": null
                       },
@@ -177,7 +175,7 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "pendingCents",
+                        "name": "status",
                         "storageKey": null
                       },
                       {
@@ -226,12 +224,14 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": "approveLoans(after:\"\",first:5)"
+            "storageKey": "approveLoans(after:\"\",first:5,reset:0)"
           },
           {
             "alias": null,
             "args": (v1/*: any*/),
-            "filters": null,
+            "filters": [
+              "reset"
+            ],
             "handle": "connection",
             "key": "ApproveLoansQueries_user_approveLoans",
             "kind": "LinkedHandle",
@@ -243,12 +243,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d805e102267940b0c2a03b66c47d9261",
+    "cacheID": "95e917f2d6bae2e6488eedb4b1649b47",
     "id": null,
     "metadata": {},
     "name": "ApproveLoanQueriesQuery",
     "operationKind": "query",
-    "text": "query ApproveLoanQueriesQuery {\n  user {\n    id\n    ...ApproveLoanQueries_user\n  }\n}\n\nfragment ApproveLoanQueries_user on User {\n  approveLoans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n  pendingCents\n}\n"
+    "text": "query ApproveLoanQueriesQuery {\n  user {\n    id\n    ...ApproveLoanQueries_user\n  }\n}\n\nfragment ApproveLoanQueriesRowRefetch_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n}\n\nfragment ApproveLoanQueries_user on User {\n  approveLoans(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        pending\n        ...ApproveLoanQueriesRowRefetch_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

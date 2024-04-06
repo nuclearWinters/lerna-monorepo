@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<03e73cd0ac1411437ba2c60e8b1132f5>>
+ * @generated SignedSource<<b0a2353d0eeeea565f70d123749be9e1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -46,6 +46,11 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": 0,
+      "kind": "LocalArgument",
+      "name": "reset"
     }
   ],
   "kind": "Fragment",
@@ -70,7 +75,7 @@ return {
       "fragmentPathInResult": [
         "node"
       ],
-      "operation": require('./MyTransactionsPaginationUser.graphql'),
+      "operation": require('./MyTransactionsQueriesPaginationUser.graphql'),
       "identifierInfo": {
         "identifierField": "id",
         "identifierQueryVariableName": "id"
@@ -81,10 +86,16 @@ return {
   "selections": [
     {
       "alias": "transactions",
-      "args": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "reset",
+          "variableName": "reset"
+        }
+      ],
       "concreteType": "TransactionConnection",
       "kind": "LinkedField",
-      "name": "__MyTransactions_user_transactions_connection",
+      "name": "__MyTransactionsQueries_user_transactions_connection",
       "plural": false,
       "selections": [
         {
@@ -204,6 +215,6 @@ return {
 };
 })();
 
-(node as any).hash = "cbbcd437936991af82124464545d12c2";
+(node as any).hash = "f2d900130175437da6b19c2f43ddbd8b";
 
 export default node;

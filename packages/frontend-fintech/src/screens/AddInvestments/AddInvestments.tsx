@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, Fragment, useMemo, useState } from "react";
 import {
   ConnectionHandler,
   graphql,
@@ -6,10 +6,10 @@ import {
   useMutation,
   usePaginationFragment,
   usePreloadedQuery,
+  useRefetchableFragment,
   useSubscription,
 } from "react-relay/hooks";
 import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
-import { LoanRow } from "../../components/LoanRow";
 import { Spinner } from "../../components/Spinner";
 import { CustomButton } from "../../components/CustomButton";
 import { Main } from "../../components/Main";
@@ -22,11 +22,12 @@ import { TableColumnName } from "../../components/TableColumnName";
 import { Table } from "../../components/Table";
 import { authUserQuery, useTranslation } from "../../utils";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
-import { useNavigate } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
 import {
   addInvestmentFragment,
   addInvestmentPaginationFragment,
+  addInvestmentsQueriesRowRefetchableFragment,
+  subscriptionAddInvestmentsUpdate,
   subscriptionLoans,
 } from "./AddInvestmentsQueries";
 import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
@@ -35,15 +36,21 @@ import { AddInvestmentsQueriesQuery } from "./__generated__/AddInvestmentsQuerie
 import { AddInvestmentsQueriesPaginationQuery } from "./__generated__/AddInvestmentsQueriesPaginationQuery.graphql";
 import { AddInvestmentsQueries_user$key } from "./__generated__/AddInvestmentsQueries_user.graphql";
 import { AddInvestmentsQueriesLoansSubscription } from "./__generated__/AddInvestmentsQueriesLoansSubscription.graphql";
+import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
+import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
+import dayjs from "dayjs";
+import { AddInvestmentsQueriesUpdateSubscription } from "./__generated__/AddInvestmentsQueriesUpdateSubscription.graphql";
+import { AddInvestmentQueriesRefetchQuery } from "./__generated__/AddInvestmentQueriesRefetchQuery.graphql";
+import { AddInvestmentsQueriesRowRefetch_loan$key } from "./__generated__/AddInvestmentsQueriesRowRefetch_loan.graphql";
 
-export const baseAddInvestmentsTotal = stylex.create({
+const baseAddInvestmentsTotal = stylex.create({
   base: {
     marginTop: "14px",
     fontWeight: "bold",
   },
 });
 
-export const basePrestarWrapper = stylex.create({
+const basePrestarWrapper = stylex.create({
   base: {
     backgroundColor: "white",
     display: "flex",
@@ -52,6 +59,120 @@ export const basePrestarWrapper = stylex.create({
     justifyContent: "center",
     margin: "16px",
     padding: "30px 0px",
+  },
+});
+
+const baseLoanRowIcon = stylex.create({
+  base: {
+    fontSize: "18px",
+    color: "rgb(255,90,96)",
+    margin: "auto",
+  },
+});
+
+const baseLoanRowCell = stylex.create({
+  base: {
+    textAlign: "center",
+    color: "#333",
+    minWidth: "100px",
+  },
+});
+
+const baseLoanRowInputBox = stylex.create({
+  base: {
+    backgroundColor: "white",
+    alignItems: "center",
+    color: "#333",
+    display: "flex",
+    justifyContent: "center",
+    height: "50px",
+  },
+});
+
+const baseLoanRowInput = stylex.create({
+  base: {
+    margin: "4px",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "#999",
+    borderRadius: "4px",
+    padding: "4px",
+    width: "100%",
+    minWidth: "100px",
+  },
+});
+
+const baseLoanRowClipboard = stylex.create({
+  base: {
+    display: "table-cell",
+    color: "#333",
+    cursor: "pointer",
+    textAlign: "center",
+    minWidth: "60px",
+  },
+});
+
+const baseLoanRowScore = stylex.create({
+  base: {
+    color: "#333",
+    display: "table-cell",
+    minWidth: "80px",
+  },
+});
+
+const baseLoanRowScoreCircle = stylex.create({
+  base: {
+    borderRadius: "100%",
+    backgroundColor: "rgb(102,141,78)",
+    width: "30px",
+    height: "30px",
+    fontSize: "10px",
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "auto",
+  },
+});
+
+const baseLoanRowContainer = stylex.create({
+  base: {
+    height: "50px",
+    backgroundColor: "white",
+  },
+});
+
+export const baseLoanRowStatusBox = stylex.create({
+  base: {
+    padding: "4px",
+    borderRadius: "4px",
+    textAlign: "center",
+    flex: "1",
+    color: "white",
+  },
+  financing: {
+    backgroundColor: "#4F7942",
+  },
+  default: {
+    backgroundColor: "#FF9F00",
+  },
+  scheduledPaymentsDelayed: {
+    backgroundColor: "#FF9F00",
+    maxWidth: "200px",
+  },
+  scheduledPaymentsPaid: {
+    backgroundColor: "#44d43b",
+    maxWidth: "200px",
+  },
+  scheduledPaymentsToBePaid: {
+    backgroundColor: "#046307",
+    maxWidth: "200px",
+  },
+  scheduledPaymentsDefault: {
+    backgroundColor: "white",
+    maxWidth: "200px",
   },
 });
 
@@ -69,11 +190,215 @@ interface ILends {
   term: number;
 }
 
+const Cell: FC<{ id: string }> = ({ id }) => {
+  const configLoansUpdate = useMemo<
+    GraphQLSubscriptionConfig<AddInvestmentsQueriesUpdateSubscription>
+  >(
+    () => ({
+      variables: {
+        gid: id,
+      },
+      subscription: subscriptionAddInvestmentsUpdate,
+    }),
+    [id]
+  );
+
+  useSubscription<AddInvestmentsQueriesUpdateSubscription>(configLoansUpdate);
+
+  return (
+    <td {...stylex.props(baseLoanRowClipboard.base)}>
+      <FaClipboard
+        onClick={() => {
+          navigator.clipboard.writeText(id);
+        }}
+        {...stylex.props(baseLoanRowIcon.base)}
+      />
+    </td>
+  );
+};
+
+const RefetchCell: FC<{ loan: AddInvestmentsQueriesRowRefetch_loan$key }> = ({
+  loan,
+}) => {
+  const [, refetch] = useRefetchableFragment<
+    AddInvestmentQueriesRefetchQuery,
+    AddInvestmentsQueriesRowRefetch_loan$key
+  >(addInvestmentsQueriesRowRefetchableFragment, loan);
+  return (
+    <td
+      {...stylex.props(baseLoanRowClipboard.base)}
+      onClick={() => {
+        refetch({}, { fetchPolicy: "network-only" });
+      }}
+    >
+      <FaSyncAlt {...stylex.props(baseLoanRowIcon.base)} />
+    </td>
+  );
+};
+
+const columnAddInvestment: {
+  id: string;
+  header: (t: (text: string) => string) => JSX.Element;
+  cell: (info: {
+    info: {
+      id: string;
+      user_id: string;
+      score: string;
+      ROI: number;
+      goal: string;
+      term: number;
+      pending: string;
+      expiry: number;
+      pendingCents: number;
+    };
+    value: string;
+    setLends: React.Dispatch<React.SetStateAction<ILends[]>>;
+    t: (text: string) => string;
+    loan: AddInvestmentsQueriesRowRefetch_loan$key;
+  }) => JSX.Element;
+}[] = [
+  {
+    id: "id",
+    header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
+    cell: ({ info }) => <Cell id={info.id} />,
+  },
+  {
+    id: "user_id",
+    header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
+    cell: ({ info, t }) => (
+      <td {...stylex.props(baseLoanRowClipboard.base)}>
+        <FaClipboard
+          onClick={() => {
+            navigator.clipboard.writeText(info.id);
+          }}
+          {...stylex.props(baseLoanRowIcon.base)}
+        />
+      </td>
+    ),
+  },
+  {
+    id: "score",
+    header: (t) => <TableColumnName>{t("Calif.")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowScore.base)}>
+        <div {...stylex.props(baseLoanRowScoreCircle.base)}>{info.score}</div>
+      </td>
+    ),
+  },
+  {
+    id: "ROI",
+    header: (t) => <TableColumnName>{t("Retorno anual")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.ROI}%</td>
+    ),
+  },
+  {
+    id: "goal",
+    header: (t) => <TableColumnName>{t("Monto")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.goal}</td>
+    ),
+  },
+  {
+    id: "term",
+    header: (t) => <TableColumnName>{t("Periodo")}</TableColumnName>,
+    cell: ({ info, t }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>
+        {info.term} {t("meses")}
+      </td>
+    ),
+  },
+  {
+    id: "pending",
+    header: (t) => <TableColumnName>{t("Faltan")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.pending}</td>
+    ),
+  },
+  {
+    id: "expiry",
+    header: (t) => <TableColumnName>{t("Termina")}</TableColumnName>,
+    cell: ({ info, t }) => {
+      const now = dayjs();
+      const expiry = dayjs(info.expiry);
+      return (
+        <td {...stylex.props(baseLoanRowCell.base)}>
+          {expiry.diff(now, "months") || expiry.diff(now, "days")} {t("meses")}
+        </td>
+      );
+    },
+  },
+  {
+    id: "prestar",
+    header: (t) => <TableColumnName>{t("Prestar")}</TableColumnName>,
+    cell: ({ info, t, value, setLends }) => (
+      <td {...stylex.props(baseLoanRowInputBox.base)}>
+        $
+        <input
+          type="text"
+          name={info.id}
+          {...stylex.props(baseLoanRowInput.base)}
+          value={value}
+          onChange={(e) => {
+            const val = e.target.value.replace("e", "");
+            if (isNaN(Number(val))) {
+              return;
+            }
+            setLends((state) => {
+              const idx = state.findIndex((lend) => info.id === lend.loan_gid);
+              if (Number(val) === 0) {
+                state.splice(idx, 1);
+                return [...state];
+              }
+              if (idx === -1) {
+                return [
+                  ...state,
+                  {
+                    loan_gid: info.id,
+                    quantity: val,
+                    borrower_id: info.user_id,
+                    goal: info.goal,
+                    term: info.term,
+                    ROI: info.ROI,
+                  },
+                ];
+              }
+              const pendingDollars = info.pendingCents / 100;
+              const quantity = Number(val);
+              if (Number(quantity) > pendingDollars) {
+                state[idx].quantity = String(pendingDollars);
+              } else {
+                state[idx].quantity = val;
+              }
+              return [...state];
+            });
+          }}
+          onBlur={() => {
+            setLends((state) => {
+              const idx = state.findIndex((lend) => info.id === lend.loan_gid);
+              if (idx === -1) {
+                return state;
+              }
+              state[idx].quantity = Number(state[idx].quantity).toFixed(2);
+              return [...state];
+            });
+          }}
+        />
+      </td>
+    ),
+  },
+  {
+    id: "refetch",
+    header: (t) => <TableColumnName>{t("Refrescar")}</TableColumnName>,
+    cell: ({ loan }) => <RefetchCell loan={loan} />,
+  },
+];
+
 export const AddInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
-  const { user, __id } = usePreloadedQuery(addInvestmentFragment, props.query);
+  const [reset, setReset] = useState(0);
+  const { user } = usePreloadedQuery(addInvestmentFragment, props.query);
   const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
-  const id = authUser?.id;
   const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {
@@ -81,24 +406,10 @@ export const AddInvestments: FC<Props> = (props) => {
       }
     }
   `);
-  const navigate = useNavigate();
   const { data, loadNext, refetch } = usePaginationFragment<
     AddInvestmentsQueriesPaginationQuery,
     AddInvestmentsQueries_user$key
   >(addInvestmentPaginationFragment, user);
-
-  const columns = [
-    { key: "id", title: t("ID") },
-    { key: "user_id", title: t("Solicitante") },
-    { key: "score", title: t("Calif.") },
-    { key: "ROI", title: t("Retorno anual") },
-    { key: "goal", title: t("Monto") },
-    { key: "term", title: t("Periodo") },
-    { key: "pending", title: t("Faltan") },
-    { key: "expiry", title: t("Termina") },
-    { key: "lend", title: t("Prestar") },
-    { key: "refetch", title: t("Refrescar") },
-  ];
 
   const [lends, setLends] = useState<ILends[]>([]);
 
@@ -115,28 +426,33 @@ export const AddInvestments: FC<Props> = (props) => {
   }, 0);
 
   const connectionLoanID = ConnectionHandler.getConnectionID(
-    __id,
-    "AddInvestments_query_loansFinancing",
-    {}
+    user?.id || "",
+    "AddInvestmentsQueries_query_loansFinancing",
+    {
+      reset,
+    }
   );
+
   const configLoans = useMemo<
     GraphQLSubscriptionConfig<AddInvestmentsQueriesLoansSubscription>
   >(
     () => ({
       variables: {
+        reset,
         connections: [connectionLoanID],
       },
       subscription: subscriptionLoans,
     }),
-    [connectionLoanID]
+    [connectionLoanID, reset]
   );
+
   useSubscription<AddInvestmentsQueriesLoansSubscription>(configLoans);
 
   if (!authUser || !user) {
     return null;
   }
 
-  const { isLender, isSupport, isBorrower, language } = authUser;
+  const { isLender, isSupport, isBorrower } = authUser;
 
   if (isBorrower || isSupport) {
     return (
@@ -154,73 +470,92 @@ export const AddInvestments: FC<Props> = (props) => {
       <WrapperBig>
         <Title text={t("Solicitudes")} />
         <Table color="primary">
-          <Rows styleX={[baseRows.base, baseRows.flex1]}>
-            <Columns>
-              {isBorrower ? <Space styleX={customSpace.w30} /> : null}
-              {columns.map((column) => (
-                <TableColumnName key={column.key}>
-                  {column.title}
-                </TableColumnName>
+          <thead>
+            <tr>
+              {columnAddInvestment.map((column) => (
+                <Fragment key={column.id}>{column.header(t)}</Fragment>
               ))}
-            </Columns>
+            </tr>
+          </thead>
+          <tbody>
             {data?.loansFinancing?.edges?.map((edge) => {
-              if (edge && edge.node) {
-                const value = getValue(edge.node.id);
-                return (
-                  <LoanRow
-                    key={edge.node.id}
-                    setLends={setLends}
-                    loan={edge.node}
-                    value={value}
-                    isLender={isLender}
-                    isSupport={isSupport}
-                    isBorrower={isBorrower}
-                    language={language}
-                  />
-                );
+              const node = edge?.node;
+              if (!node) {
+                return null;
               }
-              return null;
-            })}
-          </Rows>
-          {isLender && (
-            <Rows styleX={[baseRows.base, baseRows.lender]}>
-              {isInFlight ? (
-                <Spinner />
-              ) : (
-                <div {...stylex.props(basePrestarWrapper.base)}>
-                  <Space styleX={customSpace.h30} />
-                  <CustomButton
-                    text={t("Prestar")}
-                    onClick={() => {
-                      if (id === "QXV0aFVzZXI6") {
-                        return navigate("/login");
-                      }
-                      commit({
-                        variables: {
-                          input: {
-                            lends: lends.map((lend) => ({
-                              ...lend,
-                              quantity: lend.quantity,
-                            })),
-                          },
+              const value = getValue(node.id);
+              const {
+                id,
+                user_id,
+                score,
+                ROI,
+                goal,
+                term,
+                expiry,
+                pending,
+                pendingCents,
+              } = node;
+              return (
+                <tr key={id} {...stylex.props(baseLoanRowContainer.base)}>
+                  {columnAddInvestment.map((column) => (
+                    <Fragment key={column.id}>
+                      {column.cell({
+                        info: {
+                          id,
+                          user_id,
+                          score,
+                          ROI,
+                          goal,
+                          term,
+                          expiry,
+                          pending,
+                          pendingCents,
                         },
-                      });
-                      setLends([]);
-                    }}
-                  />
-                  <div {...stylex.props(baseAddInvestmentsTotal.base)}>
-                    {t("Total")}
-                    {`: $${total}`}
-                  </div>
-                  <div {...stylex.props(baseAddInvestmentsTotal.base)}>
-                    {t("Inversiones")}: {lends.length}
-                  </div>
-                  <Space styleX={customSpace.h30} />
-                </div>
-              )}
-            </Rows>
-          )}
+                        value,
+                        setLends,
+                        t,
+                        loan: node,
+                      })}
+                    </Fragment>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
         </Table>
+        <Rows styleX={[baseRows.base, baseRows.lender]}>
+          {isInFlight ? (
+            <Spinner />
+          ) : (
+            <div {...stylex.props(basePrestarWrapper.base)}>
+              <Space styleX={customSpace.h30} />
+              <CustomButton
+                text={t("Prestar")}
+                onClick={() => {
+                  commit({
+                    variables: {
+                      input: {
+                        lends: lends.map((lend) => ({
+                          ...lend,
+                          quantity: lend.quantity,
+                        })),
+                      },
+                    },
+                  });
+                  setLends([]);
+                }}
+              />
+              <div {...stylex.props(baseAddInvestmentsTotal.base)}>
+                {t("Total")}
+                {`: $${total}`}
+              </div>
+              <div {...stylex.props(baseAddInvestmentsTotal.base)}>
+                {t("Inversiones")}: {lends.length}
+              </div>
+              <Space styleX={customSpace.h30} />
+            </div>
+          )}
+        </Rows>
         <Space styleX={customSpace.h20} />
         <Columns styleX={[baseColumn.base, baseColumn.columnJustifyCenter]}>
           <CustomButton
@@ -230,17 +565,20 @@ export const AddInvestments: FC<Props> = (props) => {
           />
           <Space styleX={customSpace.w20} />
           <CustomButton
-            text={t("Refrescar lista")}
+            text={t("Reiniciar lista")}
             color="secondary"
-            onClick={() =>
+            onClick={() => {
+              const time = new Date().getTime();
+              setReset(time);
               refetch(
                 {
                   count: 5,
                   cursor: "",
+                  reset: time,
                 },
                 { fetchPolicy: "network-only" }
-              )
-            }
+              );
+            }}
           />
         </Columns>
         <Space styleX={customSpace.h20} />

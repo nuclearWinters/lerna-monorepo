@@ -13,6 +13,8 @@ export interface Decode {
   exp: number;
 }
 
+export type Languages = "EN" | "ES";
+
 export const useLogout = () => {
   const [commit] = useMutation<utilsLogOutMutation>(graphql`
     mutation utilsLogOutMutation($input: LogOutInput!) {
@@ -46,9 +48,6 @@ export const useTranslation = () => {
   const [language, changeLanguage] = useContext(LanguageContext);
   const t = (text: string) => {
     if (language === "ES") {
-      return text;
-    }
-    if (language === "DEFAULT" && navigator.language.includes("es")) {
       return text;
     }
     return resources["EN"].translation[text] || text;

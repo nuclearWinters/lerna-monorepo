@@ -48,7 +48,7 @@ export const LogIn: FC = () => {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "";
   return (
-    <Main>
+    <Main notLogged>
       <WrapperSmall>
         <Title text={t("Iniciar sesión")} />
         <FormSmall>

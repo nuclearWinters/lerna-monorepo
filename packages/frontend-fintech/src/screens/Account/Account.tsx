@@ -7,13 +7,13 @@ import { PreloadedQuery, usePreloadedQuery } from "react-relay/hooks";
 import { TitleAccount } from "../../components/TitleAccount";
 import { Space, customSpace } from "../../components/Space";
 import { authUserQuery, useTranslation } from "../../utils";
-import { AccountUserQuery } from "./__generated__/AccountUserQuery.graphql";
 import { accountFragment } from "./AccountQueries";
 import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
 import { RedirectContainer } from "../../components/RedirectContainer";
+import { AccountQueriesQuery } from "./__generated__/AccountQueriesQuery.graphql";
 
 type Props = {
-  query: PreloadedQuery<AccountUserQuery, {}>;
+  query: PreloadedQuery<AccountQueriesQuery, {}>;
   authQuery: PreloadedQuery<utilsQuery, {}>;
 };
 
@@ -51,6 +51,7 @@ export const Account: FC<Props> = (props) => {
             text={t("Falta por recibir")}
             value={user.accountToBePaid}
           />
+          <AccountRow text={t("Retenido")} value={user.accountWithheld} />
           <AccountRow
             text={t("Disponible")}
             value={user.accountAvailable}

@@ -7,8 +7,7 @@ import {
 import { Icon } from "../components/Icon";
 import { AccountInfo } from "../components/AccountInfo";
 import { AccountLink } from "../components/AccountLink";
-import { Rows } from "../components/Rows";
-import { authUserQuery, useTranslation } from "../utils";
+import { Languages, authUserQuery, useTranslation } from "../utils";
 import { FaFileAlt } from "@react-icons/all-files/fa/FaFileAlt";
 import { FaCartPlus } from "@react-icons/all-files/fa/FaCartPlus";
 import { FaFunnelDollar } from "@react-icons/all-files/fa/FaFunnelDollar";
@@ -25,19 +24,32 @@ import { useLocation, useNavigate } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
 import { utilsQuery } from "../__generated__/utilsQuery.graphql";
 
-export const baseRoutesIcon = stylex.create({
+const baseRoutesIcon = stylex.create({
   base: {
     fontSize: "28px",
   },
 });
 
-export const baseSider = stylex.create({
+const baseSider = stylex.create({
   base: {
     gridRowStart: "1",
     gridRowEnd: "3",
     gridColumnStart: "1",
     gridColumnEnd: "1",
     display: "flex",
+    overflow: "hidden",
+    flex: "1",
+    position: "relative",
+  },
+});
+
+const siderMenu = stylex.create({
+  base: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    overflow: "scroll",
+    width: "100%",
   },
 });
 
@@ -55,7 +67,7 @@ const subscriptionUser = graphql`
 export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
   query,
 }) => {
-  const { t } = useTranslation();
+  const { t, changeLanguage } = useTranslation();
   const { user, authUser } = usePreloadedQuery<utilsQuery>(
     authUserQuery,
     query
@@ -77,7 +89,10 @@ export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
   useEffect(() => {
     if (!authUser) {
       const isLoggedPage = !["/login", "/register", "/"].includes(location);
-      navigate(`/login${isLoggedPage ? `?redirectTo=${location}` : ""}`);
+      if (isLoggedPage) {
+        alert("You are not logged in");
+        navigate(`/login${isLoggedPage ? `?redirectTo=${location}` : ""}`);
+      }
     } else {
       const isNotLoggedPage = ["/login", "/register", "/"].includes(location);
       if (isNotLoggedPage) {
@@ -92,15 +107,23 @@ export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
     }
   }, [authUser, navigate, location]);
 
+  useEffect(() => {
+    const navigatorLanguage = navigator.language.includes("es") ? "ES" : "EN";
+    const language = authUser?.language;
+    if (language && language !== navigatorLanguage) {
+      changeLanguage(language as Languages);
+    }
+  }, [authUser, changeLanguage]);
+
   if (!user || !authUser) {
-    return <div {...stylex.props(baseSider.base)} />;
+    return null;
   }
 
   const { isBorrower, isSupport, isLender } = authUser;
 
   return (
     <div {...stylex.props(baseSider.base)}>
-      <Rows>
+      <div {...stylex.props(siderMenu.base)}>
         {isBorrower ? (
           <>
             <Icon />
@@ -230,7 +253,7 @@ export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
             />
           </>
         ) : null}
-      </Rows>
+      </div>
     </div>
   );
 };

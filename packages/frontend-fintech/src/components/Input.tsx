@@ -15,6 +15,7 @@ export const baseInput = stylex.create({
     fontSize: "20px",
     color: "rgb(62,62,62)",
     padding: "6px 6px",
+    margin: "0px 14px",
   },
 });
 

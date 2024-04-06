@@ -1,4 +1,4 @@
-import { FC, Suspense, useMemo } from "react";
+import { FC, Suspense, useMemo, useState } from "react";
 import {
   PreloadedQuery,
   usePaginationFragment,
@@ -12,12 +12,8 @@ import { Title } from "../../components/Title";
 import { Rows, baseRows } from "../../components/Rows";
 import { Space, customSpace } from "../../components/Space";
 import { Columns, baseColumn } from "../../components/Colums";
-import { MyTransactionsPaginationUser } from "./__generated__/MyTransactionsPaginationUser.graphql";
-import { MyTransactions_user$key } from "./__generated__/MyTransactions_user.graphql";
 import { authUserQuery, useTranslation } from "../../utils";
-import { MyTransactionsQuery } from "./__generated__/MyTransactionsQuery.graphql";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
-import { MyTransactionsTransactionsSubscription } from "./__generated__/MyTransactionsTransactionsSubscription.graphql";
 import RelayMatchContainer from "../../RelayMatchContainer";
 import { Spinner } from "../../components/Spinner";
 import { baseApp } from "../../App";
@@ -29,37 +25,44 @@ import {
 } from "./MyTransactionsQueries";
 import { RedirectContainer } from "../../components/RedirectContainer";
 import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
+import { MyTransactionsQueriesQuery } from "./__generated__/MyTransactionsQueriesQuery.graphql";
+import { MyTransactionsQueriesPaginationUser } from "./__generated__/MyTransactionsQueriesPaginationUser.graphql";
+import { MyTransactionsQueries_user$key } from "./__generated__/MyTransactionsQueries_user.graphql";
+import { MyTransactionsQueriesSubscription } from "./__generated__/MyTransactionsQueriesSubscription.graphql";
 
 type Props = {
-  query: PreloadedQuery<MyTransactionsQuery, {}>;
+  query: PreloadedQuery<MyTransactionsQueriesQuery, {}>;
   authQuery: PreloadedQuery<utilsQuery, {}>;
 };
 
 export const MyTransactions: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const [reset, setReset] = useState(0);
   const { user } = usePreloadedQuery(transactionsFragment, props.query);
   const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
   const { data, loadNext, refetch } = usePaginationFragment<
-    MyTransactionsPaginationUser,
-    MyTransactions_user$key
+    MyTransactionsQueriesPaginationUser,
+    MyTransactionsQueries_user$key
   >(transactionsPaginationFragment, user);
 
   const connectionTransactionID = ConnectionHandler.getConnectionID(
-    user.id,
-    "MyTransactions_user_transactions",
-    {}
+    user?.id || "",
+    "MyTransactionsQueries_user_transactions",
+    {
+      reset,
+    }
   );
 
   const configTransactions = useMemo<
-    GraphQLSubscriptionConfig<MyTransactionsTransactionsSubscription>
+    GraphQLSubscriptionConfig<MyTransactionsQueriesSubscription>
   >(
     () => ({
-      variables: { connections: [connectionTransactionID] },
+      variables: { connections: [connectionTransactionID], reset },
       subscription: subscriptionTransactions,
     }),
-    [connectionTransactionID]
+    [connectionTransactionID, reset]
   );
-  useSubscription<MyTransactionsTransactionsSubscription>(configTransactions);
+  useSubscription<MyTransactionsQueriesSubscription>(configTransactions);
 
   if (!user || !authUser) {
     return null;
@@ -109,11 +112,17 @@ export const MyTransactions: FC<Props> = (props) => {
           />
           <Space styleX={customSpace.w20} />
           <CustomButton
-            text={t("Refrescar lista")}
+            text={t("Reiniciar lista")}
             color="secondary"
             onClick={() => {
+              const time = new Date().getTime();
+              setReset(time);
               refetch(
-                {},
+                {
+                  count: 5,
+                  cursor: "",
+                  reset: time,
+                },
                 {
                   fetchPolicy: "network-only",
                 }

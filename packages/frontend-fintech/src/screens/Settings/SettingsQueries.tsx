@@ -24,9 +24,10 @@ export const settingsSessionsPaginationFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
+    reset: { type: "Float", defaultValue: 0 }
   )
   @refetchable(queryName: "SettingsSessionsPaginationUser") {
-    sessions(first: $count, after: $cursor)
+    sessions(first: $count, after: $cursor, reset: $reset)
       @connection(key: "Settings_user_sessions") {
       edges {
         node {
@@ -44,9 +45,10 @@ export const settingsLoginsPaginationFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
+    reset: { type: "Float", defaultValue: 0 }
   )
   @refetchable(queryName: "SettingsLoginsPaginationUser") {
-    logins(first: $count, after: $cursor)
+    logins(first: $count, after: $cursor, reset: $reset)
       @connection(key: "Settings_user_logins") {
       edges {
         node {

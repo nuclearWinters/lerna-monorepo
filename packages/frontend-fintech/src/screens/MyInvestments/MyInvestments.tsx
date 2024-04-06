@@ -40,6 +40,7 @@ type Props = {
 
 export const MyInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
+  const [reset, setReset] = useState(0);
   const { user } = usePreloadedQuery(myInvestmentsFragment, props.query);
   const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
   const { data, loadNext, refetch } = usePaginationFragment<
@@ -76,9 +77,10 @@ export const MyInvestments: FC<Props> = (props) => {
 
   const connectionInvestmentID = ConnectionHandler.getConnectionID(
     user?.id || "",
-    "MyInvestments_user_investments",
+    "MyInvestmentsQueries_user_investments",
     {
       status,
+      reset,
     }
   );
   const configInvestments = useMemo<
@@ -87,11 +89,12 @@ export const MyInvestments: FC<Props> = (props) => {
     () => ({
       variables: {
         status,
+        reset,
         connections: [connectionInvestmentID],
       },
       subscription: subscriptionInvestments,
     }),
-    [status, connectionInvestmentID]
+    [status, connectionInvestmentID, reset]
   );
   const configInvestmentsUpdate = useMemo<
     GraphQLSubscriptionConfig<MyInvestmentsQueriesUpdateSubscription>
@@ -192,11 +195,17 @@ export const MyInvestments: FC<Props> = (props) => {
           />
           <Space styleX={customSpace.w20} />
           <CustomButton
-            text={t("Refrescar lista")}
+            text={t("Reiniciar lista")}
             color="secondary"
             onClick={() => {
+              const time = new Date().getTime();
+              setReset(time);
               refetch(
-                {},
+                {
+                  count: 5,
+                  cursor: "",
+                  reset: time,
+                },
                 {
                   fetchPolicy: "network-only",
                 }

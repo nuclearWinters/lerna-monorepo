@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<673d235d36bbeb35630c535ad5d52b37>>
+ * @generated SignedSource<<75e0548cc651709b2917526e0d393932>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -40,6 +40,11 @@ v1 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
+  },
+  {
+    "kind": "Literal",
+    "name": "reset",
+    "value": 0
   }
 ];
 return {
@@ -247,13 +252,14 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": "investments(after:\"\",first:5)"
+            "storageKey": "investments(after:\"\",first:5,reset:0)"
           },
           {
             "alias": null,
             "args": (v1/*: any*/),
             "filters": [
-              "status"
+              "status",
+              "reset"
             ],
             "handle": "connection",
             "key": "MyInvestmentsQueries_user_investments",
@@ -266,12 +272,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "bb1ed1481604e119a922cdff40013d96",
+    "cacheID": "a534fca88f6983b8fb5381bdb24efeaa",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsQueriesQuery",
     "operationKind": "query",
-    "text": "query MyInvestmentsQueriesQuery {\n  user {\n    id\n    ...MyInvestmentsQueries_user\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestmentsQueries_user on User {\n  investments(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsQueriesQuery {\n  user {\n    id\n    ...MyInvestmentsQueries_user\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestmentsQueries_user on User {\n  investments(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

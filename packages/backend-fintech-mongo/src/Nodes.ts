@@ -467,7 +467,12 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
     },
     approveLoans: {
       type: LoanConnection,
-      args: forwardConnectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
+      },
       resolve: async (
         _root: unknown,
         args: unknown,
@@ -516,7 +521,12 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
     },
     myLoans: {
       type: LoanConnection,
-      args: forwardConnectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
+      },
       resolve: async (
         _root: unknown,
         args: unknown,
@@ -566,10 +576,13 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
     investments: {
       type: InvestmentConnection,
       args: {
+        ...forwardConnectionArgs,
         status: {
           type: new GraphQLList(new GraphQLNonNull(InvestmentStatus)),
         },
-        ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
       },
       resolve: async (
         _root: unknown,
@@ -621,6 +634,9 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
       type: TransactionConnection,
       args: {
         ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
       },
       resolve: async (
         _root: unknown,
@@ -667,7 +683,12 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
     },
     loansFinancing: {
       type: LoanConnection,
-      args: forwardConnectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
+      },
       resolve: async (
         _root: unknown,
         args: unknown,

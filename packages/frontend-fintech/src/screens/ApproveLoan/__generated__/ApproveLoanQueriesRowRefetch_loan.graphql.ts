@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9d21baaf2262292686bf2868e53dfa5f>>
+ * @generated SignedSource<<f438123244fd6a9948c0fca336509d71>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,23 +11,22 @@
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
-export type LoanRow_loan$data = {
+export type ApproveLoanQueriesRowRefetch_loan$data = {
   readonly ROI: number;
   readonly expiry: Int;
   readonly goal: string;
   readonly id: string;
   readonly pending: string;
-  readonly pendingCents: number;
   readonly raised: string;
   readonly score: string;
   readonly status: LoanStatus;
   readonly term: number;
   readonly user_id: string;
-  readonly " $fragmentType": "LoanRow_loan";
+  readonly " $fragmentType": "ApproveLoanQueriesRowRefetch_loan";
 };
-export type LoanRow_loan$key = {
-  readonly " $data"?: LoanRow_loan$data;
-  readonly " $fragmentSpreads": FragmentRefs<"LoanRow_loan">;
+export type ApproveLoanQueriesRowRefetch_loan$key = {
+  readonly " $data"?: ApproveLoanQueriesRowRefetch_loan$data;
+  readonly " $fragmentSpreads": FragmentRefs<"ApproveLoanQueriesRowRefetch_loan">;
 };
 
 const node: ReaderFragment = {
@@ -39,14 +38,14 @@ const node: ReaderFragment = {
       "fragmentPathInResult": [
         "node"
       ],
-      "operation": require('./LoanRowRefetchQuery.graphql'),
+      "operation": require('./ApproveLoanQueriesRefetchQuery.graphql'),
       "identifierInfo": {
         "identifierField": "id",
         "identifierQueryVariableName": "id"
       }
     }
   },
-  "name": "LoanRow_loan",
+  "name": "ApproveLoanQueriesRowRefetch_loan",
   "selections": [
     {
       "alias": null,
@@ -117,19 +116,12 @@ const node: ReaderFragment = {
       "kind": "ScalarField",
       "name": "pending",
       "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "pendingCents",
-      "storageKey": null
     }
   ],
   "type": "Loan",
   "abstractKey": null
 };
 
-(node as any).hash = "d915b4b9563f99cdca35108581ab27a2";
+(node as any).hash = "eb54b2dbb84e6e6c89aa624e181984bf";
 
 export default node;

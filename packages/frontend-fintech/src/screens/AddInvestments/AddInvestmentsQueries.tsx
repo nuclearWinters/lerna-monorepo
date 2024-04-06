@@ -23,8 +23,8 @@ export const subscriptionLoans = graphql`
 
 export const addInvestmentFragment = graphql`
   query AddInvestmentsQueriesQuery {
-    __id
     user {
+      id
       ...AddInvestmentsQueries_user
     }
   }
@@ -35,17 +35,59 @@ export const addInvestmentPaginationFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
+    reset: { type: "Float", defaultValue: 0 }
   )
   @refetchable(queryName: "AddInvestmentsQueriesPaginationQuery") {
-    loansFinancing(first: $count, after: $cursor)
+    loansFinancing(first: $count, after: $cursor, reset: $reset)
       @connection(key: "AddInvestmentsQueries_query_loansFinancing") {
-      __id
       edges {
         node {
           id
-          ...LoanRow_loan
+          user_id
+          score
+          ROI
+          goal
+          term
+          raised
+          expiry
+          pending
+          pendingCents
+          ...AddInvestmentsQueriesRowRefetch_loan
         }
       }
     }
+  }
+`;
+
+export const subscriptionAddInvestmentsUpdate = graphql`
+  subscription AddInvestmentsQueriesUpdateSubscription($gid: ID!) {
+    loans_subscribe_update(gid: $gid) {
+      id
+      user_id
+      score
+      ROI
+      goal
+      term
+      raised
+      expiry
+      pending
+      pendingCents
+    }
+  }
+`;
+
+export const addInvestmentsQueriesRowRefetchableFragment = graphql`
+  fragment AddInvestmentsQueriesRowRefetch_loan on Loan
+  @refetchable(queryName: "AddInvestmentQueriesRefetchQuery") {
+    id
+    user_id
+    score
+    ROI
+    goal
+    term
+    raised
+    expiry
+    pending
+    pendingCents
   }
 `;

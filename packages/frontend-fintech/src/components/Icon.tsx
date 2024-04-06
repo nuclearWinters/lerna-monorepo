@@ -16,6 +16,7 @@ export const baseIconBox = stylex.create({
     borderBottomColor: "rgb(225,225,225)",
     borderBottomStyle: "solid",
     borderBottomWidth: "1px",
+    width: "100%",
   },
 });
 

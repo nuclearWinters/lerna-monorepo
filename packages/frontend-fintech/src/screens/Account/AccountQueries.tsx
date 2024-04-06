@@ -6,6 +6,7 @@ export const accountFragment = graphql`
       accountAvailable
       accountToBePaid
       accountTotal
+      accountWithheld
     }
   }
 `;

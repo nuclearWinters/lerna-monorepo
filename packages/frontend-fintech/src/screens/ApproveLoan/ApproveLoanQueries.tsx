@@ -35,16 +35,57 @@ export const ApproveLoansQueriesPaginationFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
+    reset: { type: "Float", defaultValue: 0 }
   )
   @refetchable(queryName: "ApproveLoansQueriesPaginationUser") {
-    approveLoans(first: $count, after: $cursor)
+    approveLoans(first: $count, after: $cursor, reset: $reset)
       @connection(key: "ApproveLoansQueries_user_approveLoans") {
       edges {
         node {
           id
-          ...LoanRow_loan
+          user_id
+          score
+          ROI
+          goal
+          term
+          raised
+          expiry
+          pending
+          ...ApproveLoanQueriesRowRefetch_loan
         }
       }
     }
+  }
+`;
+
+export const subscriptionApproveLoanUpdate = graphql`
+  subscription ApproveLoanQueriesUpdateSubscription($gid: ID!) {
+    loans_subscribe_update(gid: $gid) {
+      id
+      user_id
+      score
+      ROI
+      goal
+      term
+      raised
+      expiry
+      pending
+    }
+  }
+`;
+
+export const approveLoanQueriesRowRefetchableFragment = graphql`
+  fragment ApproveLoanQueriesRowRefetch_loan on Loan
+  @refetchable(queryName: "ApproveLoanQueriesRefetchQuery") {
+    id
+    user_id
+    score
+    ROI
+    goal
+    term
+    raised
+    expiry
+    status
+    pending
   }
 `;

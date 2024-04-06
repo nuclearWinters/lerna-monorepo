@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<33ff8726bfd51521aae2b7a93d0427cd>>
+ * @generated SignedSource<<3df51ceef5682e3ade3f2a3bc46c9403>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,6 +15,7 @@ export type AccountQueriesQuery$data = {
     readonly accountAvailable: string;
     readonly accountToBePaid: string;
     readonly accountTotal: string;
+    readonly accountWithheld: string;
   } | null | undefined;
 };
 export type AccountQueriesQuery = {
@@ -43,6 +44,13 @@ v2 = {
   "kind": "ScalarField",
   "name": "accountTotal",
   "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "accountWithheld",
+  "storageKey": null
 };
 return {
   "fragment": {
@@ -61,7 +69,8 @@ return {
         "selections": [
           (v0/*: any*/),
           (v1/*: any*/),
-          (v2/*: any*/)
+          (v2/*: any*/),
+          (v3/*: any*/)
         ],
         "storageKey": null
       }
@@ -86,6 +95,7 @@ return {
           (v0/*: any*/),
           (v1/*: any*/),
           (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -99,16 +109,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "5b7b07b0be3a66b177e31eb76675c214",
+    "cacheID": "aa6ec069076aa222be921f4b6568a17c",
     "id": null,
     "metadata": {},
     "name": "AccountQueriesQuery",
     "operationKind": "query",
-    "text": "query AccountQueriesQuery {\n  user {\n    accountAvailable\n    accountToBePaid\n    accountTotal\n    id\n  }\n}\n"
+    "text": "query AccountQueriesQuery {\n  user {\n    accountAvailable\n    accountToBePaid\n    accountTotal\n    accountWithheld\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "dc85fdc42e022adbe63961a1481219e8";
+(node as any).hash = "d4b69171d6eb9bcc3ab2394767291a7f";
 
 export default node;

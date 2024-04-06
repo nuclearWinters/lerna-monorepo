@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9a120e786382f0bf9c68c497d76d1aea>>
+ * @generated SignedSource<<068b9d6cd93ca4d27d8e0d9486d39c9e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type SettingsSessionsPaginationUser$variables = {
   count?: number | null | undefined;
   cursor?: string | null | undefined;
   id: string;
+  reset?: number | null | undefined;
 };
 export type SettingsSessionsPaginationUser$data = {
   readonly node: {
@@ -26,45 +27,53 @@ export type SettingsSessionsPaginationUser = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": 5,
-    "kind": "LocalArgument",
-    "name": "count"
-  },
-  {
-    "defaultValue": "",
-    "kind": "LocalArgument",
-    "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": 5,
+  "kind": "LocalArgument",
+  "name": "count"
+},
+v1 = {
+  "defaultValue": "",
+  "kind": "LocalArgument",
+  "name": "cursor"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v3 = {
+  "defaultValue": 0,
+  "kind": "LocalArgument",
+  "name": "reset"
+},
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v2 = {
+v5 = {
+  "kind": "Variable",
+  "name": "reset",
+  "variableName": "reset"
+},
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v8 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -74,18 +83,24 @@ v4 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
-  }
+  },
+  (v5/*: any*/)
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/),
+      (v3/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "SettingsSessionsPaginationUser",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -102,7 +117,8 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
-              }
+              },
+              (v5/*: any*/)
             ],
             "kind": "FragmentSpread",
             "name": "SettingsQueries_sessions_user"
@@ -116,26 +132,31 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v3/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Operation",
     "name": "SettingsSessionsPaginationUser",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
+          (v6/*: any*/),
+          (v7/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v8/*: any*/),
                 "concreteType": "SessionsConnection",
                 "kind": "LinkedField",
                 "name": "sessions",
@@ -157,7 +178,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v3/*: any*/),
+                          (v7/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -200,7 +221,7 @@ return {
                             "name": "lastTimeAccessed",
                             "storageKey": null
                           },
-                          (v2/*: any*/)
+                          (v6/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -244,8 +265,10 @@ return {
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
-                "filters": null,
+                "args": (v8/*: any*/),
+                "filters": [
+                  "reset"
+                ],
                 "handle": "connection",
                 "key": "Settings_user_sessions",
                 "kind": "LinkedHandle",
@@ -261,16 +284,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7dee4f23001980d38860d93fd15242f5",
+    "cacheID": "41640cdbc2dc197f3f03d4bbd5baef42",
     "id": null,
     "metadata": {},
     "name": "SettingsSessionsPaginationUser",
     "operationKind": "query",
-    "text": "query SettingsSessionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SettingsQueries_sessions_user_1G22uz\n    id\n  }\n}\n\nfragment SessionRow_session on Session {\n  id\n  applicationName\n  type\n  deviceName\n  address\n  lastTimeAccessed\n}\n\nfragment SettingsQueries_sessions_user_1G22uz on AuthUser {\n  sessions(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        expirationDate\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsSessionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SettingsQueries_sessions_user_3sPmgd\n    id\n  }\n}\n\nfragment SessionRow_session on Session {\n  id\n  applicationName\n  type\n  deviceName\n  address\n  lastTimeAccessed\n}\n\nfragment SettingsQueries_sessions_user_3sPmgd on AuthUser {\n  sessions(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        id\n        expirationDate\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b45d92c466236586ea4317b92976b9e8";
+(node as any).hash = "1ae31fca2f8cce3e22b00767897ee941";
 
 export default node;

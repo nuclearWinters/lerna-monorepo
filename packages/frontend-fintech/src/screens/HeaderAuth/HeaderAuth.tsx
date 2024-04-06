@@ -16,11 +16,10 @@ export const baseApp = stylex.create({
 
 export const baseRoutes = stylex.create({
   base: {
-    flexDirection: "row",
     height: "100vh",
     width: "100vw",
     display: "grid",
-    gridTemplateColumns: "126px 1fr",
+    gridTemplateColumns: "150px 1fr",
     gridAutoRows: "60px 1fr",
   },
 });
@@ -29,7 +28,8 @@ export const baseRoutesContent = stylex.create({
   base: {
     flex: "1",
     display: "flex",
-    backgroundColor: "rgb(248,248,248)",
+    overflow: "scroll",
+    backgroundColor: "rgb(248, 248, 248)",
     gridRowStart: "2",
     gridRowEnd: "2",
     gridColumnStart: "2",
@@ -43,8 +43,6 @@ export const baseHeader = stylex.create({
     gridColumnEnd: "2",
     gridRowStart: "1",
     gridRowEnd: "2",
-  },
-  fallback: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -58,6 +56,9 @@ export const baseSider = stylex.create({
     gridColumnStart: "1",
     gridColumnEnd: "1",
     display: "flex",
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
@@ -77,24 +78,14 @@ export const HeaderAuth: FC = () => {
         </Suspense>
         <Suspense
           fallback={
-            <div {...stylex.props(baseHeader.base, baseHeader.fallback)}>
+            <div {...stylex.props(baseHeader.base)}>
               <Spinner />
             </div>
           }
         >
           <Header query={query} />
         </Suspense>
-        <Suspense
-          fallback={
-            <div {...stylex.props(baseApp.base)}>
-              <Spinner />
-            </div>
-          }
-        >
-          <div {...stylex.props(baseRoutesContent.base)}>
-            <Outlet />
-          </div>
-        </Suspense>
+        <Outlet />
       </div>
     </>
   );

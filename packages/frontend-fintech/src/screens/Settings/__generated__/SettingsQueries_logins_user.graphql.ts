@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3f7bad175863c2e5e960b3489d077e88>>
+ * @generated SignedSource<<68d7b059212e658b2b1ed76ffa978b81>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -49,6 +49,11 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": 0,
+      "kind": "LocalArgument",
+      "name": "reset"
     }
   ],
   "kind": "Fragment",
@@ -84,7 +89,13 @@ return {
   "selections": [
     {
       "alias": "logins",
-      "args": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "reset",
+          "variableName": "reset"
+        }
+      ],
       "concreteType": "LoginsConnection",
       "kind": "LinkedField",
       "name": "__Settings_user_logins_connection",
@@ -167,6 +178,6 @@ return {
 };
 })();
 
-(node as any).hash = "46e819c536708df2be77904261d49060";
+(node as any).hash = "e5cdfa59bd8afda133de37be043d1fa6";
 
 export default node;

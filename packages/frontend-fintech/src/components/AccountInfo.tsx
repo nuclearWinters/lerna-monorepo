@@ -17,6 +17,8 @@ const baseAccountInfoBox = stylex.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+    width: "100%",
+    padding: "8px 0px",
   },
 });
 

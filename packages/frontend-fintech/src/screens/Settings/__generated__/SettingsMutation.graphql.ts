@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<00ea707bc1c55039012d02065566447c>>
+ * @generated SignedSource<<f78e3ed1ea2d6def5db334ab4b213c92>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
-export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
+export type Languages = "EN" | "ES" | "%future added value";
 export type UpdateUserInput = {
   CURP: string;
   RFC: string;

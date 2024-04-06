@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<176869e59b1aa3fefe68d06b766a483b>>
+ * @generated SignedSource<<9e46c77ac8e2d08c35ef32227322b846>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
-export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
+export type Languages = "EN" | "ES" | "%future added value";
 export type SignUpInput = {
   clientMutationId?: string | null | undefined;
   email: string;

@@ -28,10 +28,11 @@ export const transactionsPaginationFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 5 }
     cursor: { type: "String", defaultValue: "" }
+    reset: { type: "Float", defaultValue: 0 }
   )
-  @refetchable(queryName: "MyTransactionsPaginationUser") {
-    transactions(first: $count, after: $cursor)
-      @connection(key: "MyTransactions_user_transactions") {
+  @refetchable(queryName: "MyTransactionsQueriesPaginationUser") {
+    transactions(first: $count, after: $cursor, reset: $reset)
+      @connection(key: "MyTransactionsQueries_user_transactions") {
       edges {
         node {
           __id

@@ -11,7 +11,7 @@ import { Title } from "../../components/Title";
 import { WrapperSmall } from "../../components/WrapperSmall";
 import { ChangeEvent, FC, useState } from "react";
 import { useMutation, graphql } from "react-relay/hooks";
-import { useTranslation } from "../../utils";
+import { getUserDataCache, useTranslation } from "../../utils";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
 
 export const SignUp: FC = () => {
@@ -36,7 +36,7 @@ export const SignUp: FC = () => {
     setIsLender(e.target.name === "lender" ? true : false);
   };
   return (
-    <Main>
+    <Main notLogged>
       <WrapperSmall>
         <Title text={t("Crear cuenta")} />
         <FormSmall>
@@ -93,7 +93,16 @@ export const SignUp: FC = () => {
                       },
                     },
                     onCompleted: () => {
-                      window.location.reload();
+                      const userData = getUserDataCache();
+                      if (userData) {
+                        if (userData.isBorrower) {
+                          window.location.href = "/myLoans";
+                        } else if (userData.isSupport) {
+                          window.location.href = "/approveLoan";
+                        } else {
+                          window.location.href = "/addInvestments";
+                        }
+                      }
                     },
                   });
                 }}

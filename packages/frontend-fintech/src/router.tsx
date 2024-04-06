@@ -2,7 +2,6 @@ import { createBrowserRouter, defer, redirect } from "react-router-dom";
 import { loadQuery } from "react-relay";
 import { RelayEnvironment } from "./RelayEnvironment";
 import { HeaderAuth } from "./screens/HeaderAuth/HeaderAuth";
-import { LogInLoader } from "./screens/LogIn/LogInLoader";
 import {
   authUserQuery,
   defaultBorrower,
@@ -10,24 +9,14 @@ import {
   defaultSupport,
   getUserDataCache,
 } from "./utils";
-import { SignUpLoader } from "./screens/SignUp/SignUpLoader";
-import { SettingsLoader } from "./screens/Settings/SettingsLoader";
 import { settingsFragment } from "./screens/Settings/SettingsQueries";
-import { AccountLoader } from "./screens/Account/AccountLoader";
 import { accountFragment } from "./screens/Account/AccountQueries";
-import { MyTransactionsLoader } from "./screens/MyTransactions/MyTransactionsLoader";
 import { transactionsFragment } from "./screens/MyTransactions/MyTransactionsQueries";
-import { AddFundsLoader } from "./screens/AddFunds/AddFundsLoader";
-import { RetireFundsLoader } from "./screens/RetireFunds/RetireFundsLoader";
-import { AddInvestmentsLoader } from "./screens/AddInvestments/AddInvestmentsLoader";
-import { AddLoanLoader } from "./screens/AddLoan/AddLoanLoader";
-import { ApproveLoanLoader } from "./screens/ApproveLoan/ApproveLoanLoader";
-import { MyLoansLoader } from "./screens/MyLoans/MyLoansLoader";
-import { MyInvestmentsLoader } from "./screens/MyInvestments/MyInvestmentsLoader";
 import { addInvestmentFragment } from "./screens/AddInvestments/AddInvestmentsQueries";
 import { approveLoansFragment } from "./screens/ApproveLoan/ApproveLoanQueries";
 import { myLoansFragment } from "./screens/MyLoans/MyLoansQueries";
 import { myInvestmentsFragment } from "./screens/MyInvestments/MyInvestmentsQueries";
+import { PageLoader } from "./components/PageLoader";
 
 type inputUser = "lender" | "borrower" | "support";
 
@@ -71,7 +60,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/login",
-        element: <LogInLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const data = getUserDataCache();
           if (data?.isBorrower) {
@@ -89,7 +78,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/register",
-        element: <SignUpLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const data = getUserDataCache();
           if (data?.isBorrower) {
@@ -107,7 +96,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/settings",
-        element: <SettingsLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(
             ["borrower", "lender", "support"],
@@ -128,7 +117,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/account",
-        element: <AccountLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(["borrower", "lender"], "/account");
           if (path) {
@@ -146,7 +135,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/myTransactions",
-        element: <MyTransactionsLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(["borrower", "lender"], "/myTransactions");
           if (path) {
@@ -164,7 +153,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/addFunds",
-        element: <AddFundsLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(["borrower", "lender"], "/addFunds");
           if (path) {
@@ -176,7 +165,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/retireFunds",
-        element: <RetireFundsLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(["borrower", "lender"], "/retireFunds");
           if (path) {
@@ -188,7 +177,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/addInvestments",
-        element: <AddInvestmentsLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(["lender"], "/addInvestments");
           if (path) {
@@ -206,7 +195,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/addLoan",
-        element: <AddLoanLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(["borrower"], "/addLoan");
           if (path) {
@@ -218,7 +207,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/approveLoan",
-        element: <ApproveLoanLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(["support"], "/approveLoan");
           if (path) {
@@ -236,7 +225,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/myLoans",
-        element: <MyLoansLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(["borrower"], "/myLoans");
           if (path) {
@@ -254,7 +243,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/myInvestments",
-        element: <MyInvestmentsLoader />,
+        element: <PageLoader />,
         loader: async () => {
           const path = redirectPage(["lender"], "/myInvestments");
           if (path) {

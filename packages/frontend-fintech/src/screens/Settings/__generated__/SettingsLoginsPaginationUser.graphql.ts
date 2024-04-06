@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<73f31025083ff6f842e6e987c3d05223>>
+ * @generated SignedSource<<db5e281b5f5242d706b45c65e61efbb4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type SettingsLoginsPaginationUser$variables = {
   count?: number | null | undefined;
   cursor?: string | null | undefined;
   id: string;
+  reset?: number | null | undefined;
 };
 export type SettingsLoginsPaginationUser$data = {
   readonly node: {
@@ -26,45 +27,53 @@ export type SettingsLoginsPaginationUser = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": 5,
-    "kind": "LocalArgument",
-    "name": "count"
-  },
-  {
-    "defaultValue": "",
-    "kind": "LocalArgument",
-    "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": 5,
+  "kind": "LocalArgument",
+  "name": "count"
+},
+v1 = {
+  "defaultValue": "",
+  "kind": "LocalArgument",
+  "name": "cursor"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v3 = {
+  "defaultValue": 0,
+  "kind": "LocalArgument",
+  "name": "reset"
+},
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v2 = {
+v5 = {
+  "kind": "Variable",
+  "name": "reset",
+  "variableName": "reset"
+},
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v8 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -74,18 +83,24 @@ v4 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
-  }
+  },
+  (v5/*: any*/)
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/),
+      (v3/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "SettingsLoginsPaginationUser",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -102,7 +117,8 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
-              }
+              },
+              (v5/*: any*/)
             ],
             "kind": "FragmentSpread",
             "name": "SettingsQueries_logins_user"
@@ -116,26 +132,31 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v3/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Operation",
     "name": "SettingsLoginsPaginationUser",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
+          (v6/*: any*/),
+          (v7/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v8/*: any*/),
                 "concreteType": "LoginsConnection",
                 "kind": "LinkedField",
                 "name": "logins",
@@ -157,7 +178,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v3/*: any*/),
+                          (v7/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -179,7 +200,7 @@ return {
                             "name": "address",
                             "storageKey": null
                           },
-                          (v2/*: any*/)
+                          (v6/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -223,8 +244,10 @@ return {
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
-                "filters": null,
+                "args": (v8/*: any*/),
+                "filters": [
+                  "reset"
+                ],
                 "handle": "connection",
                 "key": "Settings_user_logins",
                 "kind": "LinkedHandle",
@@ -240,16 +263,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "5210015cd6a232dc73f494cba81f8fc1",
+    "cacheID": "81235884f7b8af4da1cc47a7933c494c",
     "id": null,
     "metadata": {},
     "name": "SettingsLoginsPaginationUser",
     "operationKind": "query",
-    "text": "query SettingsLoginsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SettingsQueries_logins_user_1G22uz\n    id\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SettingsQueries_logins_user_1G22uz on AuthUser {\n  logins(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsLoginsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SettingsQueries_logins_user_3sPmgd\n    id\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SettingsQueries_logins_user_3sPmgd on AuthUser {\n  logins(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "46e819c536708df2be77904261d49060";
+(node as any).hash = "e5cdfa59bd8afda133de37be043d1fa6";
 
 export default node;

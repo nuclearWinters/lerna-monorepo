@@ -4,7 +4,7 @@ import { RelayEnvironment } from "./RelayEnvironment";
 import { RouterProvider } from "react-router";
 import { router } from "./router";
 import * as stylex from "@stylexjs/stylex";
-import { Languages } from "./__generated__/utilsQuery.graphql";
+import { Languages } from "./utils";
 
 export const baseApp = stylex.create({
   base: {
@@ -17,10 +17,12 @@ export const baseApp = stylex.create({
 
 export const LanguageContext = createContext<
   [Languages, Dispatch<SetStateAction<Languages>>]
->(["EN", () => {}]);
+>([navigator.language.includes("es") ? "ES" : "EN", () => {}]);
 
 export const App: FC = () => {
-  const [language, setLanguage] = useState<Languages>("EN");
+  const [language, setLanguage] = useState<Languages>(
+    navigator.language.includes("es") ? "ES" : "EN"
+  );
   return (
     <LanguageContext.Provider value={[language, setLanguage]}>
       <RelayEnvironmentProvider environment={RelayEnvironment}>

@@ -32,7 +32,10 @@ export const button = stylex.create({
     fontWeight: "bold",
     fontSize: "20px",
     alignSelf: "center",
-    width: "200px",
+    width: {
+      default: "200px",
+      "@media (max-width: 500px)": "100px",
+    },
   },
   auth: {
     color: "rgb(245, 245, 245)",

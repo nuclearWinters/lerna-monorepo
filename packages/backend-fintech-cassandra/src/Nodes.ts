@@ -468,7 +468,12 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
     },
     myLoans: {
       type: new GraphQLNonNull(LoanConnection),
-      args: forwardConnectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
+      },
       resolve: async (
         _root: unknown,
         args: unknown,
@@ -535,10 +540,13 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
     investments: {
       type: new GraphQLNonNull(InvestmentConnection),
       args: {
+        ...forwardConnectionArgs,
         status_type: {
           type: InvestmentStatusType,
         },
-        ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
       },
       resolve: async (
         _root: unknown,
@@ -610,6 +618,9 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
       type: new GraphQLNonNull(TransactionConnection),
       args: {
         ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
       },
       resolve: async (
         _root: unknown,
@@ -662,7 +673,12 @@ const GraphQLUser = new GraphQLObjectType<UserCassandra, Context>({
     },
     loansFinancing: {
       type: new GraphQLNonNull(LoanConnection),
-      args: forwardConnectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
+      },
       resolve: async (
         _root: unknown,
         args: unknown,

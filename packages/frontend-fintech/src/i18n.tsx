@@ -49,7 +49,7 @@ export const resources: Record<
       "Mis inversiones": "My investments",
       "En curso": "On going",
       Terminados: "Ended",
-      "Refrescar lista": "Refresh list",
+      "Reiniciar lista": "Reset list",
       Atrasado: "Delayed",
       Financiandose: "Financing",
       "Al día": "Up to date",
@@ -93,6 +93,7 @@ export const resources: Record<
       IP: "IP",
       time: "Date",
       Borrar: "Delete",
+      Retenido: "Withheld",
     },
   },
 };

@@ -21,6 +21,8 @@ export const accountLinkBox = stylex.create({
     justifyContent: "center",
     position: "relative",
     cursor: "pointer",
+    width: "100%",
+    padding: "8px 0px",
   },
   selected: {
     backgroundColor: "rgba(221,221,221,0.48)",

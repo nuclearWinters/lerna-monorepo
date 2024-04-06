@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1d99aa86b6e57c0502288e985a8584ce>>
+ * @generated SignedSource<<488e2234a29f2c01cf9a99e459a0c082>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -40,6 +40,11 @@ v1 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
+  },
+  {
+    "kind": "Literal",
+    "name": "reset",
+    "value": 0
   }
 ];
 return {
@@ -177,13 +182,6 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "pendingCents",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
                         "name": "__typename",
                         "storageKey": null
                       }
@@ -226,12 +224,14 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": "myLoans(after:\"\",first:5)"
+            "storageKey": "myLoans(after:\"\",first:5,reset:0)"
           },
           {
             "alias": null,
             "args": (v1/*: any*/),
-            "filters": null,
+            "filters": [
+              "reset"
+            ],
             "handle": "connection",
             "key": "MyLoansQueries_user_myLoans",
             "kind": "LinkedHandle",
@@ -243,12 +243,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "4396a3f960d6dc5627b095f1190bad0a",
+    "cacheID": "637da5cfc2c12753da0c87267d947dc5",
     "id": null,
     "metadata": {},
     "name": "MyLoansQueriesQuery",
     "operationKind": "query",
-    "text": "query MyLoansQueriesQuery {\n  user {\n    id\n    ...MyLoansQueries_user\n  }\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n  pendingCents\n}\n\nfragment MyLoansQueries_user on User {\n  myLoans(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyLoansQueriesQuery {\n  user {\n    id\n    ...MyLoansQueries_user\n  }\n}\n\nfragment MyLoansQueriesRowRefetch_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n}\n\nfragment MyLoansQueries_user on User {\n  myLoans(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        status\n        pending\n        ...MyLoansQueriesRowRefetch_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

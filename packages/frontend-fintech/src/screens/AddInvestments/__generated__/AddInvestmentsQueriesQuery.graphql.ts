@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4d7aea889db7a807bd61227897d22666>>
+ * @generated SignedSource<<843bcbe1ec53fe3b023783006dc94385>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,8 +12,8 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestmentsQueriesQuery$variables = Record<PropertyKey, never>;
 export type AddInvestmentsQueriesQuery$data = {
-  readonly __id: string;
   readonly user: {
+    readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"AddInvestmentsQueries_user">;
   } | null | undefined;
 };
@@ -24,16 +24,11 @@ export type AddInvestmentsQueriesQuery = {
 
 const node: ConcreteRequest = (function(){
 var v0 = {
-  "kind": "ClientExtension",
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "__id",
-      "storageKey": null
-    }
-  ]
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
 },
 v1 = [
   {
@@ -45,15 +40,13 @@ v1 = [
     "kind": "Literal",
     "name": "first",
     "value": 5
+  },
+  {
+    "kind": "Literal",
+    "name": "reset",
+    "value": 0
   }
-],
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -69,6 +62,7 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
+          (v0/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
@@ -76,8 +70,7 @@ return {
           }
         ],
         "storageKey": null
-      },
-      (v0/*: any*/)
+      }
     ],
     "type": "Query",
     "abstractKey": null
@@ -96,6 +89,7 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
+          (v0/*: any*/),
           {
             "alias": null,
             "args": (v1/*: any*/),
@@ -120,7 +114,7 @@ return {
                     "name": "node",
                     "plural": false,
                     "selections": [
-                      (v2/*: any*/),
+                      (v0/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -168,13 +162,6 @@ return {
                         "args": null,
                         "kind": "ScalarField",
                         "name": "expiry",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "status",
                         "storageKey": null
                       },
                       {
@@ -235,38 +222,37 @@ return {
                   }
                 ],
                 "storageKey": null
-              },
-              (v0/*: any*/)
+              }
             ],
-            "storageKey": "loansFinancing(after:\"\",first:5)"
+            "storageKey": "loansFinancing(after:\"\",first:5,reset:0)"
           },
           {
             "alias": null,
             "args": (v1/*: any*/),
-            "filters": null,
+            "filters": [
+              "reset"
+            ],
             "handle": "connection",
             "key": "AddInvestmentsQueries_query_loansFinancing",
             "kind": "LinkedHandle",
             "name": "loansFinancing"
-          },
-          (v2/*: any*/)
+          }
         ],
         "storageKey": null
-      },
-      (v0/*: any*/)
+      }
     ]
   },
   "params": {
-    "cacheID": "69e6e0ead416fcff24bd94389784b5eb",
+    "cacheID": "658dbc4b6935df57beacdb336718b0e1",
     "id": null,
     "metadata": {},
     "name": "AddInvestmentsQueriesQuery",
     "operationKind": "query",
-    "text": "query AddInvestmentsQueriesQuery {\n  user {\n    ...AddInvestmentsQueries_user\n    id\n  }\n}\n\nfragment AddInvestmentsQueries_user on User {\n  loansFinancing(first: 5, after: \"\") {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n  pendingCents\n}\n"
+    "text": "query AddInvestmentsQueriesQuery {\n  user {\n    id\n    ...AddInvestmentsQueries_user\n  }\n}\n\nfragment AddInvestmentsQueriesRowRefetch_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  pending\n  pendingCents\n}\n\nfragment AddInvestmentsQueries_user on User {\n  loansFinancing(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        pending\n        pendingCents\n        ...AddInvestmentsQueriesRowRefetch_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "177f83ae55a9f4f0fdf39f96de75cdc5";
+(node as any).hash = "5247af706d8cc07e97d0b9fd2b575dde";
 
 export default node;

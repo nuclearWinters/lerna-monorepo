@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bcd0a68c4527f8b3e81c60b6c924c18e>>
+ * @generated SignedSource<<8583d9729eca8e187c992ac2f3f98540>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type Languages = "DEFAULT" | "EN" | "ES" | "%future added value";
+export type Languages = "EN" | "ES" | "%future added value";
 export type utilsQuery$variables = Record<PropertyKey, never>;
 export type utilsQuery$data = {
   readonly authUser: {

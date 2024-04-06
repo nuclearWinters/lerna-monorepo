@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<407d242bdf9fddda5a52aa361f5d980d>>
+ * @generated SignedSource<<5d60efaae8e6c37dc70a89e36ee80f1f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type AddInvestmentsQueriesPaginationQuery$variables = {
   count?: number | null | undefined;
   cursor?: string | null | undefined;
   id: string;
+  reset?: number | null | undefined;
 };
 export type AddInvestmentsQueriesPaginationQuery$data = {
   readonly node: {
@@ -26,45 +27,53 @@ export type AddInvestmentsQueriesPaginationQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": 5,
-    "kind": "LocalArgument",
-    "name": "count"
-  },
-  {
-    "defaultValue": "",
-    "kind": "LocalArgument",
-    "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": 5,
+  "kind": "LocalArgument",
+  "name": "count"
+},
+v1 = {
+  "defaultValue": "",
+  "kind": "LocalArgument",
+  "name": "cursor"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v3 = {
+  "defaultValue": 0,
+  "kind": "LocalArgument",
+  "name": "reset"
+},
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v2 = {
+v5 = {
+  "kind": "Variable",
+  "name": "reset",
+  "variableName": "reset"
+},
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v8 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -74,18 +83,24 @@ v4 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
-  }
+  },
+  (v5/*: any*/)
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/),
+      (v3/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "AddInvestmentsQueriesPaginationQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -102,7 +117,8 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
-              }
+              },
+              (v5/*: any*/)
             ],
             "kind": "FragmentSpread",
             "name": "AddInvestmentsQueries_user"
@@ -116,26 +132,31 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v3/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Operation",
     "name": "AddInvestmentsQueriesPaginationQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
+          (v6/*: any*/),
+          (v7/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v8/*: any*/),
                 "concreteType": "LoanConnection",
                 "kind": "LinkedField",
                 "name": "loansFinancing",
@@ -157,7 +178,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v3/*: any*/),
+                          (v7/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -211,13 +232,6 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "status",
-                            "storageKey": null
-                          },
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
                             "name": "pending",
                             "storageKey": null
                           },
@@ -228,7 +242,7 @@ return {
                             "name": "pendingCents",
                             "storageKey": null
                           },
-                          (v2/*: any*/)
+                          (v6/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -266,26 +280,16 @@ return {
                       }
                     ],
                     "storageKey": null
-                  },
-                  {
-                    "kind": "ClientExtension",
-                    "selections": [
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "__id",
-                        "storageKey": null
-                      }
-                    ]
                   }
                 ],
                 "storageKey": null
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
-                "filters": null,
+                "args": (v8/*: any*/),
+                "filters": [
+                  "reset"
+                ],
                 "handle": "connection",
                 "key": "AddInvestmentsQueries_query_loansFinancing",
                 "kind": "LinkedHandle",
@@ -301,16 +305,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "773d221e12a6a9a389f661e21125475d",
+    "cacheID": "74997cad3da3ce985529fbd30726bd41",
     "id": null,
     "metadata": {},
     "name": "AddInvestmentsQueriesPaginationQuery",
     "operationKind": "query",
-    "text": "query AddInvestmentsQueriesPaginationQuery(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...AddInvestmentsQueries_user_1G22uz\n    id\n  }\n}\n\nfragment AddInvestmentsQueries_user_1G22uz on User {\n  loansFinancing(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...LoanRow_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment LoanRow_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n  pendingCents\n}\n"
+    "text": "query AddInvestmentsQueriesPaginationQuery(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...AddInvestmentsQueries_user_3sPmgd\n    id\n  }\n}\n\nfragment AddInvestmentsQueriesRowRefetch_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  pending\n  pendingCents\n}\n\nfragment AddInvestmentsQueries_user_3sPmgd on User {\n  loansFinancing(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        pending\n        pendingCents\n        ...AddInvestmentsQueriesRowRefetch_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "756168f9d8ec612dd988af7ff43f4dcf";
+(node as any).hash = "296f1d9b462343561c624af58c70cb70";
 
 export default node;

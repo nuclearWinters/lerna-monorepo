@@ -6,6 +6,7 @@ import {
   GraphQLBoolean,
   GraphQLScalarType,
   Kind,
+  GraphQLFloat,
 } from "graphql";
 import {
   Connection,
@@ -200,7 +201,12 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
     },
     sessions: {
       type: new GraphQLNonNull(SessionsConnection),
-      args: forwardConnectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
+      },
       resolve: async (
         _root: unknown,
         args: unknown,
@@ -251,7 +257,12 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
     },
     logins: {
       type: new GraphQLNonNull(LoginConnection),
-      args: forwardConnectionArgs,
+      args: {
+        ...forwardConnectionArgs,
+        reset: {
+          type: GraphQLFloat,
+        },
+      },
       resolve: async (
         _root: unknown,
         args: unknown,

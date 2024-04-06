@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a9bd936f696132e89aa79f2823144053>>
+ * @generated SignedSource<<ce27a024372d640ce78eab31ae83ec5d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -50,6 +50,11 @@ return {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": 0,
+      "kind": "LocalArgument",
+      "name": "reset"
     }
   ],
   "kind": "Fragment",
@@ -85,7 +90,13 @@ return {
   "selections": [
     {
       "alias": "sessions",
-      "args": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "reset",
+          "variableName": "reset"
+        }
+      ],
       "concreteType": "SessionsConnection",
       "kind": "LinkedField",
       "name": "__Settings_user_sessions_connection",
@@ -175,6 +186,6 @@ return {
 };
 })();
 
-(node as any).hash = "b45d92c466236586ea4317b92976b9e8";
+(node as any).hash = "1ae31fca2f8cce3e22b00767897ee941";
 
 export default node;

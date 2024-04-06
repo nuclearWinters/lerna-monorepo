@@ -6,11 +6,39 @@ export const baseMain = stylex.create({
     backgroundColor: "rgb(248,248,248)",
     flex: "1",
     display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
+    gridRowStart: "2",
+    gridRowEnd: "2",
+    gridColumnStart: "2",
+    gridColumnEnd: "3",
+    overflow: "scroll",
+    position: "relative",
+  },
+  notLogged: {
+    gridColumnStart: "1",
+    gridColumnEnd: "3",
   },
 });
 
-export const Main: FC<{ children: ReactNode }> = ({ children }) => {
-  return <div {...stylex.props(baseMain.base)}>{children}</div>;
+export const baseMainBlock = stylex.create({
+  base: {
+    display: "block",
+    overflowX: "hidden",
+    width: "100%",
+  },
+});
+
+export const Main: FC<{ children: ReactNode; notLogged?: boolean }> = ({
+  children,
+  notLogged,
+}) => {
+  return (
+    <div
+      {...stylex.props(
+        baseMain.base,
+        notLogged ? baseMain.notLogged : undefined
+      )}
+    >
+      <div {...stylex.props(baseMainBlock.base)}>{children}</div>
+    </div>
+  );
 };
