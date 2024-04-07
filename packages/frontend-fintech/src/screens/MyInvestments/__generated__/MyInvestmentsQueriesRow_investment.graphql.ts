@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<367a088dcab0610fab14b91545a7e1fd>>
+ * @generated SignedSource<<3af65562ddfbba14ff0f3f119435021b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
-export type InvestmentRow_investment$data = {
+export type MyInvestmentsQueriesRow_investment$data = {
   readonly ROI: number;
   readonly borrower_id: string;
   readonly created_at: Int;
@@ -26,11 +26,11 @@ export type InvestmentRow_investment$data = {
   readonly term: number;
   readonly to_be_paid: string;
   readonly updated_at: Int;
-  readonly " $fragmentType": "InvestmentRow_investment";
+  readonly " $fragmentType": "MyInvestmentsQueriesRow_investment";
 };
-export type InvestmentRow_investment$key = {
-  readonly " $data"?: InvestmentRow_investment$data;
-  readonly " $fragmentSpreads": FragmentRefs<"InvestmentRow_investment">;
+export type MyInvestmentsQueriesRow_investment$key = {
+  readonly " $data"?: MyInvestmentsQueriesRow_investment$data;
+  readonly " $fragmentSpreads": FragmentRefs<"MyInvestmentsQueriesRow_investment">;
 };
 
 const node: ReaderFragment = {
@@ -42,14 +42,14 @@ const node: ReaderFragment = {
       "fragmentPathInResult": [
         "node"
       ],
-      "operation": require('./InvestmentRowRefetchQuery.graphql'),
+      "operation": require('./MyInvestmentRowRefetchQuery.graphql'),
       "identifierInfo": {
         "identifierField": "id",
         "identifierQueryVariableName": "id"
       }
     }
   },
-  "name": "InvestmentRow_investment",
+  "name": "MyInvestmentsQueriesRow_investment",
   "selections": [
     {
       "alias": null,
@@ -154,6 +154,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "1cb15992ac67c5ae1cdae6add7abd428";
+(node as any).hash = "3da30e88e395c4e3d7cb8f7432eb6d7e";
 
 export default node;

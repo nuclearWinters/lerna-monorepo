@@ -1,11 +1,11 @@
-import { FC, useMemo, useState } from "react";
+import { FC, Fragment, useMemo, useState } from "react";
 import {
   usePaginationFragment,
   usePreloadedQuery,
   PreloadedQuery,
   useSubscription,
+  useRefetchableFragment,
 } from "react-relay/hooks";
-import { InvestmentRow } from "../../components/InvestmentRow";
 import { CustomButton } from "../../components/CustomButton";
 import { Title } from "../../components/Title";
 import { Main } from "../../components/Main";
@@ -14,12 +14,11 @@ import { Select } from "../../components/Select";
 import { Space, customSpace } from "../../components/Space";
 import { Columns, baseColumn } from "../../components/Colums";
 import { Table } from "../../components/Table";
-import { Rows, baseRows } from "../../components/Rows";
 import { TableColumnName } from "../../components/TableColumnName";
 import { authUserQuery, useTranslation } from "../../utils";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
-import { InvestmentStatus } from "../../components/__generated__/InvestmentRow_investment.graphql";
 import {
+  investmentRowRefetchableFragment,
   myInvestmentsFragment,
   myInvestmentsPaginationFragment,
   subscriptionInvestments,
@@ -32,11 +31,285 @@ import { MyInvestmentsQueriesPaginationUser } from "./__generated__/MyInvestment
 import { MyInvestmentsQueries_user$key } from "./__generated__/MyInvestmentsQueries_user.graphql";
 import { MyInvestmentsQueriesQuery } from "./__generated__/MyInvestmentsQueriesQuery.graphql";
 import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
+import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
+import * as stylex from "@stylexjs/stylex";
+import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
+import { MyInvestmentRowRefetchQuery } from "./__generated__/MyInvestmentRowRefetchQuery.graphql";
+import dayjs from "dayjs";
+import { MyInvestmentsQueriesRow_investment$key } from "./__generated__/MyInvestmentsQueriesRow_investment.graphql";
+
+const baseInvestmentRowBox = stylex.create({
+  base: {
+    height: "50px",
+    backgroundColor: "white",
+  },
+});
+
+const baseInvestmentRowClipboard = stylex.create({
+  base: {
+    textAlign: "center",
+    color: "#333",
+    cursor: "pointer",
+  },
+});
+
+const baseInvestmentRowCell = stylex.create({
+  base: {
+    padding: "10px 0px",
+    textAlign: "center",
+    color: "#333",
+    minWidth: "100px",
+  },
+});
+
+const baseInvestmentRowStatus = stylex.create({
+  base: {
+    color: "#333",
+    display: "table-cell",
+    minWidth: "120px",
+  },
+});
+
+const baseInvestmentRowIcon = stylex.create({
+  base: {
+    fontSize: "18px",
+    color: "rgb(90,96,255)",
+    minWidth: "60px",
+  },
+});
+
+const baseInvestmentRowStatusBar = stylex.create({
+  base: {
+    margin: "4px",
+    borderRadius: "4px",
+    textAlign: "center",
+    padding: "3px 0px",
+    color: "white",
+  },
+  delayPayment: {
+    backgroundColor: "#FF9F00",
+  },
+  financing: {
+    backgroundColor: "#4F7942",
+  },
+  paid: {
+    backgroundColor: "#046307",
+  },
+  pastDue: {
+    backgroundColor: "#CA3435",
+  },
+  upToDate: {
+    backgroundColor: "#44d43b",
+  },
+  default: {
+    backgroundColor: "white",
+  },
+});
+
+type Status =
+  | "DELAY_PAYMENT"
+  | "FINANCING"
+  | "PAID"
+  | "PAST_DUE"
+  | "UP_TO_DATE";
+
+const status = (status: Status, t: (name: string) => string) => {
+  switch (status) {
+    case "DELAY_PAYMENT":
+      return t("Atrasado");
+    case "FINANCING":
+      return t("Financiandose");
+    case "PAID":
+      return t("Pagado");
+    case "PAST_DUE":
+      return t("Vencido");
+    case "UP_TO_DATE":
+      return t("Al día");
+    default:
+      return "";
+  }
+};
+const statusStyle = (status: Status) => {
+  switch (status) {
+    case "DELAY_PAYMENT":
+      return baseInvestmentRowStatusBar.delayPayment;
+    case "FINANCING":
+      return baseInvestmentRowStatusBar.financing;
+    case "PAID":
+      return baseInvestmentRowStatusBar.paid;
+    case "PAST_DUE":
+      return baseInvestmentRowStatusBar.pastDue;
+    case "UP_TO_DATE":
+      return baseInvestmentRowStatusBar.upToDate;
+    default:
+      return baseInvestmentRowStatusBar.default;
+  }
+};
 
 type Props = {
   query: PreloadedQuery<MyInvestmentsQueriesQuery, {}>;
   authQuery: PreloadedQuery<utilsQuery, {}>;
 };
+
+const RefetchCell: FC<{
+  investment: MyInvestmentsQueriesRow_investment$key;
+}> = ({ investment }) => {
+  const [, refetch] = useRefetchableFragment<
+    MyInvestmentRowRefetchQuery,
+    MyInvestmentsQueriesRow_investment$key
+  >(investmentRowRefetchableFragment, investment);
+  return (
+    <td
+      {...stylex.props(baseInvestmentRowClipboard.base)}
+      onClick={() => {
+        refetch({}, { fetchPolicy: "network-only" });
+      }}
+    >
+      <FaSyncAlt {...stylex.props(baseInvestmentRowIcon.base)} />
+    </td>
+  );
+};
+
+const columns: {
+  id: string;
+  header: (t: (text: string) => string) => JSX.Element;
+  cell: (info: {
+    info: {
+      id: string;
+      borrower_id: string;
+      loan_id: string;
+      quantity: string;
+      status: Status;
+      paid_already: string;
+      interest_to_earn: string;
+      moratory: string;
+      created_at: number;
+      updated_at: number;
+      to_be_paid: string;
+    };
+    t: (text: string) => string;
+    investment: MyInvestmentsQueriesRow_investment$key;
+  }) => JSX.Element;
+}[] = [
+  {
+    id: "id",
+    header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowClipboard.base)}>
+        <FaClipboard
+          onClick={() => {
+            navigator.clipboard.writeText(info.id);
+          }}
+          {...stylex.props(baseInvestmentRowIcon.base)}
+        />
+      </td>
+    ),
+  },
+  {
+    id: "borrower_id",
+    header: (t) => <TableColumnName>{t("ID deudor")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowClipboard.base)}>
+        <FaClipboard
+          onClick={() => {
+            navigator.clipboard.writeText(info.borrower_id);
+          }}
+          {...stylex.props(baseInvestmentRowIcon.base)}
+        />
+      </td>
+    ),
+  },
+  {
+    id: "loan_id",
+    header: (t) => <TableColumnName>{t("ID deuda")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowClipboard.base)}>
+        <FaClipboard
+          onClick={() => {
+            navigator.clipboard.writeText(info.loan_id);
+          }}
+          {...stylex.props(baseInvestmentRowIcon.base)}
+        />
+      </td>
+    ),
+  },
+  {
+    id: "quantity",
+    header: (t) => <TableColumnName>{t("Cantidad")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowCell.base)}>{info.quantity}</td>
+    ),
+  },
+  {
+    id: "status",
+    header: (t) => <TableColumnName>{t("Estatus")}</TableColumnName>,
+    cell: ({ info, t }) => (
+      <td {...stylex.props(baseInvestmentRowStatus.base)}>
+        <div
+          {...stylex.props(
+            baseInvestmentRowStatusBar.base,
+            statusStyle(info.status)
+          )}
+        >
+          {status(info.status as Status, t)}
+        </div>
+      </td>
+    ),
+  },
+  {
+    id: "paid",
+    header: (t) => <TableColumnName>{t("Pagado")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowCell.base)}>{info.paid_already}</td>
+    ),
+  },
+  {
+    id: "owe",
+    header: (t) => <TableColumnName>{t("Pagado")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowCell.base)}>{info.to_be_paid}</td>
+    ),
+  },
+  {
+    id: "interests",
+    header: (t) => <TableColumnName>{t("Intereses")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowCell.base)}>
+        {info.interest_to_earn}
+      </td>
+    ),
+  },
+  {
+    id: "moratory",
+    header: (t) => <TableColumnName>{t("Interés por mora")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowCell.base)}>{info.moratory}</td>
+    ),
+  },
+  {
+    id: "created",
+    header: (t) => <TableColumnName>{t("Creado en")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowCell.base)}>
+        {dayjs(info.created_at).format("DD/MM/YYYY")}
+      </td>
+    ),
+  },
+  {
+    id: "updated",
+    header: (t) => <TableColumnName>{t("Último cambio en")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseInvestmentRowCell.base)}>
+        {dayjs(info.updated_at).format("DD/MM/YYYY")}
+      </td>
+    ),
+  },
+  {
+    id: "refetch",
+    header: (t) => <TableColumnName>{t("Refrescar")}</TableColumnName>,
+    cell: ({ investment }) => <RefetchCell investment={investment} />,
+  },
+];
 
 export const MyInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
@@ -48,26 +321,11 @@ export const MyInvestments: FC<Props> = (props) => {
     MyInvestmentsQueries_user$key
   >(myInvestmentsPaginationFragment, user);
 
-  const columns = [
-    { key: "id", title: t("ID") },
-    { key: "borrower_id", title: t("ID deudor") },
-    { key: "loan_id", title: t("ID deuda") },
-    { key: "quantity", title: t("Cantidad") },
-    { key: "status", title: t("Estatus") },
-    { key: "paid", title: t("Pagado") },
-    { key: "owe", title: t("Adeudo") },
-    { key: "interests", title: t("Intereses") },
-    { key: "moratory", title: t("Interés por mora") },
-    { key: "created", title: t("Creado en") },
-    { key: "updated_at", title: t("Último cambio en") },
-    { key: "refetch", title: t("Refrescar") },
-  ];
-
   const [investmentStatus, setInvestmentStatus] = useState<
     "none" | "on_going" | "over"
   >("none");
 
-  const status: InvestmentStatus[] | null = useMemo(() => {
+  const status: Status[] | null = useMemo(() => {
     return investmentStatus === "on_going"
       ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
       : investmentStatus === "over"
@@ -139,7 +397,7 @@ export const MyInvestments: FC<Props> = (props) => {
               | "over"
               | "none";
             setInvestmentStatus(investmentStatus);
-            const status: InvestmentStatus[] | null =
+            const status: Status[] | null =
               investmentStatus === "on_going"
                 ? ["DELAY_PAYMENT", "UP_TO_DATE", "FINANCING"]
                 : investmentStatus === "over"
@@ -168,23 +426,59 @@ export const MyInvestments: FC<Props> = (props) => {
           ]}
         />
         <Table color="secondary">
-          <Rows styleX={[baseRows.base, baseRows.flex1]}>
-            <Columns>
+          <thead>
+            <tr>
               {columns.map((column) => (
-                <TableColumnName key={column.key}>
-                  {column.title}
-                </TableColumnName>
+                <Fragment key={column.id}>{column.header(t)}</Fragment>
               ))}
-            </Columns>
+            </tr>
+          </thead>
+          <tbody>
             {data?.investments?.edges?.map((edge) => {
-              if (edge?.node) {
-                return (
-                  <InvestmentRow key={edge.node.id} investment={edge.node} />
-                );
+              const node = edge?.node;
+              if (!node) {
+                return null;
               }
-              return null;
+              const {
+                id,
+                borrower_id,
+                loan_id,
+                quantity,
+                status,
+                paid_already,
+                interest_to_earn,
+                moratory,
+                created_at,
+                updated_at,
+                to_be_paid,
+              } = node;
+              return (
+                <tr key={id} {...stylex.props(baseInvestmentRowBox.base)}>
+                  {columns.map((column) => (
+                    <Fragment key={column.id}>
+                      {column.cell({
+                        info: {
+                          id,
+                          borrower_id,
+                          loan_id,
+                          quantity,
+                          status: status as Status,
+                          paid_already,
+                          interest_to_earn,
+                          moratory,
+                          created_at,
+                          updated_at,
+                          to_be_paid,
+                        },
+                        t,
+                        investment: node,
+                      })}
+                    </Fragment>
+                  ))}
+                </tr>
+              );
             })}
-          </Rows>
+          </tbody>
         </Table>
         <Space styleX={customSpace.h20} />
         <Columns styleX={[baseColumn.base, baseColumn.columnJustifyCenter]}>

@@ -74,9 +74,42 @@ export const myInvestmentsPaginationFragment = graphql`
       edges {
         node {
           id
-          ...InvestmentRow_investment
+          borrower_id
+          loan_id
+          quantity
+          created_at
+          updated_at
+          status
+          payments
+          ROI
+          term
+          moratory
+          interest_to_earn
+          paid_already
+          to_be_paid
+          ...MyInvestmentsQueriesRow_investment
         }
       }
     }
+  }
+`;
+
+export const investmentRowRefetchableFragment = graphql`
+  fragment MyInvestmentsQueriesRow_investment on Investment
+  @refetchable(queryName: "MyInvestmentRowRefetchQuery") {
+    id
+    borrower_id
+    loan_id
+    quantity
+    created_at
+    updated_at
+    status
+    payments
+    ROI
+    term
+    moratory
+    interest_to_earn
+    paid_already
+    to_be_paid
   }
 `;

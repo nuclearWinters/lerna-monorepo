@@ -12,7 +12,6 @@ import { CustomButton } from "../../components/CustomButton";
 import { Main } from "../../components/Main";
 import { Title } from "../../components/Title";
 import { WrapperBig } from "../../components/WrapperBig";
-import { Rows, baseRows } from "../../components/Rows";
 import { Space, customSpace } from "../../components/Space";
 import { Columns, baseColumn } from "../../components/Colums";
 import { TableColumnName } from "../../components/TableColumnName";
@@ -47,60 +46,41 @@ type Props = {
   authQuery: PreloadedQuery<utilsQuery, {}>;
 };
 
-export const baseLoanRowContainer = stylex.create({
+const baseLoanRowContainer = stylex.create({
   base: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: "8px",
-  },
-});
-
-export const baseLoanRowBorrowerIcon = stylex.create({
-  base: {
-    fontSize: "18px",
-    color: "rgb(62,62,62)",
-    cursor: "pointer",
-    backgroundColor: "rgb(245,245,245)",
-  },
-});
-
-export const baseLoanRowClipboard = stylex.create({
-  base: {
-    flex: "1",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
     backgroundColor: "white",
-    padding: "10px 0px",
+    height: "50px",
+  },
+});
+
+const baseLoanRowClipboard = stylex.create({
+  base: {
     textAlign: "center",
     color: "#333",
     cursor: "pointer",
+    display: "table-cell",
+    minWidth: "60px",
   },
 });
 
-export const baseLoanRowIcon = stylex.create({
+const baseLoanRowIcon = stylex.create({
   base: {
     fontSize: "18px",
     color: "rgb(255,90,96)",
+    margin: "auto",
   },
 });
 
-export const baseLoanRowScore = stylex.create({
+const baseLoanRowScore = stylex.create({
   base: {
-    flex: "1",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
     textAlign: "center",
     color: "#333",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: "table-cell",
+    minWidth: "80px",
   },
 });
 
-export const baseLoanRowScoreCircle = stylex.create({
+const baseLoanRowScoreCircle = stylex.create({
   base: {
     borderRadius: "100%",
     backgroundColor: "rgb(102,141,78)",
@@ -113,19 +93,17 @@ export const baseLoanRowScoreCircle = stylex.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    margin: "auto",
   },
 });
 
-export const baseLoanRowCell = stylex.create({
+const baseLoanRowCell = stylex.create({
   base: {
-    flex: "1",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
+    display: "table-cell",
     padding: "10px 0px",
     textAlign: "center",
     color: "#333",
+    minWidth: "100px",
   },
 });
 
@@ -159,7 +137,7 @@ const ApproveLoanCell: FC<{
   useSubscription<ApproveLoanQueriesUpdateSubscription>(configLoansUpdate);
 
   return (
-    <div
+    <td
       {...stylex.props(baseLoanRowClipboard.base)}
       onClick={() => {
         commitApproveLoan({
@@ -172,7 +150,7 @@ const ApproveLoanCell: FC<{
       }}
     >
       <FaThumbsUp {...stylex.props(baseLoanRowIcon.base)} />
-    </div>
+    </td>
   );
 };
 
@@ -217,67 +195,67 @@ const columnApproveLoans: {
     id: "id",
     header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowClipboard.base)}>
+      <td {...stylex.props(baseLoanRowClipboard.base)}>
         <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}
           {...stylex.props(baseLoanRowIcon.base)}
         />
-      </div>
+      </td>
     ),
   },
   {
     id: "user_id",
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
     cell: ({ info, t }) => (
-      <div {...stylex.props(baseLoanRowClipboard.base)}>
+      <td {...stylex.props(baseLoanRowClipboard.base)}>
         <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}
           {...stylex.props(baseLoanRowIcon.base)}
         />
-      </div>
+      </td>
     ),
   },
   {
     id: "score",
     header: (t) => <TableColumnName>{t("Calif.")}</TableColumnName>,
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowScore.base)}>
+      <td {...stylex.props(baseLoanRowScore.base)}>
         <div {...stylex.props(baseLoanRowScoreCircle.base)}>{info.score}</div>
-      </div>
+      </td>
     ),
   },
   {
     id: "ROI",
     header: (t) => <TableColumnName>{t("Retorno anual")}</TableColumnName>,
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>{info.ROI}%</div>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.ROI}%</td>
     ),
   },
   {
     id: "goal",
     header: (t) => <TableColumnName>{t("Monto")}</TableColumnName>,
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>{info.goal}</div>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.goal}</td>
     ),
   },
   {
     id: "term",
     header: (t) => <TableColumnName>{t("Periodo")}</TableColumnName>,
     cell: ({ info, t }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>
+      <td {...stylex.props(baseLoanRowCell.base)}>
         {info.term} {t("meses")}
-      </div>
+      </td>
     ),
   },
   {
     id: "pending",
     header: (t) => <TableColumnName>{t("Faltan")}</TableColumnName>,
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>{info.pending}</div>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.pending}</td>
     ),
   },
   {
@@ -287,9 +265,9 @@ const columnApproveLoans: {
       const now = dayjs();
       const expiry = dayjs(info.expiry);
       return (
-        <div {...stylex.props(baseLoanRowCell.base)}>
+        <td {...stylex.props(baseLoanRowCell.base)}>
           {expiry.diff(now, "months") || expiry.diff(now, "days")} {t("meses")}
-        </div>
+        </td>
       );
     },
   },
@@ -360,12 +338,14 @@ export const ApproveLoans: FC<Props> = (props) => {
       <WrapperBig>
         <Title text={t("Solicitudes")} />
         <Table color="primary">
-          <Rows styleX={[baseRows.base, baseRows.flex1]}>
-            <Columns>
+          <thead>
+            <tr>
               {columnApproveLoans.map((column) => (
                 <Fragment key={column.id}>{column.header(t)}</Fragment>
               ))}
-            </Columns>
+            </tr>
+          </thead>
+          <tbody>
             {data?.approveLoans?.edges?.map((edge) => {
               const node = edge?.node;
               if (!node) {
@@ -374,7 +354,7 @@ export const ApproveLoans: FC<Props> = (props) => {
               const { id, user_id, score, ROI, goal, term, expiry, pending } =
                 edge.node;
               return (
-                <div {...stylex.props(baseLoanRowContainer.base)}>
+                <tr {...stylex.props(baseLoanRowContainer.base)}>
                   {columnApproveLoans.map((column) => (
                     <Fragment key={column.id}>
                       {column.cell({
@@ -393,10 +373,10 @@ export const ApproveLoans: FC<Props> = (props) => {
                       })}
                     </Fragment>
                   ))}
-                </div>
+                </tr>
               );
             })}
-          </Rows>
+          </tbody>
         </Table>
         <Space styleX={customSpace.h20} />
         <Columns styleX={[baseColumn.base, baseColumn.columnJustifyCenter]}>

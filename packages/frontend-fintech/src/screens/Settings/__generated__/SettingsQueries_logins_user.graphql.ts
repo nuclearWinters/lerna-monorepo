@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<68d7b059212e658b2b1ed76ffa978b81>>
+ * @generated SignedSource<<308a4f702691f2d582e1cb70a8b88eb4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,8 +15,10 @@ export type SettingsQueries_logins_user$data = {
   readonly logins: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly address: string;
+        readonly applicationName: string;
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"LoginRow_login">;
+        readonly time: Int;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   } | null | undefined;
@@ -119,9 +121,25 @@ return {
               "selections": [
                 (v1/*: any*/),
                 {
+                  "alias": null,
                   "args": null,
-                  "kind": "FragmentSpread",
-                  "name": "LoginRow_login"
+                  "kind": "ScalarField",
+                  "name": "applicationName",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "time",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "address",
+                  "storageKey": null
                 },
                 {
                   "alias": null,
@@ -178,6 +196,6 @@ return {
 };
 })();
 
-(node as any).hash = "e5cdfa59bd8afda133de37be043d1fa6";
+(node as any).hash = "3b54fe70cbd6fe34802d0526616bc328";
 
 export default node;

@@ -144,38 +144,6 @@ const baseLoanRowContainer = stylex.create({
   },
 });
 
-export const baseLoanRowStatusBox = stylex.create({
-  base: {
-    padding: "4px",
-    borderRadius: "4px",
-    textAlign: "center",
-    flex: "1",
-    color: "white",
-  },
-  financing: {
-    backgroundColor: "#4F7942",
-  },
-  default: {
-    backgroundColor: "#FF9F00",
-  },
-  scheduledPaymentsDelayed: {
-    backgroundColor: "#FF9F00",
-    maxWidth: "200px",
-  },
-  scheduledPaymentsPaid: {
-    backgroundColor: "#44d43b",
-    maxWidth: "200px",
-  },
-  scheduledPaymentsToBePaid: {
-    backgroundColor: "#046307",
-    maxWidth: "200px",
-  },
-  scheduledPaymentsDefault: {
-    backgroundColor: "white",
-    maxWidth: "200px",
-  },
-});
-
 type Props = {
   query: PreloadedQuery<AddInvestmentsQueriesQuery, {}>;
   authQuery: PreloadedQuery<utilsQuery, {}>;

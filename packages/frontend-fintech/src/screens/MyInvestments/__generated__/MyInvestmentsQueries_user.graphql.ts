@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4365a1855fe595b638a0e4c6873fc8de>>
+ * @generated SignedSource<<406bb67021cf1657488f977bc5e4752b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,14 +9,28 @@
 // @ts-nocheck
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type MyInvestmentsQueries_user$data = {
   readonly id: string;
   readonly investments: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly ROI: number;
+        readonly borrower_id: string;
+        readonly created_at: Int;
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"InvestmentRow_investment">;
+        readonly interest_to_earn: string;
+        readonly loan_id: string;
+        readonly moratory: string;
+        readonly paid_already: string;
+        readonly payments: number;
+        readonly quantity: string;
+        readonly status: InvestmentStatus;
+        readonly term: number;
+        readonly to_be_paid: string;
+        readonly updated_at: Int;
+        readonly " $fragmentSpreads": FragmentRefs<"MyInvestmentsQueriesRow_investment">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   } | null | undefined;
@@ -129,9 +143,100 @@ return {
               "selections": [
                 (v1/*: any*/),
                 {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "borrower_id",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "loan_id",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "quantity",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "created_at",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "updated_at",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "status",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "payments",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "ROI",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "term",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "moratory",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "interest_to_earn",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "paid_already",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "to_be_paid",
+                  "storageKey": null
+                },
+                {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "InvestmentRow_investment"
+                  "name": "MyInvestmentsQueriesRow_investment"
                 },
                 {
                   "alias": null,
@@ -188,6 +293,6 @@ return {
 };
 })();
 
-(node as any).hash = "9ec0b08128bc69c37022d0adf76a07af";
+(node as any).hash = "7d4e58595025291c60063e1589a03f4e";
 
 export default node;

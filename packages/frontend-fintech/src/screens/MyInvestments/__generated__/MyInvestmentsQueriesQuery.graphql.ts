@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<75e0548cc651709b2917526e0d393932>>
+ * @generated SignedSource<<eb7f84db3fc99c760f2295e26239d71a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -272,12 +272,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a534fca88f6983b8fb5381bdb24efeaa",
+    "cacheID": "f107789267f87404db9a5dcc1324db00",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsQueriesQuery",
     "operationKind": "query",
-    "text": "query MyInvestmentsQueriesQuery {\n  user {\n    id\n    ...MyInvestmentsQueries_user\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestmentsQueries_user on User {\n  investments(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsQueriesQuery {\n  user {\n    id\n    ...MyInvestmentsQueries_user\n  }\n}\n\nfragment MyInvestmentsQueriesRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestmentsQueries_user on User {\n  investments(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        borrower_id\n        loan_id\n        quantity\n        created_at\n        updated_at\n        status\n        payments\n        ROI\n        term\n        moratory\n        interest_to_earn\n        paid_already\n        to_be_paid\n        ...MyInvestmentsQueriesRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

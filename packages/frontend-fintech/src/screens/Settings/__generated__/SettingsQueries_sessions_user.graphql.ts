@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ce27a024372d640ce78eab31ae83ec5d>>
+ * @generated SignedSource<<baba08aa787a516f901325f12e9c8708>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,9 +15,13 @@ export type SettingsQueries_sessions_user$data = {
   readonly sessions: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly address: string;
+        readonly applicationName: string;
+        readonly deviceName: string;
         readonly expirationDate: Int;
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"SessionRow_session">;
+        readonly lastTimeAccessed: Int;
+        readonly type: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   } | null | undefined;
@@ -123,13 +127,43 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "expirationDate",
+                  "name": "applicationName",
                   "storageKey": null
                 },
                 {
+                  "alias": null,
                   "args": null,
-                  "kind": "FragmentSpread",
-                  "name": "SessionRow_session"
+                  "kind": "ScalarField",
+                  "name": "type",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "deviceName",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "address",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "lastTimeAccessed",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "expirationDate",
+                  "storageKey": null
                 },
                 {
                   "alias": null,
@@ -186,6 +220,6 @@ return {
 };
 })();
 
-(node as any).hash = "1ae31fca2f8cce3e22b00767897ee941";
+(node as any).hash = "ce2c2b2d1e08e8e20c4c02a65cd080b0";
 
 export default node;

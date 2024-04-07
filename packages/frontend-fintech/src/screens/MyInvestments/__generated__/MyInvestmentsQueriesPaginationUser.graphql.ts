@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7af55ecf1c2fd650d92d2cf2f7dc8912>>
+ * @generated SignedSource<<0605e37e0d4c8f7ef36f598f88fe2e33>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -350,16 +350,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e1f4703a69cec26a69e44b0582640230",
+    "cacheID": "fa1e028210325a70201ab2012ab3ca9a",
     "id": null,
     "metadata": {},
     "name": "MyInvestmentsQueriesPaginationUser",
     "operationKind": "query",
-    "text": "query MyInvestmentsQueriesPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestmentsQueries_user_2YVuhV\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestmentsQueries_user_2YVuhV on User {\n  investments(first: $count, after: $cursor, status: $status, reset: $reset) {\n    edges {\n      node {\n        id\n        ...InvestmentRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query MyInvestmentsQueriesPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestmentsQueries_user_2YVuhV\n    id\n  }\n}\n\nfragment MyInvestmentsQueriesRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestmentsQueries_user_2YVuhV on User {\n  investments(first: $count, after: $cursor, status: $status, reset: $reset) {\n    edges {\n      node {\n        id\n        borrower_id\n        loan_id\n        quantity\n        created_at\n        updated_at\n        status\n        payments\n        ROI\n        term\n        moratory\n        interest_to_earn\n        paid_already\n        to_be_paid\n        ...MyInvestmentsQueriesRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "9ec0b08128bc69c37022d0adf76a07af";
+(node as any).hash = "7d4e58595025291c60063e1589a03f4e";
 
 export default node;

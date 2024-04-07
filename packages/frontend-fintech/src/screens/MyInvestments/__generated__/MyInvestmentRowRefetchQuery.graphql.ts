@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bb3475f55609005d3fc69dc01a47e3c1>>
+ * @generated SignedSource<<9fb055444aefda687f7f2873a1467b9d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,17 +10,17 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type InvestmentRowRefetchQuery$variables = {
+export type MyInvestmentRowRefetchQuery$variables = {
   id: string;
 };
-export type InvestmentRowRefetchQuery$data = {
+export type MyInvestmentRowRefetchQuery$data = {
   readonly node: {
-    readonly " $fragmentSpreads": FragmentRefs<"InvestmentRow_investment">;
+    readonly " $fragmentSpreads": FragmentRefs<"MyInvestmentsQueriesRow_investment">;
   } | null | undefined;
 };
-export type InvestmentRowRefetchQuery = {
-  response: InvestmentRowRefetchQuery$data;
-  variables: InvestmentRowRefetchQuery$variables;
+export type MyInvestmentRowRefetchQuery = {
+  response: MyInvestmentRowRefetchQuery$data;
+  variables: MyInvestmentRowRefetchQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -43,7 +43,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "InvestmentRowRefetchQuery",
+    "name": "MyInvestmentRowRefetchQuery",
     "selections": [
       {
         "alias": null,
@@ -56,7 +56,7 @@ return {
           {
             "args": null,
             "kind": "FragmentSpread",
-            "name": "InvestmentRow_investment"
+            "name": "MyInvestmentsQueriesRow_investment"
           }
         ],
         "storageKey": null
@@ -69,7 +69,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "InvestmentRowRefetchQuery",
+    "name": "MyInvestmentRowRefetchQuery",
     "selections": [
       {
         "alias": null,
@@ -197,16 +197,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "780032219dd790709c090493fab468af",
+    "cacheID": "859a477d42e444e295ab1cc6cade1550",
     "id": null,
     "metadata": {},
-    "name": "InvestmentRowRefetchQuery",
+    "name": "MyInvestmentRowRefetchQuery",
     "operationKind": "query",
-    "text": "query InvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...InvestmentRow_investment\n    id\n  }\n}\n\nfragment InvestmentRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n"
+    "text": "query MyInvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestmentsQueriesRow_investment\n    id\n  }\n}\n\nfragment MyInvestmentsQueriesRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1cb15992ac67c5ae1cdae6add7abd428";
+(node as any).hash = "3da30e88e395c4e3d7cb8f7432eb6d7e";
 
 export default node;

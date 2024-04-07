@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<068b9d6cd93ca4d27d8e0d9486d39c9e>>
+ * @generated SignedSource<<4a7d2637b637e6438b42b6405b5ddc3f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -183,13 +183,6 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "expirationDate",
-                            "storageKey": null
-                          },
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
                             "name": "applicationName",
                             "storageKey": null
                           },
@@ -219,6 +212,13 @@ return {
                             "args": null,
                             "kind": "ScalarField",
                             "name": "lastTimeAccessed",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "expirationDate",
                             "storageKey": null
                           },
                           (v6/*: any*/)
@@ -284,16 +284,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "41640cdbc2dc197f3f03d4bbd5baef42",
+    "cacheID": "24d910bc131e2fa99d30993701210592",
     "id": null,
     "metadata": {},
     "name": "SettingsSessionsPaginationUser",
     "operationKind": "query",
-    "text": "query SettingsSessionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SettingsQueries_sessions_user_3sPmgd\n    id\n  }\n}\n\nfragment SessionRow_session on Session {\n  id\n  applicationName\n  type\n  deviceName\n  address\n  lastTimeAccessed\n}\n\nfragment SettingsQueries_sessions_user_3sPmgd on AuthUser {\n  sessions(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        id\n        expirationDate\n        ...SessionRow_session\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsSessionsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SettingsQueries_sessions_user_3sPmgd\n    id\n  }\n}\n\nfragment SettingsQueries_sessions_user_3sPmgd on AuthUser {\n  sessions(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        id\n        applicationName\n        type\n        deviceName\n        address\n        lastTimeAccessed\n        expirationDate\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1ae31fca2f8cce3e22b00767897ee941";
+(node as any).hash = "ce2c2b2d1e08e8e20c4c02a65cd080b0";
 
 export default node;

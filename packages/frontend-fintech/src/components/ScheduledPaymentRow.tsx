@@ -1,7 +1,5 @@
 import { FC, Fragment } from "react";
-import { Columns, baseColumn } from "./Colums";
-import { Rows, baseRows } from "./Rows";
-import { Space, customSpace } from "./Space";
+import { customSpace } from "./Space";
 import { TableColumnName } from "./TableColumnName";
 import dayjs from "dayjs";
 import { graphql } from "relay-runtime";
@@ -15,31 +13,21 @@ import {
 } from "./__generated__/ScheduledPaymentRowQuery.graphql";
 import * as stylex from "@stylexjs/stylex";
 
-export const baseLoanRowCell = stylex.create({
+const baseLoanRowCell = stylex.create({
   base: {
-    flex: "1",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
-    padding: "10px 0px",
     textAlign: "center",
     color: "#333",
   },
 });
 
-export const baseLoanRowStatus = stylex.create({
+const baseLoanRowStatus = stylex.create({
   base: {
-    flex: "1",
-    backgroundColor: "white",
     color: "#333",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: "table-cell",
   },
 });
 
-export const baseLoanRowStatusBox = stylex.create({
+const baseLoanRowStatusBox = stylex.create({
   base: {
     padding: "4px",
     borderRadius: "4px",
@@ -88,14 +76,18 @@ const columns: {
 }[] = [
   {
     id: "space",
-    header: () => <Space styleX={customSpace.w50} />,
-    cell: () => <Space styleX={customSpace.w50} />,
+    header: () => <th {...stylex.props(customSpace.w50)} />,
+    cell: () => <td />,
   },
   {
     id: "amortize",
-    header: (t) => <TableColumnName>{t("Pago amortización")}</TableColumnName>,
+    header: (t) => (
+      <TableColumnName colspan={3}>{t("Pago amortización")}</TableColumnName>
+    ),
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>{info.amortize}</div>
+      <td colSpan={3} {...stylex.props(baseLoanRowCell.base)}>
+        {info.amortize}
+      </td>
     ),
   },
   {
@@ -127,7 +119,7 @@ const columns: {
         }
       };
       return (
-        <div {...stylex.props(baseLoanRowStatus.base)}>
+        <td {...stylex.props(baseLoanRowStatus.base)}>
           <div
             {...stylex.props(
               baseLoanRowStatusBox.base,
@@ -136,15 +128,17 @@ const columns: {
           >
             {getStatusPayment(info.status)}
           </div>
-        </div>
+        </td>
       );
     },
   },
   {
     id: "scheduledDate",
-    header: (t) => <TableColumnName>{t("Fecha de pago")}</TableColumnName>,
+    header: (t) => (
+      <TableColumnName colspan={3}>{t("Fecha de pago")}</TableColumnName>
+    ),
     cell: ({ info, languageEnum }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>
+      <td colSpan={3} {...stylex.props(baseLoanRowCell.base)}>
         {dayjs(info.scheduledDate)
           .locale(languageEnum === "ES" ? es : en)
           .format(
@@ -152,7 +146,7 @@ const columns: {
               ? "D [de] MMMM [del] YYYY [a las] h:mm a"
               : "D MMMM[,] YYYY [at] h:mm a"
           )}
-      </div>
+      </td>
     ),
   },
 ];
@@ -181,31 +175,27 @@ export const ScheduledPaymentRow: FC<{
   const languageEnum = language === "ES" ? "ES" : "EN";
 
   return (
-    <Rows styleX={[baseRows.base, baseRows.flex1]}>
-      <Columns>
-        <Space styleX={customSpace.w50} />
+    <>
+      <tr>
         {columns.map((column) => (
           <Fragment key={column.id}>{column.header(t)}</Fragment>
         ))}
-      </Columns>
+      </tr>
       {data.scheduledPaymentsbyLoanId?.map((payment) => {
         if (!payment) {
           return null;
         }
         return (
-          <Columns
-            key={String(payment?.scheduledDate)}
-            styleX={[baseColumn.base, baseColumn.columnLoanRow]}
-          >
+          <tr key={String(payment.id)}>
             {columns.map((column) => (
               <Fragment key={column.id}>
                 {column.cell({ info: payment, t, languageEnum })}
               </Fragment>
             ))}
-          </Columns>
+          </tr>
         );
       })}
-      <Space styleX={customSpace.h30} />
-    </Rows>
+      <tr {...stylex.props(customSpace.h10)} />
+    </>
   );
 };

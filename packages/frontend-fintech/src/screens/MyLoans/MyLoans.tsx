@@ -10,7 +10,6 @@ import { CustomButton } from "../../components/CustomButton";
 import { Main } from "../../components/Main";
 import { Title } from "../../components/Title";
 import { WrapperBig } from "../../components/WrapperBig";
-import { Rows, baseRows } from "../../components/Rows";
 import { Space, customSpace } from "../../components/Space";
 import { Columns, baseColumn } from "../../components/Colums";
 import { TableColumnName } from "../../components/TableColumnName";
@@ -45,18 +44,14 @@ type Props = {
   authQuery: PreloadedQuery<utilsQuery, {}>;
 };
 
-export const baseLoanRowStatus = stylex.create({
+const baseLoanRowStatus = stylex.create({
   base: {
-    flex: "1",
-    backgroundColor: "white",
     color: "#333",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: "table-cell",
   },
 });
 
-export const baseLoanRowStatusBox = stylex.create({
+const baseLoanRowStatusBox = stylex.create({
   base: {
     padding: "4px",
     borderRadius: "4px",
@@ -88,33 +83,32 @@ export const baseLoanRowStatusBox = stylex.create({
   },
 });
 
-export const baseLoanRowContainer = stylex.create({
+const baseLoanRowContainer = stylex.create({
   base: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: "8px",
+    height: "50px",
+    backgroundColor: "white",
   },
 });
 
-export const baseLoanRowBorrowerIconBox = stylex.create({
+const baseLoanRowBorrowerIconBox = stylex.create({
   base: {
     width: "30px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: "table-cell",
+    textAlign: "center",
   },
 });
 
-export const baseLoanRowBorrowerIcon = stylex.create({
+const baseLoanRowBorrowerIcon = stylex.create({
   base: {
     fontSize: "18px",
     color: "rgb(62,62,62)",
     cursor: "pointer",
     backgroundColor: "rgb(245,245,245)",
+    margin: "auto",
   },
 });
 
-export const baseLoanRowClipboard = stylex.create({
+const baseLoanRowClipboard = stylex.create({
   base: {
     flex: "1",
     whiteSpace: "nowrap",
@@ -128,29 +122,22 @@ export const baseLoanRowClipboard = stylex.create({
   },
 });
 
-export const baseLoanRowIcon = stylex.create({
+const baseLoanRowIcon = stylex.create({
   base: {
     fontSize: "18px",
     color: "rgb(255,90,96)",
   },
 });
 
-export const baseLoanRowScore = stylex.create({
+const baseLoanRowScore = stylex.create({
   base: {
-    flex: "1",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
     textAlign: "center",
     color: "#333",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: "table-cell",
   },
 });
 
-export const baseLoanRowScoreCircle = stylex.create({
+const baseLoanRowScoreCircle = stylex.create({
   base: {
     borderRadius: "100%",
     backgroundColor: "rgb(102,141,78)",
@@ -163,19 +150,15 @@ export const baseLoanRowScoreCircle = stylex.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    margin: "auto",
   },
 });
 
-export const baseLoanRowCell = stylex.create({
+const baseLoanRowCell = stylex.create({
   base: {
-    flex: "1",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    backgroundColor: "white",
-    padding: "10px 0px",
     textAlign: "center",
     color: "#333",
+    display: "table-cell",
   },
 });
 
@@ -219,14 +202,14 @@ const Cell: FC<{ id: string }> = ({ id }) => {
   useSubscription<MyLoansQueriesUpdateSubscription>(configLoansUpdate);
 
   return (
-    <div {...stylex.props(baseLoanRowClipboard.base)}>
+    <td {...stylex.props(baseLoanRowClipboard.base)}>
       <FaClipboard
         onClick={() => {
           navigator.clipboard.writeText(id);
         }}
         {...stylex.props(baseLoanRowIcon.base)}
       />
-    </div>
+    </td>
   );
 };
 
@@ -265,26 +248,26 @@ const columnMyLoans: {
       status: StatusLoan;
     };
     t: (text: string) => string;
-    setShowSubTable: Dispatch<React.SetStateAction<boolean>>;
+    setShowSubTable: Dispatch<React.SetStateAction<string>>;
     loan: MyLoansQueriesRowRefetch_loan$key;
   }) => JSX.Element;
 }[] = [
   {
     id: "space",
-    header: (t) => <Space styleX={customSpace.w50} />,
+    header: (t) => <th {...stylex.props(customSpace.w50)} />,
     cell: ({ info, setShowSubTable }) => (
-      <div {...stylex.props(baseLoanRowBorrowerIconBox.base)}>
+      <td {...stylex.props(baseLoanRowBorrowerIconBox.base)}>
         {info.status === "PAID" ||
           info.status === "PAST_DUE" ||
           (info.status === "TO_BE_PAID" && (
             <FaPlusSquare
               onClick={() => {
-                setShowSubTable((state) => !state);
+                setShowSubTable((state) => (info.id === state ? "" : info.id));
               }}
               {...stylex.props(baseLoanRowBorrowerIcon.base)}
             />
           ))}
-      </div>
+      </td>
     ),
   },
   {
@@ -296,53 +279,53 @@ const columnMyLoans: {
     id: "user_id",
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
     cell: ({ info, t }) => (
-      <div {...stylex.props(baseLoanRowClipboard.base)}>
+      <td {...stylex.props(baseLoanRowClipboard.base)}>
         <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}
           {...stylex.props(baseLoanRowIcon.base)}
         />
-      </div>
+      </td>
     ),
   },
   {
     id: "score",
     header: (t) => <TableColumnName>{t("Calif.")}</TableColumnName>,
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowScore.base)}>
+      <td {...stylex.props(baseLoanRowScore.base)}>
         <div {...stylex.props(baseLoanRowScoreCircle.base)}>{info.score}</div>
-      </div>
+      </td>
     ),
   },
   {
     id: "ROI",
     header: (t) => <TableColumnName>{t("Retorno anual")}</TableColumnName>,
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>{info.ROI}%</div>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.ROI}%</td>
     ),
   },
   {
     id: "goal",
     header: (t) => <TableColumnName>{t("Monto")}</TableColumnName>,
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>{info.goal}</div>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.goal}</td>
     ),
   },
   {
     id: "term",
     header: (t) => <TableColumnName>{t("Periodo")}</TableColumnName>,
     cell: ({ info, t }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>
+      <td {...stylex.props(baseLoanRowCell.base)}>
         {info.term} {t("meses")}
-      </div>
+      </td>
     ),
   },
   {
     id: "pending",
     header: (t) => <TableColumnName>{t("Faltan")}</TableColumnName>,
     cell: ({ info }) => (
-      <div {...stylex.props(baseLoanRowCell.base)}>{info.pending}</div>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.pending}</td>
     ),
   },
   {
@@ -352,9 +335,9 @@ const columnMyLoans: {
       const now = dayjs();
       const expiry = dayjs(info.expiry);
       return (
-        <div {...stylex.props(baseLoanRowCell.base)}>
+        <td {...stylex.props(baseLoanRowCell.base)}>
           {expiry.diff(now, "months") || expiry.diff(now, "days")} {t("meses")}
-        </div>
+        </td>
       );
     },
   },
@@ -362,7 +345,7 @@ const columnMyLoans: {
     id: "status",
     header: (t) => <TableColumnName>{t("Estatus")}</TableColumnName>,
     cell: ({ info, t }) => (
-      <div {...stylex.props(baseLoanRowStatus.base)}>
+      <td {...stylex.props(baseLoanRowStatus.base)}>
         <div
           {...stylex.props(
             baseLoanRowStatusBox.base,
@@ -373,7 +356,7 @@ const columnMyLoans: {
         >
           {getStatus(info.status, t)}
         </div>
-      </div>
+      </td>
     ),
   },
   {
@@ -386,7 +369,7 @@ const columnMyLoans: {
 export const MyLoans: FC<Props> = (props) => {
   const { t } = useTranslation();
   const [reset, setReset] = useState(0);
-  const [showSubTable, setShowSubTable] = useState(false);
+  const [showSubTable, setShowSubTable] = useState("");
   const { user } = usePreloadedQuery(myLoansFragment, props.query);
   const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
   const { data, loadNext, refetch } = usePaginationFragment<
@@ -439,13 +422,14 @@ export const MyLoans: FC<Props> = (props) => {
       <WrapperBig>
         <Title text={t("Solicitudes")} />
         <Table color="primary">
-          <Rows styleX={[baseRows.base, baseRows.flex1]}>
-            <Columns>
-              <Space styleX={customSpace.w30} />
+          <thead>
+            <tr>
               {columnMyLoans.map((column) => (
                 <Fragment key={column.id}>{column.header(t)}</Fragment>
               ))}
-            </Columns>
+            </tr>
+          </thead>
+          <tbody>
             {data?.myLoans?.edges?.map((edge) => {
               const node = edge?.node;
               if (!node) {
@@ -461,39 +445,41 @@ export const MyLoans: FC<Props> = (props) => {
                 expiry,
                 status,
                 pending,
-              } = edge.node;
+              } = node;
               return (
-                <div {...stylex.props(baseLoanRowContainer.base)}>
-                  {columnMyLoans.map((column) => (
-                    <Fragment key={column.id}>
-                      {column.cell({
-                        info: {
-                          id,
-                          user_id,
-                          score,
-                          ROI,
-                          goal,
-                          term,
-                          expiry,
-                          status: status as StatusLoan,
-                          pending,
-                        },
-                        t,
-                        setShowSubTable,
-                        loan: node,
-                      })}
-                      {showSubTable && (
-                        <ScheduledPaymentRow
-                          loan_gid={data.id}
-                          language={language as Languages}
-                        />
-                      )}
-                    </Fragment>
-                  ))}
-                </div>
+                <Fragment key={node.id}>
+                  <tr {...stylex.props(baseLoanRowContainer.base)}>
+                    {columnMyLoans.map((column) => (
+                      <Fragment key={column.id}>
+                        {column.cell({
+                          info: {
+                            id,
+                            user_id,
+                            score,
+                            ROI,
+                            goal,
+                            term,
+                            expiry,
+                            status: status as StatusLoan,
+                            pending,
+                          },
+                          t,
+                          setShowSubTable,
+                          loan: node,
+                        })}
+                      </Fragment>
+                    ))}
+                  </tr>
+                  {showSubTable === node.id ? (
+                    <ScheduledPaymentRow
+                      loan_gid={node.id}
+                      language={language as Languages}
+                    />
+                  ) : null}
+                </Fragment>
               );
             })}
-          </Rows>
+          </tbody>
         </Table>
         <Space styleX={customSpace.h20} />
         <Columns styleX={[baseColumn.base, baseColumn.columnJustifyCenter]}>

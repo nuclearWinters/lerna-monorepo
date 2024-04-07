@@ -32,8 +32,12 @@ export const settingsSessionsPaginationFragment = graphql`
       edges {
         node {
           id
+          applicationName
+          type
+          deviceName
+          address
+          lastTimeAccessed
           expirationDate
-          ...SessionRow_session
         }
       }
     }
@@ -53,7 +57,9 @@ export const settingsLoginsPaginationFragment = graphql`
       edges {
         node {
           id
-          ...LoginRow_login
+          applicationName
+          time
+          address
         }
       }
     }

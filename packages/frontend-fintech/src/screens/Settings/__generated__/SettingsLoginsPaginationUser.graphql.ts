@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<db5e281b5f5242d706b45c65e61efbb4>>
+ * @generated SignedSource<<c3910a5598497ce461b9b544bdce2ac6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -263,16 +263,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "81235884f7b8af4da1cc47a7933c494c",
+    "cacheID": "4c778455fdea93462afd1c5097ca6dcf",
     "id": null,
     "metadata": {},
     "name": "SettingsLoginsPaginationUser",
     "operationKind": "query",
-    "text": "query SettingsLoginsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SettingsQueries_logins_user_3sPmgd\n    id\n  }\n}\n\nfragment LoginRow_login on Login {\n  applicationName\n  time\n  address\n  id\n}\n\nfragment SettingsQueries_logins_user_3sPmgd on AuthUser {\n  logins(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        id\n        ...LoginRow_login\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsLoginsPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SettingsQueries_logins_user_3sPmgd\n    id\n  }\n}\n\nfragment SettingsQueries_logins_user_3sPmgd on AuthUser {\n  logins(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        id\n        applicationName\n        time\n        address\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e5cdfa59bd8afda133de37be043d1fa6";
+(node as any).hash = "3b54fe70cbd6fe34802d0526616bc328";
 
 export default node;

@@ -1,6 +1,6 @@
 import * as stylex from "@stylexjs/stylex";
 import { Spinner } from "../../components/Spinner";
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, FC, Fragment, useState } from "react";
 import {
   graphql,
   PreloadedQuery,
@@ -24,8 +24,6 @@ import { SettingsSessionsPaginationUser } from "./__generated__/SettingsSessions
 import { SettingsLoginsPaginationUser } from "./__generated__/SettingsLoginsPaginationUser.graphql";
 import { Table } from "../../components/Table";
 import { TableColumnName } from "../../components/TableColumnName";
-import { LoginRow } from "../../components/LoginRow";
-import { SessionRow } from "../../components/SessionRow";
 import {
   settingsFragment,
   settingsLoginsPaginationFragment,
@@ -34,6 +32,198 @@ import {
 import { SettingsQueriesAuthUserQuery } from "./__generated__/SettingsQueriesAuthUserQuery.graphql";
 import { SettingsQueries_logins_user$key } from "./__generated__/SettingsQueries_logins_user.graphql";
 import { SettingsQueries_sessions_user$key } from "./__generated__/SettingsQueries_sessions_user.graphql";
+import { FaTrashAlt } from "@react-icons/all-files/fa/FaTrashAlt";
+import dayjs from "dayjs";
+import es from "dayjs/locale/es";
+import en from "dayjs/locale/en";
+import { SettingsSessionRowRevokeSessionMutation } from "./__generated__/SettingsSessionRowRevokeSessionMutation.graphql";
+
+const baseLoanRowIcon = stylex.create({
+  base: {
+    fontSize: "18px",
+    color: "rgb(255,90,96)",
+    margin: "auto",
+  },
+});
+
+const baseLoanRowClipboard = stylex.create({
+  base: {
+    display: "table-cell",
+    textAlign: "center",
+    color: "#333",
+    cursor: "pointer",
+    minWidth: "60px",
+  },
+});
+
+const baseLoanRowCell = stylex.create({
+  base: {
+    display: "table-cell",
+    textAlign: "center",
+    color: "#333",
+  },
+});
+
+const baseLoanRowContainer = stylex.create({
+  base: {
+    height: "50px",
+    backgroundColor: "white",
+  },
+});
+
+const columnLogin: {
+  id: string;
+  header: (t: (text: string) => string) => JSX.Element;
+  cell: (info: {
+    info: {
+      applicationName: string;
+      time: string;
+      address: string;
+    };
+    t: (text: string) => string;
+    language: Languages;
+  }) => JSX.Element;
+}[] = [
+  {
+    id: "id",
+    header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.applicationName}</td>
+    ),
+  },
+  {
+    id: "time",
+    header: (t) => <TableColumnName>{t("Fecha")}</TableColumnName>,
+    cell: ({ info, language }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>
+        {dayjs(info.time)
+          .locale(language === "ES" ? es : en)
+          .format(
+            language === "ES"
+              ? "D [de] MMMM [del] YYYY [a las] h:mm a"
+              : "D MMMM[,] YYYY [at] h:mm a"
+          )}
+      </td>
+    ),
+  },
+  {
+    id: "address",
+    header: (t) => <TableColumnName>{t("IP")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.address}</td>
+    ),
+  },
+];
+
+const DeleteCell: FC<{ id: string }> = ({ id }) => {
+  const [commitRevokeSession, isInFlightRevokeSession] =
+    useMutation<SettingsSessionRowRevokeSessionMutation>(graphql`
+      mutation SettingsSessionRowRevokeSessionMutation(
+        $input: RevokeSessionInput!
+      ) {
+        revokeSession(input: $input) {
+          error
+          shouldReloadBrowser
+          session {
+            id
+            expirationDate
+          }
+        }
+      }
+    `);
+  return isInFlightRevokeSession ? (
+    <Spinner />
+  ) : (
+    <td
+      {...stylex.props(baseLoanRowClipboard.base)}
+      onClick={() => {
+        commitRevokeSession({
+          variables: { input: { sessionId: id } },
+          onCompleted: (data) => {
+            if (data.revokeSession.shouldReloadBrowser) {
+              window.location.reload();
+            }
+          },
+        });
+      }}
+    >
+      <FaTrashAlt {...stylex.props(baseLoanRowIcon.base)} />
+    </td>
+  );
+};
+
+const columnSession: {
+  id: string;
+  header: (t: (text: string) => string) => JSX.Element;
+  cell: (info: {
+    info: {
+      id: string;
+      applicationName: string;
+      type: string;
+      deviceName: string;
+      address: string;
+      lastTimeAccessed: string;
+    };
+    t: (text: string) => string;
+    language: Languages;
+  }) => JSX.Element;
+}[] = [
+  {
+    id: "id",
+    header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.applicationName}</td>
+    ),
+  },
+  {
+    id: "applicationName",
+    header: (t) => <TableColumnName>{t("Aplicacion")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.type}</td>
+    ),
+  },
+  {
+    id: "type",
+    header: (t) => (
+      <TableColumnName>{t("Tipo de dispositivo")}</TableColumnName>
+    ),
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.type}</td>
+    ),
+  },
+  {
+    id: "deviceName",
+    header: (t) => (
+      <TableColumnName>{t("Nombre del dispositivo")}</TableColumnName>
+    ),
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.deviceName}</td>
+    ),
+  },
+  {
+    id: "lastTimeAccessed",
+    header: (t) => (
+      <TableColumnName>{t("Ultima vez accedido")}</TableColumnName>
+    ),
+    cell: ({ info, language }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>
+        {dayjs(info.lastTimeAccessed).format("DD[/]MM[/]YYYY h:mm a")}
+      </td>
+    ),
+  },
+  {
+    id: "address",
+    header: (t) => <TableColumnName>{t("IP")}</TableColumnName>,
+    cell: ({ info }) => (
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.address}</td>
+    ),
+  },
+  {
+    id: "delete",
+    header: (t) => <TableColumnName>{t("Borrar")}</TableColumnName>,
+    cell: ({ info }) => <DeleteCell id={info.id} />,
+  },
+];
 
 export const baseSettingsForm = stylex.create({
   base: {
@@ -107,19 +297,6 @@ export const Settings: FC<Props> = (props) => {
       SettingsSessionsPaginationUser,
       SettingsQueries_sessions_user$key
     >(settingsSessionsPaginationFragment, authUser);
-  const columnsSessions = [
-    { key: "applicationName", title: t("Aplicacion") },
-    { key: "type", title: t("Tipo de dispositivo") },
-    { key: "deviceName", title: t("Nombre del dispositivo") },
-    { key: "lasTimeAccessed", title: t("Ultima vez accedido") },
-    { key: "address", title: t("IP") },
-    { key: "delete", title: t("Borrar") },
-  ];
-  const columnsLogins = [
-    { key: "applicationName", title: t("Aplicacion") },
-    { key: "time", title: t("Fecha") },
-    { key: "address", title: t("IP") },
-  ];
 
   if (!authUser) {
     return null;
@@ -238,25 +415,40 @@ export const Settings: FC<Props> = (props) => {
         </div>
         <Title text={t("Logins")} />
         <Table color="primary">
-          <Rows styleX={[baseRows.base, baseRows.flex1]}>
-            <Columns>
-              {columnsLogins.map((column) => (
-                <TableColumnName key={column.key}>
-                  {column.title}
-                </TableColumnName>
+          <thead>
+            <tr>
+              {columnLogin.map((column) => (
+                <Fragment key={column.id}>{column.header(t)}</Fragment>
               ))}
-            </Columns>
-          </Rows>
+            </tr>
+          </thead>
+          <tbody>
+            {loginsData?.logins?.edges?.map((edge) => {
+              const node = edge?.node;
+              if (!node) {
+                return null;
+              }
+              const { id, applicationName, time, address } = node;
+              return (
+                <tr key={id} {...stylex.props(baseLoanRowContainer.base)}>
+                  {columnLogin.map((column) => (
+                    <Fragment key={column.id}>
+                      {column.cell({
+                        info: {
+                          applicationName,
+                          time,
+                          address,
+                        },
+                        t,
+                        language: originLang,
+                      })}
+                    </Fragment>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
         </Table>
-        {loginsData?.logins?.edges?.map((edge) =>
-          edge?.node ? (
-            <LoginRow
-              key={edge?.node?.id}
-              login={edge?.node}
-              language={originLang}
-            />
-          ) : null
-        )}
         <CustomButton
           color="secondary"
           text={t("Cargar más")}
@@ -265,25 +457,50 @@ export const Settings: FC<Props> = (props) => {
         <Space styleX={customSpace.h20} />
         <Title text={t("Sessions")} />
         <Table color="secondary">
-          <Rows styleX={[baseRows.base, baseRows.flex1]}>
-            <Columns>
-              {columnsSessions.map((column) => (
-                <TableColumnName key={column.key}>
-                  {column.title}
-                </TableColumnName>
+          <thead>
+            <tr>
+              {columnSession.map((column) => (
+                <Fragment key={column.id}>{column.header(t)}</Fragment>
               ))}
-            </Columns>
-          </Rows>
+            </tr>
+          </thead>
+          <tbody>
+            {sessionsData?.sessions?.edges?.map((edge) => {
+              const node = edge?.node;
+              if (!node) {
+                return null;
+              }
+              const {
+                id,
+                applicationName,
+                type,
+                deviceName,
+                address,
+                lastTimeAccessed,
+              } = node;
+              return (
+                <tr key={id} {...stylex.props(baseLoanRowContainer.base)}>
+                  {columnSession.map((column) => (
+                    <Fragment key={column.id}>
+                      {column.cell({
+                        info: {
+                          id,
+                          applicationName,
+                          type,
+                          deviceName,
+                          address,
+                          lastTimeAccessed,
+                        },
+                        t,
+                        language: originLang,
+                      })}
+                    </Fragment>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
         </Table>
-        {sessionsData?.sessions?.edges
-          ?.filter((edge) => {
-            return edge?.node?.expirationDate > new Date().getTime();
-          })
-          .map((edge) =>
-            edge?.node ? (
-              <SessionRow key={edge?.node?.id} session={edge.node} />
-            ) : null
-          )}
         <CustomButton
           color="secondary"
           text={t("Cargar más")}
