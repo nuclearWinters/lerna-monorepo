@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<4e7575f5cb0b5c1ba434486a05162f58>>
+ * @generated SignedSource<<6219ebc3c28794ef7173317795064828>>
+ * @relayHash 2ec3011510269d3a2c968f03552bf2cc
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 2ec3011510269d3a2c968f03552bf2cc
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type RevokeSessionInput = {
@@ -115,12 +118,11 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "2ec3011510269d3a2c968f03552bf2cc",
-    "id": null,
+    "id": "2ec3011510269d3a2c968f03552bf2cc",
     "metadata": {},
     "name": "SettingsSessionRowRevokeSessionMutation",
     "operationKind": "mutation",
-    "text": "mutation SettingsSessionRowRevokeSessionMutation(\n  $input: RevokeSessionInput!\n) {\n  revokeSession(input: $input) {\n    error\n    shouldReloadBrowser\n    session {\n      id\n      expirationDate\n    }\n  }\n}\n"
+    "text": null
   }
 };
 })();

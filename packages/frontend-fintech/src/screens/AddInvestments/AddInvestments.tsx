@@ -2,7 +2,6 @@ import { FC, Fragment, useMemo, useState } from "react";
 import {
   ConnectionHandler,
   graphql,
-  PreloadedQuery,
   useMutation,
   usePaginationFragment,
   usePreloadedQuery,
@@ -42,6 +41,7 @@ import dayjs from "dayjs";
 import { AddInvestmentsQueriesUpdateSubscription } from "./__generated__/AddInvestmentsQueriesUpdateSubscription.graphql";
 import { AddInvestmentQueriesRefetchQuery } from "./__generated__/AddInvestmentQueriesRefetchQuery.graphql";
 import { AddInvestmentsQueriesRowRefetch_loan$key } from "./__generated__/AddInvestmentsQueriesRowRefetch_loan.graphql";
+import { SimpleEntryPointProps } from "@loop-payments/react-router-relay";
 
 const baseAddInvestmentsTotal = stylex.create({
   base: {
@@ -144,10 +144,10 @@ const baseLoanRowContainer = stylex.create({
   },
 });
 
-type Props = {
-  query: PreloadedQuery<AddInvestmentsQueriesQuery, {}>;
-  authQuery: PreloadedQuery<utilsQuery, {}>;
-};
+type Props = SimpleEntryPointProps<{
+  query: AddInvestmentsQueriesQuery;
+  authQuery: utilsQuery;
+}>;
 
 interface ILends {
   loan_gid: string;
@@ -365,8 +365,14 @@ const columnAddInvestment: {
 export const AddInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
   const [reset, setReset] = useState(0);
-  const { user } = usePreloadedQuery(addInvestmentFragment, props.query);
-  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
+  const { user } = usePreloadedQuery(
+    addInvestmentFragment,
+    props.queries.query
+  );
+  const { authUser } = usePreloadedQuery(
+    authUserQuery,
+    props.queries.authQuery
+  );
   const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
     mutation AddInvestmentsMutation($input: AddLendsInput!) {
       addLends(input: $input) {

@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<8e6395b91ab7c9530d80a4ea7c8a886f>>
+ * @generated SignedSource<<65eb9a8ac41e7662c154876976086eae>>
+ * @relayHash 5779bdaed33088e4b35465d39b5fa485
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 5779bdaed33088e4b35465d39b5fa485
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
@@ -233,12 +236,11 @@ return {
     ]
   },
   "params": {
-    "cacheID": "5779bdaed33088e4b35465d39b5fa485",
-    "id": null,
+    "id": "5779bdaed33088e4b35465d39b5fa485",
     "metadata": {},
     "name": "MyInvestmentsQueriesSubscription",
     "operationKind": "subscription",
-    "text": "subscription MyInvestmentsQueriesSubscription(\n  $status: [InvestmentStatus!]\n) {\n  investments_subscribe_insert(status: $status) {\n    node {\n      id\n      borrower_id\n      lender_id\n      loan_id\n      quantity\n      ROI\n      payments\n      term\n      moratory\n      created_at\n      updated_at\n      status\n      interest_to_earn\n      paid_already\n      to_be_paid\n    }\n    cursor\n  }\n}\n"
+    "text": null
   }
 };
 })();

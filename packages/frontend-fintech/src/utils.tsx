@@ -90,7 +90,7 @@ export const lenderPages = [
 ];
 
 export const authUserQuery = graphql`
-  query utilsQuery {
+  query utilsQuery @preloadable {
     user {
       id
       accountAvailable

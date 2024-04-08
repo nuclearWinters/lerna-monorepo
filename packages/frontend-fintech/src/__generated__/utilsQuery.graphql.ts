@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<8583d9729eca8e187c992ac2f3f98540>>
+ * @generated SignedSource<<0d86f4e2333b2b7633f7637b68e9299f>>
+ * @relayHash 188368d4c2601c8df1e6389ffd334a40
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 188368d4c2601c8df1e6389ffd334a40
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type Languages = "EN" | "ES" | "%future added value";
@@ -188,16 +191,17 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "188368d4c2601c8df1e6389ffd334a40",
-    "id": null,
+    "id": "188368d4c2601c8df1e6389ffd334a40",
     "metadata": {},
     "name": "utilsQuery",
     "operationKind": "query",
-    "text": "query utilsQuery {\n  user {\n    id\n    accountAvailable\n    accountTotal\n  }\n  authUser {\n    id\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    isLender\n    isBorrower\n    isSupport\n    language\n    email\n  }\n}\n"
+    "text": null
   }
 };
 })();
 
-(node as any).hash = "1ea87eb3aa402cb2922c8615134a2f0d";
+(node as any).hash = "d4cdbeffcb2002b79d3444e39408d2e5";
+
+require('relay-runtime').PreloadableQueryRegistry.set(node.params.id, node);
 
 export default node;

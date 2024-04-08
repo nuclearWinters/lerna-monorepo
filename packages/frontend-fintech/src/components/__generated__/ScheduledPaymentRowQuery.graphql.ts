@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<cb8371b3a35020a96c5753e55cc5ea88>>
+ * @generated SignedSource<<79734b469acdc33565ebbe1723c0a54b>>
+ * @relayHash cf31722bae61dfad16168680dadfcde6
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID cf31722bae61dfad16168680dadfcde6
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type LoanScheduledPaymentStatus = "DELAYED" | "PAID" | "TO_BE_PAID" | "%future added value";
@@ -107,12 +110,11 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "cf31722bae61dfad16168680dadfcde6",
-    "id": null,
+    "id": "cf31722bae61dfad16168680dadfcde6",
     "metadata": {},
     "name": "ScheduledPaymentRowQuery",
     "operationKind": "query",
-    "text": "query ScheduledPaymentRowQuery(\n  $loan_gid: ID!\n) {\n  scheduledPaymentsbyLoanId(loan_gid: $loan_gid) {\n    id\n    loan_id\n    amortize\n    status\n    scheduledDate\n  }\n}\n"
+    "text": null
   }
 };
 })();

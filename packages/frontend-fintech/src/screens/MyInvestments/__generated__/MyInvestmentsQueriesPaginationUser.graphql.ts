@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<0605e37e0d4c8f7ef36f598f88fe2e33>>
+ * @generated SignedSource<<f2edafbdc129bdeb1fa2ee9e5dbe2121>>
+ * @relayHash fa1e028210325a70201ab2012ab3ca9a
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID fa1e028210325a70201ab2012ab3ca9a
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
@@ -350,12 +353,11 @@ return {
     ]
   },
   "params": {
-    "cacheID": "fa1e028210325a70201ab2012ab3ca9a",
-    "id": null,
+    "id": "fa1e028210325a70201ab2012ab3ca9a",
     "metadata": {},
     "name": "MyInvestmentsQueriesPaginationUser",
     "operationKind": "query",
-    "text": "query MyInvestmentsQueriesPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $status: [InvestmentStatus!] = null\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestmentsQueries_user_2YVuhV\n    id\n  }\n}\n\nfragment MyInvestmentsQueriesRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestmentsQueries_user_2YVuhV on User {\n  investments(first: $count, after: $cursor, status: $status, reset: $reset) {\n    edges {\n      node {\n        id\n        borrower_id\n        loan_id\n        quantity\n        created_at\n        updated_at\n        status\n        payments\n        ROI\n        term\n        moratory\n        interest_to_earn\n        paid_already\n        to_be_paid\n        ...MyInvestmentsQueriesRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": null
   }
 };
 })();

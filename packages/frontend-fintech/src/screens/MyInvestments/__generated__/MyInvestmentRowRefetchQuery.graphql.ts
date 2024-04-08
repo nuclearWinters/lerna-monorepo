@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<9fb055444aefda687f7f2873a1467b9d>>
+ * @generated SignedSource<<5b19ae8ab6b9e19ee10fd488026e6c11>>
+ * @relayHash 859a477d42e444e295ab1cc6cade1550
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 859a477d42e444e295ab1cc6cade1550
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
@@ -197,12 +200,11 @@ return {
     ]
   },
   "params": {
-    "cacheID": "859a477d42e444e295ab1cc6cade1550",
-    "id": null,
+    "id": "859a477d42e444e295ab1cc6cade1550",
     "metadata": {},
     "name": "MyInvestmentRowRefetchQuery",
     "operationKind": "query",
-    "text": "query MyInvestmentRowRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...MyInvestmentsQueriesRow_investment\n    id\n  }\n}\n\nfragment MyInvestmentsQueriesRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n"
+    "text": null
   }
 };
 })();

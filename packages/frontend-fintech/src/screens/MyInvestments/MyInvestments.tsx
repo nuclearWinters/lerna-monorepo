@@ -2,7 +2,6 @@ import { FC, Fragment, useMemo, useState } from "react";
 import {
   usePaginationFragment,
   usePreloadedQuery,
-  PreloadedQuery,
   useSubscription,
   useRefetchableFragment,
 } from "react-relay/hooks";
@@ -37,6 +36,7 @@ import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
 import { MyInvestmentRowRefetchQuery } from "./__generated__/MyInvestmentRowRefetchQuery.graphql";
 import dayjs from "dayjs";
 import { MyInvestmentsQueriesRow_investment$key } from "./__generated__/MyInvestmentsQueriesRow_investment.graphql";
+import { SimpleEntryPointProps } from "@loop-payments/react-router-relay";
 
 const baseInvestmentRowBox = stylex.create({
   base: {
@@ -146,10 +146,10 @@ const statusStyle = (status: Status) => {
   }
 };
 
-type Props = {
-  query: PreloadedQuery<MyInvestmentsQueriesQuery, {}>;
-  authQuery: PreloadedQuery<utilsQuery, {}>;
-};
+type Props = SimpleEntryPointProps<{
+  query: MyInvestmentsQueriesQuery;
+  authQuery: utilsQuery;
+}>;
 
 const RefetchCell: FC<{
   investment: MyInvestmentsQueriesRow_investment$key;
@@ -314,8 +314,14 @@ const columns: {
 export const MyInvestments: FC<Props> = (props) => {
   const { t } = useTranslation();
   const [reset, setReset] = useState(0);
-  const { user } = usePreloadedQuery(myInvestmentsFragment, props.query);
-  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
+  const { user } = usePreloadedQuery(
+    myInvestmentsFragment,
+    props.queries.query
+  );
+  const { authUser } = usePreloadedQuery(
+    authUserQuery,
+    props.queries.authQuery
+  );
   const { data, loadNext, refetch } = usePaginationFragment<
     MyInvestmentsQueriesPaginationUser,
     MyInvestmentsQueries_user$key

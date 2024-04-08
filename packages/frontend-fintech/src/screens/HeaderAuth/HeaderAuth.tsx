@@ -1,9 +1,15 @@
-import { Outlet, useLoaderData } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Header } from "../../components/Header";
 import { FC, Suspense } from "react";
 import { Spinner } from "../../components/Spinner";
 import { Sider } from "../../components/Sider";
 import * as stylex from "@stylexjs/stylex";
+import { SimpleEntryPointProps } from "@loop-payments/react-router-relay";
+import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
+
+type Props = SimpleEntryPointProps<{
+  authQuery: utilsQuery;
+}>;
 
 export const baseApp = stylex.create({
   base: {
@@ -62,8 +68,7 @@ export const baseSider = stylex.create({
   },
 });
 
-export const HeaderAuth: FC = () => {
-  const { query } = useLoaderData() as any;
+export const HeaderAuth: FC<Props> = (props) => {
   return (
     <>
       <div {...stylex.props(baseRoutes.base)}>
@@ -74,7 +79,7 @@ export const HeaderAuth: FC = () => {
             </div>
           }
         >
-          <Sider query={query} />
+          <Sider query={props.queries.authQuery} />
         </Suspense>
         <Suspense
           fallback={
@@ -83,10 +88,12 @@ export const HeaderAuth: FC = () => {
             </div>
           }
         >
-          <Header query={query} />
+          <Header query={props.queries.authQuery} />
         </Suspense>
         <Outlet />
       </div>
     </>
   );
 };
+
+export default HeaderAuth;

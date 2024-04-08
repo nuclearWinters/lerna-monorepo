@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<5e647e7db231834d6aaefe8ac91ec5dd>>
+ * @generated SignedSource<<71d5a388d3e9671a7f45c588fa83d7d1>>
+ * @relayHash e3508091b0033db0277f8d17a641b57a
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,6 +9,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
+// @relayRequestID e3508091b0033db0277f8d17a641b57a
 // @indirectDataDrivenDependency MyTransactionsQueries_user.transactions.edges.node {"branches":{"InvestTransaction":{"component":"InvestmentTransaction","fragment":"InvestmentTransaction_transaction$normalization.graphql"},"MoneyTransaction":{"component":"MoneyTransaction","fragment":"MoneyTransaction_transaction$normalization.graphql"}},"plural":true}
 
 import { ConcreteRequest, Query } from 'relay-runtime';
@@ -223,16 +225,17 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e3508091b0033db0277f8d17a641b57a",
-    "id": null,
+    "id": "e3508091b0033db0277f8d17a641b57a",
     "metadata": {},
     "name": "MyTransactionsQueriesQuery",
     "operationKind": "query",
-    "text": "query MyTransactionsQueriesQuery {\n  user {\n    id\n    ...MyTransactionsQueries_user\n  }\n}\n\nfragment InvestmentTransaction_transaction on InvestTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n  borrower_id\n  loan_id\n}\n\nfragment MoneyTransaction_transaction on MoneyTransaction {\n  id\n  user_id\n  type\n  quantity\n  created_at\n}\n\nfragment MyTransactionsQueries_user on User {\n  transactions(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        __typename\n        ... on InvestTransaction {\n          ...InvestmentTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"InvestmentTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"InvestmentTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n        ... on MoneyTransaction {\n          ...MoneyTransaction_transaction\n          __module_operation_MyTransactionsQueries_user: js(module: \"MoneyTransaction_transaction$normalization.graphql\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          __module_component_MyTransactionsQueries_user: js(module: \"MoneyTransaction\", id: \"MyTransactionsQueries_user.transactions.edges.node\")\n          id\n        }\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": null
   }
 };
 })();
 
-(node as any).hash = "7cb90236c8668fa7d10d9c89d6f42d17";
+(node as any).hash = "78731e470e3937845a193a9d6c658a40";
+
+require('relay-runtime').PreloadableQueryRegistry.set(node.params.id, node);
 
 export default node;

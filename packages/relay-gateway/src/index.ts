@@ -22,6 +22,7 @@ import cookie from "cookie";
 import { ObjMap } from "graphql/jsutils/ObjMap";
 import { delegateToSchema } from "@graphql-tools/delegate";
 import { fromGlobalId } from "graphql-relay";
+import queryMap from "./queryMap.json";
 
 const httpExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
@@ -174,8 +175,17 @@ const makeGatewaySchema = async () => {
 
 makeGatewaySchema().then((schema) => {
   app.use("/graphql", async (req, res) => {
+    const doc_id = req.body?.doc_id;
+    const query = queryMap.find((query) => query[0] === doc_id);
     const request = {
-      body: req.body,
+      body: {
+        ...req.body,
+        ...(query
+          ? {
+              query: query?.[1],
+            }
+          : {}),
+      },
       headers: req.headers,
       method: req.method,
       query: req.query,

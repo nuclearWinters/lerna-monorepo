@@ -10,9 +10,11 @@
     "pcm": "lint-staged",
     "test": "jest --bail",
     "relay": "relay-compiler",
-    "analyze": "source-map-explorer 'build/static/js/*.js'"
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "persist-server": "node ./relayLocalPersisting.js"
   },
   "dependencies": {
+    "@loop-payments/react-router-relay": "^1.0.0",
     "@react-icons/all-files": "^4.1.0",
     "@stylexjs/stylex": "^0.5.1",
     "dayjs": "^1.11.5",
@@ -47,7 +49,7 @@
     "babel-jest": "^29.0.0",
     "babel-loader": "^9.1.0",
     "babel-plugin-relay": "^16.0.0",
-    "css-loader": "^6.7.1",
+    "css-loader": "^7.0.0",
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-react-app": "^7.0.1",
@@ -96,8 +98,17 @@
       "MXN": "string"
     },
     "schema": "./schema.graphql",
-    "language": "typescript"
-  },"browserslist": {
+    "language": "typescript",
+    "exclude": [
+      "**/node_modules/**",
+      "**/__mocks__/**"
+    ],
+    "persistConfig": {
+      "url": "http://localhost:2999",
+      "params": {}
+    }
+  },
+  "browserslist": {
     "production": [
       ">0.2%",
       "not dead",

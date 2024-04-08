@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<843bcbe1ec53fe3b023783006dc94385>>
+ * @generated SignedSource<<dde82b4d09b4744571f8bba616083af6>>
+ * @relayHash 658dbc4b6935df57beacdb336718b0e1
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 658dbc4b6935df57beacdb336718b0e1
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
@@ -243,16 +246,17 @@ return {
     ]
   },
   "params": {
-    "cacheID": "658dbc4b6935df57beacdb336718b0e1",
-    "id": null,
+    "id": "658dbc4b6935df57beacdb336718b0e1",
     "metadata": {},
     "name": "AddInvestmentsQueriesQuery",
     "operationKind": "query",
-    "text": "query AddInvestmentsQueriesQuery {\n  user {\n    id\n    ...AddInvestmentsQueries_user\n  }\n}\n\nfragment AddInvestmentsQueriesRowRefetch_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  pending\n  pendingCents\n}\n\nfragment AddInvestmentsQueries_user on User {\n  loansFinancing(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        pending\n        pendingCents\n        ...AddInvestmentsQueriesRowRefetch_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": null
   }
 };
 })();
 
-(node as any).hash = "5247af706d8cc07e97d0b9fd2b575dde";
+(node as any).hash = "296c1d582aebe0291b2ef3dc70a6560e";
+
+require('relay-runtime').PreloadableQueryRegistry.set(node.params.id, node);
 
 export default node;

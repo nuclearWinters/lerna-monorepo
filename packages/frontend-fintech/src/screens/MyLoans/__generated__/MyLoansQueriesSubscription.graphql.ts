@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<f0dc71faed156a2b018086a580a988e7>>
+ * @generated SignedSource<<260bf8f87c10a10db8bfb5e292e856e4>>
+ * @relayHash bfbfc37c9c411a2c279405917b8a8bb5
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID bfbfc37c9c411a2c279405917b8a8bb5
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
@@ -188,12 +191,11 @@ return {
     ]
   },
   "params": {
-    "cacheID": "bfbfc37c9c411a2c279405917b8a8bb5",
-    "id": null,
+    "id": "bfbfc37c9c411a2c279405917b8a8bb5",
     "metadata": {},
     "name": "MyLoansQueriesSubscription",
     "operationKind": "subscription",
-    "text": "subscription MyLoansQueriesSubscription {\n  my_loans_subscribe_insert {\n    node {\n      id\n      user_id\n      score\n      ROI\n      goal\n      term\n      raised\n      expiry\n      status\n      pending\n      pendingCents\n    }\n    cursor\n  }\n}\n"
+    "text": null
   }
 };
 })();

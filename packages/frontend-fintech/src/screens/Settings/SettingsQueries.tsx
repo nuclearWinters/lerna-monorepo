@@ -1,7 +1,7 @@
 import { graphql } from "relay-runtime";
 
 export const settingsFragment = graphql`
-  query SettingsQueriesAuthUserQuery {
+  query SettingsQueriesAuthUserQuery @preloadable {
     authUser {
       id
       name

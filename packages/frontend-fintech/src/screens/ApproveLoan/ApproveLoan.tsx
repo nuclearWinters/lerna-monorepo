@@ -1,7 +1,8 @@
 import { FC, Fragment, useMemo, useState } from "react";
+import type { SimpleEntryPointProps } from "@loop-payments/react-router-relay";
+
 import {
   ConnectionHandler,
-  PreloadedQuery,
   useMutation,
   usePaginationFragment,
   usePreloadedQuery,
@@ -41,10 +42,10 @@ import { ApproveLoanMutation } from "./__generated__/ApproveLoanMutation.graphql
 import { ApproveLoanQueriesRowRefetch_loan$key } from "./__generated__/ApproveLoanQueriesRowRefetch_loan.graphql";
 import { ApproveLoanQueriesRefetchQuery } from "./__generated__/ApproveLoanQueriesRefetchQuery.graphql";
 
-type Props = {
-  query: PreloadedQuery<ApproveLoanQueriesQuery, {}>;
-  authQuery: PreloadedQuery<utilsQuery, {}>;
-};
+type Props = SimpleEntryPointProps<{
+  query: ApproveLoanQueriesQuery;
+  authQuery: utilsQuery;
+}>;
 
 const baseLoanRowContainer = stylex.create({
   base: {
@@ -286,8 +287,11 @@ const columnApproveLoans: {
 export const ApproveLoans: FC<Props> = (props) => {
   const { t } = useTranslation();
   const [reset, setReset] = useState(0);
-  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
-  const { user } = usePreloadedQuery(approveLoansFragment, props.query);
+  const { authUser } = usePreloadedQuery(
+    authUserQuery,
+    props.queries.authQuery
+  );
+  const { user } = usePreloadedQuery(approveLoansFragment, props.queries.query);
   const { data, loadNext, refetch } = usePaginationFragment<
     ApproveLoansQueriesPaginationUser,
     ApproveLoanQueries_user$key
@@ -354,7 +358,7 @@ export const ApproveLoans: FC<Props> = (props) => {
               const { id, user_id, score, ROI, goal, term, expiry, pending } =
                 edge.node;
               return (
-                <tr {...stylex.props(baseLoanRowContainer.base)}>
+                <tr key={node.id} {...stylex.props(baseLoanRowContainer.base)}>
                   {columnApproveLoans.map((column) => (
                     <Fragment key={column.id}>
                       {column.cell({

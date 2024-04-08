@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<34774d83d5909ffd869169377cf79408>>
+ * @generated SignedSource<<59f1cadb080ef533fd141ca4db72bd47>>
+ * @relayHash a06f5cec712f9c7d149194a18314cb7c
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID a06f5cec712f9c7d149194a18314cb7c
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type AddInvestmentsQueriesUpdateSubscription$variables = {
@@ -146,12 +149,11 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "a06f5cec712f9c7d149194a18314cb7c",
-    "id": null,
+    "id": "a06f5cec712f9c7d149194a18314cb7c",
     "metadata": {},
     "name": "AddInvestmentsQueriesUpdateSubscription",
     "operationKind": "subscription",
-    "text": "subscription AddInvestmentsQueriesUpdateSubscription(\n  $gid: ID!\n) {\n  loans_subscribe_update(gid: $gid) {\n    id\n    user_id\n    score\n    ROI\n    goal\n    term\n    raised\n    expiry\n    pending\n    pendingCents\n  }\n}\n"
+    "text": null
   }
 };
 })();

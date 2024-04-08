@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<9c10a0eb6f73bfcada59cba317e667b9>>
+ * @generated SignedSource<<a67c057b643eb6a6bd9e1476b934ff9c>>
+ * @relayHash 36feabd5eb31b52eb1997e88d5b1ef95
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 36feabd5eb31b52eb1997e88d5b1ef95
 
 import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
 export type SiderUserSubscription$variables = Record<PropertyKey, never>;
@@ -83,12 +86,11 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "36feabd5eb31b52eb1997e88d5b1ef95",
-    "id": null,
+    "id": "36feabd5eb31b52eb1997e88d5b1ef95",
     "metadata": {},
     "name": "SiderUserSubscription",
     "operationKind": "subscription",
-    "text": "subscription SiderUserSubscription {\n  user_subscribe {\n    id\n    accountAvailable\n    accountToBePaid\n    accountTotal\n  }\n}\n"
+    "text": null
   }
 };
 })();

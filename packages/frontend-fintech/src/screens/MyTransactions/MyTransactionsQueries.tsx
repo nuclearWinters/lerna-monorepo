@@ -1,7 +1,7 @@
 import { graphql } from "relay-runtime";
 
 export const transactionsFragment = graphql`
-  query MyTransactionsQueriesQuery {
+  query MyTransactionsQueriesQuery @preloadable {
     user {
       id
       ...MyTransactionsQueries_user

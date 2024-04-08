@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<dc1438d02558573ce4cfebbb053b5f97>>
+ * @generated SignedSource<<8f97cdaa761ab4e0331f606fc5e48879>>
+ * @relayHash c9bd568aa06900f94c89f561b121c699
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID c9bd568aa06900f94c89f561b121c699
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
@@ -305,12 +308,11 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c9bd568aa06900f94c89f561b121c699",
-    "id": null,
+    "id": "c9bd568aa06900f94c89f561b121c699",
     "metadata": {},
     "name": "ApproveLoansQueriesPaginationUser",
     "operationKind": "query",
-    "text": "query ApproveLoansQueriesPaginationUser(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ApproveLoanQueries_user_3sPmgd\n    id\n  }\n}\n\nfragment ApproveLoanQueriesRowRefetch_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n}\n\nfragment ApproveLoanQueries_user_3sPmgd on User {\n  approveLoans(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        pending\n        ...ApproveLoanQueriesRowRefetch_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": null
   }
 };
 })();

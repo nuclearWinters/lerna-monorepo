@@ -1,6 +1,5 @@
 import { Dispatch, FC, Fragment, useMemo, useState } from "react";
 import {
-  PreloadedQuery,
   usePaginationFragment,
   usePreloadedQuery,
   useRefetchableFragment,
@@ -38,11 +37,12 @@ import { ScheduledPaymentRow } from "../../components/ScheduledPaymentRow";
 import { MyLoansQueriesUpdateSubscription } from "./__generated__/MyLoansQueriesUpdateSubscription.graphql";
 import { MyLoansQueriesRowRefetch_loan$key } from "./__generated__/MyLoansQueriesRowRefetch_loan.graphql";
 import { MyLoansQueriesRefetchQuery } from "./__generated__/MyLoansQueriesRefetchQuery.graphql";
+import { SimpleEntryPointProps } from "@loop-payments/react-router-relay";
 
-type Props = {
-  query: PreloadedQuery<MyLoansQueriesQuery, {}>;
-  authQuery: PreloadedQuery<utilsQuery, {}>;
-};
+type Props = SimpleEntryPointProps<{
+  query: MyLoansQueriesQuery;
+  authQuery: utilsQuery;
+}>;
 
 const baseLoanRowStatus = stylex.create({
   base: {
@@ -370,8 +370,11 @@ export const MyLoans: FC<Props> = (props) => {
   const { t } = useTranslation();
   const [reset, setReset] = useState(0);
   const [showSubTable, setShowSubTable] = useState("");
-  const { user } = usePreloadedQuery(myLoansFragment, props.query);
-  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
+  const { user } = usePreloadedQuery(myLoansFragment, props.queries.query);
+  const { authUser } = usePreloadedQuery(
+    authUserQuery,
+    props.queries.authQuery
+  );
   const { data, loadNext, refetch } = usePaginationFragment<
     MyLoansQueriesPaginationUser,
     MyLoansQueries_user$key

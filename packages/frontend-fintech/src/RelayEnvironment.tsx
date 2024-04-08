@@ -30,6 +30,7 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
     },
     credentials: "include",
     body: JSON.stringify({
+      doc_id: params.id,
       query: params?.text || "",
       variables,
     }),

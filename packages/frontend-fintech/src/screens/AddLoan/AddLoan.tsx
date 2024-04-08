@@ -1,10 +1,5 @@
 import { ChangeEvent, FC, useState } from "react";
-import {
-  PreloadedQuery,
-  graphql,
-  useMutation,
-  usePreloadedQuery,
-} from "react-relay/hooks";
+import { graphql, useMutation, usePreloadedQuery } from "react-relay/hooks";
 import { Spinner } from "../../components/Spinner";
 import { Label } from "../../components/Label";
 import { CustomButton } from "../../components/CustomButton";
@@ -19,14 +14,18 @@ import { authUserQuery, useTranslation } from "../../utils";
 import { AddLoanMutation } from "./__generated__/AddLoanMutation.graphql";
 import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
 import { RedirectContainer } from "../../components/RedirectContainer";
+import { SimpleEntryPointProps } from "@loop-payments/react-router-relay";
 
-type Props = {
-  authQuery: PreloadedQuery<utilsQuery, {}>;
-};
+type Props = SimpleEntryPointProps<{
+  authQuery: utilsQuery;
+}>;
 
 export const AddLoan: FC<Props> = (props) => {
   const { t } = useTranslation();
-  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
+  const { authUser } = usePreloadedQuery(
+    authUserQuery,
+    props.queries.authQuery
+  );
   const [commit, isInFlight] = useMutation<AddLoanMutation>(graphql`
     mutation AddLoanMutation($input: AddLoanInput!) {
       addLoan(input: $input) {

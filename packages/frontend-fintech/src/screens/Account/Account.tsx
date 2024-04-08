@@ -3,7 +3,7 @@ import { Main } from "../../components/Main";
 import { WrapperSmall } from "../../components/WrapperSmall";
 import { AccountRow } from "../../components/AccountRow";
 import { FC } from "react";
-import { PreloadedQuery, usePreloadedQuery } from "react-relay/hooks";
+import { usePreloadedQuery } from "react-relay/hooks";
 import { TitleAccount } from "../../components/TitleAccount";
 import { Space, customSpace } from "../../components/Space";
 import { authUserQuery, useTranslation } from "../../utils";
@@ -11,16 +11,20 @@ import { accountFragment } from "./AccountQueries";
 import { utilsQuery } from "../../__generated__/utilsQuery.graphql";
 import { RedirectContainer } from "../../components/RedirectContainer";
 import { AccountQueriesQuery } from "./__generated__/AccountQueriesQuery.graphql";
+import { SimpleEntryPointProps } from "@loop-payments/react-router-relay";
 
-type Props = {
-  query: PreloadedQuery<AccountQueriesQuery, {}>;
-  authQuery: PreloadedQuery<utilsQuery, {}>;
-};
+type Props = SimpleEntryPointProps<{
+  query: AccountQueriesQuery;
+  authQuery: utilsQuery;
+}>;
 
 export const Account: FC<Props> = (props) => {
   const { t } = useTranslation();
-  const { user } = usePreloadedQuery(accountFragment, props.query);
-  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
+  const { user } = usePreloadedQuery(accountFragment, props.queries.query);
+  const { authUser } = usePreloadedQuery(
+    authUserQuery,
+    props.queries.authQuery
+  );
 
   if (!user || !authUser) {
     return null;

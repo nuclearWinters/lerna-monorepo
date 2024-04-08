@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<5d60efaae8e6c37dc70a89e36ee80f1f>>
+ * @generated SignedSource<<8d1ec18196655ccf8fa64a853d2808be>>
+ * @relayHash 74997cad3da3ce985529fbd30726bd41
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 74997cad3da3ce985529fbd30726bd41
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
@@ -305,12 +308,11 @@ return {
     ]
   },
   "params": {
-    "cacheID": "74997cad3da3ce985529fbd30726bd41",
-    "id": null,
+    "id": "74997cad3da3ce985529fbd30726bd41",
     "metadata": {},
     "name": "AddInvestmentsQueriesPaginationQuery",
     "operationKind": "query",
-    "text": "query AddInvestmentsQueriesPaginationQuery(\n  $count: Int = 5\n  $cursor: String = \"\"\n  $reset: Float = 0\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...AddInvestmentsQueries_user_3sPmgd\n    id\n  }\n}\n\nfragment AddInvestmentsQueriesRowRefetch_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  pending\n  pendingCents\n}\n\nfragment AddInvestmentsQueries_user_3sPmgd on User {\n  loansFinancing(first: $count, after: $cursor, reset: $reset) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        pending\n        pendingCents\n        ...AddInvestmentsQueriesRowRefetch_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": null
   }
 };
 })();

@@ -1,6 +1,5 @@
 import { FC, Suspense, useMemo, useState } from "react";
 import {
-  PreloadedQuery,
   usePaginationFragment,
   usePreloadedQuery,
   useSubscription,
@@ -29,17 +28,21 @@ import { MyTransactionsQueriesQuery } from "./__generated__/MyTransactionsQuerie
 import { MyTransactionsQueriesPaginationUser } from "./__generated__/MyTransactionsQueriesPaginationUser.graphql";
 import { MyTransactionsQueries_user$key } from "./__generated__/MyTransactionsQueries_user.graphql";
 import { MyTransactionsQueriesSubscription } from "./__generated__/MyTransactionsQueriesSubscription.graphql";
+import { SimpleEntryPointProps } from "@loop-payments/react-router-relay";
 
-type Props = {
-  query: PreloadedQuery<MyTransactionsQueriesQuery, {}>;
-  authQuery: PreloadedQuery<utilsQuery, {}>;
-};
+type Props = SimpleEntryPointProps<{
+  query: MyTransactionsQueriesQuery;
+  authQuery: utilsQuery;
+}>;
 
 export const MyTransactions: FC<Props> = (props) => {
   const { t } = useTranslation();
   const [reset, setReset] = useState(0);
-  const { user } = usePreloadedQuery(transactionsFragment, props.query);
-  const { authUser } = usePreloadedQuery(authUserQuery, props.authQuery);
+  const { user } = usePreloadedQuery(transactionsFragment, props.queries.query);
+  const { authUser } = usePreloadedQuery(
+    authUserQuery,
+    props.queries.authQuery
+  );
   const { data, loadNext, refetch } = usePaginationFragment<
     MyTransactionsQueriesPaginationUser,
     MyTransactionsQueries_user$key

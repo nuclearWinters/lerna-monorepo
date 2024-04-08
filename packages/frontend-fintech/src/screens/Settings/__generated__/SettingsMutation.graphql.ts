@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<f78e3ed1ea2d6def5db334ab4b213c92>>
+ * @generated SignedSource<<b6249dd858dbffedb9eeddc873071ff7>>
+ * @relayHash 42158b2d4898c10429bee6ac923b8bbc
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 42158b2d4898c10429bee6ac923b8bbc
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type Languages = "EN" | "ES" | "%future added value";
@@ -180,12 +183,11 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "42158b2d4898c10429bee6ac923b8bbc",
-    "id": null,
+    "id": "42158b2d4898c10429bee6ac923b8bbc",
     "metadata": {},
     "name": "SettingsMutation",
     "operationKind": "mutation",
-    "text": "mutation SettingsMutation(\n  $input: UpdateUserInput!\n) {\n  updateUser(input: $input) {\n    error\n    authUser {\n      id\n      name\n      apellidoPaterno\n      apellidoMaterno\n      RFC\n      CURP\n      clabe\n      mobile\n      language\n      email\n    }\n  }\n}\n"
+    "text": null
   }
 };
 })();

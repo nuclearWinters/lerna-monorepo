@@ -3,7 +3,6 @@ import { Spinner } from "../../components/Spinner";
 import { ChangeEvent, FC, Fragment, useState } from "react";
 import {
   graphql,
-  PreloadedQuery,
   useMutation,
   usePaginationFragment,
   usePreloadedQuery,
@@ -37,6 +36,7 @@ import dayjs from "dayjs";
 import es from "dayjs/locale/es";
 import en from "dayjs/locale/en";
 import { SettingsSessionRowRevokeSessionMutation } from "./__generated__/SettingsSessionRowRevokeSessionMutation.graphql";
+import { SimpleEntryPointProps } from "@loop-payments/react-router-relay";
 
 const baseLoanRowIcon = stylex.create({
   base: {
@@ -235,9 +235,9 @@ export const baseSettingsForm = stylex.create({
   },
 });
 
-type Props = {
-  query: PreloadedQuery<SettingsQueriesAuthUserQuery, {}>;
-};
+type Props = SimpleEntryPointProps<{
+  query: SettingsQueriesAuthUserQuery;
+}>;
 
 export const Settings: FC<Props> = (props) => {
   const { t, changeLanguage } = useTranslation();
@@ -260,7 +260,7 @@ export const Settings: FC<Props> = (props) => {
       }
     }
   `);
-  const { authUser } = usePreloadedQuery(settingsFragment, props.query);
+  const { authUser } = usePreloadedQuery(settingsFragment, props.queries.query);
   const originLang = authUser?.language as Languages;
   const [formUser, setFormUser] = useState({
     name: authUser?.name || "",

@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<eb7f84db3fc99c760f2295e26239d71a>>
+ * @generated SignedSource<<57760ef0caa5581d13a8d3b4a53e739f>>
+ * @relayHash f107789267f87404db9a5dcc1324db00
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID f107789267f87404db9a5dcc1324db00
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
@@ -272,16 +275,17 @@ return {
     ]
   },
   "params": {
-    "cacheID": "f107789267f87404db9a5dcc1324db00",
-    "id": null,
+    "id": "f107789267f87404db9a5dcc1324db00",
     "metadata": {},
     "name": "MyInvestmentsQueriesQuery",
     "operationKind": "query",
-    "text": "query MyInvestmentsQueriesQuery {\n  user {\n    id\n    ...MyInvestmentsQueries_user\n  }\n}\n\nfragment MyInvestmentsQueriesRow_investment on Investment {\n  id\n  borrower_id\n  loan_id\n  quantity\n  created_at\n  updated_at\n  status\n  payments\n  ROI\n  term\n  moratory\n  interest_to_earn\n  paid_already\n  to_be_paid\n}\n\nfragment MyInvestmentsQueries_user on User {\n  investments(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        borrower_id\n        loan_id\n        quantity\n        created_at\n        updated_at\n        status\n        payments\n        ROI\n        term\n        moratory\n        interest_to_earn\n        paid_already\n        to_be_paid\n        ...MyInvestmentsQueriesRow_investment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": null
   }
 };
 })();
 
-(node as any).hash = "e780bc5ff2527c4fd68cb0f75c156c4a";
+(node as any).hash = "fde2c5d863e2ff60d84ed3435e7784f1";
+
+require('relay-runtime').PreloadableQueryRegistry.set(node.params.id, node);
 
 export default node;

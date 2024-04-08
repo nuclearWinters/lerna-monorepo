@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<5ea1656af09a6e735091f3d1077a5894>>
+ * @generated SignedSource<<27290267721c5a210b9aa4f5d362f9b0>>
+ * @relayHash f195854fe93adea3b9eb8a2246eb539b
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID f195854fe93adea3b9eb8a2246eb539b
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
@@ -108,12 +111,11 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "f195854fe93adea3b9eb8a2246eb539b",
-    "id": null,
+    "id": "f195854fe93adea3b9eb8a2246eb539b",
     "metadata": {},
     "name": "ApproveLoanMutation",
     "operationKind": "mutation",
-    "text": "mutation ApproveLoanMutation(\n  $input: ApproveLoanInput!\n) {\n  approveLoan(input: $input) {\n    error\n    loan {\n      id\n      status\n    }\n  }\n}\n"
+    "text": null
   }
 };
 })();

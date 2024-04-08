@@ -1,7 +1,7 @@
 import { graphql } from "relay-runtime";
 
 export const approveLoansFragment = graphql`
-  query ApproveLoanQueriesQuery {
+  query ApproveLoanQueriesQuery @preloadable {
     user {
       id
       ...ApproveLoanQueries_user

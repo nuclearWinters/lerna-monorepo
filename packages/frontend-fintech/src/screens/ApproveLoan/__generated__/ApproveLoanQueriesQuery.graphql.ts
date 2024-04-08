@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<ac4f677f983ca09f1e80f4b9467047f0>>
+ * @generated SignedSource<<eab90ba1bee4523f405578e063951063>>
+ * @relayHash 95e917f2d6bae2e6488eedb4b1649b47
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 95e917f2d6bae2e6488eedb4b1649b47
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
@@ -243,16 +246,17 @@ return {
     ]
   },
   "params": {
-    "cacheID": "95e917f2d6bae2e6488eedb4b1649b47",
-    "id": null,
+    "id": "95e917f2d6bae2e6488eedb4b1649b47",
     "metadata": {},
     "name": "ApproveLoanQueriesQuery",
     "operationKind": "query",
-    "text": "query ApproveLoanQueriesQuery {\n  user {\n    id\n    ...ApproveLoanQueries_user\n  }\n}\n\nfragment ApproveLoanQueriesRowRefetch_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n}\n\nfragment ApproveLoanQueries_user on User {\n  approveLoans(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        user_id\n        score\n        ROI\n        goal\n        term\n        raised\n        expiry\n        pending\n        ...ApproveLoanQueriesRowRefetch_loan\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": null
   }
 };
 })();
 
-(node as any).hash = "b714649ea33f3fc2af9d2051f0886f2d";
+(node as any).hash = "c4e8291c66f824d110e53d27651e836d";
+
+require('relay-runtime').PreloadableQueryRegistry.set(node.params.id, node);
 
 export default node;

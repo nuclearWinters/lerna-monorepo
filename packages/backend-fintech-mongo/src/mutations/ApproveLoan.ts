@@ -17,7 +17,11 @@ type Payload = {
   loan: LoanMongo | null;
 };
 
-export const ApproveLoanMutation = mutationWithClientMutationId({
+export const ApproveLoanMutation = mutationWithClientMutationId<
+  Input,
+  Payload,
+  Context
+>({
   name: "ApproveLoan",
   description: "Aprueba una deuda para que empieze a ser financiada.",
   inputFields: {
@@ -26,17 +30,14 @@ export const ApproveLoanMutation = mutationWithClientMutationId({
   outputFields: {
     error: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ error }: Payload): string => error,
+      resolve: ({ error }): string => error,
     },
     loan: {
       type: GraphQLLoan,
-      resolve: ({ loan }: Payload): LoanMongo | null => loan,
+      resolve: ({ loan }): LoanMongo | null => loan,
     },
   },
-  mutateAndGetPayload: async (
-    { loan_gid }: Input,
-    { loans, id, isSupport }: Context
-  ): Promise<Payload> => {
+  mutateAndGetPayload: async ({ loan_gid }, { loans, id, isSupport }) => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");

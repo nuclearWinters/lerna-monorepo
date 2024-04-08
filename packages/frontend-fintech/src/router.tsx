@@ -1,7 +1,11 @@
-import { createBrowserRouter, defer, redirect } from "react-router-dom";
-import { loadQuery } from "react-relay";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  defer,
+  redirect,
+} from "react-router-dom";
+import { loadQuery, useRelayEnvironment } from "react-relay";
 import { RelayEnvironment } from "./RelayEnvironment";
-import { HeaderAuth } from "./screens/HeaderAuth/HeaderAuth";
 import {
   authUserQuery,
   defaultBorrower,
@@ -9,14 +13,23 @@ import {
   defaultSupport,
   getUserDataCache,
 } from "./utils";
-import { settingsFragment } from "./screens/Settings/SettingsQueries";
-import { accountFragment } from "./screens/Account/AccountQueries";
-import { transactionsFragment } from "./screens/MyTransactions/MyTransactionsQueries";
-import { addInvestmentFragment } from "./screens/AddInvestments/AddInvestmentsQueries";
-import { approveLoansFragment } from "./screens/ApproveLoan/ApproveLoanQueries";
-import { myLoansFragment } from "./screens/MyLoans/MyLoansQueries";
-import { myInvestmentsFragment } from "./screens/MyInvestments/MyInvestmentsQueries";
 import { PageLoader } from "./components/PageLoader";
+import {
+  EntryPointRouteObject,
+  preparePreloadableRoutes,
+} from "@loop-payments/react-router-relay";
+import { useMemo } from "react";
+import { ApproveLoanEntryPoint } from "./screens/ApproveLoan/ApproveLoan.entrypoint";
+import { HeaderAuthEntryPoint } from "./screens/HeaderAuth/HeaderAuth.entrypoint";
+import { AddLoanEntryPoint } from "./screens/AddLoan/AddLoan.entrypoint";
+import { AddFundsEntryPoint } from "./screens/AddFunds/AddFunds.entrypoint";
+import { AddInvestmentsEntryPoint } from "./screens/AddInvestments/AddInvestments.entrypoint";
+import { MyLoansEntryPoint } from "./screens/MyLoans/MyLoans.entrypoint";
+import { MyTransactionsEntryPoint } from "./screens/MyTransactions/MyTransactions.entrypoint";
+import { RetireFundsEntryPoint } from "./screens/RetireFunds/RetireFunds.entrypoint";
+import { AccountEntryPoint } from "./screens/Account/Account.entrypoint";
+import { SettingsEntryPoint } from "./screens/Settings/Settings.entrypoint";
+import { MyInvestmentsEntryPoint } from "./screens/MyInvestments/MyInvestments.entrypoints";
 
 type inputUser = "lender" | "borrower" | "support";
 
@@ -47,16 +60,11 @@ const redirectPage = (
 
 const authQuery = loadQuery(RelayEnvironment, authUserQuery, {});
 
-export const router = createBrowserRouter([
+const MY_ROUTES: EntryPointRouteObject[] = [
   {
     path: "/",
-    element: <HeaderAuth />,
+    entryPoint: HeaderAuthEntryPoint,
     errorElement: <div>Error</div>,
-    loader: async () => {
-      return {
-        query: authQuery,
-      };
-    },
     children: [
       {
         path: "/login",
@@ -96,7 +104,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/settings",
-        element: <PageLoader />,
+        entryPoint: SettingsEntryPoint,
         loader: async () => {
           const path = redirectPage(
             ["borrower", "lender", "support"],
@@ -105,160 +113,123 @@ export const router = createBrowserRouter([
           if (path) {
             return redirect(path);
           }
-          const page = import("./screens/Settings/Settings");
-          const query = loadQuery(
-            RelayEnvironment,
-            settingsFragment,
-            {},
-            { fetchPolicy: "network-only" }
-          );
-          return defer({ page, query });
+          return {};
         },
       },
       {
         path: "/account",
-        element: <PageLoader />,
+        entryPoint: AccountEntryPoint,
         loader: async () => {
           const path = redirectPage(["borrower", "lender"], "/account");
           if (path) {
-            return path;
+            return redirect(path);
           }
-          const page = import("./screens/Account/Account");
-          const query = loadQuery(
-            RelayEnvironment,
-            accountFragment,
-            {},
-            { fetchPolicy: "network-only" }
-          );
-          return defer({ page, query, authQuery });
+          return {};
         },
       },
       {
         path: "/myTransactions",
-        element: <PageLoader />,
+        entryPoint: MyTransactionsEntryPoint,
         loader: async () => {
           const path = redirectPage(["borrower", "lender"], "/myTransactions");
           if (path) {
-            return path;
+            return redirect(path);
           }
-          const page = import("./screens/MyTransactions/MyTransactions");
-          const query = loadQuery(
-            RelayEnvironment,
-            transactionsFragment,
-            {},
-            { fetchPolicy: "network-only" }
-          );
-          return defer({ page, query, authQuery });
+          return {};
         },
       },
       {
         path: "/addFunds",
-        element: <PageLoader />,
+        entryPoint: AddFundsEntryPoint,
         loader: async () => {
           const path = redirectPage(["borrower", "lender"], "/addFunds");
           if (path) {
-            return path;
+            return redirect(path);
           }
-          const page = import("./screens/AddFunds/AddFunds");
-          return defer({ page, authQuery });
+          return {};
         },
       },
       {
         path: "/retireFunds",
-        element: <PageLoader />,
+        entryPoint: RetireFundsEntryPoint,
         loader: async () => {
           const path = redirectPage(["borrower", "lender"], "/retireFunds");
           if (path) {
-            return path;
+            return redirect(path);
           }
-          const page = import("./screens/RetireFunds/RetireFunds");
-          return defer({ page, authQuery });
+          return {};
         },
       },
       {
         path: "/addInvestments",
-        element: <PageLoader />,
+        entryPoint: AddInvestmentsEntryPoint,
         loader: async () => {
           const path = redirectPage(["lender"], "/addInvestments");
           if (path) {
-            return path;
+            return redirect(path);
           }
-          const page = import("./screens/AddInvestments/AddInvestments");
-          const query = loadQuery(
-            RelayEnvironment,
-            addInvestmentFragment,
-            {},
-            { fetchPolicy: "network-only" }
-          );
-          return defer({ page, query, authQuery });
+          return {};
         },
       },
       {
         path: "/addLoan",
-        element: <PageLoader />,
+        entryPoint: AddLoanEntryPoint,
         loader: async () => {
           const path = redirectPage(["borrower"], "/addLoan");
           if (path) {
-            return path;
+            return redirect(path);
           }
-          const page = import("./screens/AddLoan/AddLoan");
-          return defer({ page, authQuery });
+          return {};
         },
       },
       {
         path: "/approveLoan",
-        element: <PageLoader />,
+        entryPoint: ApproveLoanEntryPoint,
         loader: async () => {
           const path = redirectPage(["support"], "/approveLoan");
           if (path) {
-            return path;
+            return redirect(path);
           }
-          const page = import("./screens/ApproveLoan/ApproveLoan");
-          const query = loadQuery(
-            RelayEnvironment,
-            approveLoansFragment,
-            {},
-            { fetchPolicy: "network-only" }
-          );
-          return defer({ page, query, authQuery });
+          return {};
         },
       },
       {
         path: "/myLoans",
-        element: <PageLoader />,
+        entryPoint: MyLoansEntryPoint,
         loader: async () => {
           const path = redirectPage(["borrower"], "/myLoans");
           if (path) {
-            return path;
+            return redirect(path);
           }
-          const page = import("./screens/MyLoans/MyLoans");
-          const query = loadQuery(
-            RelayEnvironment,
-            myLoansFragment,
-            {},
-            { fetchPolicy: "network-only" }
-          );
-          return defer({ page, query, authQuery });
+          return {};
         },
       },
       {
         path: "/myInvestments",
-        element: <PageLoader />,
+        entryPoint: MyInvestmentsEntryPoint,
         loader: async () => {
           const path = redirectPage(["lender"], "/myInvestments");
           if (path) {
-            return path;
+            return redirect(path);
           }
-          const page = import("./screens/MyInvestments/MyInvestments");
-          const query = loadQuery(
-            RelayEnvironment,
-            myInvestmentsFragment,
-            {},
-            { fetchPolicy: "network-only" }
-          );
-          return defer({ page, query, authQuery });
+          return {};
         },
       },
     ],
   },
-]);
+];
+
+export const MyRouter = () => {
+  const environment = useRelayEnvironment();
+  const router = useMemo(() => {
+    const routes = preparePreloadableRoutes(MY_ROUTES, {
+      getEnvironment() {
+        return environment;
+      },
+    });
+
+    return createBrowserRouter(routes);
+  }, [environment]);
+
+  return <RouterProvider router={router} />;
+};

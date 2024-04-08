@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<1d9fbf1e05823fc3a04a4dce46e328ef>>
+ * @generated SignedSource<<9e8cf16bf1271c0f28573771ffebbba1>>
+ * @relayHash dc570781771a4c3630c2402ec2ae4ffe
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID dc570781771a4c3630c2402ec2ae4ffe
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
@@ -379,16 +382,17 @@ return {
     ]
   },
   "params": {
-    "cacheID": "dc570781771a4c3630c2402ec2ae4ffe",
-    "id": null,
+    "id": "dc570781771a4c3630c2402ec2ae4ffe",
     "metadata": {},
     "name": "SettingsQueriesAuthUserQuery",
     "operationKind": "query",
-    "text": "query SettingsQueriesAuthUserQuery {\n  authUser {\n    id\n    name\n    apellidoPaterno\n    apellidoMaterno\n    RFC\n    CURP\n    clabe\n    mobile\n    email\n    language\n    ...SettingsQueries_logins_user\n    ...SettingsQueries_sessions_user\n  }\n}\n\nfragment SettingsQueries_logins_user on AuthUser {\n  logins(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        applicationName\n        time\n        address\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment SettingsQueries_sessions_user on AuthUser {\n  sessions(first: 5, after: \"\", reset: 0) {\n    edges {\n      node {\n        id\n        applicationName\n        type\n        deviceName\n        address\n        lastTimeAccessed\n        expirationDate\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": null
   }
 };
 })();
 
-(node as any).hash = "5e060e56540ceb0cd7faf094e11eb128";
+(node as any).hash = "552f52a7be5e427babfb995ba285ac25";
+
+require('relay-runtime').PreloadableQueryRegistry.set(node.params.id, node);
 
 export default node;

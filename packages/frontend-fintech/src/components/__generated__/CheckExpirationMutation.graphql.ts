@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<8666925cdde3f4db3f0dd86d399add22>>
+ * @generated SignedSource<<5f74a280567703322368bd4db112d890>>
+ * @relayHash 4e65856e4f21af21cfd702bbdea624e4
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 4e65856e4f21af21cfd702bbdea624e4
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type ExtendSessionInput = {
@@ -77,12 +80,11 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "4e65856e4f21af21cfd702bbdea624e4",
-    "id": null,
+    "id": "4e65856e4f21af21cfd702bbdea624e4",
     "metadata": {},
     "name": "CheckExpirationMutation",
     "operationKind": "mutation",
-    "text": "mutation CheckExpirationMutation(\n  $input: ExtendSessionInput!\n) {\n  extendSession(input: $input) {\n    error\n  }\n}\n"
+    "text": null
   }
 };
 })();

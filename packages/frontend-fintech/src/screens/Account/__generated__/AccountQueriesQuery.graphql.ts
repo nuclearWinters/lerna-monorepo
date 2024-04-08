@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<3df51ceef5682e3ade3f2a3bc46c9403>>
+ * @generated SignedSource<<4fef15b51470c6950273b04606b885a2>>
+ * @relayHash aa6ec069076aa222be921f4b6568a17c
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID aa6ec069076aa222be921f4b6568a17c
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type AccountQueriesQuery$variables = Record<PropertyKey, never>;
@@ -109,16 +112,17 @@ return {
     ]
   },
   "params": {
-    "cacheID": "aa6ec069076aa222be921f4b6568a17c",
-    "id": null,
+    "id": "aa6ec069076aa222be921f4b6568a17c",
     "metadata": {},
     "name": "AccountQueriesQuery",
     "operationKind": "query",
-    "text": "query AccountQueriesQuery {\n  user {\n    accountAvailable\n    accountToBePaid\n    accountTotal\n    accountWithheld\n    id\n  }\n}\n"
+    "text": null
   }
 };
 })();
 
-(node as any).hash = "d4b69171d6eb9bcc3ab2394767291a7f";
+(node as any).hash = "6cc7b20c1216248722cb5cad631cfee6";
+
+require('relay-runtime').PreloadableQueryRegistry.set(node.params.id, node);
 
 export default node;

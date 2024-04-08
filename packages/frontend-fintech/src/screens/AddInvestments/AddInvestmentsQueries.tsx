@@ -22,7 +22,7 @@ export const subscriptionLoans = graphql`
 `;
 
 export const addInvestmentFragment = graphql`
-  query AddInvestmentsQueriesQuery {
+  query AddInvestmentsQueriesQuery @preloadable {
     user {
       id
       ...AddInvestmentsQueries_user

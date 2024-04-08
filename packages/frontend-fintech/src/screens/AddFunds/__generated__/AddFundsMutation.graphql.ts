@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<1e5036c01ad50ec80c9140c3223d2b80>>
+ * @generated SignedSource<<6720af55b7995245d53fbfbc2df7ad43>>
+ * @relayHash 363198c728833a7a9684d8072b6c96db
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 363198c728833a7a9684d8072b6c96db
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type AddFundsInput = {
@@ -78,12 +81,11 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "363198c728833a7a9684d8072b6c96db",
-    "id": null,
+    "id": "363198c728833a7a9684d8072b6c96db",
     "metadata": {},
     "name": "AddFundsMutation",
     "operationKind": "mutation",
-    "text": "mutation AddFundsMutation(\n  $input: AddFundsInput!\n) {\n  addFunds(input: $input) {\n    error\n  }\n}\n"
+    "text": null
   }
 };
 })();

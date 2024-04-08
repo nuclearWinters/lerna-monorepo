@@ -1,5 +1,6 @@
 /**
- * @generated SignedSource<<b20c618a69e67a6feb5eb06c6f3aa244>>
+ * @generated SignedSource<<78236f3880e8ddb993da08c6c89af458>>
+ * @relayHash 556039e2ee54fd8ec6e0c664b0b0af8c
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -7,6 +8,8 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
+
+// @relayRequestID 556039e2ee54fd8ec6e0c664b0b0af8c
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
@@ -169,12 +172,11 @@ return {
     ]
   },
   "params": {
-    "cacheID": "556039e2ee54fd8ec6e0c664b0b0af8c",
-    "id": null,
+    "id": "556039e2ee54fd8ec6e0c664b0b0af8c",
     "metadata": {},
     "name": "ApproveLoanQueriesRefetchQuery",
     "operationKind": "query",
-    "text": "query ApproveLoanQueriesRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ApproveLoanQueriesRowRefetch_loan\n    id\n  }\n}\n\nfragment ApproveLoanQueriesRowRefetch_loan on Loan {\n  id\n  user_id\n  score\n  ROI\n  goal\n  term\n  raised\n  expiry\n  status\n  pending\n}\n"
+    "text": null
   }
 };
 })();
