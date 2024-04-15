@@ -7,5 +7,10 @@
     "no-console": "error",
     "no-unused-vars": "error",
     "@stylexjs/valid-styles": "error"
-  }
+  },
+  "ignores": [
+    "node_modules/*",
+    "build/*",
+    "*.js"
+  ]
 }
