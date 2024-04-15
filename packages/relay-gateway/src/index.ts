@@ -6,6 +6,7 @@ import {
   ExecutionResult,
   getOperationAST,
   OperationTypeNode,
+  parse,
   print,
 } from "graphql";
 import { createClient } from "graphql-ws";
@@ -266,6 +267,24 @@ makeGatewaySchema().then((schema) => {
               (ctx?.connectionParams?.Authorization as string | undefined) ||
               "",
           };
+        },
+        onSubscribe: (_ctx, msg) => {
+          const doc_id = msg.payload.extensions?.doc_id;
+          if (typeof doc_id === "string") {
+            const persistedQuery = queryMap.find(
+              (query) => query[0] === doc_id
+            );
+            if (persistedQuery) {
+              const args = {
+                schema,
+                operationName: msg.payload.operationName,
+                document: parse(persistedQuery[1]),
+                variableValues: msg.payload.variables,
+              };
+              return args;
+            }
+          }
+          return;
         },
       },
       wsServer

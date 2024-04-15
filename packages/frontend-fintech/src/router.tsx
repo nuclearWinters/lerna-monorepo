@@ -18,7 +18,7 @@ import {
   EntryPointRouteObject,
   preparePreloadableRoutes,
 } from "@loop-payments/react-router-relay";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { ApproveLoanEntryPoint } from "./screens/ApproveLoan/ApproveLoan.entrypoint";
 import { HeaderAuthEntryPoint } from "./screens/HeaderAuth/HeaderAuth.entrypoint";
 import { AddLoanEntryPoint } from "./screens/AddLoan/AddLoan.entrypoint";
@@ -221,15 +221,16 @@ const MY_ROUTES: EntryPointRouteObject[] = [
 
 export const MyRouter = () => {
   const environment = useRelayEnvironment();
+  const environmentRef = useRef(environment);
   const router = useMemo(() => {
     const routes = preparePreloadableRoutes(MY_ROUTES, {
       getEnvironment() {
-        return environment;
+        return environmentRef.current;
       },
     });
 
     return createBrowserRouter(routes);
-  }, [environment]);
+  }, []);
 
   return <RouterProvider router={router} />;
 };

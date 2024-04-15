@@ -58,14 +58,18 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
 
 const subscribeRelay = (operation: RequestParameters, variables: Variables) => {
   return Observable.create<GraphQLResponse>((sink) => {
-    if (!operation.text) {
-      return sink.error(new Error("Operation text cannot be empty"));
+    const { text, id, name } = operation;
+    if (!(text || id)) {
+      return sink.error(new Error("Operation text or id cannot be empty"));
     }
     return subscriptionsClient.subscribe(
       {
-        operationName: operation.name,
-        query: operation.text,
+        operationName: name,
+        query: text || "",
         variables,
+        extensions: {
+          doc_id: id,
+        },
       },
       sink as Sink
     );

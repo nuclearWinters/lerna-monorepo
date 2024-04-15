@@ -68,6 +68,22 @@ export const baseSider = stylex.create({
   },
 });
 
+export const baseMain = stylex.create({
+  base: {
+    backgroundColor: "rgb(248,248,248)",
+    flex: "1",
+    display: "flex",
+    gridRowStart: "2",
+    gridRowEnd: "2",
+    gridColumnStart: "2",
+    gridColumnEnd: "3",
+    overflow: "scroll",
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
 export const HeaderAuth: FC<Props> = (props) => {
   return (
     <>
@@ -90,7 +106,15 @@ export const HeaderAuth: FC<Props> = (props) => {
         >
           <Header query={props.queries.authQuery} />
         </Suspense>
-        <Outlet />
+        <Suspense
+          fallback={
+            <div {...stylex.props(baseMain.base)}>
+              <Spinner />
+            </div>
+          }
+        >
+          <Outlet />
+        </Suspense>
       </div>
     </>
   );
