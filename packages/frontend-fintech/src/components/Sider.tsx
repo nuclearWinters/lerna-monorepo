@@ -60,6 +60,7 @@ const subscriptionUser = graphql`
       accountAvailable
       accountToBePaid
       accountTotal
+      accountWithheld
     }
   }
 `;
@@ -90,7 +91,6 @@ export const Sider: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
     if (!authUser) {
       const isLoggedPage = !["/login", "/register", "/"].includes(location);
       if (isLoggedPage) {
-        alert("You are not logged in");
         navigate(`/login${isLoggedPage ? `?redirectTo=${location}` : ""}`);
       }
     } else {

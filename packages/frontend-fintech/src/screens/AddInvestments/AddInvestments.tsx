@@ -510,7 +510,8 @@ export const AddInvestments: FC<Props> = (props) => {
                     variables: {
                       input: {
                         lends: lends.map((lend) => ({
-                          ...lend,
+                          loan_gid: lend.loan_gid,
+                          borrower_id: lend.borrower_id,
                           quantity: lend.quantity,
                         })),
                       },

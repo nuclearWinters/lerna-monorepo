@@ -75,9 +75,6 @@ input LendList {
   loan_gid: ID!
   quantity: MXN!
   borrower_id: String!
-  term: Int!
-  goal: MXN!
-  ROI: Float!
 }
 
 input AddLendsInput {

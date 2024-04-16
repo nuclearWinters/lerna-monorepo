@@ -29,9 +29,9 @@ export const runKafkaConsumer = async (
     eachMessage: async ({ topic, message }) => {
       const value = message.value?.toString() || "{}";
       if (topic === "loan-transaction") {
-        LoanTransaction(value, loans, producer);
+        await LoanTransaction(value, loans, producer, scheduledPayments);
       } else if (topic === "user-transaction") {
-        UserTransaction(
+        await UserTransaction(
           value,
           users,
           producer,
@@ -41,7 +41,7 @@ export const runKafkaConsumer = async (
           investments
         );
       } else if (topic === "add-lends") {
-        AddLends(value, loans, investments, producer);
+        await AddLends(value, loans, investments, producer);
       }
     },
   });

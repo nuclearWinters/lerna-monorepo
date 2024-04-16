@@ -25,8 +25,9 @@ export const UserTransaction = async (
   const values = JSON.parse(messageValue);
   const {
     quantity,
-    interest,
-    withheld,
+    interestFromTotal,
+    withheldFromAvailable,
+    withheldFromToBePaid,
     user_id,
     loan_id,
     borrower_id,
@@ -37,8 +38,9 @@ export const UserTransaction = async (
     nextKey,
   }: {
     quantity: number;
-    interest: number;
-    withheld: number;
+    interestFromTotal: number;
+    withheldFromAvailable: number;
+    withheldFromToBePaid: number;
     user_id: string;
     loan_id: string;
     borrower_id: string;
@@ -56,12 +58,11 @@ export const UserTransaction = async (
   const accountTotal = user.account_total;
   const accountToBePaid = user.account_to_be_paid;
   const accountWithheld = user.account_withheld;
-  if (withheld) {
-    /*----- Quitar/Añadir fondos retenidos al usuario START -----*/
-    const newAccountAvailable = accountAvailable + withheld;
+  if (withheldFromAvailable) {
+    /*----- Quitar/Añadir fondos retenidos al usuario de fondos disponibles START -----*/
+    const newAccountAvailable = accountAvailable - withheldFromAvailable;
     const resultIsMoreThanZero = newAccountAvailable >= 0;
-    const newAccountTotal = accountTotal - withheld;
-    const newAccountWithheld = accountWithheld - withheld;
+    const newAccountWithheld = accountWithheld + withheldFromAvailable;
     if (resultIsMoreThanZero) {
       await users.updateOne(
         {
@@ -70,7 +71,7 @@ export const UserTransaction = async (
         {
           $set: {
             account_available: newAccountAvailable,
-            account_total: newAccountTotal,
+            account_withheld: newAccountWithheld,
           },
         }
       );
@@ -81,17 +82,45 @@ export const UserTransaction = async (
         account_total: accountTotal,
         account_withheld: newAccountWithheld,
       });
-      await producer.send({
-        topic: nextTopic,
-        messages: [
-          {
-            value: nextValue,
-            key: nextKey,
+      if (nextTopic && nextValue && nextKey) {
+        await producer.send({
+          topic: nextTopic,
+          messages: [
+            {
+              value: nextValue,
+              key: nextKey,
+            },
+          ],
+        });
+      }
+    }
+    /*----- Quitar/Añadir fondos retenidos al usuario de fondos disponibles END -----*/
+  } else if (withheldFromToBePaid) {
+    /*----- Quitar/Añadir fondos retenidos al usuario de fondos totales START -----*/
+    const newAccountWithheld = accountWithheld - withheldFromToBePaid;
+    const resultIsMoreThanZero = newAccountWithheld >= 0;
+    const newAccountToBePaid = accountToBePaid + withheldFromToBePaid;
+    if (resultIsMoreThanZero) {
+      await users.updateOne(
+        {
+          id: user_id,
+        },
+        {
+          $set: {
+            account_to_be_paid: newAccountToBePaid,
+            account_withheld: newAccountWithheld,
           },
-        ],
+        }
+      );
+      publishUser({
+        id: user_id,
+        account_available: accountAvailable,
+        account_to_be_paid: accountToBePaid,
+        account_total: accountTotal,
+        account_withheld: newAccountWithheld,
       });
     }
-    /*----- Quitar/Añadir fondos retenidos al usuario END -----*/
+    /*----- Quitar/Añadir fondos retenidos al usuario de fondos totales END -----*/
   } else if (quantity) {
     /*----- Quitar/Añadir fondos disponibles al usuario START -----*/
     const newAccountAvailable = accountAvailable + quantity;
@@ -295,11 +324,11 @@ export const UserTransaction = async (
       }
     }
     /*----- Quitar/Añadir fondos disponibles al usuario END -----*/
-  } else if (interest && loan_id && borrower_id) {
+  } else if (interestFromTotal) {
     /*----- Quitar/Añadir ganancias futuras al usuario START -----*/
-    const newAccountToBePaid = accountToBePaid - interest;
+    const newAccountToBePaid = accountToBePaid + interestFromTotal;
     const resultIsMoreThanZero = newAccountToBePaid >= 0;
-    const newAccountAvailable = accountAvailable + interest;
+    const newAccountTotal = accountTotal + interestFromTotal;
     if (resultIsMoreThanZero) {
       await users.updateOne(
         {
@@ -307,21 +336,11 @@ export const UserTransaction = async (
         },
         {
           $set: {
-            account_available: newAccountAvailable,
+            account_total: newAccountTotal,
             account_to_be_paid: newAccountToBePaid,
           },
         }
       );
-      if (interest > 0) {
-        await transactions.insertOne({
-          user_id,
-          type: "collect",
-          quantity: interest,
-          created_at: new Date(),
-          borrower_id: borrower_id,
-          loan_oid: new ObjectId(loan_id),
-        });
-      }
       publishUser({
         id: user_id,
         account_available: accountAvailable,

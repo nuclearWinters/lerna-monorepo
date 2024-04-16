@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5a60c2bb571fc3d8d9b598227b321069>>
+ * @generated SignedSource<<371aef72b79eef2ef20e6556efb24632>>
  * @relayHash 64b571ffb2b4d4c3b1ab5d40cf54f5b1
  * @lightSyntaxTransform
  * @nogrep
@@ -17,12 +17,9 @@ export type AddLendsInput = {
   lends: ReadonlyArray<LendList>;
 };
 export type LendList = {
-  ROI: number;
   borrower_id: string;
-  goal: string;
   loan_gid: string;
   quantity: string;
-  term: number;
 };
 export type AddInvestmentsMutation$variables = {
   input: AddLendsInput;

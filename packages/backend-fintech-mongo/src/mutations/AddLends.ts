@@ -70,8 +70,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
               key: id,
               value: JSON.stringify({
                 user_id: id,
-                quantity: lend.quantity,
-                loan_id: lend,
+                withheld: lend.quantity,
                 nextTopic: "loan-transaction",
                 nextKey: loan_id,
                 nextValue: JSON.stringify({

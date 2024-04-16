@@ -12,6 +12,7 @@ export const AddLends = async (
     lender_id: string;
     quantity: number;
     loan_id: string;
+    completed: boolean;
   } = JSON.parse(messageValue);
   const { quantity, loan_id, lender_id } = values;
   const loan_oid = new ObjectId(loan_id);
@@ -22,13 +23,10 @@ export const AddLends = async (
   if (!loan) {
     throw new Error("Loan not found");
   }
-  const raised = loan.raised;
-  const goal = loan.goal;
   const borrower_id = loan.user_id;
   const term = loan.term;
   const ROI = loan.roi;
-  const newRaised = raised + quantity;
-  const completed = newRaised === goal;
+  const completed = values.completed;
   const TEM = Math.pow(1 + ROI / 100, 1 / 12) - 1;
   let found = false;
   for (const inv of resultInvestments) {
@@ -43,6 +41,30 @@ export const AddLends = async (
         );
         const amortizes = amortize * term;
         const interest_to_earn = amortizes - inv.quantity;
+        await producer.send({
+          topic: "user-transaction",
+          messages: [
+            {
+              value: JSON.stringify({
+                interestFromTotal: -inv.interest_to_earn,
+                user_id: lender_id,
+              }),
+              key: lender_id,
+            },
+          ],
+        });
+        await producer.send({
+          topic: "user-transaction",
+          messages: [
+            {
+              value: JSON.stringify({
+                interestFromTotal: interest_to_earn,
+                user_id: lender_id,
+              }),
+              key: lender_id,
+            },
+          ],
+        });
         await investments.updateOne(
           {
             _id: inv._id,
@@ -72,24 +94,24 @@ export const AddLends = async (
       }
       /*----- Actualizar inversion ya realizada previamente END -----*/
     } else if (completed) {
-      await producer.send({
-        topic: "user-transaction",
-        messages: [
-          {
-            value: JSON.stringify({
-              quantity: goal,
-              user_id: borrower_id,
-            }),
-            key: borrower_id,
-          },
-        ],
-      });
       /*----- Actualizar las inversiones como listas para ser pagadas START -----*/
       const amortize = Math.floor(
         inv.quantity / ((1 - Math.pow(1 / (1 + TEM), inv.term)) / TEM)
       );
       const amortizes = amortize * inv.term;
       const interest_to_earn = amortizes - inv.quantity;
+      await producer.send({
+        topic: "user-transaction",
+        messages: [
+          {
+            value: JSON.stringify({
+              interestFromTotal: interest_to_earn,
+              user_id: inv.lender_id,
+            }),
+            key: inv.lender_id,
+          },
+        ],
+      });
       await investments.updateOne(
         {
           _id: inv._id,
@@ -114,7 +136,19 @@ export const AddLends = async (
       );
       const amortizes = amortize * term;
       const interest_to_earn = amortizes - quantity;
-      investments.insertOne({
+      await producer.send({
+        topic: "user-transaction",
+        messages: [
+          {
+            value: JSON.stringify({
+              interestFromTotal: interest_to_earn,
+              user_id: lender_id,
+            }),
+            key: lender_id,
+          },
+        ],
+      });
+      await investments.insertOne({
         borrower_id,
         lender_id,
         loan_oid,
@@ -133,7 +167,7 @@ export const AddLends = async (
         to_be_paid: amortizes,
       });
     } else {
-      investments.insertOne({
+      await investments.insertOne({
         borrower_id,
         lender_id,
         loan_oid: new ObjectId(loan_id),
