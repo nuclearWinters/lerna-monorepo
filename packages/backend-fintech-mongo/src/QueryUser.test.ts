@@ -1,8 +1,10 @@
-import { app } from "./app";
+import { app, main, schema } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "./types";
 import { jwt } from "./utils";
+import TestAgent from "supertest/lib/agent";
+import { Producer } from "kafkajs";
 
 jest.mock("graphql-redis-subscriptions", () => ({
   RedisPubSub: jest.fn().mockImplementation(() => {
@@ -16,11 +18,11 @@ jest.mock("ioredis", () =>
   })
 );
 
-const request = supertest(app);
-
 describe("QueryUser tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
+  let request: TestAgent<supertest.Test>;
+  let producer: Producer;
 
   beforeAll(async () => {
     client = await MongoClient.connect(
@@ -30,7 +32,9 @@ describe("QueryUser tests", () => {
     dbInstance = client.db(
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
     );
-    app.locals.db = dbInstance;
+
+    const server = await main(dbInstance, producer);
+    request = supertest(server, { http2: true });
   });
 
   afterAll(async () => {
@@ -65,8 +69,9 @@ describe("QueryUser tests", () => {
         }`,
         variables: {},
         operationName: "GetUser",
+        "content-type": "application/json",
       })
-      .set("Accept", "application/json")
+      .set("Accept", "text/event-stream")
       .set(
         "Authorization",
         jwt.sign(
@@ -81,9 +86,11 @@ describe("QueryUser tests", () => {
         )
       )
       .set("Cookie", `id=` + user_id);
-    expect(response.body.data.user.id).toBeTruthy();
-    expect(response.body.data.user.accountAvailable).toBe("$500.00");
-    expect(response.body.data.user.accountToBePaid).toBe("$0.00");
-    expect(response.body.data.user.accountTotal).toBe("$500.00");
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.user.id).toBeTruthy();
+    expect(data.data.user.accountAvailable).toBe("$500.00");
+    expect(data.data.user.accountToBePaid).toBe("$0.00");
+    expect(data.data.user.accountTotal).toBe("$500.00");
   });
 });

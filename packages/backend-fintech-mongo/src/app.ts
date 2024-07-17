@@ -1,12 +1,10 @@
-import express from "express";
-import { GraphQLSchema, GraphQLObjectType } from "graphql";
-import cors from "cors";
+import { GraphQLSchema, GraphQLObjectType, parse } from "graphql";
 import { QueryUser } from "./QueryUser";
 import { dataDrivenDependencies, nodeField } from "./Nodes";
 import { AddLendsMutation } from "./mutations/AddLends";
 import { AddFundsMutation } from "./mutations/AddFunds";
 import { AddLoanMutation } from "./mutations/AddLoan";
-import { getContext } from "./utils";
+import { getContextSSE } from "./utils";
 import {
   investments_subscribe_insert,
   loans_subscribe_insert,
@@ -17,14 +15,13 @@ import {
   my_loans_subscribe_insert,
 } from "./subscriptions/subscriptions";
 import { ApproveLoanMutation } from "./mutations/ApproveLoan";
-import {
-  getGraphQLParameters,
-  processRequest,
-  renderGraphiQL,
-  shouldRenderGraphiQL,
-} from "graphql-helix";
-import cookieParser from "cookie-parser";
 import { QueryScheduledPayments } from "./QueryScheduledPayments";
+import { createSecureServer } from "http2";
+import { Db } from "mongodb";
+import { Producer } from "kafkajs";
+import { createHandler } from "graphql-sse/lib/use/http2";
+import fs from "fs";
+import queryMap from "./queryMap.json";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -65,49 +62,68 @@ export const schema = new GraphQLSchema({
   subscription: Subscription,
 });
 
-const app = express();
-
-app.use(express.json());
-
-app.use(cookieParser());
-
-app.use(
-  cors({
-    origin: ["http://relay-gateway:4001", "http://backend-auth-node:4002"],
-    credentials: true,
-  })
-);
-
-app.use("/graphql", async (req, res) => {
-  const request = {
-    body: req.body,
-    headers: req.headers,
-    method: req.method,
-    query: req.query,
-  };
-  if (shouldRenderGraphiQL(request)) {
-    res.send(renderGraphiQL());
-  } else {
-    const { operationName, query, variables } = getGraphQLParameters(request);
-    const context = await getContext(req);
-    dataDrivenDependencies.reset();
-    const result = await processRequest({
-      operationName,
-      query,
-      variables,
-      request,
-      schema,
-      contextFactory: () => context,
-    });
-    if (result.type === "RESPONSE") {
-      result.headers.forEach(({ name, value }) => res.setHeader(name, value));
-      res.status(result.status);
-      result.payload.extensions = {
-        modules: dataDrivenDependencies.getModules(),
-      };
-      res.json(result.payload);
-    }
+const main = async (db: Db, producer: Producer) => {
+  if (producer) {
+    await producer.connect();
   }
-});
+  const handler = createHandler({
+    schema,
+    context: async (request) => {
+      const context = await getContextSSE(request, db, producer);
+      dataDrivenDependencies.reset();
+      return context;
+    },
+    onSubscribe: async (request, params) => {
+      const doc_id = params.extensions?.doc_id;
+      const query = queryMap.find((query) => query[0] === doc_id);
+      if (query) {
+        return {
+          schema,
+          document: parse(query[1]),
+          variableValues: params.variables,
+          contextValue: await getContextSSE(request, db, producer),
+        };
+      }
+      return [null, { status: 404, statusText: "Not Found" }];
+    },
+    //onOperation: (_req, _args, result) => {
+    //  return {
+    //    ...result,
+    //    extensions: {
+    //      modules: dataDrivenDependencies.getModules()
+    //    },
+    //  };
+    //}
+  });
+  const server = createSecureServer(
+    {
+      key: fs.readFileSync("../../certs/localhost.key"),
+      cert: fs.readFileSync("../../certs/localhost.crt"),
+    },
+    async (req, res) => {
+      try {
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:8000");
+        res.setHeader(
+          "Access-Control-Allow-Methods",
+          "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        );
+        res.setHeader(
+          "Access-Control-Allow-Headers",
+          "Content-Type, Authorization"
+        );
+        const isOptions = req.method === "OPTIONS";
+        if (isOptions) {
+          return res.writeHead(200).end();
+        } else if (req.url.startsWith("/graphql")) {
+          await handler(req, res);
+        }
+      } catch (err) {
+        console.log("err:", err);
+        res.writeHead(500).end();
+      }
+    }
+  );
+  return server;
+};
 
-export { app };
+export { main };

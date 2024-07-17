@@ -15,6 +15,7 @@ import {
   REFRESH_TOKEN_EXP_NUMBER,
 } from "../utils";
 import { customAlphabet } from "nanoid";
+import { serialize } from "cookie";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -59,7 +60,7 @@ export const SignUpMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
-    { authusers, res, logins, ip, sessions, deviceName, deviceType }: Context
+    { authusers, req, logins, ip, sessions, deviceName, deviceType }: Context
   ): Promise<Payload> => {
     try {
       const user = await authusers.findOne({ email });
@@ -110,12 +111,15 @@ export const SignUpMutation = mutationWithClientMutationId({
         ACCESSSECRET
       );
       const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1000);
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        expires: refreshTokenExpireDate,
-        secure: NODE_ENV === "production" ? true : false,
-      });
-      res?.setHeader("accessToken", accessToken);
+      req.context.res.appendHeader(
+        "Set-Cookie",
+        serialize("refreshToken", refreshToken, {
+          httpOnly: true,
+          expires: refreshTokenExpireDate,
+          secure: NODE_ENV === "production" ? true : false,
+        })
+      );
+      req.context.res.setHeader("accessToken", accessToken);
       await createUser(id);
       await logins.insertOne({
         applicationName: "Lerna Monorepo",

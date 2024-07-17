@@ -8,6 +8,7 @@ import {
   jwt,
   REFRESH_TOKEN_EXP_NUMBER,
 } from "../utils";
+import { serialize } from "cookie";
 
 interface Input {
   email: string;
@@ -36,7 +37,7 @@ export const SignInMutation = mutationWithClientMutationId({
     {
       authusers,
       rdb,
-      res,
+      req,
       logins,
       ip,
       sessions,
@@ -81,12 +82,15 @@ export const SignInMutation = mutationWithClientMutationId({
         ACCESSSECRET
       );
       const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1000);
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        expires: refreshTokenExpireDate,
-        secure: NODE_ENV === "production" ? true : false,
-      });
-      res?.setHeader("accessToken", accessToken);
+      req.context.res.appendHeader(
+        "Set-Cookie",
+        serialize("refreshToken", refreshToken, {
+          httpOnly: true,
+          expires: refreshTokenExpireDate,
+          secure: NODE_ENV === "production" ? true : false,
+        })
+      );
+      req.context.res?.setHeader("accessToken", accessToken);
       await logins.insertOne({
         applicationName: "Lerna Monorepo",
         address: ip || "",

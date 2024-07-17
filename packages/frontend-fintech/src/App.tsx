@@ -1,6 +1,6 @@
 import { createContext, Dispatch, FC, SetStateAction, useState } from "react";
 import { RelayEnvironmentProvider } from "react-relay/hooks";
-import { RelayEnvironment } from "./RelayEnvironment";
+import { RelayEnvironmentAuth } from "./RelayEnvironment";
 import { MyRouter } from "./router";
 import * as stylex from "@stylexjs/stylex";
 import { Languages } from "./utils";
@@ -24,7 +24,7 @@ export const App: FC = () => {
   );
   return (
     <LanguageContext.Provider value={[language, setLanguage]}>
-      <RelayEnvironmentProvider environment={RelayEnvironment}>
+      <RelayEnvironmentProvider environment={RelayEnvironmentAuth}>
         <MyRouter />
       </RelayEnvironmentProvider>
     </LanguageContext.Provider>

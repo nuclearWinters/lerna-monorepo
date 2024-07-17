@@ -1,0 +1,17 @@
+{
+  "src": "./src/authSrc",
+  "customScalarTypes": {
+    "Date": "Int",
+    "MXN": "string"
+  },
+  "schema": "./schemaAuth.graphql",
+  "language": "typescript",
+  "exclude": [
+    "**/node_modules/**",
+    "**/__mocks__/**"
+  ],
+  "persistConfig": {
+    "url": "http://localhost:2999",
+    "params": {}
+  }
+}

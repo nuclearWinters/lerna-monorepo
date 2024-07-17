@@ -1,6 +1,7 @@
-import { CookieOptions } from "express";
 import { ObjectId, Collection } from "mongodb";
 import { createClient } from "redis";
+import { Request } from "graphql-sse";
+import { Http2ServerRequest, Http2ServerResponse } from "http2";
 
 export type RedisClientType = ReturnType<typeof createClient>;
 
@@ -11,16 +12,12 @@ export interface Context {
   rdb: RedisClientType;
   accessToken?: string;
   refreshToken?: string;
-  res: {
-    cookie: (name: string, val: string, options: CookieOptions) => void;
-    clearCookie: (name: string, options?: CookieOptions | undefined) => void;
-    setHeader: (key: string, value: string) => void;
-  };
   validAccessToken?: string;
   id?: string;
   ip?: string;
   deviceType: string;
   deviceName: string;
+  req: Request<Http2ServerRequest, { res: Http2ServerResponse }>;
 }
 
 export interface UserLogins {

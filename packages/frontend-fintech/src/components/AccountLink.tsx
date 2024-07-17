@@ -1,6 +1,6 @@
 import { FC } from "react";
 import * as stylex from "@stylexjs/stylex";
-import { Link } from "@loop-payments/react-router-relay";
+import { Link } from "../react-router-relay";
 
 interface Props {
   title: string;

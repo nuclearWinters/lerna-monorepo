@@ -9,24 +9,25 @@
     "serve": "",
     "pcm": "lint-staged",
     "test": "jest --bail",
-    "relay": "relay-compiler",
+    "relayAuth": "relay-compiler ./relayAuth.config.json",
+    "relayFintech": "relay-compiler ./relayFintech.config.json",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "persist-server": "node ./relayLocalPersisting.js"
   },
   "dependencies": {
-    "@loop-payments/react-router-relay": "^1.0.0",
     "@react-icons/all-files": "^4.1.0",
-    "@stylexjs/stylex": "^0.5.1",
-    "dayjs": "^1.11.5",
+    "@stylexjs/stylex": "^0.6.1",
+    "dayjs": "^1.11.11",
+    "graphql-sse": "^2.5.3",
     "graphql-ws": "^5.10.1",
     "jwt-decode": "^4.0.0",
     "nanoid": "^5.0.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^5.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.2.0",
     "react-idle-timer": "^5.4.1",
     "react-relay": "^16.0.0",
-    "react-router-dom": "^6.22.3",
+    "react-router-dom": "^6.23.0",
     "relay-runtime": "^16.0.0"
   },
   "devDependencies": {
@@ -34,13 +35,13 @@
     "@babel/preset-env": "^7.18.10",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
-    "@stylexjs/eslint-plugin": "^0.5.1",
-    "@stylexjs/webpack-plugin": "^0.5.1",
-    "@testing-library/react": "^15.0.2",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.13",
+    "@stylexjs/eslint-plugin": "^0.6.1",
+    "@stylexjs/webpack-plugin": "^0.6.1",
+    "@testing-library/react": "^15.0.6",
     "@types/jest": "^29.0.0",
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
     "@types/react-relay": "^16.0.6",
     "@types/relay-runtime": "^14.1.2",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
@@ -50,7 +51,7 @@
     "babel-loader": "^9.1.0",
     "babel-plugin-relay": "^16.0.0",
     "css-loader": "^7.0.0",
-    "eslint": "^9.0.0",
+    "eslint": "^9.2.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-flowtype": "^8.0.3",
@@ -66,7 +67,7 @@
     "jest": "^29.0.0",
     "lint-staged": "^15.0.2",
     "prettier": "^3.0.3",
-    "react-refresh": "^0.14.0",
+    "react-refresh": "^0.14.2",
     "relay-compiler": "^16.0.0",
     "relay-config": "^12.0.1",
     "source-map-explorer": "^2.5.3",
@@ -90,23 +91,6 @@
     "modulePathIgnorePatterns": [
       "build/"
     ]
-  },
-  "relay": {
-    "src": "./src",
-    "customScalarTypes": {
-      "Date": "Int",
-      "MXN": "string"
-    },
-    "schema": "./schema.graphql",
-    "language": "typescript",
-    "exclude": [
-      "**/node_modules/**",
-      "**/__mocks__/**"
-    ],
-    "persistConfig": {
-      "url": "http://localhost:2999",
-      "params": {}
-    }
   },
   "browserslist": {
     "production": [

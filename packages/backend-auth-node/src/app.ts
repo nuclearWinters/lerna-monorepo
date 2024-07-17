@@ -1,21 +1,18 @@
-import express from "express";
-import { GraphQLSchema, GraphQLObjectType } from "graphql";
-import cors from "cors";
+import { GraphQLSchema, GraphQLObjectType, parse } from "graphql";
 import { SignUpMutation } from "./mutations/SignUpMutation";
 import { SignInMutation } from "./mutations/SignInMutation";
-import { getContext } from "./utils";
+import { getContextSSE } from "./utils";
 import { QueryUser, nodeField } from "./AuthUserQuery";
 import { UpdateUserMutation } from "./mutations/UpdateUser";
-import {
-  getGraphQLParameters,
-  processRequest,
-  renderGraphiQL,
-  shouldRenderGraphiQL,
-} from "graphql-helix";
-import cookieParser from "cookie-parser";
 import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation";
 import { LogOutMutation } from "./mutations/LogOutMutation";
 import { RevokeSessionMutation } from "./mutations/RevokeSession";
+import { createSecureServer } from "http2";
+import { createHandler } from "graphql-sse/lib/use/http2";
+import { RedisClientType } from "./types";
+import { Db } from "mongodb";
+import fs from "fs";
+import queryMap from "./queryMapAuth.json";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -37,50 +34,60 @@ const Query = new GraphQLObjectType({
   },
 });
 
-const schema = new GraphQLSchema({
+export const schema = new GraphQLSchema({
   mutation: Mutation,
   query: Query,
 });
 
-const app = express();
-
-app.use(cookieParser());
-
-app.use(express.json());
-
-app.use(
-  cors({
-    origin: ["http://relay-gateway:3001", "http://backend-fintech:3000"],
-    credentials: true,
-  })
-);
-
-app.use("/graphql", async (req, res) => {
-  const request = {
-    body: req.body,
-    headers: req.headers,
-    method: req.method,
-    query: req.query,
-  };
-  if (shouldRenderGraphiQL(request)) {
-    res.send(renderGraphiQL());
-  } else {
-    const { operationName, query, variables } = getGraphQLParameters(request);
-    const context = getContext(req, res);
-    const result = await processRequest({
-      operationName,
-      query,
-      variables,
-      request,
-      schema,
-      contextFactory: () => context,
-    });
-    if (result.type === "RESPONSE") {
-      result.headers.forEach(({ name, value }) => res.setHeader(name, value));
-      res.status(result.status);
-      res.json(result.payload);
+const main = async (db: Db, rdb: RedisClientType) => {
+  const handler = createHandler({
+    schema,
+    context: (request) => {
+      return getContextSSE(request, db, rdb);
+    },
+    onSubscribe: (request, params) => {
+      const doc_id = params.extensions?.doc_id;
+      const query = queryMap.find((query) => query[0] === doc_id);
+      if (query) {
+        return {
+          schema,
+          document: parse(query[1]),
+          variableValues: params.variables,
+          contextValue: getContextSSE(request, db, rdb),
+        };
+      }
+      return [null, { status: 404, statusText: "Not Found" }];
+    },
+  });
+  const server = createSecureServer(
+    {
+      key: fs.readFileSync("../../certs/localhost.key"),
+      cert: fs.readFileSync("../../certs/localhost.crt"),
+    },
+    async (req, res) => {
+      try {
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:8000");
+        res.setHeader(
+          "Access-Control-Allow-Methods",
+          "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        );
+        res.setHeader(
+          "Access-Control-Allow-Headers",
+          "Content-Type, Authorization"
+        );
+        res.setHeader("Access-Control-Expose-Headers", "Accesstoken");
+        const isOptions = req.method === "OPTIONS";
+        if (isOptions) {
+          return res.writeHead(200).end();
+        } else if (req?.url?.startsWith("/graphql")) {
+          await handler(req, res);
+        }
+      } catch (err) {
+        res.writeHead(500).end();
+      }
     }
-  }
-});
+  );
+  return server;
+};
 
-export { app };
+export { main };

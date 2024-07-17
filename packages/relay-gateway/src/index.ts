@@ -1,46 +1,105 @@
-import { app } from "./app";
 import { schemaFromExecutor, wrapSchema } from "@graphql-tools/wrap";
 import { stitchSchemas } from "@graphql-tools/stitch";
-import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
-import {
-  ExecutionResult,
-  getOperationAST,
-  OperationTypeNode,
-  parse,
-  print,
-} from "graphql";
-import { createClient } from "graphql-ws";
-import { IContextResult, jwtMiddleware, setExtensionsContext } from "./utils";
-import { useServer } from "graphql-ws/lib/use/ws";
-import {
-  getGraphQLParameters,
-  processRequest,
-  renderGraphiQL,
-  shouldRenderGraphiQL,
-} from "graphql-helix";
-import ws, { Server as WebSocketServer, CloseEvent } from "ws";
+import { OperationTypeNode, parse, print } from "graphql";
+import { parse as parseCookie } from "cookie";
+import { jwtMiddleware } from "./utils";
 import cookie from "cookie";
-import { ObjMap } from "graphql/jsutils/ObjMap";
 import { delegateToSchema } from "@graphql-tools/delegate";
 import { fromGlobalId } from "graphql-relay";
 import queryMap from "./queryMap.json";
+import { createHandler } from "graphql-sse/lib/use/http2";
+import { createSecureServer } from "http2";
+import { buildHTTPExecutor } from "@graphql-tools/executor-http";
+import fs from "fs";
+import { AsyncExecutor, observableToAsyncIterable } from "@graphql-tools/utils";
+import { fetch } from "@whatwg-node/fetch";
+import { createClient } from "graphql-sse";
 
-const httpExecutor = (url: string): AsyncExecutor => {
+//import { ex } from "@graphql-tools/executor"
+
+const subscriptionClient = createClient({
+  url: "https://backend-auth-node:4002/graphql",
+  fetchFn: fetch,
+  headers: {
+    accept: "text/event-stream",
+  },
+});
+
+console.log("env:", process.env);
+
+const executor =
+  (url: string): AsyncExecutor =>
+  async ({ document, variables, operationName, extensions }) => {
+    const query = print(document);
+    console.log("query:", query);
+    //const agent = new https.Agent({
+    //  key: fs.readFileSync("../../certs/localhost-privkey.pem"),
+    //  cert: fs.readFileSync("../../certs/localhost-cert.pem"),
+    //})
+    const fetchResult = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "text/event-stream",
+      },
+      //body: JSON.stringify({ query, variables, operationName, extensions }),
+    });
+    const text = fetchResult.arrayBuffer();
+    console.log("text:", text);
+    return text;
+  };
+
+const SSEExecutor: AsyncExecutor = async ({
+  document,
+  variables,
+  operationName,
+  extensions,
+}) =>
+  observableToAsyncIterable({
+    subscribe: (observer) => ({
+      unsubscribe: subscriptionClient.subscribe(
+        {
+          query: print(document),
+          variables: variables as Record<string, any>,
+          operationName,
+          extensions,
+        },
+        {
+          next: (data) => observer.next?.(data as unknown),
+          error(err) {
+            if (!observer.error) return;
+            if (err instanceof Error) {
+              observer.error(err);
+            } else if (err instanceof CloseEvent) {
+              observer.error(new Error(`Socket closed with event ${err.code}`));
+            } else if (Array.isArray(err)) {
+              // GraphQLError[]
+              observer.error(
+                new Error(err.map(({ message }) => message).join(", "))
+              );
+            }
+          },
+          complete: () => observer.complete?.(),
+        }
+      ),
+    }),
+  });
+
+/*const httpExecutor = (url: string): AsyncExecutor => {
   return async ({ document, variables, context }) => {
     const query = print(document);
     const fetchResult = await fetch(url, {
       method: "POST",
       headers: context?.req?.headers
         ? {
-            "x-forwarded-for": context?.req?.socket?.remoteAddress,
-            authorization: context?.req?.headers?.["authorization"],
-            cookie: context?.req?.headers?.["cookie"],
-            "content-type": context?.req?.headers?.["content-type"],
-            "user-agent": context?.req?.headers?.["user-agent"],
-          }
+          "x-forwarded-for": context?.req?.socket?.remoteAddress,
+          authorization: context?.req?.headers?.["authorization"],
+          cookie: context?.req?.headers?.["cookie"],
+          "content-type": context?.req?.headers?.["content-type"],
+          "user-agent": context?.req?.headers?.["user-agent"],
+        }
         : {
-            "Content-Type": "application/json",
-          },
+          "Content-Type": "application/json",
+        },
       body: JSON.stringify({ query, variables }),
     });
     const cookiesResponse = fetchResult.headers.get("set-cookie") || "";
@@ -57,88 +116,32 @@ const httpExecutor = (url: string): AsyncExecutor => {
     }
     return result;
   };
-};
+};*/
 
-const executorBoth =
-  (url: string, streamUrl: string): AsyncExecutor =>
-  async (args) => {
-    const operation = getOperationAST(args.document, args.operationName);
-    if (operation?.operation === OperationTypeNode.SUBSCRIPTION) {
-      return wsExecutor(streamUrl)(args);
-    }
-    return httpExecutor(url)(args);
-  };
+const remoteExecutorFintech = buildHTTPExecutor({
+  endpoint: "https://backend-fintech:4000/graphql",
+  fetch,
+  headers: {
+    accept: "text/event-stream",
+  },
+});
 
-const wsExecutor = (url: string): AsyncExecutor => {
-  return async ({
-    document,
-    variables,
-    operationName,
-    extensions,
-    context,
-  }) => {
-    const subscriptionClient = createClient({
-      url,
-      webSocketImpl: ws,
-      connectionParams: () => {
-        return {
-          Authorization: (context?.Authorization as string | undefined) || "",
-        };
-      },
-    });
-    return observableToAsyncIterable({
-      subscribe: (observer) => ({
-        unsubscribe: subscriptionClient.subscribe(
-          {
-            query: print(document),
-            variables: variables as Record<string, unknown>,
-            operationName,
-            extensions,
-          },
-          {
-            next: (data: unknown) => {
-              observer.next &&
-                observer.next(data as ExecutionResult<null, unknown>);
-            },
-            error: (err) => {
-              if (!observer.error) return;
-              if (err instanceof Error) {
-                observer.error(err);
-              } else if ((err as CloseEvent)?.code) {
-                observer.error(
-                  new Error(
-                    `Socket closed with event ${(err as CloseEvent).code}`
-                  )
-                );
-              } else if (Array.isArray(err)) {
-                observer.error(
-                  new Error(err.map(({ message }) => message).join(", "))
-                );
-              }
-            },
-            complete: () => {
-              observer.complete && observer.complete();
-            },
-          }
-        ),
-      }),
-    });
-  };
-};
+const remoteExecutorAuth = buildHTTPExecutor({
+  endpoint: "https://backend-auth-node:4002/graphql",
+  fetch,
+  headers: {
+    accept: "text/event-stream",
+  },
+});
 
 const makeGatewaySchema = async () => {
-  const fintech = executorBoth(
-    "http://backend-fintech:4000/graphql",
-    "ws://backend-fintech:4000/graphql"
-  );
-  const auth = httpExecutor("http://backend-auth-node:4002/graphql");
   const schemaFintech = wrapSchema({
-    schema: await schemaFromExecutor(fintech),
-    executor: fintech,
+    schema: await schemaFromExecutor(remoteExecutorFintech),
+    executor: remoteExecutorFintech,
   });
   const schemaAuth = wrapSchema({
-    schema: await schemaFromExecutor(auth),
-    executor: auth,
+    schema: await schemaFromExecutor(remoteExecutorAuth),
+    executor: SSEExecutor,
   });
   const gatewaySchema = stitchSchemas({
     subschemas: [schemaFintech, schemaAuth],
@@ -175,119 +178,101 @@ const makeGatewaySchema = async () => {
 };
 
 makeGatewaySchema().then((schema) => {
-  app.use("/graphql", async (req, res) => {
-    const doc_id = req.body?.doc_id;
-    const query = queryMap.find((query) => query[0] === doc_id);
-    const request = {
-      body: {
-        ...req.body,
-        ...(query
-          ? {
-              query: query?.[1],
-            }
-          : {}),
-      },
-      headers: req.headers,
-      method: req.method,
-      query: req.query,
-    };
-    if (shouldRenderGraphiQL(request)) {
-      res.send(renderGraphiQL());
-    } else {
-      const refreshToken: string = req.cookies.refreshToken ?? "";
-      if (req.cookies.refreshToken) {
-        try {
-          const response = await jwtMiddleware(
-            refreshToken,
-            req.headers.authorization ?? ""
-          );
-          const validAccessToken = response.getValidaccesstoken();
-          req.headers.authorization = validAccessToken;
-          res.setHeader("accessToken", validAccessToken);
-          const id = response.getId();
-          const isLender = response.getIslender();
-          const isBorrower = response.getIsborrower();
-          const isSupport = response.getIssupport();
-          if (req?.headers?.cookie) {
-            req.headers.cookie +=
-              "; " +
-              cookie.serialize("id", id, {
-                httpOnly: true,
-              });
-            req.headers.cookie +=
-              "; " +
-              cookie.serialize("isLender", String(isLender), {
-                httpOnly: true,
-              });
-            req.headers.cookie +=
-              "; " +
-              cookie.serialize("isBorrower", String(isBorrower), {
-                httpOnly: true,
-              });
-            req.headers.cookie +=
-              "; " +
-              cookie.serialize("isSupport", String(isSupport), {
-                httpOnly: true,
-              });
-          }
-        } catch (e) {
-          req.headers.authorization = "";
+  const handler = createHandler({
+    schema,
+    context: async (request) => {
+      const rawCookies = request.headers.get("cookie") || "";
+      const cookies = parseCookie(rawCookies);
+      const refreshToken = cookies.refreshToken ?? "";
+      const accessToken = cookies.authorization ?? "";
+      try {
+        const response = await jwtMiddleware(refreshToken, accessToken);
+        const validAccessToken = response.getValidaccesstoken();
+        request.raw.headers.authorization = validAccessToken;
+        request.context.res.setHeader("accessToken", validAccessToken);
+        const id = response.getId();
+        const isLender = response.getIslender();
+        const isBorrower = response.getIsborrower();
+        const isSupport = response.getIssupport();
+        if (rawCookies) {
+          request.raw.headers.cookie +=
+            "; " +
+            cookie.serialize("id", id, {
+              httpOnly: true,
+            });
+          request.raw.headers.cookie +=
+            "; " +
+            cookie.serialize("isLender", String(isLender), {
+              httpOnly: true,
+            });
+          request.raw.headers.cookie +=
+            "; " +
+            cookie.serialize("isBorrower", String(isBorrower), {
+              httpOnly: true,
+            });
+          request.raw.headers.cookie +=
+            "; " +
+            cookie.serialize("isSupport", String(isSupport), {
+              httpOnly: true,
+            });
         }
+      } catch (e) {
+        request.raw.headers.authorization = "";
       }
-      const { operationName, query, variables } = getGraphQLParameters(request);
-      const result = await processRequest({
-        operationName,
-        query,
-        variables,
-        request,
-        schema,
-        contextFactory: () => ({ req, res }),
-      });
-      if (result.type === "RESPONSE") {
-        result.headers.forEach(({ name, value }) => res.setHeader(name, value));
-        res.status(result.status);
-        result.payload.extensions = (
-          result.context as IContextResult | undefined
-        )?.extensions as ObjMap<unknown> | undefined;
-        res.json(result.payload);
+      return { request };
+    },
+    onSubscribe: (_req, params) => {
+      const doc_id = params.extensions?.doc_id;
+      const query = queryMap.find((query) => query[0] === doc_id);
+      if (query) {
+        return {
+          schema,
+          document: parse(query[1]),
+          variableValues: params.variables,
+          contextValue: undefined,
+        };
+      }
+      return [null, { status: 404, statusText: "Not Found" }];
+    },
+    onComplete: () => {
+      console.log("complete");
+    },
+    onOperation: (_ctx, _req, _args, result) => {
+      console.log("operation-result:", result);
+      return result;
+    },
+    onNext: (_ctx, _req, result) => {
+      console.log("next-result:", result);
+    },
+  });
+  const server = createSecureServer(
+    {
+      key: fs.readFileSync("../../certs/localhost-privkey.pem"),
+      cert: fs.readFileSync("../../certs/localhost-cert.pem"),
+      allowHTTP1: true,
+    },
+    async (req, res) => {
+      try {
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:8000");
+        res.setHeader(
+          "Access-Control-Allow-Methods",
+          "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        );
+        res.setHeader(
+          "Access-Control-Allow-Headers",
+          "Content-Type, Authorization"
+        );
+
+        const isOptions = req.method === "OPTIONS";
+        if (isOptions) {
+          return res.writeHead(200).end();
+        } else if (req.url.startsWith("/graphql")) {
+          await handler(req, res);
+        }
+      } catch (err) {
+        res.writeHead(500).end();
       }
     }
-  });
-  const server = app.listen(4001, () => {
-    const wsServer = new WebSocketServer({
-      server,
-      path: "/graphql",
-    });
-    useServer(
-      {
-        schema,
-        context: (ctx) => {
-          return {
-            Authorization:
-              (ctx?.connectionParams?.Authorization as string | undefined) ||
-              "",
-          };
-        },
-        onSubscribe: (_ctx, msg) => {
-          const doc_id = msg.payload.extensions?.doc_id;
-          if (typeof doc_id === "string") {
-            const persistedQuery = queryMap.find(
-              (query) => query[0] === doc_id
-            );
-            if (persistedQuery) {
-              const args = {
-                schema,
-                operationName: msg.payload.operationName,
-                document: parse(persistedQuery[1]),
-                variableValues: msg.payload.variables,
-              };
-              return args;
-            }
-          }
-          return;
-        },
-      },
-      wsServer
-    );
-  });
+  );
+  server.listen(4001);
 });

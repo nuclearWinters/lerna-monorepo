@@ -1,12 +1,20 @@
 import { Db } from "mongodb";
-import { UserMongo, Context, UserLogins, UserSessions } from "./types";
+import {
+  UserMongo,
+  Context,
+  UserLogins,
+  UserSessions,
+  RedisClientType,
+} from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
 import { AuthClient } from "./proto/auth_grpc_pb";
 import { credentials } from "@grpc/grpc-js";
 import { CreateUserInput, CreateUserPayload } from "./proto/auth_pb";
-import { Request, Response } from "express";
-import DeviceDetector from "node-device-detector";
+//import DeviceDetector from "node-device-detector";
+import { Request } from "graphql-sse";
+import { Http2ServerRequest, Http2ServerResponse } from "http2";
+import { parse } from "cookie";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -34,26 +42,30 @@ export const jwt = {
   },
 };
 
-export const getContext = (req: Request, res: Response): Context => {
-  const authdb = req.app.locals.authdb as Db;
-  const rdb = req.app.locals.rdb;
-  const ip = req.header("x-forwarded-for") || req.socket.remoteAddress;
-  const accessToken = req.headers.authorization || "";
-  const refreshToken = req.cookies.refreshToken || "";
-  const id = req.cookies.id || "";
-  const userAgent = req.headers["user-agent"];
-  const detector = new DeviceDetector({
-    clientIndexes: true,
-    deviceIndexes: true,
-    deviceAliasCode: false,
-  });
+export const getContextSSE = (
+  req: Request<Http2ServerRequest, { res: Http2ServerResponse }>,
+  authdb: Db,
+  rdb: RedisClientType
+): Record<string, unknown> => {
+  //const ip = req.headers.get("x-forwarded-for") || req.socket.remoteAddress;
+  const ip = "";
+  const accessToken = req.headers.get("authorization") || "";
+  const cookies = parse(req.headers.get("cookie") || "");
+  const refreshToken = cookies.refreshToken || "";
+  const id = cookies.id || "";
+  //const userAgent = req.headers["user-agent"];
+  //const detector = new DeviceDetector({
+  //  clientIndexes: true,
+  //  deviceIndexes: true,
+  //  deviceAliasCode: false,
+  //});
   let deviceName = "";
   let deviceType = "";
-  if (userAgent) {
+  /*if (userAgent) {
     const result = detector.detect(userAgent);
     deviceName = `${result.os.name} ${result.os.version}`;
     deviceType = `${result.device.type} ${result.client.type} ${result.client.name}`;
-  }
+  }*/
   return {
     authusers: authdb.collection<UserMongo>("users"),
     logins: authdb.collection<UserLogins>("logins"),
@@ -61,11 +73,11 @@ export const getContext = (req: Request, res: Response): Context => {
     rdb,
     accessToken,
     refreshToken,
-    res,
     id,
     ip,
     deviceName,
     deviceType,
+    req,
   };
 };
 

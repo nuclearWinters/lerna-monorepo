@@ -1,8 +1,6 @@
 import { LanguageContext } from "./App";
 import { resources } from "./i18n";
 import { useContext } from "react";
-import { graphql, useMutation } from "react-relay";
-import { utilsLogOutMutation } from "./__generated__/utilsLogOutMutation.graphql";
 
 export interface Decode {
   id: string;
@@ -15,34 +13,11 @@ export interface Decode {
 
 export type Languages = "EN" | "ES";
 
-export const useLogout = () => {
-  const [commit] = useMutation<utilsLogOutMutation>(graphql`
-    mutation utilsLogOutMutation($input: LogOutInput!) {
-      logOut(input: $input) {
-        error
-      }
-    }
-  `);
-  const logout = () => {
-    commit({
-      variables: {
-        input: {},
-      },
-      onCompleted: () => {
-        sessionStorage.removeItem("accessToken");
-        sessionStorage.removeItem("userData");
-        window.location.reload();
-      },
-    });
-  };
-  return logout;
-};
+export const AUTH_API =
+  process.env.REALTIME_GATEWAY || "https://localhost:4002/graphql";
 
-export const API_GATEWAY =
-  process.env.API_GATEWAY || "http://localhost:4001/graphql";
-
-export const REALTIME_GATEWAY =
-  process.env.REALTIME_GATEWAY || "ws://localhost:4001/graphql";
+export const FINTECH_API =
+  process.env.REALTIME_GATEWAY || "https://localhost:4000/graphql";
 
 export const useTranslation = () => {
   const [language, changeLanguage] = useContext(LanguageContext);
@@ -88,28 +63,3 @@ export const lenderPages = [
   "/myTransactions",
   "/settings",
 ];
-
-export const authUserQuery = graphql`
-  query utilsQuery @preloadable {
-    user {
-      id
-      accountAvailable
-      accountTotal
-    }
-    authUser {
-      id
-      name
-      apellidoPaterno
-      apellidoMaterno
-      RFC
-      CURP
-      clabe
-      mobile
-      isLender
-      isBorrower
-      isSupport
-      language
-      email
-    }
-  }
-`;

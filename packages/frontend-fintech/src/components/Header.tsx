@@ -1,14 +1,15 @@
-import { authUserQuery, useLogout, useTranslation } from "../utils";
-import { CheckExpiration } from "../components/CheckExpiration";
+import { useTranslation } from "../utils";
+import { CheckExpiration } from "../authSrc/components/CheckExpiration";
 import { FaUserCircle } from "@react-icons/all-files/fa/FaUserCircle";
 import { FaSignOutAlt } from "@react-icons/all-files/fa/FaSignOutAlt";
 import { FC } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { useNavigate } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
-import { utilsQuery } from "../__generated__/utilsQuery.graphql";
 import { CustomButton } from "./CustomButton";
-import { Link } from "@loop-payments/react-router-relay";
+import { authUserQuery, useLogout } from "../authSrc/utilsAuth";
+import { utilsAuthQuery } from "../authSrc/__generated__/utilsAuthQuery.graphql";
+import { Link } from "../react-router-relay";
 
 const baseRoutesHeaderLogged = stylex.create({
   base: {
@@ -72,7 +73,7 @@ const baseRoutesIconLogout = stylex.create({
   },
 });
 
-export const Header: FC<{ query: PreloadedQuery<utilsQuery, {}> }> = ({
+export const Header: FC<{ query: PreloadedQuery<utilsAuthQuery, {}> }> = ({
   query,
 }) => {
   const { authUser } = usePreloadedQuery(authUserQuery, query);

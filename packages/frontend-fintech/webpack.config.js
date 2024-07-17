@@ -74,9 +74,9 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin(),
-    new ESLintPlugin({
-      extensions: ["js", "mjs", "jsx", "ts", "tsx"],
-    }),
+    //new ESLintPlugin({
+    //  extensions: ["ts", "tsx"],
+    //}),
     new StylexPlugin({
       filename: "static/css/styles.[contenthash].css",
       dev: isDevelopment,

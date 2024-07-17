@@ -1,30 +1,5 @@
 version: "3"
 services:
-  nginx:
-    container_name: nginx
-    image: nginx
-    volumes:
-      - ./packages/nginx:/etc/nginx/conf.d
-    ports:
-    - '80:80'
-    depends_on:
-    - backend-auth-rust
-    - backend-auth-node
-
-  backend-auth-rust:
-    container_name: backend-auth-rust
-    image: my-rust-app
-    volumes:
-      - .:/usr/src/service
-    working_dir: /usr/src/service/packages/backend-auth-rust
-    ports: 
-      - "8001:8001"
-    depends_on:
-      - mongo-fintech
-      - redis-auth
-    command: 
-      ["./wait-for-it.sh", "backend-auth-node:4002", "--", "cargo", "run"]
-
   kafka:
     image: 'bitnami/kafka:latest'
     ports:
@@ -37,22 +12,8 @@ services:
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
 
-  relay-gateway:
-    container_name: relay-gateway
-    image: node:18
-    volumes:
-      - .:/usr/src/service
-    working_dir: /usr/src/service/packages/relay-gateway
-    command:
-      ["./wait-for-it.sh", "backend-fintech:4000", "--", "npm", "run", "start"]
-    ports:
-      - "4001:4001"
-    depends_on:
-      - backend-fintech
-      - backend-auth-node
-
   kafka-mongo:
-    image: node:18
+    image: node:20
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/kafka-mongo
@@ -67,7 +28,7 @@ services:
 
   backend-fintech:
     container_name: backend-fintech
-    image: node:18
+    image: node:20
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/backend-fintech-mongo
@@ -83,7 +44,7 @@ services:
 
   backend-auth-node:
     container_name: backend-auth-node
-    image: node:18
+    image: node:20
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/backend-auth-node
@@ -97,7 +58,7 @@ services:
 
   frontend-fintech:
     container_name: frontend-fintech
-    image: node:18
+    image: node:20
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service/packages/frontend-fintech

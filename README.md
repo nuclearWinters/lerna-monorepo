@@ -1,45 +1,38 @@
 # Monorepo with a GraphQL Gateway and Relay specifications
 
-This project explores microservices as a monorepository.
+This project explores microservices in a monorepository.
 
-These microservices expose GraphQL schemas with Relay specifications and are merged into one in the GraphQL Gateway so the  app only need to fetch data from one endpoint.
+These microservices use GraphQL (with Relay specifications) along with a GraphQL Gateway. Docker is being used to orchestrate the rollout of services.
 
-Docker will run all microservices locally.
-
-This app is about lending money and earning interest.
+Microservices support HTTP2 at application layer.
 
 **Programming Languages:**
 
 - Javascript
 - Typescript
 
-**Communications:**
+**Architecture Tools:**
 
 - Kafka
 - gRPC
-- GraphQL
+- GraphQL (Relay specifications)
+- Nginx
 
-**Specifications:**
-
-- Relay
-
-**Tools:**
+**Developer Tools:**
 
 - Husky
 - Prettier
 - Webpack
-- lint-staged
 - Eslint
 - Jest
 - Babel
-- Typescript
+- Docker
 
-**Dependencies:**
+**NPM Dependency Highlights:**
 
 - lerna
-- express
 - graphql
-- graphql-ws
+- graphql-sse
 - jsonwebtokens
 - @grpc/grpc-js
 - kafkajs
@@ -47,15 +40,14 @@ This app is about lending money and earning interest.
 - mongodb
 - react
 - supertest
+- testcontainers
+- lint-staged
 
 **Databases:**
 
 - MongoDB
 - Redis
-
-**Environment:**
-
-- Docker
+- Cassandra
 
 To set up the project locally:
 

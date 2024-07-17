@@ -8,6 +8,7 @@ import {
   REFRESH_TOKEN_EXP_NUMBER,
 } from "../utils";
 import { addMinutes, isAfter } from "date-fns";
+import { serialize } from "cookie";
 
 type Payload = {
   error: string;
@@ -25,7 +26,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     _: unknown,
-    { rdb, refreshToken, id, res }: Context
+    { rdb, refreshToken, id, req }: Context
   ): Promise<Payload> => {
     try {
       if (!id) {
@@ -64,11 +65,14 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
         REFRESHSECRET
       );
       const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1000);
-      res.cookie("refreshToken", newRefreshToken, {
-        httpOnly: true,
-        expires: refreshTokenExpireDate,
-        secure: NODE_ENV === "production" ? true : false,
-      });
+      req.context.res.appendHeader(
+        "Set-Cookie",
+        serialize("refreshToken", newRefreshToken, {
+          httpOnly: true,
+          expires: refreshTokenExpireDate,
+          secure: NODE_ENV === "production" ? true : false,
+        })
+      );
       const accessToken = jwt.sign(
         {
           id,
@@ -80,7 +84,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
         },
         ACCESSSECRET
       );
-      res?.setHeader("accessToken", accessToken);
+      req.context.res.setHeader("accessToken", accessToken);
       return {
         error: "",
       };

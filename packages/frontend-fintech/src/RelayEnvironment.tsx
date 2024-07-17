@@ -8,25 +8,59 @@ import {
   Observable,
   GraphQLResponse,
 } from "relay-runtime";
-import { API_GATEWAY, REALTIME_GATEWAY, Decode } from "./utils";
-import { createClient, Sink } from "graphql-ws";
+import { AUTH_API, FINTECH_API, Decode } from "./utils";
 import { jwtDecode } from "jwt-decode";
+import { Sink, createClient } from "graphql-sse";
 
-export const subscriptionsClient = createClient({
-  url: REALTIME_GATEWAY,
-  connectionParams: () => {
-    return {
-      Authorization: sessionStorage.getItem("accessToken"),
-    };
+const subscriptionsClientAuth = createClient({
+  url: AUTH_API,
+  headers: {
+    Authorization: sessionStorage.getItem("accessToken") ?? "",
+  },
+  fetchFn: async (url: string, config: RequestInit) => {
+    const response = await fetch(url, config);
+    const accesstoken = response.headers.get("accessToken");
+    if (accesstoken && sessionStorage.getItem("accessToken") !== accesstoken) {
+      const decoded = jwtDecode<Decode>(accesstoken);
+      sessionStorage.setItem("accessToken", accesstoken);
+      sessionStorage.setItem("userData", JSON.stringify(decoded));
+    }
+    if (sessionStorage.getItem("accessToken") && !accesstoken) {
+      sessionStorage.removeItem("accessToken");
+      sessionStorage.removeItem("userData");
+      return window.location.reload();
+    }
+    return response;
   },
 });
 
-const fetchRelay = async (params: RequestParameters, variables: Variables) => {
+const subscriptionsClientFintech = createClient({
+  url: FINTECH_API,
+  headers: {
+    Authorization: sessionStorage.getItem("accessToken") ?? "",
+  },
+  fetchFn: async (url: string, config: RequestInit) => {
+    const response = await fetch(url, config);
+    const accesstoken = response.headers.get("accessToken");
+    if (accesstoken && sessionStorage.getItem("accessToken") !== accesstoken) {
+      const decoded = jwtDecode<Decode>(accesstoken);
+      sessionStorage.setItem("accessToken", accesstoken);
+      sessionStorage.setItem("userData", JSON.stringify(decoded));
+    }
+    if (sessionStorage.getItem("accessToken") && !accesstoken) {
+      sessionStorage.removeItem("accessToken");
+      sessionStorage.removeItem("userData");
+      return window.location.reload();
+    }
+    return response;
+  },
+});
+
+/*const fetchRelay = async (params: RequestParameters, variables: Variables) => {
   const response = await fetch(API_GATEWAY, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: sessionStorage.getItem("accessToken") ?? "",
     },
     credentials: "include",
     body: JSON.stringify({
@@ -54,15 +88,18 @@ const fetchRelay = async (params: RequestParameters, variables: Variables) => {
   }
 
   return data;
-};
+};*/
 
-const subscribeRelay = (operation: RequestParameters, variables: Variables) => {
+const subscribeRelayAuth = (
+  operation: RequestParameters,
+  variables: Variables
+) => {
   return Observable.create<GraphQLResponse>((sink) => {
     const { text, id, name } = operation;
     if (!(text || id)) {
       return sink.error(new Error("Operation text or id cannot be empty"));
     }
-    return subscriptionsClient.subscribe(
+    return subscriptionsClientAuth.subscribe(
       {
         operationName: name,
         query: text || "",
@@ -76,7 +113,35 @@ const subscribeRelay = (operation: RequestParameters, variables: Variables) => {
   });
 };
 
-const network = Network.create(fetchRelay, subscribeRelay);
+const subscribeRelayFintech = (
+  operation: RequestParameters,
+  variables: Variables
+) => {
+  return Observable.create<GraphQLResponse>((sink) => {
+    const { text, id, name } = operation;
+    if (!(text || id)) {
+      return sink.error(new Error("Operation text or id cannot be empty"));
+    }
+    subscriptionsClientFintech.iterate;
+    return subscriptionsClientFintech.subscribe(
+      {
+        operationName: name,
+        query: text || "",
+        variables,
+        extensions: {
+          doc_id: id,
+        },
+      },
+      sink as Sink
+    );
+  });
+};
+
+const networkAuth = Network.create(subscribeRelayAuth, subscribeRelayAuth);
+const networkFintech = Network.create(
+  subscribeRelayFintech,
+  subscribeRelayFintech
+);
 
 const operationLoader = {
   get: (name: string) => {
@@ -87,8 +152,15 @@ const operationLoader = {
   },
 };
 
-const RelayEnvironment = new Environment({
-  network: network,
+const RelayEnvironmentAuth = new Environment({
+  network: networkAuth,
+  store: new Store(new RecordSource(), { operationLoader }),
+  operationLoader,
+  isServer: false,
+});
+
+const RelayEnvironmentFintech = new Environment({
+  network: networkFintech,
   store: new Store(new RecordSource(), { operationLoader }),
   operationLoader,
   isServer: false,
@@ -99,7 +171,7 @@ function registerModuleLoaders(modules: string[]) {
     if (module.endsWith("$normalization.graphql")) {
       registerLoader(
         module,
-        () => import(`./components/__generated__/${module}`)
+        () => import(`./fintechSrc/components/__generated__/${module}`)
       );
     } else {
       registerLoader(module, () => import(`./components/${module}`));
@@ -177,4 +249,4 @@ export function registerLoader(name: string, loaderFn: any) {
   }
 }
 
-export { RelayEnvironment };
+export { RelayEnvironmentAuth, RelayEnvironmentFintech };

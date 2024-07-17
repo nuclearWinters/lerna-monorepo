@@ -1,4 +1,3 @@
-import { app } from "./app";
 import { MongoClient, Db } from "mongodb";
 import { MONGO_DB } from "./config";
 import { createClient } from "redis";
@@ -7,6 +6,7 @@ import { Server, ServerCredentials } from "@grpc/grpc-js";
 import { AuthServer } from "./grpc";
 import { AuthService } from "./proto/auth_grpc_pb";
 import { REDIS } from "./config";
+import { main } from "./app";
 
 export const ctx: {
   rdb?: RedisClientType;
@@ -22,11 +22,10 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
   });
   await redisClient.connect();
   const authdb = client.db("auth");
-  app.locals.authdb = authdb;
-  app.locals.rdb = redisClient;
   ctx.rdb = redisClient;
   ctx.authdb = authdb;
-  app.listen(process.env.PORT || 4002);
+  const serverHTTP2 = await main(authdb, redisClient);
+  serverHTTP2.listen(process.env.PORT || 4002);
   const server = new Server();
   server.addService(AuthService, AuthServer);
   server.bindAsync(

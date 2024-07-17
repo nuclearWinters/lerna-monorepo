@@ -4,32 +4,35 @@ import {
   defer,
   redirect,
 } from "react-router-dom";
-import { loadQuery, useRelayEnvironment } from "react-relay";
-import { RelayEnvironment } from "./RelayEnvironment";
+import { loadQuery } from "react-relay";
 import {
-  authUserQuery,
+  RelayEnvironmentAuth,
+  RelayEnvironmentFintech,
+} from "./RelayEnvironment";
+import {
   defaultBorrower,
   defaultLender,
   defaultSupport,
   getUserDataCache,
 } from "./utils";
 import { PageLoader } from "./components/PageLoader";
+import { useMemo } from "react";
+import { ApproveLoanEntryPoint } from "./authSrc/screens/ApproveLoan/ApproveLoan.entrypoint";
+import { HeaderAuthEntryPoint } from "./authSrc/screens/HeaderAuth/HeaderAuth.entrypoint";
+import { AddLoanEntryPoint } from "./authSrc/screens/AddLoan/AddLoan.entrypoint";
+import { AddFundsEntryPoint } from "./authSrc/screens/AddFunds/AddFunds.entrypoint";
+import { AddInvestmentsEntryPoint } from "./authSrc/screens/AddInvestments/AddInvestments.entrypoint";
+import { MyLoansEntryPoint } from "./authSrc/screens/MyLoans/MyLoans.entrypoint";
+import { MyTransactionsEntryPoint } from "./authSrc/screens/MyTransactions/MyTransactions.entrypoint";
+import { RetireFundsEntryPoint } from "./authSrc/screens/RetireFunds/RetireFunds.entrypoint";
+import { AccountEntryPoint } from "./authSrc/screens/Account/Account.entrypoint";
+import { SettingsEntryPoint } from "./authSrc/screens/Settings/Settings.entrypoint";
+import { MyInvestmentsEntryPoint } from "./authSrc/screens/MyInvestments/MyInvestments.entrypoints";
+import { authUserQuery } from "./authSrc/utilsAuth";
 import {
   EntryPointRouteObject,
   preparePreloadableRoutes,
-} from "@loop-payments/react-router-relay";
-import { useMemo, useRef } from "react";
-import { ApproveLoanEntryPoint } from "./screens/ApproveLoan/ApproveLoan.entrypoint";
-import { HeaderAuthEntryPoint } from "./screens/HeaderAuth/HeaderAuth.entrypoint";
-import { AddLoanEntryPoint } from "./screens/AddLoan/AddLoan.entrypoint";
-import { AddFundsEntryPoint } from "./screens/AddFunds/AddFunds.entrypoint";
-import { AddInvestmentsEntryPoint } from "./screens/AddInvestments/AddInvestments.entrypoint";
-import { MyLoansEntryPoint } from "./screens/MyLoans/MyLoans.entrypoint";
-import { MyTransactionsEntryPoint } from "./screens/MyTransactions/MyTransactions.entrypoint";
-import { RetireFundsEntryPoint } from "./screens/RetireFunds/RetireFunds.entrypoint";
-import { AccountEntryPoint } from "./screens/Account/Account.entrypoint";
-import { SettingsEntryPoint } from "./screens/Settings/Settings.entrypoint";
-import { MyInvestmentsEntryPoint } from "./screens/MyInvestments/MyInvestments.entrypoints";
+} from "./react-router-relay";
 
 type inputUser = "lender" | "borrower" | "support";
 
@@ -58,7 +61,7 @@ const redirectPage = (
   return `/login?redirectTo=${path}`;
 };
 
-const authQuery = loadQuery(RelayEnvironment, authUserQuery, {});
+const authQuery = loadQuery(RelayEnvironmentAuth, authUserQuery, {});
 
 const MY_ROUTES: EntryPointRouteObject[] = [
   {
@@ -80,7 +83,7 @@ const MY_ROUTES: EntryPointRouteObject[] = [
           if (data?.isLender) {
             return redirect(defaultLender);
           }
-          const page = import("./screens/LogIn/LogIn");
+          const page = import("./authSrc/screens/LogIn/LogIn");
           return defer({ page, authQuery });
         },
       },
@@ -98,7 +101,7 @@ const MY_ROUTES: EntryPointRouteObject[] = [
           if (data?.isLender) {
             return redirect(defaultLender);
           }
-          const page = import("./screens/SignUp/SignUp");
+          const page = import("./authSrc/screens/SignUp/SignUp");
           return defer({ page, authQuery });
         },
       },
@@ -220,12 +223,16 @@ const MY_ROUTES: EntryPointRouteObject[] = [
 ];
 
 export const MyRouter = () => {
-  const environment = useRelayEnvironment();
-  const environmentRef = useRef(environment);
   const router = useMemo(() => {
     const routes = preparePreloadableRoutes(MY_ROUTES, {
-      getEnvironment() {
-        return environmentRef.current;
+      getEnvironment(options) {
+        if (options?.environment === "auth") {
+          return RelayEnvironmentAuth;
+        }
+        if (options?.environment === "fintech") {
+          return RelayEnvironmentFintech;
+        }
+        return RelayEnvironmentAuth;
       },
     });
 
