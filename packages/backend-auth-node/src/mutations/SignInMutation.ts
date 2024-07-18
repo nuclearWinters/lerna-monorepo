@@ -19,7 +19,11 @@ type Payload = {
   error: string;
 };
 
-export const SignInMutation = mutationWithClientMutationId({
+export const SignInMutation = mutationWithClientMutationId<
+  Input,
+  Payload,
+  Context
+>({
   name: "SignIn",
   description: "Obtén un Refresh Token y un AccessToken.",
   inputFields: {
@@ -29,27 +33,18 @@ export const SignInMutation = mutationWithClientMutationId({
   outputFields: {
     error: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ error }: Payload): string => error,
+      resolve: ({ error }): string => error,
     },
   },
   mutateAndGetPayload: async (
-    { email, password }: Input,
-    {
-      authusers,
-      rdb,
-      req,
-      logins,
-      ip,
-      sessions,
-      deviceType,
-      deviceName,
-    }: Context
-  ): Promise<Payload> => {
+    { email, password },
+    { authusers, rdb, req, logins, ip, sessions, deviceType, deviceName }
+  ) => {
     try {
       const user = await authusers.findOne({ email });
       if (!user) throw new Error("User do not exists");
-      const blacklistedUser = await rdb.get(user._id.toHexString());
-      if (blacklistedUser) {
+      const isBlacklisted = await rdb.get(user._id.toHexString());
+      if (isBlacklisted) {
         throw new Error("User is suspended");
       }
       const hash = await bcrypt.compare(password, user.password);
@@ -87,7 +82,8 @@ export const SignInMutation = mutationWithClientMutationId({
         serialize("refreshToken", refreshToken, {
           httpOnly: true,
           expires: refreshTokenExpireDate,
-          secure: NODE_ENV === "production" ? true : false,
+          secure: true,
+          sameSite: NODE_ENV === "production" ? "lax" : "none",
         })
       );
       req.context.res?.setHeader("accessToken", accessToken);

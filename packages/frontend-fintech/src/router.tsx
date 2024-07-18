@@ -1,10 +1,8 @@
 import {
   RouterProvider,
   createBrowserRouter,
-  defer,
   redirect,
 } from "react-router-dom";
-import { loadQuery } from "react-relay";
 import {
   RelayEnvironmentAuth,
   RelayEnvironmentFintech,
@@ -15,7 +13,6 @@ import {
   defaultSupport,
   getUserDataCache,
 } from "./utils";
-import { PageLoader } from "./components/PageLoader";
 import { useMemo } from "react";
 import { ApproveLoanEntryPoint } from "./authSrc/screens/ApproveLoan/ApproveLoan.entrypoint";
 import { HeaderAuthEntryPoint } from "./authSrc/screens/HeaderAuth/HeaderAuth.entrypoint";
@@ -28,7 +25,8 @@ import { RetireFundsEntryPoint } from "./authSrc/screens/RetireFunds/RetireFunds
 import { AccountEntryPoint } from "./authSrc/screens/Account/Account.entrypoint";
 import { SettingsEntryPoint } from "./authSrc/screens/Settings/Settings.entrypoint";
 import { MyInvestmentsEntryPoint } from "./authSrc/screens/MyInvestments/MyInvestments.entrypoints";
-import { authUserQuery } from "./authSrc/utilsAuth";
+import { LogInEntryPoint } from "./authSrc/screens/LogIn/LogIn.entrypoint";
+import { SignUpEntryPoint } from "./authSrc/screens/SignUp/SignUp.entrypoint";
 import {
   EntryPointRouteObject,
   preparePreloadableRoutes,
@@ -61,8 +59,6 @@ const redirectPage = (
   return `/login?redirectTo=${path}`;
 };
 
-const authQuery = loadQuery(RelayEnvironmentAuth, authUserQuery, {});
-
 const MY_ROUTES: EntryPointRouteObject[] = [
   {
     path: "/",
@@ -71,7 +67,7 @@ const MY_ROUTES: EntryPointRouteObject[] = [
     children: [
       {
         path: "/login",
-        element: <PageLoader />,
+        entryPoint: LogInEntryPoint,
         loader: async () => {
           const data = getUserDataCache();
           if (data?.isBorrower) {
@@ -83,13 +79,12 @@ const MY_ROUTES: EntryPointRouteObject[] = [
           if (data?.isLender) {
             return redirect(defaultLender);
           }
-          const page = import("./authSrc/screens/LogIn/LogIn");
-          return defer({ page, authQuery });
+          return {};
         },
       },
       {
         path: "/register",
-        element: <PageLoader />,
+        entryPoint: SignUpEntryPoint,
         loader: async () => {
           const data = getUserDataCache();
           if (data?.isBorrower) {
@@ -101,8 +96,7 @@ const MY_ROUTES: EntryPointRouteObject[] = [
           if (data?.isLender) {
             return redirect(defaultLender);
           }
-          const page = import("./authSrc/screens/SignUp/SignUp");
-          return defer({ page, authQuery });
+          return {};
         },
       },
       {

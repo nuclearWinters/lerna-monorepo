@@ -94,7 +94,7 @@ export const SignUpMutation = mutationWithClientMutationId({
           isBorrower: !isLender,
           isLender: isLender,
           isSupport: false,
-          refreshTokenExpireTime: refreshTokenExpireTime,
+          refreshTokenExpireTime,
           exp: refreshTokenExpireTime,
         },
         REFRESHSECRET
@@ -105,7 +105,7 @@ export const SignUpMutation = mutationWithClientMutationId({
           isBorrower: !isLender,
           isLender: isLender,
           isSupport: false,
-          refreshTokenExpireTime: refreshTokenExpireTime,
+          refreshTokenExpireTime,
           exp: accessTokenExpireTime,
         },
         ACCESSSECRET
@@ -116,7 +116,8 @@ export const SignUpMutation = mutationWithClientMutationId({
         serialize("refreshToken", refreshToken, {
           httpOnly: true,
           expires: refreshTokenExpireDate,
-          secure: NODE_ENV === "production" ? true : false,
+          secure: true,
+          sameSite: NODE_ENV === "production" ? "lax" : "none",
         })
       );
       req.context.res.setHeader("accessToken", accessToken);

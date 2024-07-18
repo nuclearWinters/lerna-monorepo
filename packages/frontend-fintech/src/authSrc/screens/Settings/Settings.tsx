@@ -123,7 +123,6 @@ const DeleteCell: FC<{ id: string }> = ({ id }) => {
       ) {
         revokeSession(input: $input) {
           error
-          shouldReloadBrowser
           session {
             id
             expirationDate
@@ -139,11 +138,6 @@ const DeleteCell: FC<{ id: string }> = ({ id }) => {
       onClick={() => {
         commitRevokeSession({
           variables: { input: { sessionId: id } },
-          onCompleted: (data) => {
-            if (data.revokeSession.shouldReloadBrowser) {
-              window.location.reload();
-            }
-          },
         });
       }}
     >

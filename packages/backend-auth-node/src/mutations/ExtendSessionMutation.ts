@@ -7,7 +7,6 @@ import {
   jwt,
   REFRESH_TOKEN_EXP_NUMBER,
 } from "../utils";
-import { addMinutes, isAfter } from "date-fns";
 import { serialize } from "cookie";
 
 type Payload = {
@@ -38,14 +37,9 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
       const user = jwt.verify(refreshToken, REFRESHSECRET);
       if (!user) throw new Error("User do not exists");
 
-      const blacklistedUserTime = await rdb?.get(refreshToken);
-      if (blacklistedUserTime) {
-        const time = new Date(Number(blacklistedUserTime) * 1000);
-        const issuedTime = addMinutes(new Date(user.exp * 1000), -3);
-        const loggedAfter = isAfter(issuedTime, time);
-        if (!loggedAfter) {
-          throw new Error("User is suspended");
-        }
+      const isBlacklisted = await rdb?.get(refreshToken);
+      if (isBlacklisted) {
+        throw new Error("User is suspended");
       }
       const { isBorrower, isLender, isSupport } = user;
       const now = new Date();
@@ -59,7 +53,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
           isLender,
           isBorrower,
           isSupport,
-          refreshTokenExpireTime: refreshTokenExpireTime,
+          refreshTokenExpireTime,
           exp: refreshTokenExpireTime,
         },
         REFRESHSECRET
@@ -70,16 +64,17 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
         serialize("refreshToken", newRefreshToken, {
           httpOnly: true,
           expires: refreshTokenExpireDate,
-          secure: NODE_ENV === "production" ? true : false,
+          secure: true,
+          sameSite: NODE_ENV === "production" ? "lax" : "none",
         })
       );
       const accessToken = jwt.sign(
         {
           id,
-          isBorrower: !isLender,
-          isLender: isLender,
-          isSupport: false,
-          refreshTokenExpireTime: refreshTokenExpireTime,
+          isBorrower,
+          isLender,
+          isSupport,
+          refreshTokenExpireTime,
           exp: accessTokenExpireTime,
         },
         ACCESSSECRET

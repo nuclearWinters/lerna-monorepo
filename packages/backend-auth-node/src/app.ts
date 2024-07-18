@@ -42,10 +42,10 @@ export const schema = new GraphQLSchema({
 const main = async (db: Db, rdb: RedisClientType) => {
   const handler = createHandler({
     schema,
-    context: (request) => {
-      return getContextSSE(request, db, rdb);
+    context: async (request) => {
+      return await getContextSSE(request, db, rdb);
     },
-    onSubscribe: (request, params) => {
+    onSubscribe: async (request, params) => {
       const doc_id = params.extensions?.doc_id;
       const query = queryMap.find((query) => query[0] === doc_id);
       if (query) {
@@ -53,7 +53,7 @@ const main = async (db: Db, rdb: RedisClientType) => {
           schema,
           document: parse(query[1]),
           variableValues: params.variables,
-          contextValue: getContextSSE(request, db, rdb),
+          contextValue: await getContextSSE(request, db, rdb),
         };
       }
       return [null, { status: 404, statusText: "Not Found" }];
@@ -76,6 +76,7 @@ const main = async (db: Db, rdb: RedisClientType) => {
           "Content-Type, Authorization"
         );
         res.setHeader("Access-Control-Expose-Headers", "Accesstoken");
+        res.setHeader("Access-Control-Allow-Credentials", "true");
         const isOptions = req.method === "OPTIONS";
         if (isOptions) {
           return res.writeHead(200).end();

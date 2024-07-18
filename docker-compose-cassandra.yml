@@ -53,20 +53,6 @@ services:
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
 
-  relay-gateway:
-    container_name: relay-gateway
-    image: node:18
-    volumes:
-      - .:/usr/src/service
-    working_dir: /usr/src/service/packages/relay-gateway
-    command:
-      ["./wait-for-it.sh", "backend-fintech:4000", "--", "npm", "run", "start"]
-    ports:
-      - "4001:4001"
-    depends_on:
-      - backend-fintech
-      - backend-auth-node
-
   backend-auth-node:
     container_name: backend-auth-node
     image: node:18

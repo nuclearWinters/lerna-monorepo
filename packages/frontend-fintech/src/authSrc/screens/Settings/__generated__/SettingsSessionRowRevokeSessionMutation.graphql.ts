@@ -1,6 +1,6 @@
 /**
- * @generated SignedSource<<6219ebc3c28794ef7173317795064828>>
- * @relayHash 2ec3011510269d3a2c968f03552bf2cc
+ * @generated SignedSource<<dd692bd1f117f6bd722ae2e3e45f498d>>
+ * @relayHash 360b8a63b14154e6762d64c916371a6e
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-// @relayRequestID 2ec3011510269d3a2c968f03552bf2cc
+// @relayRequestID 360b8a63b14154e6762d64c916371a6e
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type RevokeSessionInput = {
@@ -26,7 +26,6 @@ export type SettingsSessionRowRevokeSessionMutation$data = {
       readonly expirationDate: Int;
       readonly id: string;
     } | null | undefined;
-    readonly shouldReloadBrowser: boolean;
   };
 };
 export type SettingsSessionRowRevokeSessionMutation = {
@@ -62,13 +61,6 @@ v1 = [
         "args": null,
         "kind": "ScalarField",
         "name": "error",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "shouldReloadBrowser",
         "storageKey": null
       },
       {
@@ -118,7 +110,7 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "id": "2ec3011510269d3a2c968f03552bf2cc",
+    "id": "360b8a63b14154e6762d64c916371a6e",
     "metadata": {},
     "name": "SettingsSessionRowRevokeSessionMutation",
     "operationKind": "mutation",
@@ -127,6 +119,6 @@ return {
 };
 })();
 
-(node as any).hash = "87b83b1d24fc383229834212f608eb92";
+(node as any).hash = "10856882ebffa0ea2ce66e3979b1e721";
 
 export default node;

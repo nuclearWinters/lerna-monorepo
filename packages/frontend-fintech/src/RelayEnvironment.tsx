@@ -17,6 +17,7 @@ const subscriptionsClientAuth = createClient({
   headers: {
     Authorization: sessionStorage.getItem("accessToken") ?? "",
   },
+  credentials: "include",
   fetchFn: async (url: string, config: RequestInit) => {
     const response = await fetch(url, config);
     const accesstoken = response.headers.get("accessToken");
@@ -39,6 +40,7 @@ const subscriptionsClientFintech = createClient({
   headers: {
     Authorization: sessionStorage.getItem("accessToken") ?? "",
   },
+  credentials: "include",
   fetchFn: async (url: string, config: RequestInit) => {
     const response = await fetch(url, config);
     const accesstoken = response.headers.get("accessToken");
@@ -54,41 +56,18 @@ const subscriptionsClientFintech = createClient({
     }
     return response;
   },
-});
-
-/*const fetchRelay = async (params: RequestParameters, variables: Variables) => {
-  const response = await fetch(API_GATEWAY, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  on: {
+    message: (message) => {
+      if (message.event === "next") {
+        if (Array.isArray(message.data?.extensions?.modules)) {
+          registerModuleLoaders(message.data.extensions.modules);
+        }
+        return {};
+      }
+      return {};
     },
-    credentials: "include",
-    body: JSON.stringify({
-      doc_id: params.id,
-      query: params?.text || "",
-      variables,
-    }),
-  });
-  const data = await response.json();
-  const accesstoken = response.headers.get("accessToken");
-  if (accesstoken && sessionStorage.getItem("accessToken") !== accesstoken) {
-    const decoded = jwtDecode<Decode>(accesstoken);
-    sessionStorage.setItem("accessToken", accesstoken);
-    sessionStorage.setItem("userData", JSON.stringify(decoded));
-  }
-
-  if (sessionStorage.getItem("accessToken") && !accesstoken) {
-    sessionStorage.removeItem("accessToken");
-    sessionStorage.removeItem("userData");
-    return window.location.reload();
-  }
-
-  if (Array.isArray(data?.extensions?.modules)) {
-    registerModuleLoaders(data.extensions.modules);
-  }
-
-  return data;
-};*/
+  },
+});
 
 const subscribeRelayAuth = (
   operation: RequestParameters,
@@ -174,7 +153,7 @@ function registerModuleLoaders(modules: string[]) {
         () => import(`./fintechSrc/components/__generated__/${module}`)
       );
     } else {
-      registerLoader(module, () => import(`./components/${module}`));
+      registerLoader(module, () => import(`./fintechSrc/components/${module}`));
     }
   });
 }

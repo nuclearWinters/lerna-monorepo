@@ -10,7 +10,6 @@ type RevokeSessionPayload {
   error: String!
   clientMutationId: String
   session: Session
-  shouldReloadBrowser: Boolean!
 }
 
 input SignInInput {

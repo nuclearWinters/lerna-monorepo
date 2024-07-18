@@ -86,14 +86,14 @@ const main = async (db: Db, producer: Producer) => {
       }
       return [null, { status: 404, statusText: "Not Found" }];
     },
-    //onOperation: (_req, _args, result) => {
-    //  return {
-    //    ...result,
-    //    extensions: {
-    //      modules: dataDrivenDependencies.getModules()
-    //    },
-    //  };
-    //}
+    onOperation: (_ctx, _req, _args, result) => {
+      return {
+        ...result,
+        extensions: {
+          modules: dataDrivenDependencies.getModules(),
+        },
+      };
+    },
   });
   const server = createSecureServer(
     {
@@ -111,6 +111,8 @@ const main = async (db: Db, producer: Producer) => {
           "Access-Control-Allow-Headers",
           "Content-Type, Authorization"
         );
+        res.setHeader("Access-Control-Expose-Headers", "Accesstoken");
+        res.setHeader("Access-Control-Allow-Credentials", "true");
         const isOptions = req.method === "OPTIONS";
         if (isOptions) {
           return res.writeHead(200).end();
@@ -118,7 +120,6 @@ const main = async (db: Db, producer: Producer) => {
           await handler(req, res);
         }
       } catch (err) {
-        console.log("err:", err);
         res.writeHead(500).end();
       }
     }

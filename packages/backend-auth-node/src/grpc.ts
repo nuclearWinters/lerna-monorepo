@@ -14,7 +14,6 @@ import { IAuthServer } from "./proto/auth_grpc_pb";
 import { ctx } from "./index";
 import { ACCESS_TOKEN_EXP_NUMBER, jwt } from "./utils";
 import { REFRESHSECRET, ACCESSSECRET } from "./config";
-import { addMinutes, isAfter } from "date-fns";
 import { UserSessions } from "./types";
 
 export const AuthServer: IAuthServer = {
@@ -29,19 +28,14 @@ export const AuthServer: IAuthServer = {
       }
       const accessToken = call.request.getAccesstoken();
       const isBlacklisted = await ctx?.rdb?.get(refreshToken);
+      if (isBlacklisted) {
+        throw new Error("El usuario esta bloqueado.");
+      }
       if (accessToken) {
         try {
           const userAccess = jwt.verify(accessToken, ACCESSSECRET);
           if (!userAccess) {
             throw new Error("El token esta corrompido.");
-          }
-          if (isBlacklisted) {
-            const time = new Date(Number(isBlacklisted) * 1000);
-            const issuedTime = addMinutes(new Date(userAccess.exp * 1000), -3);
-            const loggedAfter = isAfter(issuedTime, time);
-            if (!loggedAfter) {
-              throw new Error("El usuario esta bloqueado.");
-            }
           }
           const payload = new JWTMiddlewarePayload();
           payload.setValidaccesstoken(accessToken);
@@ -59,14 +53,6 @@ export const AuthServer: IAuthServer = {
       const user = jwt.verify(refreshToken, REFRESHSECRET);
       if (!user) {
         throw new Error("El token esta corrompido.");
-      }
-      if (isBlacklisted) {
-        const time = new Date(Number(isBlacklisted) * 1000);
-        const issuedTime = addMinutes(new Date(user.exp * 1000), -15);
-        const loggedAfter = isAfter(issuedTime, time);
-        if (!loggedAfter) {
-          throw new Error("El usuario esta bloqueado.");
-        }
       }
       const { isBorrower, isLender, isSupport, id } = user;
       const now = new Date();

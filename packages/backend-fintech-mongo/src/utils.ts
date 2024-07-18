@@ -122,7 +122,6 @@ export const getContextSSE = async (
   const { id, isLender, isBorrower, isSupport, validAccessToken } =
     await jwtMiddleware(refreshToken, accessToken);
   if (validAccessToken) {
-    req.context;
     req.context.res?.setHeader("accessToken", accessToken);
   }
   return {

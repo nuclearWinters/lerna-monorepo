@@ -1,14 +1,10 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
-import {
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLString,
-} from "graphql";
+import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
 import { Context, UserSessions } from "../types";
 import { ObjectId } from "mongodb";
-import { addMinutes } from "date-fns";
 import { GraphQLSession } from "../AuthUserQuery";
+import { serialize } from "cookie";
+import { NODE_ENV } from "../config";
 
 interface Input {
   sessionId: string;
@@ -17,7 +13,6 @@ interface Input {
 type Payload = {
   error: string;
   session: UserSessions | null;
-  shouldReloadBrowser: boolean;
 };
 
 export const RevokeSessionMutation = mutationWithClientMutationId({
@@ -37,15 +32,10 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
       type: GraphQLSession,
       resolve: ({ session }: Payload): UserSessions | null => session,
     },
-    shouldReloadBrowser: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: ({ shouldReloadBrowser }: Payload): boolean =>
-        shouldReloadBrowser,
-    },
   },
   mutateAndGetPayload: async (
     { sessionId }: Input,
-    { rdb, id, sessions, refreshToken, res }: Context
+    { rdb, id, sessions, refreshToken, req }: Context
   ): Promise<Payload> => {
     try {
       if (!id) {
@@ -54,30 +44,32 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
       const { id: session_id } = fromGlobalId(sessionId);
       const now = new Date();
       now.setMilliseconds(0);
-      const time = now.getTime() / 1000;
-      const expireDate = addMinutes(now, -15);
+      const time = now.getTime();
       const session = await sessions.findOneAndUpdate(
         { _id: new ObjectId(session_id) },
-        { $set: { expirationDate: expireDate } },
+        { $set: { expirationDate: now } },
         { returnDocument: "after" }
       );
       if (session) {
         await rdb.set(session.refreshToken, time, { EX: 60 * 15 });
         if (refreshToken === session.refreshToken) {
-          res.clearCookie("refreshToken");
-          return {
-            error: "",
-            session,
-            shouldReloadBrowser: true,
-          };
+          req.context.res.setHeader("accessToken", "");
+          req.context.res.appendHeader(
+            "Set-Cookie",
+            serialize("refreshToken", "", {
+              httpOnly: true,
+              expires: now,
+              secure: true,
+              sameSite: NODE_ENV === "production" ? "lax" : "none",
+            })
+          );
         }
       }
-      return { error: "", session, shouldReloadBrowser: false };
+      return { error: "", session };
     } catch (e) {
       return {
         error: e instanceof Error ? e.message : "",
         session: null,
-        shouldReloadBrowser: false,
       };
     }
   },
