@@ -62,7 +62,6 @@ describe("Kafka", () => {
       clientId: "my-app",
       brokers: [`${name}:${port}`],
     });
-
     const admin = kafka.admin();
     await admin.connect();
     await admin.createTopics({

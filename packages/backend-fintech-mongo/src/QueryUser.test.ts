@@ -1,4 +1,4 @@
-import { app, main, schema } from "./app";
+import { main } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { UserMongo } from "./types";
@@ -57,19 +57,14 @@ describe("QueryUser tests", () => {
     ]);
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
-        query: `query GetUser {
-          user {
-            id
-            accountAvailable
-            accountToBePaid
-            accountTotal
-            accountWithheld
-          }  
-        }`,
+        query: "",
         variables: {},
-        operationName: "GetUser",
-        "content-type": "application/json",
+        operationName: "AccountQueriesQuery",
+        extensions: {
+          doc_id: "aa6ec069076aa222be921f4b6568a17c"
+        }
       })
       .set("Accept", "text/event-stream")
       .set(
@@ -82,10 +77,20 @@ describe("QueryUser tests", () => {
             isSupport: false,
           },
           "ACCESSSECRET",
-          { expiresIn: "15m" }
+          { expiresIn: "3m" }
         )
       )
-      .set("Cookie", `id=` + user_id);
+      .set("Cookie", `refreshToken=${jwt.sign(
+        {
+          id: user_id,
+          isBorrower: false,
+          isLender: true,
+          isSupport: false,
+        },
+        "REFRESHSECRET",
+        { expiresIn: "15m" }
+      )}`);
+    console.log(response.text);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[3].replace("data: ", ""));
     expect(data.data.user.id).toBeTruthy();

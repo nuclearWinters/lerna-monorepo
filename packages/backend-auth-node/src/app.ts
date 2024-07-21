@@ -3,16 +3,17 @@ import { SignUpMutation } from "./mutations/SignUpMutation";
 import { SignInMutation } from "./mutations/SignInMutation";
 import { getContextSSE } from "./utils";
 import { QueryUser, nodeField } from "./AuthUserQuery";
-import { UpdateUserMutation } from "./mutations/UpdateUser";
+import { UpdateUserMutation } from "./mutations/UpdateUserMutation";
 import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation";
 import { LogOutMutation } from "./mutations/LogOutMutation";
-import { RevokeSessionMutation } from "./mutations/RevokeSession";
+import { RevokeSessionMutation } from "./mutations/RevokeSessionMutation";
 import { createSecureServer } from "http2";
 import { createHandler } from "graphql-sse/lib/use/http2";
 import { RedisClientType } from "./types";
 import { Db } from "mongodb";
 import fs from "fs";
 import queryMap from "./queryMapAuth.json";
+import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -39,11 +40,11 @@ export const schema = new GraphQLSchema({
   query: Query,
 });
 
-const main = async (db: Db, rdb: RedisClientType) => {
+const main = async (db: Db, rdb: RedisClientType, grpcClient: AccountClient) => {
   const handler = createHandler({
     schema,
     context: async (request) => {
-      return await getContextSSE(request, db, rdb);
+      return await getContextSSE(request, db, rdb, grpcClient);
     },
     onSubscribe: async (request, params) => {
       const doc_id = params.extensions?.doc_id;
@@ -53,7 +54,7 @@ const main = async (db: Db, rdb: RedisClientType) => {
           schema,
           document: parse(query[1]),
           variableValues: params.variables,
-          contextValue: await getContextSSE(request, db, rdb),
+          contextValue: await getContextSSE(request, db, rdb, grpcClient),
         };
       }
       return [null, { status: 404, statusText: "Not Found" }];

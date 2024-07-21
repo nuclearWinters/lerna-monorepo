@@ -31,10 +31,13 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     const _id_transaction_7 = new ObjectId("607bd608ef9719001cf38126");
     const now = new Date();
     const _id_investment_1 = new ObjectId("607bd608ef9716001cf38126");
+    const user_id_one = crypto.randomUUID();
+    const user_id_two = crypto.randomUUID();
+    const user_id_three = crypto.randomUUID();
     await users.insertMany([
       {
         _id: new ObjectId("607bd608ef9719001cf38fd5"),
-        id: "wHHR1SUBT0dspoF4YUOw1",
+        id: user_id_one,
         account_available: 0,
         account_to_be_paid: 0,
         account_total: 0,
@@ -42,7 +45,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("6095f055f92be2001a15885b"),
-        id: "wHHR1SUBT0dspoF4YUOw2",
+        id: user_id_two,
         account_available: 0,
         account_to_be_paid: 0,
         account_total: 0,
@@ -50,7 +53,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("6095f172f92be2001a15885c"),
-        id: "wHHR1SUBT0dspoF4YUOw3",
+        id: user_id_three,
         account_available: 0,
         account_to_be_paid: 0,
         account_total: 0,
@@ -61,7 +64,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     await loans.insertMany([
       {
         _id: new ObjectId("609875a48f2814002aaefe24"),
-        user_id: "wHHR1SUBT0dspoF4YUOw2",
+        user_id: user_id_two,
         score: "AAA",
         raised: 0,
         expiry,
@@ -75,7 +78,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe25"),
-        user_id: "wHHR1SUBT0dspoF4YUOw2",
+        user_id: user_id_two,
         score: "AAA",
         raised: 9500000,
         expiry,
@@ -89,7 +92,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe26"),
-        user_id: "wHHR1SUBT0dspoF4YUOw2",
+        user_id: user_id_two,
         score: "AAA",
         raised: 0,
         expiry,
@@ -103,7 +106,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe27"),
-        user_id: "wHHR1SUBT0dspoF4YUOw2",
+        user_id: user_id_two,
         score: "AAA",
         raised: 10000000,
         expiry,
@@ -117,7 +120,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe28"),
-        user_id: "wHHR1SUBT0dspoF4YUOw2",
+        user_id: user_id_two,
         score: "AAA",
         raised: 0,
         expiry,
@@ -131,7 +134,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe29"),
-        user_id: "wHHR1SUBT0dspoF4YUOw2",
+        user_id: user_id_two,
         score: "AAA",
         raised: 0,
         expiry,
@@ -145,7 +148,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe30"),
-        user_id: "wHHR1SUBT0dspoF4YUOw2",
+        user_id: user_id_two,
         score: "AAA",
         raised: 0,
         expiry,
@@ -159,7 +162,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe31"),
-        user_id: "wHHR1SUBT0dspoF4YUOw2",
+        user_id: user_id_two,
         score: "AAA",
         raised: 0,
         expiry,
@@ -173,7 +176,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: new ObjectId("609875a48f2814002aaefe32"),
-        user_id: "wHHR1SUBT0dspoF4YUOw2",
+        user_id: user_id_two,
         score: "AAA",
         raised: 5000000,
         expiry,
@@ -271,7 +274,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       {
         _id: _id_investment_1,
         borrower_id: "wHHR1SUBT0dspoF4YUOw2",
-        lender_id: "wHHR1SUBT0dspoF4YUOw1",
+        lender_id: user_id_one,
         loan_oid: new ObjectId("609875a48f2814002aaefe25"),
         created_at: new Date(),
         quantity: 9500000,
@@ -292,7 +295,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     await transactions.insertMany([
       {
         _id: _id_transaction_1,
-        user_id: "wHHR1SUBT0dspoF4YUOw1",
+        user_id: user_id_one,
         type: "invest",
         quantity: -5000000,
         created_at: now,
@@ -301,7 +304,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: _id_transaction_2,
-        user_id: "wHHR1SUBT0dspoF4YUOw1",
+        user_id: user_id_one,
         type: "invest",
         quantity: -1000000,
         created_at: now,
@@ -310,7 +313,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: _id_transaction_3,
-        user_id: "wHHR1SUBT0dspoF4YUOw1",
+        user_id: user_id_one,
         type: "invest",
         quantity: -1000000,
         created_at: now,
@@ -319,7 +322,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: _id_transaction_4,
-        user_id: "wHHR1SUBT0dspoF4YUOw1",
+        user_id: user_id_one,
         type: "invest",
         quantity: -1000000,
         created_at: now,
@@ -328,7 +331,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: _id_transaction_5,
-        user_id: "wHHR1SUBT0dspoF4YUOw1",
+        user_id: user_id_one,
         type: "invest",
         quantity: -500000,
         created_at: now,
@@ -337,7 +340,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: _id_transaction_6,
-        user_id: "wHHR1SUBT0dspoF4YUOw1",
+        user_id: user_id_one,
         type: "invest",
         quantity: -500000,
         created_at: now,
@@ -346,7 +349,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
       {
         _id: _id_transaction_7,
-        user_id: "wHHR1SUBT0dspoF4YUOw1",
+        user_id: user_id_one,
         type: "invest",
         quantity: -500000,
         created_at: now,

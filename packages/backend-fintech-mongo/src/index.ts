@@ -1,14 +1,14 @@
 import { main } from "./app";
 import { MongoClient } from "mongodb";
-import { MONGO_DB } from "./config";
-import { UserMongo } from "./types";
-import { Server, ServerCredentials } from "@grpc/grpc-js";
-import { AuthServer } from "./grpc";
-import { AuthService } from "./proto/auth_grpc_pb";
+import { MONGO_DB, REDIS } from "./config";
+import { credentials } from "@grpc/grpc-js";
 import { checkEveryDay, checkEveryMonth } from "./cronJobs";
 import { dayFunction } from "./cronJobDay";
 import { monthFunction } from "./cronJobMonth";
 import { Kafka } from "kafkajs";
+import { AuthClient } from "@lerna-monorepo/grpc-auth-node"
+import { RedisPubSub } from "graphql-redis-subscriptions";
+import { Redis, RedisOptions } from "ioredis";
 
 const kafka = new Kafka({
   clientId: "my-app",
@@ -17,24 +17,28 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-MongoClient.connect(MONGO_DB, {}).then(async (client) => {
+Promise.all([
+  MongoClient.connect(MONGO_DB, {}),
+  producer.connect()
+]).then(async ([client]) => {
   const db = client.db("fintech");
-  const users = db.collection<UserMongo>("users");
-  await producer.connect();
+  const grpcClient = new AuthClient(
+    `backend-auth-node:1983`,
+    credentials.createInsecure()
+  );
   checkEveryDay(() => dayFunction(db, producer));
   checkEveryMonth(() => monthFunction(db, producer));
-  const serverHTTP2 = await main(db, producer);
+  const options: RedisOptions = {
+    host: REDIS,
+    port: 6379,
+    retryStrategy: (times) => {
+      return Math.min(times * 50, 2000);
+    },
+  };
+  const pubsub = new RedisPubSub({
+    publisher: new Redis(options),
+    subscriber: new Redis(options),
+  });
+  const serverHTTP2 = await main(db, producer, grpcClient, pubsub);
   serverHTTP2.listen(4000);
-  const server = new Server();
-  server.addService(AuthService, AuthServer(users));
-  server.bindAsync(
-    "backend-auth-node:1984",
-    ServerCredentials.createInsecure(),
-    (err) => {
-      if (err) {
-        return;
-      }
-      server.start();
-    }
-  );
-});
+})

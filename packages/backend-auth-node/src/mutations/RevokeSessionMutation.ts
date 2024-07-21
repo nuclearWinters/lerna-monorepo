@@ -42,11 +42,12 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
         throw new Error("Unauthenticated");
       }
       const { id: session_id } = fromGlobalId(sessionId);
+      const session_oid = new ObjectId(session_id);
       const now = new Date();
       now.setMilliseconds(0);
       const time = now.getTime();
       const session = await sessions.findOneAndUpdate(
-        { _id: new ObjectId(session_id) },
+        { _id: session_oid },
         { $set: { expirationDate: now } },
         { returnDocument: "after" }
       );

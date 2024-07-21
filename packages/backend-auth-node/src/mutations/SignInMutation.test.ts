@@ -1,18 +1,20 @@
-import { app } from "../app";
+import { main } from "../app";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { UserMongo } from "../types";
-
-jest.mock("nanoid", () => ({
-  customAlphabet: () => () => "wHHR1SUBT0dspoF4YUOw1",
-}));
-
-const request = supertest(app);
+import { createClient, RedisClientType } from "redis";
+import TestAgent from "supertest/lib/agent";
+import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
+import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
 
 describe("SignInMutation tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
+  let request: TestAgent<supertest.Test>;
+  let grpcClient: AccountClient;
+  let redisClient: RedisClientType;
+  let startedRedisContainer: StartedRedisContainer;
 
   beforeAll(async () => {
     client = await MongoClient.connect(
@@ -22,19 +24,25 @@ describe("SignInMutation tests", () => {
     dbInstance = client.db(
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
     );
-    app.locals.authdb = dbInstance;
-    app.locals.ch = { sendToQueue: jest.fn() };
-    app.locals.rdb = { get: jest.fn() };
+    startedRedisContainer = await new RedisContainer().start();
+    redisClient = createClient({
+      url: startedRedisContainer.getConnectionUrl(),
+    });
+    await redisClient.connect();
+    const server = await main(dbInstance, redisClient, grpcClient);
+    request = supertest(server, { http2: true });
   });
 
   afterAll(async () => {
+    await redisClient.disconnect();
+    await startedRedisContainer.stop();
     await client.close();
   });
 
   it("SignInMutation: user exists and password is correct", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     const _id = new ObjectId();
-    const id = "wHHR1SUBT0dspoF4YUOw4";
+    const id = crypto.randomUUID();
     await users.insertOne({
       _id,
       email: "armandocorrect@hotmail.com",
@@ -54,12 +62,12 @@ describe("SignInMutation tests", () => {
     });
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
-        query: `mutation signInMutation($input: SignInInput!) {
-          signIn(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "95e2b3e28198459a859cd2b7075ac533"
+        },
+        query: "",
         variables: {
           input: {
             password: "correct",
@@ -68,20 +76,22 @@ describe("SignInMutation tests", () => {
         },
         operationName: "signInMutation",
       })
-      .set("Accept", "application/json");
-    expect(response.body.data.signIn.error).toBeFalsy();
+      .set("Accept", "text/event-stream");
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.signIn.error).toBeFalsy();
     expect(response.headers["set-cookie"]).toBeTruthy();
   });
 
   it("SignInMutation: user NOT exists", async () => {
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
-        query: `mutation signInMutation($input: SignInInput!) {
-          signIn(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "95e2b3e28198459a859cd2b7075ac533"
+        },
+        query: "",
         variables: {
           input: {
             password: "correct",
@@ -90,20 +100,22 @@ describe("SignInMutation tests", () => {
         },
         operationName: "signInMutation",
       })
-      .set("Accept", "application/json");
-    expect(response.body.data.signIn.error).toBe("User do not exists");
+      .set("Accept", "text/event-stream");
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.signIn.error).toBe("User do not exists");
     expect(response.headers["set-cookie"]).toBeFalsy();
   });
 
   it("SignInMutation: password is NOT correct", async () => {
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
-        query: `mutation signInMutation($input: SignInInput!) {
-          signIn(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "95e2b3e28198459a859cd2b7075ac533"
+        },
+        query: "",
         variables: {
           input: {
             password: "incorrect",
@@ -112,8 +124,10 @@ describe("SignInMutation tests", () => {
         },
         operationName: "signInMutation",
       })
-      .set("Accept", "application/json");
-    expect(response.body.data.signIn.error).toBe("Incorrect password");
+      .set("Accept", "text/event-stream");
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.signIn.error).toBe("Incorrect password");
     expect(response.headers["set-cookie"]).toBeFalsy();
   });
 });

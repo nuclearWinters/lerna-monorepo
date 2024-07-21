@@ -1,5 +1,8 @@
+import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Producer } from "kafkajs";
 import { ObjectId, Collection } from "mongodb";
+
+export type UUID = `${string}-${string}-${string}-${string}-${string}`
 
 export interface Context {
   users: Collection<UserMongo>;
@@ -18,6 +21,7 @@ export interface Context {
   authusers?: unknown;
   sessions?: unknown;
   producer: Producer;
+  pubsub: RedisPubSub;
 }
 
 export interface UserMongo {
@@ -25,7 +29,7 @@ export interface UserMongo {
   account_to_be_paid: number;
   account_total: number;
   account_withheld: number;
-  id: string;
+  id: UUID;
 }
 
 export interface ILoanEdge {
@@ -53,7 +57,7 @@ export type TransactionMongo =
 
 export interface InvestmentTransactionMongo {
   _id?: ObjectId;
-  user_id: string;
+  user_id: UUID;
   type: TransactionInvestMongoType;
   quantity: number;
   borrower_id: string;
@@ -63,7 +67,7 @@ export interface InvestmentTransactionMongo {
 
 export interface MoneyTransactionMongo {
   _id?: ObjectId;
-  user_id: string;
+  user_id: UUID;
   type: TransactionMongoType;
   quantity: number;
   created_at: Date;
@@ -96,7 +100,7 @@ export interface IScheduledPaymentsMongoRedis {
 
 export interface LoanMongo {
   _id?: ObjectId;
-  user_id: string;
+  user_id: UUID;
   score: string;
   roi: number;
   goal: number;
@@ -111,7 +115,7 @@ export interface LoanMongo {
 
 export interface LoanMongoRedis {
   _id: string;
-  user_id: string;
+  user_id: UUID;
   score: string;
   roi: number;
   goal: number;

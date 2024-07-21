@@ -4,6 +4,8 @@
     "packages/backend-fintech-mongo",
     "packages/backend-auth-node",
     "packages/kafka-mongo",
+    "packages/grpc-auth-node",
+    "packages/grpc-fintech-node",
   ],
   "editor.formatOnSave": true,
   "editor.indentSize": 2

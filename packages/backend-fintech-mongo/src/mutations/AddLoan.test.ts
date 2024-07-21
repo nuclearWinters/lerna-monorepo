@@ -1,4 +1,4 @@
-import { app } from "../app";
+import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "../types";
@@ -44,7 +44,7 @@ describe("AddLoan tests", () => {
   it("test AddLoan valid access token", async () => {
     const users = dbInstance.collection<UserMongo>("users");
     const _id = new ObjectId();
-    const id = "wHHR1SUBT0dspoF4YUO20";
+    const id = crypto.randomUUID();
     await users.insertOne({
       _id,
       id,

@@ -10,17 +10,11 @@ import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import {
   ACCESS_TOKEN_EXP_NUMBER,
-  createUser,
   jwt,
   REFRESH_TOKEN_EXP_NUMBER,
 } from "../utils";
-import { customAlphabet } from "nanoid";
 import { serialize } from "cookie";
-
-const nanoid = customAlphabet(
-  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-  21
-);
+import { createUser } from "@lerna-monorepo/grpc-fintech-node"
 
 interface Input {
   email: string;
@@ -60,13 +54,13 @@ export const SignUpMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
-    { authusers, req, logins, ip, sessions, deviceName, deviceType }: Context
+    { authusers, req, logins, ip, sessions, deviceName, deviceType, grpcClient }: Context
   ): Promise<Payload> => {
     try {
       const user = await authusers.findOne({ email });
       if (user) throw new Error("Email already in use");
       const hash_password = await bcrypt.hash(password, 12);
-      const id = nanoid();
+      const id = crypto.randomUUID();
       await authusers.insertOne({
         email,
         password: hash_password,
@@ -121,7 +115,7 @@ export const SignUpMutation = mutationWithClientMutationId({
         })
       );
       req.context.res.setHeader("accessToken", accessToken);
-      await createUser(id);
+      await createUser(id, grpcClient);
       await logins.insertOne({
         applicationName: "Lerna Monorepo",
         address: ip || "",

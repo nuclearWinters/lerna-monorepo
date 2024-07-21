@@ -2,8 +2,11 @@ import { ObjectId, Collection } from "mongodb";
 import { createClient } from "redis";
 import { Request } from "graphql-sse";
 import { Http2ServerRequest, Http2ServerResponse } from "http2";
+import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
 
 export type RedisClientType = ReturnType<typeof createClient>;
+
+export type UUID = `${string}-${string}-${string}-${string}-${string}`
 
 export interface Context {
   authusers: Collection<UserMongo>;
@@ -13,11 +16,12 @@ export interface Context {
   accessToken?: string;
   refreshToken?: string;
   validAccessToken?: string;
-  id?: string;
+  id?: UUID;
   ip?: string;
   deviceType: string;
   deviceName: string;
   req: Request<Http2ServerRequest, { res: Http2ServerResponse }>;
+  grpcClient: AccountClient;
 }
 
 export interface UserLogins {
@@ -25,7 +29,7 @@ export interface UserLogins {
   applicationName: "Lerna Monorepo";
   time: Date;
   address: string;
-  userId: string;
+  userId: UUID;
 }
 
 export interface UserSessions {
@@ -35,7 +39,7 @@ export interface UserSessions {
   deviceName: string;
   address: string;
   lastTimeAccessed: Date;
-  userId: string;
+  userId: UUID;
   refreshToken: string;
   expirationDate: Date;
 }
@@ -54,11 +58,11 @@ export interface UserMongo {
   CURP: string;
   clabe: string;
   mobile: string;
-  id: string;
+  id: UUID;
 }
 
 export interface DecodeJWT {
-  id: string;
+  id: UUID;
   isLender: boolean;
   isBorrower: boolean;
   isSupport: boolean;

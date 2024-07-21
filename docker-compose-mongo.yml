@@ -36,7 +36,6 @@ services:
       ["./wait-for-it.sh", "kafka:9092", "--", "npm", "run", "start"]
     ports:
       - "4000:4000"
-      - "1984:1984"
     depends_on:
       - mongo-fintech
       - backend-auth-node
@@ -51,10 +50,34 @@ services:
     command: ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
     ports:
       - "4002:4002"
+    depends_on:
+      - mongo-fintech
+      - redis-auth
+    
+  grpc-auth:
+    container_name: grpc-auth-node
+    image: node:20
+    volumes:
+      - .:/usr/src/service
+    working_dir: /usr/src/service/packages/backend-auth-node
+    command: ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
+    ports:
       - "1983:1983"
     depends_on:
       - mongo-fintech
       - redis-auth
+
+  grpc-fintech:
+    container_name: grpc-fintech-node
+    image: node:20
+    volumes:
+      - .:/usr/src/service
+    working_dir: /usr/src/service/packages/backend-fintech-node
+    command: ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
+    ports:
+      - "1984:1984"
+    depends_on:
+      - mongo-fintech
 
   frontend-fintech:
     container_name: frontend-fintech

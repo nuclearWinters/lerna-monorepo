@@ -5,29 +5,27 @@ import {
   Metadata,
 } from "@grpc/grpc-js";
 import {
-  CreateUserInput,
-  CreateUserPayload,
   JWTMiddlewareInput,
   JWTMiddlewarePayload,
 } from "./proto/auth_pb";
 import { IAuthServer } from "./proto/auth_grpc_pb";
-import { ctx } from "./index";
 import { ACCESS_TOKEN_EXP_NUMBER, jwt } from "./utils";
 import { REFRESHSECRET, ACCESSSECRET } from "./config";
-import { UserSessions } from "./types";
+import { RedisClientType, UserSessions } from "./types";
+import { Db } from "mongodb";
 
-export const AuthServer: IAuthServer = {
+export const AuthServer = (authdb: Db, rdb: RedisClientType): IAuthServer => ({
   async jwtMiddleware(
     call: ServerUnaryCall<JWTMiddlewareInput, JWTMiddlewarePayload>,
     callback: sendUnaryData<JWTMiddlewarePayload>
   ): Promise<void> {
     try {
-      const refreshToken = call.request.getRefreshtoken();
+      const refreshToken = call.request.getRefreshToken();
       if (!refreshToken) {
         throw new Error("No refresh token");
       }
-      const accessToken = call.request.getAccesstoken();
-      const isBlacklisted = await ctx?.rdb?.get(refreshToken);
+      const accessToken = call.request.getAccessToken();
+      const isBlacklisted = await rdb.get(refreshToken);
       if (isBlacklisted) {
         throw new Error("El usuario esta bloqueado.");
       }
@@ -38,11 +36,11 @@ export const AuthServer: IAuthServer = {
             throw new Error("El token esta corrompido.");
           }
           const payload = new JWTMiddlewarePayload();
-          payload.setValidaccesstoken(accessToken);
+          payload.setValidAccessToken(accessToken);
           payload.setId(userAccess.id);
-          payload.setIsborrower(userAccess.isBorrower);
-          payload.setIslender(userAccess.isLender);
-          payload.setIssupport(userAccess.isSupport);
+          payload.setIsBorrower(userAccess.isBorrower);
+          payload.setIsLender(userAccess.isLender);
+          payload.setIsSupport(userAccess.isSupport);
           return callback(null, payload);
         } catch (e) {
           if (e instanceof Error && e.name !== "TokenExpiredError") {
@@ -71,12 +69,12 @@ export const AuthServer: IAuthServer = {
         ACCESSSECRET
       );
       const payload = new JWTMiddlewarePayload();
-      payload.setValidaccesstoken(validAccessToken);
+      payload.setValidAccessToken(validAccessToken);
       payload.setId(id);
-      payload.setIsborrower(isBorrower);
-      payload.setIslender(isLender);
-      payload.setIssupport(isSupport);
-      const sessions = ctx?.authdb?.collection<UserSessions>("sessions");
+      payload.setIsBorrower(isBorrower);
+      payload.setIsLender(isLender);
+      payload.setIsSupport(isSupport);
+      const sessions = authdb.collection<UserSessions>("sessions");
       sessions?.updateOne(
         {
           refreshToken,
@@ -99,23 +97,4 @@ export const AuthServer: IAuthServer = {
       callback(error, null);
     }
   },
-  async createUser(
-    call: ServerUnaryCall<CreateUserInput, CreateUserPayload>,
-    callback: sendUnaryData<CreateUserPayload>
-  ): Promise<void> {
-    try {
-      const payload = new CreateUserPayload();
-      payload.setDone("");
-      callback(null, payload);
-    } catch (e) {
-      const error: ServiceError = {
-        name: "Error Auth Service",
-        message: e instanceof Error ? e.message : "",
-        code: 1,
-        details: "",
-        metadata: new Metadata(),
-      };
-      callback(error, null);
-    }
-  },
-};
+});

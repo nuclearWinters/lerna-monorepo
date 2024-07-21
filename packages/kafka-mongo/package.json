@@ -1,5 +1,5 @@
 {
-  "name": "kafka-mongo",
+  "name": "@lerna-monorepo/kafka-mongo",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
   "main": "src/index.ts",

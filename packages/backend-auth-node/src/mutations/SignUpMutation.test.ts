@@ -1,19 +1,20 @@
-import { app } from "../app";
+import { main } from "../app";
 import supertest from "supertest";
 import { MongoClient, Db } from "mongodb";
 import { UserMongo } from "../types";
-import { client as grpcClient } from "../utils";
 import { SurfaceCall } from "@grpc/grpc-js/build/src/call";
-
-jest.mock("nanoid", () => ({
-  customAlphabet: () => () => "wHHR1SUBT0dspoF4YUOwm",
-}));
-
-const request = supertest(app);
+import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
+import { createClient, RedisClientType } from "redis";
+import TestAgent from "supertest/lib/agent";
+import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
 
 describe("SignUpMutation tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
+  let redisClient: RedisClientType;
+  let request: TestAgent<supertest.Test>;
+  let grpcClient: AccountClient;
+  let startedRedisContainer: StartedRedisContainer;
 
   beforeAll(async () => {
     client = await MongoClient.connect(
@@ -23,12 +24,18 @@ describe("SignUpMutation tests", () => {
     dbInstance = client.db(
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
     );
-    app.locals.authdb = dbInstance;
-    app.locals.ch = { sendToQueue: jest.fn() };
-    app.locals.rdb = { get: jest.fn() };
+    startedRedisContainer = await new RedisContainer().start();
+    redisClient = createClient({
+      url: startedRedisContainer.getConnectionUrl(),
+    });
+    await redisClient.connect();
+    const server = await main(dbInstance, redisClient, grpcClient);
+    request = supertest(server, { http2: true });
   });
 
   afterAll(async () => {
+    await redisClient.disconnect();
+    await startedRedisContainer.stop();
     await client.close();
   });
 
@@ -48,6 +55,7 @@ describe("SignUpMutation tests", () => {
     const users = dbInstance.collection<UserMongo>("users");
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
         query: `mutation signUpMutation($input: SignUpInput!) {
           signUp(input: $input) {

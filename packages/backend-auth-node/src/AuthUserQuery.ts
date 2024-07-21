@@ -20,34 +20,15 @@ import {
 } from "graphql-relay";
 import { Filter } from "mongodb";
 import { Languages } from "./mutations/SignUpMutation";
-import { Context, UserLogins, UserMongo, UserSessions } from "./types";
+import { Context, UserLogins, UserMongo, UserSessions, UUID } from "./types";
 import { base64, unbase64 } from "./utils";
 
 const { nodeInterface, nodeField } = nodeDefinitions<Context>(
-  async (globalId, { authusers, id: userId }) => {
+  async (globalId, { authusers }) => {
     const { type, id } = fromGlobalId(globalId);
     switch (type) {
       case "AuthUser":
-        if (!userId) {
-          return {
-            email: "",
-            password: "",
-            language: "default",
-            name: "",
-            apellidoPaterno: "",
-            apellidoMaterno: "",
-            RFC: "",
-            CURP: "",
-            clabe: "",
-            mobile: "",
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-            id: "",
-            type,
-          };
-        }
-        return { ...(await authusers.findOne({ id })), type };
+        return { ...(await authusers.findOne({ id: id as UUID })), type };
       default:
         return { type: "" };
     }
@@ -78,7 +59,7 @@ export const DateScalarType = new GraphQLScalarType({
 export const GraphQLSession = new GraphQLObjectType<UserSessions>({
   name: "Session",
   fields: {
-    id: globalIdField("Investment", ({ _id }): string =>
+    id: globalIdField("Session", ({ _id }): string =>
       typeof _id === "string" ? _id : _id.toHexString()
     ),
     applicationName: {

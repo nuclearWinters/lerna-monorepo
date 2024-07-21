@@ -1,22 +1,18 @@
 import { Db } from "mongodb";
 import {
   UserMongo,
-  Context,
   UserLogins,
   UserSessions,
   RedisClientType,
 } from "./types";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
-import { AuthClient } from "./proto/auth_grpc_pb";
-import { credentials } from "@grpc/grpc-js";
-import { CreateUserInput, CreateUserPayload } from "./proto/auth_pb";
 //import DeviceDetector from "node-device-detector";
 import { Request } from "graphql-sse";
 import { Http2ServerRequest, Http2ServerResponse } from "http2";
 import { parse } from "cookie";
 import { ACCESSSECRET, REFRESHSECRET } from "./config";
-import { addMinutes, isAfter } from "date-fns";
+import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -140,7 +136,8 @@ export const getUser = async (
 export const getContextSSE = async (
   req: Request<Http2ServerRequest, { res: Http2ServerResponse }>,
   authdb: Db,
-  rdb: RedisClientType
+  rdb: RedisClientType,
+  grpcClient: AccountClient
 ): Promise<Record<string, unknown>> => {
   //const ip = req.headers.get("x-forwarded-for") || req.socket.remoteAddress;
   const ip = "";
@@ -181,6 +178,7 @@ export const getContextSSE = async (
     deviceName,
     deviceType,
     req,
+    grpcClient,
   };
 };
 
@@ -190,23 +188,6 @@ export const base64Name = (i: string, name: string): string => {
 
 export const REFRESH_TOKEN_EXP_NUMBER = 900;
 export const ACCESS_TOKEN_EXP_NUMBER = 180;
-
-export const client = new AuthClient(
-  `backend-fintech:1983`,
-  credentials.createInsecure()
-);
-
-export const createUser = (nanoid: string): Promise<CreateUserPayload> => {
-  return new Promise<CreateUserPayload>((resolve, reject) => {
-    const request = new CreateUserInput();
-    request.setNanoid(nanoid);
-
-    client.createUser(request, (err, user) => {
-      if (err) reject(err);
-      else resolve(user);
-    });
-  });
-};
 
 export const base64 = (i: string): string => {
   return Buffer.from("arrayconnection:" + i, "utf8").toString("base64");

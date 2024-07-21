@@ -1,7 +1,6 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import { Context } from "../types";
-import { addMinutes } from "date-fns";
 import { NODE_ENV } from "../config";
 import { serialize } from "cookie";
 

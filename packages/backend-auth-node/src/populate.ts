@@ -14,7 +14,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       applicationName: "Lerna Monorepo",
       time: new Date(),
       address: "::1",
-      userId: "wHHR1SUBT0dspoF4YUOw1",
+      userId: crypto.randomUUID(),
     });
     await users.insertMany([
       {
@@ -33,7 +33,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         CURP: "CURP",
         clabe: "clabe",
         mobile: "9831228788",
-        id: "wHHR1SUBT0dspoF4YUOw1",
+        id: crypto.randomUUID(),
       },
       {
         _id: new ObjectId("6095f055f92be2001a15885b"),
@@ -51,7 +51,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         CURP: "CURP",
         clabe: "clabe",
         mobile: "9831228788",
-        id: "wHHR1SUBT0dspoF4YUOw2",
+        id: crypto.randomUUID(),
       },
       {
         _id: new ObjectId("6095f172f92be2001a15885c"),
@@ -69,7 +69,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         CURP: "CURP",
         clabe: "clabe",
         mobile: "9831228788",
-        id: "wHHR1SUBT0dspoF4YUOw3",
+        id: crypto.randomUUID(),
       },
     ]);
     process.exit();

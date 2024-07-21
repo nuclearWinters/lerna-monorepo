@@ -22,6 +22,8 @@ import { Producer } from "kafkajs";
 import { createHandler } from "graphql-sse/lib/use/http2";
 import fs from "fs";
 import queryMap from "./queryMap.json";
+import { AuthClient } from "@lerna-monorepo/grpc-auth-node";
+import { RedisPubSub } from "graphql-redis-subscriptions";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -62,14 +64,14 @@ export const schema = new GraphQLSchema({
   subscription: Subscription,
 });
 
-const main = async (db: Db, producer: Producer) => {
+const main = async (db: Db, producer: Producer, grpcClient: AuthClient, pubsub: RedisPubSub) => {
   if (producer) {
     await producer.connect();
   }
   const handler = createHandler({
     schema,
     context: async (request) => {
-      const context = await getContextSSE(request, db, producer);
+      const context = await getContextSSE(request, db, producer, grpcClient, pubsub);
       dataDrivenDependencies.reset();
       return context;
     },
@@ -81,7 +83,7 @@ const main = async (db: Db, producer: Producer) => {
           schema,
           document: parse(query[1]),
           variableValues: params.variables,
-          contextValue: await getContextSSE(request, db, producer),
+          contextValue: await getContextSSE(request, db, producer, grpcClient, pubsub),
         };
       }
       return [null, { status: 404, statusText: "Not Found" }];

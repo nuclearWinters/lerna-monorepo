@@ -38,7 +38,7 @@ import {
   ScheduledPaymentsStatus,
 } from "./types";
 import { base64, unbase64 } from "./utils";
-import { DateScalarType } from "../../backend-auth-node/src/exports";
+import { DateScalarType } from "@lerna-monorepo/backend-auth-node";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatus[];

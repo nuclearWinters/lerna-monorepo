@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package authPackage;
+
+service Account {
+    rpc createUser(CreateUserInput) returns (CreateUserPayload) {};
+}
+
+message CreateUserInput {
+    string id = 1;
+}
+
+message CreateUserPayload {
+    string done = 1;
+}

@@ -11,18 +11,18 @@
 
 // @relayRequestID dc570781771a4c3630c2402ec2ae4ffe
 
-import { PreloadableConcreteRequest } from "relay-runtime";
-import { SettingsQueriesAuthUserQuery } from "./SettingsQueriesAuthUserQuery.graphql";
+import { PreloadableConcreteRequest } from 'relay-runtime';
+import { SettingsQueriesAuthUserQuery } from './SettingsQueriesAuthUserQuery.graphql';
 
 const node: PreloadableConcreteRequest<SettingsQueriesAuthUserQuery> = {
-  kind: "PreloadableConcreteRequest",
-  params: {
-    id: "dc570781771a4c3630c2402ec2ae4ffe",
-    metadata: {},
-    name: "SettingsQueriesAuthUserQuery",
-    operationKind: "query",
-    text: null,
-  },
+  "kind": "PreloadableConcreteRequest",
+  "params": {
+    "id": "dc570781771a4c3630c2402ec2ae4ffe",
+    "metadata": {},
+    "name": "SettingsQueriesAuthUserQuery",
+    "operationKind": "query",
+    "text": null
+  }
 };
 
 export default node;
