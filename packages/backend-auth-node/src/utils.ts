@@ -151,7 +151,7 @@ export const getContextSSE = async (
     authdb
   );
   if (validAccessToken) {
-    req.context.res?.setHeader("accessToken", validAccessToken);
+    req.context.res.setHeader("accessToken", validAccessToken);
   }
   //const userAgent = req.headers["user-agent"];
   //const detector = new DeviceDetector({

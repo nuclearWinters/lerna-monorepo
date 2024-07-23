@@ -136,8 +136,10 @@ describe("AddFunds tests", () => {
       account_total: 100000,
       account_withheld: 0,
     });
-    const refreshTokenExpireTime = new Date().getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime = new Date().getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+    const now = new Date();
+    now.setMilliseconds(0);
+    const refreshTokenExpireTime = now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime = now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
     const refreshToken = jwt.sign(
       {
         id,
@@ -182,9 +184,9 @@ describe("AddFunds tests", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[3].replace("data: ", ""));
     expect(data.data.addFunds.error).toBeFalsy();
-  });
+  }, 10000);
 
-  /*it("test AddFunds decrease valid access token", async () => {
+  it("test AddFunds decrease valid access token", async () => {
     const users = dbInstanceFintech.collection<UserMongo>("users");
     const user_oid = new ObjectId();
     const id = crypto.randomUUID();
@@ -196,15 +198,41 @@ describe("AddFunds tests", () => {
       account_total: 100000,
       account_withheld: 0,
     });
+    const now = new Date();
+    now.setMilliseconds(0);
+    const refreshTokenExpireTime = now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime = now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+    const refreshToken = jwt.sign(
+      {
+        id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: refreshTokenExpireTime,
+      },
+      REFRESHSECRET,
+    );
+    const accessToken = jwt.sign(
+      {
+        id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: accessTokenExpireTime,
+      },
+      ACCESSSECRET,
+    );
+    const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
       .trustLocalhost()
       .send({
-        query: `mutation addFundsMutation($input: AddFundsInput!) {
-          addFunds(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "ccd989a67362a42de18960129992958e"
+        },
+        query: "",
         variables: {
           input: {
             quantity: "-500.00",
@@ -212,27 +240,15 @@ describe("AddFunds tests", () => {
         },
         operationName: "addFundsMutation",
       })
-      .set("Accept", "application/json")
-      .set(
-        "Authorization",
-        jwt.sign(
-          {
-            id,
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "ACCESSSECRET",
-          {
-            expiresIn: "15m",
-          }
-        )
-      )
-      .set("Cookie", `id=` + id);
-    expect(response.body.data.addFunds.error).toBeFalsy();
-  });
+      .set("Accept", "text/event-stream")
+      .set("Authorization", accessToken)
+      .set("Cookie", requestCookies);
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.addFunds.error).toBeFalsy();
+  }, 10000);
 
-  it("test AddFunds increase invalid access token", async () => {
+  it("test AddFunds increase invalid access token and valid refresh token", async () => {
     const users = dbInstanceFintech.collection<UserMongo>("users");
     const user_oid = new ObjectId();
     const id = crypto.randomUUID();
@@ -244,15 +260,41 @@ describe("AddFunds tests", () => {
       account_total: 100000,
       account_withheld: 0,
     });
+    const now = new Date();
+    now.setMilliseconds(0);
+    const refreshTokenExpireTime = now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime = now.getTime() / 1000;
+    const refreshToken = jwt.sign(
+      {
+        id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: refreshTokenExpireTime,
+      },
+      REFRESHSECRET,
+    );
+    const accessToken = jwt.sign(
+      {
+        id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: accessTokenExpireTime,
+      },
+      ACCESSSECRET,
+    );
+    const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
       .trustLocalhost()
       .send({
-        query: `mutation addFundsMutation($input: AddFundsInput!) {
-          addFunds(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "ccd989a67362a42de18960129992958e"
+        },
+        query: "",
         variables: {
           input: {
             quantity: "500.00",
@@ -260,23 +302,15 @@ describe("AddFunds tests", () => {
         },
         operationName: "addFundsMutation",
       })
-      .set("Accept", "application/json")
-      .set(
-        "Authorization",
-        jwt.sign(
-          {
-            id,
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "ACCESSSECRET",
-          { expiresIn: "0s" }
-        )
-      )
-      .set("Cookie", `id=` + id);
-    expect(response.body.data.addFunds.error).toBeFalsy();
-  });
+      .set("Accept", "text/event-stream")
+      .set("Authorization", accessToken)
+      .set("Cookie", requestCookies);
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.addFunds.error).toBeFalsy();
+    expect(response.headers['accesstoken']).toBeTruthy();
+    expect(response.headers['accesstoken']).not.toBe(accessToken);
+  }, 10000);
 
   it("test AddFunds try decrease more than available valid refresh token", async () => {
     const users = dbInstanceFintech.collection<UserMongo>("users");
@@ -291,15 +325,41 @@ describe("AddFunds tests", () => {
       account_total: 100000,
       account_withheld: 0,
     });
+    const now = new Date();
+    now.setMilliseconds(0);
+    const refreshTokenExpireTime = now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime = now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+    const refreshToken = jwt.sign(
+      {
+        id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: refreshTokenExpireTime,
+      },
+      REFRESHSECRET,
+    );
+    const accessToken = jwt.sign(
+      {
+        id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: accessTokenExpireTime,
+      },
+      ACCESSSECRET,
+    );
+    const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
       .trustLocalhost()
       .send({
-        query: `mutation addFundsMutation($input: AddFundsInput!) {
-          addFunds(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "ccd989a67362a42de18960129992958e"
+        },
+        query: "",
         variables: {
           input: {
             quantity: "-1500.00",
@@ -307,22 +367,12 @@ describe("AddFunds tests", () => {
         },
         operationName: "addFundsMutation",
       })
-      .set("Accept", "application/json")
-      .set(
-        "Authorization",
-        jwt.sign(
-          {
-            id,
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "ACCESSSECRET",
-          { expiresIn: "15s" }
-        )
-      )
-      .set("Cookie", `id=` + id);
-    expect(response.body.data.addFunds.error).toBe("");
+      .set("Accept", "text/event-stream")
+      .set("Authorization", accessToken)
+      .set("Cookie", requestCookies);
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.addFunds.error).toBe("");
     const user = await users.findOne({
       id,
     });
@@ -336,7 +386,7 @@ describe("AddFunds tests", () => {
     });
     const allTransactions = await transactions.find({ user_id: id }).toArray();
     expect(allTransactions.length).toBe(0);
-  });
+  }, 10000);
 
   it("test AddFunds try increase cero valid refresh token", async () => {
     const user_oid = new ObjectId();
@@ -350,15 +400,41 @@ describe("AddFunds tests", () => {
       account_total: 100000,
       account_withheld: 0,
     });
+    const now = new Date();
+    now.setMilliseconds(0);
+    const refreshTokenExpireTime = now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime = now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+    const refreshToken = jwt.sign(
+      {
+        id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: refreshTokenExpireTime,
+      },
+      REFRESHSECRET,
+    );
+    const accessToken = jwt.sign(
+      {
+        id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: accessTokenExpireTime,
+      },
+      ACCESSSECRET,
+    );
+    const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
       .trustLocalhost()
       .send({
-        query: `mutation addFundsMutation($input: AddFundsInput!) {
-          addFunds(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "ccd989a67362a42de18960129992958e"
+        },
+        query: "",
         variables: {
           input: {
             quantity: "0.00",
@@ -366,24 +442,12 @@ describe("AddFunds tests", () => {
         },
         operationName: "addFundsMutation",
       })
-      .set("Accept", "application/json")
-      .set(
-        "Authorization",
-        jwt.sign(
-          {
-            id,
-            isBorrower: false,
-            isLender: true,
-            isSupport: false,
-          },
-          "ACCESSSECRET",
-          { expiresIn: "15s" }
-        )
-      )
-      .set("Cookie", `id=` + id);
-    expect(response.body.data.addFunds.error).toBe(
-      "La cantidad no puede ser cero."
-    );
+      .set("Accept", "text/event-stream")
+      .set("Authorization", accessToken)
+      .set("Cookie", requestCookies);
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.addFunds.error).toBe("La cantidad no puede ser cero.");
     const user = await users.findOne({
       id,
     });
@@ -399,5 +463,5 @@ describe("AddFunds tests", () => {
     const transactions = dbInstanceFintech.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions.find({ user_id: id }).toArray();
     expect(allTransactions.length).toBe(0);
-  });*/
+  }, 10000);
 });

@@ -54,7 +54,7 @@ export const getContextSSE = async (
   const { id, isLender, isBorrower, isSupport, validAccessToken } =
     await jwtMiddleware(refreshToken, accessToken, grpcClient);
   if (validAccessToken) {
-    req.context.res?.setHeader("accessToken", accessToken);
+    req.context.res.setHeader("accessToken", validAccessToken);
   }
   return {
     users: db.collection<UserMongo>("users"),

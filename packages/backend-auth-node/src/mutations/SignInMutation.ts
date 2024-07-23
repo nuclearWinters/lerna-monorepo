@@ -86,7 +86,7 @@ export const SignInMutation = mutationWithClientMutationId<
           sameSite: NODE_ENV === "production" ? "lax" : "none",
         })
       );
-      req.context.res?.setHeader("accessToken", accessToken);
+      req.context.res.setHeader("accessToken", accessToken);
       await logins.insertOne({
         applicationName: "Lerna Monorepo",
         address: ip || "",
