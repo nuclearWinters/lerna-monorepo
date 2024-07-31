@@ -1,9 +1,9 @@
-//@ts-ignore
+//@ts-expect-error this componenent is not typed
 import MatchContainer from "react-relay/lib/relay-hooks/MatchContainer";
 import ErrorBoundary from "./ErrorBoundary";
 import moduleLoader from "./RelayEnvironment";
 
-export default function RelayMatchContainer({ match }: { match: any }) {
+export default function RelayMatchContainer({ match }: { match: unknown }) {
   return (
     <ErrorBoundary
       shouldCatchError={(error) => error instanceof ModuleLoaderError}

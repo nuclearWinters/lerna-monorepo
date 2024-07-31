@@ -1,4 +1,3 @@
-version: "3"
 services:
   kafka-node-fintech:
     container_name: kafka-node-fintech

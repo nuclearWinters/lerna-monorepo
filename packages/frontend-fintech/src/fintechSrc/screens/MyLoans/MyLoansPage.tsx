@@ -37,10 +37,10 @@ import { MyLoansQueriesUpdateSubscription } from "./__generated__/MyLoansQueries
 import { MyLoansQueriesRowRefetch_loan$key } from "./__generated__/MyLoansQueriesRowRefetch_loan.graphql";
 import { MyLoansQueriesRefetchQuery } from "./__generated__/MyLoansQueriesRefetchQuery.graphql";
 
-type Props = {
+interface Props {
   fintechQuery: PreloadedQuery<MyLoansQueriesQuery>;
   language: Languages;
-};
+}
 
 const baseLoanRowStatus = stylex.create({
   base: {
@@ -252,7 +252,7 @@ const columnMyLoans: {
 }[] = [
   {
     id: "space",
-    header: (t) => <th {...stylex.props(customSpace.w50)} />,
+    header: () => <th {...stylex.props(customSpace.w50)} />,
     cell: ({ info, setShowSubTable }) => (
       <td {...stylex.props(baseLoanRowBorrowerIconBox.base)}>
         {info.status === "PAID" ||
@@ -276,7 +276,7 @@ const columnMyLoans: {
   {
     id: "user_id",
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
-    cell: ({ info, t }) => (
+    cell: ({ info }) => (
       <td {...stylex.props(baseLoanRowClipboard.base)}>
         <FaClipboard
           onClick={() => {

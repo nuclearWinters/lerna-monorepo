@@ -1,6 +1,5 @@
 import type AddFunds from "./AddFunds";
 import utilsAuthQueryParameters from "../../__generated__/utilsAuthQuery$parameters";
-import { RelayEnvironmentAuth } from "../../../RelayEnvironment";
 import { JSResource, SimpleEntryPoint } from "../../../react-router-relay";
 
 export const AddFundsEntryPoint: SimpleEntryPoint<typeof AddFunds> = {

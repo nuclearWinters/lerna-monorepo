@@ -142,12 +142,12 @@ const baseLoanRowContainer = stylex.create({
   },
 });
 
-type Props = {
+interface Props {
   fintechQuery: PreloadedQuery<
     AddInvestmentsQueriesQuery,
     Record<string, unknown>
   >;
-};
+}
 
 interface ILends {
   loan_gid: string;
@@ -233,7 +233,7 @@ const columnAddInvestment: {
   {
     id: "user_id",
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
-    cell: ({ info, t }) => (
+    cell: ({ info }) => (
       <td {...stylex.props(baseLoanRowClipboard.base)}>
         <FaClipboard
           onClick={() => {
@@ -299,7 +299,7 @@ const columnAddInvestment: {
   {
     id: "prestar",
     header: (t) => <TableColumnName>{t("Prestar")}</TableColumnName>,
-    cell: ({ info, t, value, setLends }) => (
+    cell: ({ info, value, setLends }) => (
       <td {...stylex.props(baseLoanRowInputBox.base)}>
         $
         <input

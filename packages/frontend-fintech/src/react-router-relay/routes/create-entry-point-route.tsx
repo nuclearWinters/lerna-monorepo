@@ -17,10 +17,10 @@ import type {
 } from "./entry-point.types";
 import EntryPointRoute from "./EntryPointRoute";
 
-type EntryPointRouteProperties = {
+interface EntryPointRouteProperties {
   loader: LoaderFunction;
   Component: ComponentType<Record<string, never>>;
-};
+}
 
 export function createEntryPointRoute<
   Component extends BaseEntryPointComponent,

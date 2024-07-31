@@ -1,5 +1,5 @@
 import { FC } from "react";
-import logo from "assets/logo.png";
+import logo from "../assets/logo.png";
 import * as stylex from "@stylexjs/stylex";
 
 export const baseIconImg = stylex.create({

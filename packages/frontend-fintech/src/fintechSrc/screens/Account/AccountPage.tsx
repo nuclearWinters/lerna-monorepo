@@ -10,9 +10,9 @@ import { useTranslation } from "../../../utils";
 import { accountFragment } from "./AccountQueries";
 import { AccountQueriesQuery } from "./__generated__/AccountQueriesQuery.graphql";
 
-type Props = {
+interface Props {
   fintechQuery: PreloadedQuery<AccountQueriesQuery, Record<string, unknown>>;
-};
+}
 
 export const AccountPage: FC<Props> = (props) => {
   const { t } = useTranslation();

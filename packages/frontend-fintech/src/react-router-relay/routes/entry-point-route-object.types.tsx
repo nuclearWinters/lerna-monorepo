@@ -6,10 +6,10 @@ import type {
 } from "react-router-dom";
 import type { EntryPointParams } from "./entry-point.types";
 
-type BadEntryPointType = {
+interface BadEntryPointType {
   readonly root: JSResourceReference<EntryPointComponent<any, any, any, any>>;
   readonly getPreloadProps: (entryPointParams: EntryPointParams<any>) => any;
-};
+}
 
 export interface EntryPointIndexRouteObject
   extends Omit<
@@ -25,7 +25,7 @@ export interface EntryPointNonIndexRouteObject
     "loader" | "action" | "element" | "Component" | "lazy"
   > {
   entryPoint: BadEntryPointType | JSResourceReference<BadEntryPointType>;
-  children?: Array<EntryPointRouteObject>;
+  children?: EntryPointRouteObject[];
 }
 
 export type EntryPointRouteObject =

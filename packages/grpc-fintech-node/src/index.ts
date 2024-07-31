@@ -9,7 +9,7 @@ MongoClient.connect(MONGO_DB, {}).then(async mongoClient => {
   const server = new Server();
   server.addService(AccountService, AccountServer(fintechdb));
   server.bindAsync(
-    "backend-fintech-node:1983",
+    "grpc-fintech:1983",
     ServerCredentials.createInsecure(),
     (err) => {
       if (err) {

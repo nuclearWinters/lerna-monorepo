@@ -144,9 +144,9 @@ const statusStyle = (status: Status) => {
   }
 };
 
-type Props = {
+interface Props {
   fintechQuery: PreloadedQuery<MyInvestmentsQueriesQuery>;
-};
+}
 
 const RefetchCell: FC<{
   investment: MyInvestmentsQueriesRow_investment$key;

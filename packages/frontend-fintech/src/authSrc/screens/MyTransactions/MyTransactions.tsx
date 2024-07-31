@@ -2,7 +2,7 @@ import { FC } from "react";
 import { RelayEnvironmentProvider, usePreloadedQuery } from "react-relay/hooks";
 import { SimpleEntryPointProps } from "../../../react-router-relay";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
-import { MyTransactionsPage } from "../../../fintechSrc/screens/MyTransactions/MyTransactions";
+import { MyTransactionsPage } from "../../../fintechSrc/screens/MyTransactions/MyTransactionsPage";
 import { MyTransactionsQueriesQuery } from "../../../fintechSrc/screens/MyTransactions/__generated__/MyTransactionsQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";

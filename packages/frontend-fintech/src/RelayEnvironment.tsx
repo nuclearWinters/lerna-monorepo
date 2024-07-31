@@ -101,7 +101,6 @@ const subscribeRelayFintech = (
     if (!(text || id)) {
       return sink.error(new Error("Operation text or id cannot be empty"));
     }
-    subscriptionsClientFintech.iterate;
     return subscriptionsClientFintech.subscribe(
       {
         operationName: name,
@@ -189,7 +188,7 @@ export default function moduleLoader(name: string) {
         return promise;
       } else if (loader.kind === "registered") {
         return loader.loaderFn().then(
-          (module: any) => {
+          (module: { default: unknown }) => {
             loadedModules.set(name, module);
             return module.default;
           },
@@ -205,7 +204,10 @@ export default function moduleLoader(name: string) {
   };
 }
 
-export function registerLoader(name: string, loaderFn: any) {
+export function registerLoader(
+  name: string,
+  loaderFn: () => Promise<{ default: unknown }>
+) {
   const loader = loaders.get(name);
   if (loader == null) {
     loaders.set(name, {
@@ -214,7 +216,7 @@ export function registerLoader(name: string, loaderFn: any) {
     });
   } else if (loader.kind === "pending") {
     loaderFn().then(
-      (module: any) => {
+      (module) => {
         loadedModules.set(name, module);
         pendingLoaders.delete(name);
         loader.resolve(module.default);

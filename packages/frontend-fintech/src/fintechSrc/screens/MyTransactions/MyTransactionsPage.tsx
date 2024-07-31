@@ -28,9 +28,9 @@ import { MyTransactionsQueriesPaginationUser } from "./__generated__/MyTransacti
 import { MyTransactionsQueries_user$key } from "./__generated__/MyTransactionsQueries_user.graphql";
 import { MyTransactionsQueriesSubscription } from "./__generated__/MyTransactionsQueriesSubscription.graphql";
 
-type Props = {
+interface Props {
   fintechQuery: PreloadedQuery<MyTransactionsQueriesQuery>;
-};
+}
 
 export const MyTransactionsPage: FC<Props> = (props) => {
   const { t } = useTranslation();

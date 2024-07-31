@@ -16,7 +16,7 @@ export const baseApp = stylex.create({
 
 export const LanguageContext = createContext<
   [Languages, Dispatch<SetStateAction<Languages>>]
->([navigator.language.includes("es") ? "ES" : "EN", () => {}]);
+>([navigator.language.includes("es") ? "ES" : "EN", () => ({})]);
 
 export const App: FC = () => {
   const [language, setLanguage] = useState<Languages>(

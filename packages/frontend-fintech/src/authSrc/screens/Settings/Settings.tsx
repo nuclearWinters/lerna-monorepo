@@ -201,7 +201,13 @@ const columnSession: {
     ),
     cell: ({ info, language }) => (
       <td {...stylex.props(baseLoanRowCell.base)}>
-        {dayjs(info.lastTimeAccessed).format("DD[/]MM[/]YYYY h:mm a")}
+        {dayjs(info.lastTimeAccessed)
+          .locale(language === "ES" ? es : en)
+          .format(
+            language === "ES"
+              ? "D [de] MMMM [del] YYYY [a las] h:mm a"
+              : "D MMMM[,] YYYY [at] h:mm a"
+          )}
       </td>
     ),
   },

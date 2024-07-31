@@ -73,7 +73,7 @@ const baseRoutesIconLogout = stylex.create({
   },
 });
 
-export const Header: FC<{ query: PreloadedQuery<utilsAuthQuery, {}> }> = ({
+export const Header: FC<{ query: PreloadedQuery<utilsAuthQuery> }> = ({
   query,
 }) => {
   const { authUser } = usePreloadedQuery(authUserQuery, query);

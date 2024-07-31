@@ -45,15 +45,20 @@ describe("AddFunds tests", () => {
     dbInstanceAuth = mongoClient.db(
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ + "-auth"
     );
+    console.log("beforeAll1");
     startedKafkaContainer = await new KafkaContainer()
       .withExposedPorts(9093)
       .start();
+    console.log("beforeAll2");
     const name = startedKafkaContainer.getHost();
+    console.log("beforeAll3");
     const port = startedKafkaContainer.getMappedPort(9093);
+    console.log("beforeAll4");
     const kafka = new Kafka({
       clientId: "my-app",
       brokers: [`${name}:${port}`],
     });
+    console.log("beforeAll5");
     const admin = kafka.admin();
     await admin.connect();
     await admin.createTopics({
@@ -108,7 +113,7 @@ describe("AddFunds tests", () => {
     );
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
-  });
+  }, 20000);
 
   afterAll(async () => {
     grpcClient.close()
@@ -122,7 +127,7 @@ describe("AddFunds tests", () => {
     await startedRedisContainer.stop();
     await mongoClient.close();
     await (() => new Promise(resolve => setTimeout(resolve, 1000)))();
-  });
+  }, 10000);
 
   it("test AddFunds increase valid access token", async () => {
     const users = dbInstanceFintech.collection<UserMongo>("users");
@@ -463,5 +468,5 @@ describe("AddFunds tests", () => {
     const transactions = dbInstanceFintech.collection<TransactionMongo>("transactions");
     const allTransactions = await transactions.find({ user_id: id }).toArray();
     expect(allTransactions.length).toBe(0);
-  }, 10000);
+  }, 20000);
 });

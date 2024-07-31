@@ -4,7 +4,10 @@ import { ModuleLoaderError } from "./RelayMatchContainer";
 export default class ErrorBoundary extends Component<
   {
     shouldCatchError?: (error: ModuleLoaderError) => boolean;
-    renderError: (error: ModuleLoaderError, resetError: () => void) => any;
+    renderError: (
+      error: ModuleLoaderError,
+      resetError: () => void
+    ) => ReactNode;
     children: ReactNode;
   },
   { error: ModuleLoaderError | null }

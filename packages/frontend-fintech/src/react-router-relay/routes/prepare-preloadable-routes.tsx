@@ -19,10 +19,10 @@ import type {
  * @returns a list of RouteObjects compatible with react-router's data routers
  */
 export function preparePreloadableRoutes<PreloaderContext>(
-  routes: Array<EntryPointRouteObject>,
+  routes: EntryPointRouteObject[],
   environmentProvider: IEnvironmentProvider<{ environment: unknown }>,
   preloaderContextProvider?: PreloaderContextProvider<PreloaderContext>
-): Array<RouteObject> {
+): RouteObject[] {
   return routes.map((route) => {
     let newRoute;
     if (isEntryPoint(route)) {

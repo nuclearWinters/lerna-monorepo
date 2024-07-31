@@ -1,4 +1,3 @@
-version: "3"
 services:
   kafka:
     image: 'bitnami/kafka:latest'
@@ -68,11 +67,11 @@ services:
       - redis-auth
 
   grpc-fintech:
-    container_name: grpc-fintech-node
+    container_name: grpc-fintech
     image: node:20
     volumes:
       - .:/usr/src/service
-    working_dir: /usr/src/service/packages/backend-fintech-node
+    working_dir: /usr/src/service/packages/grpc-fintech-node
     command: ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
     ports:
       - "1984:1984"

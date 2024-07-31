@@ -3,7 +3,7 @@ import { RelayEnvironmentProvider, usePreloadedQuery } from "react-relay/hooks";
 import { utilsAuthQuery } from "../../../authSrc/__generated__/utilsAuthQuery.graphql";
 import { RedirectContainer } from "../../../components/RedirectContainer";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
-import { AddInvestmentsPage } from "../../../fintechSrc/screens/AddInvestments/AddInvestments";
+import { AddInvestmentsPage } from "../../../fintechSrc/screens/AddInvestments/AddInvestmentsPage";
 import { AddInvestmentsQueriesQuery } from "../../../fintechSrc/screens/AddInvestments/__generated__/AddInvestmentsQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
 import { SimpleEntryPointProps } from "../../../react-router-relay";

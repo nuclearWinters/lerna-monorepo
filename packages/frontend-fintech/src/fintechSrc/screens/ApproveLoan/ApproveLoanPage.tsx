@@ -40,12 +40,12 @@ import { ApproveLoanPageMutation } from "./__generated__/ApproveLoanPageMutation
 import { ApproveLoanQueriesRowRefetch_loan$key } from "./__generated__/ApproveLoanQueriesRowRefetch_loan.graphql";
 import { ApproveLoanQueriesRefetchQuery } from "./__generated__/ApproveLoanQueriesRefetchQuery.graphql";
 
-type Props = {
+interface Props {
   fintechQuery: PreloadedQuery<
     ApproveLoanQueriesQuery,
     Record<string, unknown>
   >;
-};
+}
 
 const baseLoanRowContainer = stylex.create({
   base: {
@@ -209,7 +209,7 @@ const columnApproveLoans: {
   {
     id: "user_id",
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
-    cell: ({ info, t }) => (
+    cell: ({ info }) => (
       <td {...stylex.props(baseLoanRowClipboard.base)}>
         <FaClipboard
           onClick={() => {
