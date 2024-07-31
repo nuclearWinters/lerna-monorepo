@@ -1,20 +1,24 @@
 import { main } from "../app";
 import supertest from "supertest";
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db, ObjectId } from "mongodb";
 import { UserMongo } from "../types";
-import { SurfaceCall } from "@grpc/grpc-js/build/src/call";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { createClient, RedisClientType } from "redis";
 import TestAgent from "supertest/lib/agent";
 import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
+import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
+import { AccountService } from "@lerna-monorepo/grpc-fintech-node/src/proto/account_grpc_pb";
+import { AccountServer } from "@lerna-monorepo/grpc-fintech-node/src/grpc";
 
 describe("SignUpMutation tests", () => {
   let client: MongoClient;
   let dbInstance: Db;
+  let dbInstanceFintech: Db;
   let redisClient: RedisClientType;
   let request: TestAgent<supertest.Test>;
   let grpcClient: AccountClient;
   let startedRedisContainer: StartedRedisContainer;
+  let grpcServer: Server
 
   beforeAll(async () => {
     client = await MongoClient.connect(
@@ -24,64 +28,79 @@ describe("SignUpMutation tests", () => {
     dbInstance = client.db(
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
     );
+    dbInstanceFintech = client.db(
+      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ + "-fintech"
+    );
     startedRedisContainer = await new RedisContainer().start();
     redisClient = createClient({
       url: startedRedisContainer.getConnectionUrl(),
     });
     await redisClient.connect();
+    grpcServer = new Server();
+    grpcServer.addService(AccountService, AccountServer(dbInstanceFintech));
+    grpcServer.bindAsync(
+      "localhost:1973",
+      ServerCredentials.createInsecure(),
+      (err) => {
+        if (err) {
+          return;
+        }
+      }
+    );
+    grpcClient = new AccountClient(
+      `localhost:1973`,
+      credentials.createInsecure()
+    );
     const server = await main(dbInstance, redisClient, grpcClient);
     request = supertest(server, { http2: true });
   });
 
   afterAll(async () => {
+    grpcClient.close()
+    grpcServer.forceShutdown()
     await redisClient.disconnect();
     await startedRedisContainer.stop();
     await client.close();
   });
 
   it("SignUpMutation: success", async () => {
-    jest
-      .spyOn(grpcClient, "createUser")
-      .mockImplementationOnce((_request, callback: unknown) => {
-        const callbackTyped = callback as (
-          error: null,
-          response: { getDone: () => string }
-        ) => void;
-        callbackTyped(null, {
-          getDone: () => "",
-        });
-        return {} as SurfaceCall;
-      });
+    const email = "anrp1@gmail.com";
     const users = dbInstance.collection<UserMongo>("users");
     const response = await request
       .post("/graphql")
       .trustLocalhost()
       .send({
-        query: `mutation signUpMutation($input: SignUpInput!) {
-          signUp(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "0780cb2c2df8b07a96bc5e98037d56fa"
+        },
+        query: "",
         variables: {
           input: {
             password: "correct",
-            email: "anrp1@gmail.com",
+            email,
             isLender: true,
             language: "EN",
           },
         },
         operationName: "signUpMutation",
       })
-      .set("Accept", "application/json");
-    expect(response.body.data.signUp.error).toBeFalsy();
-    const user = await users.findOne({ email: "anrp1@gmail.com" });
-    expect({ ...user, _id: "", password: "" }).toEqual({
-      _id: "",
-      email: "anrp1@gmail.com",
+      .set("Accept", "text/event-stream");
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.signUp.error).toBeFalsy();
+    const new_user_data = await users.findOne({ email });
+    if (!new_user_data) {
+      throw new Error("User not found.");
+    }
+    const { _id: new_user_oid, password: new_password, id: new_user_id, ...new_user_other_data } = new_user_data
+    expect(ObjectId.isValid(new_user_oid)).toBeTruthy();
+    expect(new_password).toBeTruthy();
+    expect(new_user_id).toBeTruthy();
+    expect(new_user_other_data).toEqual({
+      email,
       isBorrower: false,
       isLender: true,
       isSupport: false,
-      password: "",
       language: "en",
       mobile: "",
       name: "",
@@ -90,41 +109,48 @@ describe("SignUpMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
-      id: "wHHR1SUBT0dspoF4YUOwm",
     });
   });
 
   it("SignUpMutation: user already exists", async () => {
+    const email = "anrp1@gmail.com";
     const users = dbInstance.collection<UserMongo>("users");
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
-        query: `mutation signUpMutation($input: SignUpInput!) {
-          signUp(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "0780cb2c2df8b07a96bc5e98037d56fa"
+        },
+        query: "",
         variables: {
           input: {
             password: "correct",
-            email: "anrp1@gmail.com",
+            email,
             isLender: true,
             language: "EN",
           },
         },
         operationName: "signUpMutation",
       })
-      .set("Accept", "application/json");
-    expect(response.body.data.signUp.error).toBe("Email already in use");
-    expect(response.body.data.signUp.refreshToken).toBeFalsy();
-    const user = await users.findOne({ email: "anrp1@gmail.com" });
-    expect({ ...user, _id: "", password: "" }).toEqual({
-      _id: "",
-      email: "anrp1@gmail.com",
+      .set("Accept", "text/event-stream");
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.signUp.error).toBe("Email already in use");
+    expect(data.data.signUp.refreshToken).toBeFalsy();
+    const new_user_data = await users.findOne({ email: "anrp1@gmail.com" });
+    if (!new_user_data) {
+      throw new Error("User not found.");
+    }
+    const { _id: new_user_oid, password: new_password, id: new_user_id, ...new_user_other_data } = new_user_data
+    expect(ObjectId.isValid(new_user_oid)).toBeTruthy();
+    expect(new_password).toBeTruthy();
+    expect(new_user_id).toBeTruthy();
+    expect(new_user_other_data).toEqual({
+      email,
       isBorrower: false,
       isLender: true,
       isSupport: false,
-      password: "",
       language: "en",
       mobile: "",
       name: "",
@@ -133,52 +159,47 @@ describe("SignUpMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
-      id: "wHHR1SUBT0dspoF4YUOwm",
     });
   });
 
   it("SignUpMutation: success is borrower", async () => {
-    jest
-      .spyOn(grpcClient, "createUser")
-      .mockImplementationOnce((_request, callback: unknown) => {
-        const callbackTyped = callback as (
-          error: null,
-          response: { getDone: () => string }
-        ) => void;
-        callbackTyped(null, {
-          getDone: () => "",
-        });
-        return {} as SurfaceCall;
-      });
+    const email = "anrp2@gmail.com";
     const users = dbInstance.collection<UserMongo>("users");
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
-        query: `mutation signUpMutation($input: SignUpInput!) {
-          signUp(input: $input) {
-            error
-          }
-        }`,
+        extensions: {
+          doc_id: "0780cb2c2df8b07a96bc5e98037d56fa"
+        },
+        query: "",
         variables: {
           input: {
             password: "correct",
-            email: "anrp2@gmail.com",
+            email,
             isLender: false,
             language: "EN",
           },
         },
         operationName: "signUpMutation",
       })
-      .set("Accept", "application/json");
-    expect(response.body.data.signUp.error).toBeFalsy();
-    const user = await users.findOne({ email: "anrp2@gmail.com" });
-    expect({ ...user, _id: "", password: "" }).toEqual({
-      _id: "",
-      email: "anrp2@gmail.com",
+      .set("Accept", "text/event-stream");
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.signUp.error).toBeFalsy();
+    const new_user_data = await users.findOne({ email: "anrp2@gmail.com" });
+    if (!new_user_data) {
+      throw new Error("User not found.");
+    }
+    const { _id: new_user_oid, password: new_password, id: new_user_id, ...new_user_other_data } = new_user_data
+    expect(ObjectId.isValid(new_user_oid)).toBeTruthy();
+    expect(new_password).toBeTruthy();
+    expect(new_user_id).toBeTruthy();
+    expect(new_user_other_data).toEqual({
+      email,
       isBorrower: true,
       isLender: false,
       isSupport: false,
-      password: "",
       language: "en",
       mobile: "",
       name: "",
@@ -187,7 +208,6 @@ describe("SignUpMutation tests", () => {
       apellidoMaterno: "",
       apellidoPaterno: "",
       clabe: "",
-      id: "wHHR1SUBT0dspoF4YUOwm",
     });
   });
 });

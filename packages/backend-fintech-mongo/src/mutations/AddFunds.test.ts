@@ -45,15 +45,11 @@ describe("AddFunds tests", () => {
     dbInstanceAuth = mongoClient.db(
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ + "-auth"
     );
-    console.log("beforeAll1");
     startedKafkaContainer = await new KafkaContainer()
       .withExposedPorts(9093)
       .start();
-    console.log("beforeAll2");
     const name = startedKafkaContainer.getHost();
-    console.log("beforeAll3");
     const port = startedKafkaContainer.getMappedPort(9093);
-    console.log("beforeAll4");
     const kafka = new Kafka({
       clientId: "my-app",
       brokers: [`${name}:${port}`],
