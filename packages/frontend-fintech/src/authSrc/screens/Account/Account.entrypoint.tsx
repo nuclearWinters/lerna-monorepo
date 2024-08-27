@@ -1,25 +1,22 @@
 import type Account from "./Account";
 import utilsAuthQueryParameters from "../../../authSrc/__generated__/utilsAuthQuery$parameters";
 import AccountQueriesQueryParameters from "../../../fintechSrc/screens/Account/__generated__/AccountQueriesQuery$parameters";
-import { JSResource, SimpleEntryPoint } from "../../../react-router-relay";
+import { CustomSimpleEntryPoint } from "../../../react-router-entrypoints/createRouter";
+import { JSResource } from "../../../react-router-entrypoints/JSResource";
 
-export const AccountEntryPoint: SimpleEntryPoint<typeof Account> = {
+export const AccountEntryPoint: CustomSimpleEntryPoint<typeof Account> = {
   root: JSResource("Account", () => import("./Account")),
   getPreloadProps() {
     return {
       queries: {
         fintechQuery: {
           parameters: AccountQueriesQueryParameters,
-          environmentProviderOptions: {
-            enviroment: "fintech",
-          },
+          environment: "fintech",
           variables: {},
         },
         authQuery: {
           parameters: utilsAuthQueryParameters,
-          environmentProviderOptions: {
-            enviroment: "auth",
-          },
+          environment: "auth",
           variables: {},
         },
       },

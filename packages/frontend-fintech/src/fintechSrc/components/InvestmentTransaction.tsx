@@ -1,16 +1,13 @@
 import { useFragment, graphql } from "react-relay";
 import { FaFileContract } from "@react-icons/all-files/fa/FaFileContract";
 import { FaUserCircle } from "@react-icons/all-files/fa/FaUserCircle";
-import es from "dayjs/locale/es";
-import en from "dayjs/locale/en";
-import dayjs from "dayjs";
 import { FC } from "react";
 import {
   InvestmentTransaction_transaction$key,
   TransactionType,
 } from "./__generated__/InvestmentTransaction_transaction.graphql";
 import * as stylex from "@stylexjs/stylex";
-import { useTranslation } from "../../utils";
+import { getLongDateName, useTranslation } from "../../utils";
 
 export const baseMyTransactionsIcon = stylex.create({
   base: {
@@ -125,6 +122,9 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
     }
   };
 
+  const date = new Date(data.created_at);
+  const dateFormatted = getLongDateName(date, isEs ? "ES" : "EN");
+
   return (
     <div {...stylex.props(baseMyTransactionsBox.base)}>
       <div {...stylex.props(baseMyTransactionsBar.base)}>
@@ -155,13 +155,7 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
           />
         </div>
         <div {...stylex.props(baseMyTransactionsDate.base)}>
-          {dayjs(data.created_at)
-            .locale(isEs ? es : en)
-            .format(
-              isEs
-                ? "D [de] MMMM [del] YYYY [a las] h:mm a"
-                : "D MMMM[,] YYYY [at] h:mm a"
-            )}
+          {dateFormatted}
         </div>
       </div>
       <div

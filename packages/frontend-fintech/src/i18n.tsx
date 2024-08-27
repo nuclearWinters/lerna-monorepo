@@ -33,6 +33,7 @@ export const resources: Record<
       "Por pagar": "to be paid",
       "Por aprobar": "To be approved",
       meses: "months",
+      días: "days",
       "Pedir prestamo": "Ask for a loan",
       "Periodo de la deuda (meses)": "Term (months)",
       "Enviar solicitud": "Send request",

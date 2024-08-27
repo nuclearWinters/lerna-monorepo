@@ -1,6 +1,6 @@
 import { FC } from "react";
 import * as stylex from "@stylexjs/stylex";
-import { Link } from "../react-router-relay";
+import { Link } from "../react-router-entrypoints/Link";
 
 interface Props {
   title: string;

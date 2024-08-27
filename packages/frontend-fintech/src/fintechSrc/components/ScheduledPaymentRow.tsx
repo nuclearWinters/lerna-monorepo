@@ -1,12 +1,9 @@
 import { FC, Fragment } from "react";
 import { customSpace } from "../../components/Space";
 import { TableColumnName } from "../../components/TableColumnName";
-import dayjs from "dayjs";
 import { graphql } from "relay-runtime";
 import { useLazyLoadQuery } from "react-relay";
-import { Languages, useTranslation } from "../../utils";
-import es from "dayjs/locale/es";
-import en from "dayjs/locale/en";
+import { getLongDateName, Languages, useTranslation } from "../../utils";
 import * as stylex from "@stylexjs/stylex";
 import {
   LoanScheduledPaymentStatus,
@@ -137,17 +134,15 @@ const columns: {
     header: (t) => (
       <TableColumnName colspan={3}>{t("Fecha de pago")}</TableColumnName>
     ),
-    cell: ({ info, languageEnum }) => (
-      <td colSpan={3} {...stylex.props(baseLoanRowCell.base)}>
-        {dayjs(info.scheduledDate)
-          .locale(languageEnum === "ES" ? es : en)
-          .format(
-            languageEnum === "ES"
-              ? "D [de] MMMM [del] YYYY [a las] h:mm a"
-              : "D MMMM[,] YYYY [at] h:mm a"
-          )}
-      </td>
-    ),
+    cell: ({ info, languageEnum }) => {
+      const date = new Date(info.scheduledDate);
+      const dateFormatted = getLongDateName(date, languageEnum);
+      return (
+        <td colSpan={3} {...stylex.props(baseLoanRowCell.base)}>
+          {dateFormatted}
+        </td>
+      );
+    },
   },
 ];
 

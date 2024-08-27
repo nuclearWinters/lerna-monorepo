@@ -18,7 +18,7 @@ import { Space, customSpace } from "../../../components/Space";
 import { Rows, baseRows } from "../../../components/Rows";
 import { Columns, baseColumn } from "../../../components/Colums";
 import { Select } from "../../../components/Select";
-import { Languages, useTranslation } from "../../../utils";
+import { getLongDateName, Languages, useTranslation } from "../../../utils";
 import { SettingsSessionsPaginationUser } from "./__generated__/SettingsSessionsPaginationUser.graphql";
 import { SettingsLoginsPaginationUser } from "./__generated__/SettingsLoginsPaginationUser.graphql";
 import { Table } from "../../../components/Table";
@@ -32,11 +32,11 @@ import { SettingsQueriesAuthUserQuery } from "./__generated__/SettingsQueriesAut
 import { SettingsQueries_logins_user$key } from "./__generated__/SettingsQueries_logins_user.graphql";
 import { SettingsQueries_sessions_user$key } from "./__generated__/SettingsQueries_sessions_user.graphql";
 import { FaTrashAlt } from "@react-icons/all-files/fa/FaTrashAlt";
-import dayjs from "dayjs";
-import es from "dayjs/locale/es";
-import en from "dayjs/locale/en";
 import { SettingsSessionRowRevokeSessionMutation } from "./__generated__/SettingsSessionRowRevokeSessionMutation.graphql";
-import { SimpleEntryPointProps } from "../../../react-router-relay";
+import {
+  EntryPointPrepared,
+  EntryPointProps,
+} from "../../../react-router-entrypoints/types";
 
 const baseLoanRowIcon = stylex.create({
   base: {
@@ -94,17 +94,11 @@ const columnLogin: {
   {
     id: "time",
     header: (t) => <TableColumnName>{t("Fecha")}</TableColumnName>,
-    cell: ({ info, language }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>
-        {dayjs(info.time)
-          .locale(language === "ES" ? es : en)
-          .format(
-            language === "ES"
-              ? "D [de] MMMM [del] YYYY [a las] h:mm a"
-              : "D MMMM[,] YYYY [at] h:mm a"
-          )}
-      </td>
-    ),
+    cell: ({ info, language }) => {
+      const date = new Date(info.time);
+      const dateFormatted = getLongDateName(date, language);
+      return <td {...stylex.props(baseLoanRowCell.base)}>{dateFormatted}</td>;
+    },
   },
   {
     id: "address",
@@ -199,17 +193,11 @@ const columnSession: {
     header: (t) => (
       <TableColumnName>{t("Ultima vez accedido")}</TableColumnName>
     ),
-    cell: ({ info, language }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>
-        {dayjs(info.lastTimeAccessed)
-          .locale(language === "ES" ? es : en)
-          .format(
-            language === "ES"
-              ? "D [de] MMMM [del] YYYY [a las] h:mm a"
-              : "D MMMM[,] YYYY [at] h:mm a"
-          )}
-      </td>
-    ),
+    cell: ({ info, language }) => {
+      const date = new Date(info.lastTimeAccessed);
+      const dateFormatted = getLongDateName(date, language);
+      return <td {...stylex.props(baseLoanRowCell.base)}>{dateFormatted}</td>;
+    },
   },
   {
     id: "address",
@@ -235,9 +223,13 @@ export const baseSettingsForm = stylex.create({
   },
 });
 
-type Props = SimpleEntryPointProps<{
+export type Queries = {
   authQuery: SettingsQueriesAuthUserQuery;
-}>;
+};
+
+export type PreparedProps = EntryPointPrepared<Queries>;
+
+export type Props = EntryPointProps<Queries>;
 
 export const Settings: FC<Props> = (props) => {
   const { t, changeLanguage } = useTranslation();
@@ -262,7 +254,7 @@ export const Settings: FC<Props> = (props) => {
   `);
   const { authUser } = usePreloadedQuery(
     settingsFragment,
-    props.queries.authQuery
+    props.prepared.authQuery
   );
   const originLang = authUser?.language as Languages;
   const [formUser, setFormUser] = useState({

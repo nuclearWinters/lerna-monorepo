@@ -20,7 +20,7 @@ import { Space, customSpace } from "../../../components/Space";
 import { Columns, baseColumn } from "../../../components/Colums";
 import { TableColumnName } from "../../../components/TableColumnName";
 import { Table } from "../../../components/Table";
-import { useTranslation } from "../../../utils";
+import { dayDiff, monthDiff, useTranslation } from "../../../utils";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
 import * as stylex from "@stylexjs/stylex";
 import {
@@ -36,7 +36,6 @@ import { AddInvestmentsQueries_user$key } from "./__generated__/AddInvestmentsQu
 import { AddInvestmentsQueriesLoansSubscription } from "./__generated__/AddInvestmentsQueriesLoansSubscription.graphql";
 import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
 import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
-import dayjs from "dayjs";
 import { AddInvestmentsQueriesUpdateSubscription } from "./__generated__/AddInvestmentsQueriesUpdateSubscription.graphql";
 import { AddInvestmentQueriesRefetchQuery } from "./__generated__/AddInvestmentQueriesRefetchQuery.graphql";
 import { AddInvestmentsQueriesRowRefetch_loan$key } from "./__generated__/AddInvestmentsQueriesRowRefetch_loan.graphql";
@@ -287,11 +286,13 @@ const columnAddInvestment: {
     id: "expiry",
     header: (t) => <TableColumnName>{t("Termina")}</TableColumnName>,
     cell: ({ info, t }) => {
-      const now = dayjs();
-      const expiry = dayjs(info.expiry);
+      const now = new Date();
+      const expiry = new Date(info.expiry);
+      const months = monthDiff(now, expiry);
+      const days = dayDiff(now, expiry);
       return (
         <td {...stylex.props(baseLoanRowCell.base)}>
-          {expiry.diff(now, "months") || expiry.diff(now, "days")} {t("meses")}
+          {months || days} {months ? t("meses") : t("días")}
         </td>
       );
     },

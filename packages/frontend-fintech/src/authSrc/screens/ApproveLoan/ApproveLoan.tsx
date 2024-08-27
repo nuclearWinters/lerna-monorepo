@@ -7,17 +7,24 @@ import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { ApproveLoanQueriesQuery } from "../../../fintechSrc/screens/ApproveLoan/__generated__/ApproveLoanQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
-import { SimpleEntryPointProps } from "../../../react-router-relay";
+import {
+  EntryPointProps,
+  EntryPointPrepared,
+} from "../../../react-router-entrypoints/types";
 
-type Props = SimpleEntryPointProps<{
+export type Queries = {
   fintechQuery: ApproveLoanQueriesQuery;
   authQuery: utilsAuthQuery;
-}>;
+};
+
+export type PreparedProps = EntryPointPrepared<Queries>;
+
+export type Props = EntryPointProps<Queries>;
 
 export const ApproveLoans: FC<Props> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.queries.authQuery
+    props.prepared.authQuery
   );
 
   if (!authUser) {
@@ -39,7 +46,7 @@ export const ApproveLoans: FC<Props> = (props) => {
 
   return (
     <RelayEnvironmentProvider environment={RelayEnvironmentFintech}>
-      <ApproveLoansPage fintechQuery={props.queries.fintechQuery} />
+      <ApproveLoansPage fintechQuery={props.prepared.fintechQuery} />
     </RelayEnvironmentProvider>
   );
 };

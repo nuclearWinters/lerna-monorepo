@@ -9,7 +9,7 @@ import * as stylex from "@stylexjs/stylex";
 import { CustomButton } from "./CustomButton";
 import { authUserQuery, useLogout } from "../authSrc/utilsAuth";
 import { utilsAuthQuery } from "../authSrc/__generated__/utilsAuthQuery.graphql";
-import { Link } from "../react-router-relay";
+import { Link } from "../react-router-entrypoints/Link";
 
 const baseRoutesHeaderLogged = stylex.create({
   base: {

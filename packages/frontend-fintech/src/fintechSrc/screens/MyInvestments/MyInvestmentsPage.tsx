@@ -15,7 +15,7 @@ import { Space, customSpace } from "../../../components/Space";
 import { Columns, baseColumn } from "../../../components/Colums";
 import { Table } from "../../../components/Table";
 import { TableColumnName } from "../../../components/TableColumnName";
-import { useTranslation } from "../../../utils";
+import { getDateFormat, useTranslation } from "../../../utils";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import {
   investmentRowRefetchableFragment,
@@ -33,7 +33,6 @@ import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
 import * as stylex from "@stylexjs/stylex";
 import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
 import { MyInvestmentRowRefetchQuery } from "./__generated__/MyInvestmentRowRefetchQuery.graphql";
-import dayjs from "dayjs";
 import { MyInvestmentsQueriesRow_investment$key } from "./__generated__/MyInvestmentsQueriesRow_investment.graphql";
 
 const baseInvestmentRowBox = stylex.create({
@@ -286,20 +285,24 @@ const columns: {
   {
     id: "created",
     header: (t) => <TableColumnName>{t("Creado en")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseInvestmentRowCell.base)}>
-        {dayjs(info.created_at).format("DD/MM/YYYY")}
-      </td>
-    ),
+    cell: ({ info }) => {
+      const date = new Date(info.created_at);
+      const formattedDate = getDateFormat(date);
+      return (
+        <td {...stylex.props(baseInvestmentRowCell.base)}>{formattedDate}</td>
+      );
+    },
   },
   {
     id: "updated",
     header: (t) => <TableColumnName>{t("Último cambio en")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseInvestmentRowCell.base)}>
-        {dayjs(info.updated_at).format("DD/MM/YYYY")}
-      </td>
-    ),
+    cell: ({ info }) => {
+      const date = new Date(info.updated_at);
+      const formattedDate = getDateFormat(date);
+      return (
+        <td {...stylex.props(baseInvestmentRowCell.base)}>{formattedDate}</td>
+      );
+    },
   },
   {
     id: "refetch",

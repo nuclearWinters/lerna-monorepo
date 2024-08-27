@@ -14,7 +14,7 @@ import { Space, customSpace } from "../../../components/Space";
 import { Columns, baseColumn } from "../../../components/Colums";
 import { TableColumnName } from "../../../components/TableColumnName";
 import { Table } from "../../../components/Table";
-import { Languages, useTranslation } from "../../../utils";
+import { dayDiff, Languages, monthDiff, useTranslation } from "../../../utils";
 import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
 import {
   myLoansFragment,
@@ -30,7 +30,6 @@ import { MyLoansQueriesSubscription } from "./__generated__/MyLoansQueriesSubscr
 import { FaPlusSquare } from "@react-icons/all-files/fa/FaPlusSquare";
 import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
 import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
-import dayjs from "dayjs";
 import * as stylex from "@stylexjs/stylex";
 import { ScheduledPaymentRow } from "../../components/ScheduledPaymentRow";
 import { MyLoansQueriesUpdateSubscription } from "./__generated__/MyLoansQueriesUpdateSubscription.graphql";
@@ -330,11 +329,13 @@ const columnMyLoans: {
     id: "expiry",
     header: (t) => <TableColumnName>{t("Termina")}</TableColumnName>,
     cell: ({ info, t }) => {
-      const now = dayjs();
-      const expiry = dayjs(info.expiry);
+      const now = new Date();
+      const expiry = new Date(info.expiry);
+      const months = monthDiff(now, expiry);
+      const days = dayDiff(now, expiry);
       return (
         <td {...stylex.props(baseLoanRowCell.base)}>
-          {expiry.diff(now, "months") || expiry.diff(now, "days")} {t("meses")}
+          {months || days} {months ? t("meses") : t("dias")}
         </td>
       );
     },

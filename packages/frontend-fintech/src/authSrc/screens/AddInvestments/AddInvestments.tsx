@@ -6,17 +6,24 @@ import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { AddInvestmentsPage } from "../../../fintechSrc/screens/AddInvestments/AddInvestmentsPage";
 import { AddInvestmentsQueriesQuery } from "../../../fintechSrc/screens/AddInvestments/__generated__/AddInvestmentsQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
-import { SimpleEntryPointProps } from "../../../react-router-relay";
+import {
+  EntryPointPrepared,
+  EntryPointProps,
+} from "../../../react-router-entrypoints/types";
 
-type Props = SimpleEntryPointProps<{
+export type Queries = {
   fintechQuery: AddInvestmentsQueriesQuery;
   authQuery: utilsAuthQuery;
-}>;
+};
+
+export type PreparedProps = EntryPointPrepared<Queries>;
+
+export type Props = EntryPointProps<Queries>;
 
 export const AddInvestments: FC<Props> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.queries.authQuery
+    props.prepared.authQuery
   );
 
   if (!authUser) {
@@ -38,7 +45,7 @@ export const AddInvestments: FC<Props> = (props) => {
 
   return (
     <RelayEnvironmentProvider environment={RelayEnvironmentFintech}>
-      <AddInvestmentsPage fintechQuery={props.queries.fintechQuery} />
+      <AddInvestmentsPage fintechQuery={props.prepared.fintechQuery} />
     </RelayEnvironmentProvider>
   );
 };

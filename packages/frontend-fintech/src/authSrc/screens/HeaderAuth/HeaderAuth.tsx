@@ -1,17 +1,23 @@
-import { Outlet } from "react-router-dom";
 import { Header } from "../../../components/Header";
-import { FC, Suspense } from "react";
+import { FC, Suspense, ReactNode } from "react";
 import { Spinner } from "../../../components/Spinner";
 import * as stylex from "@stylexjs/stylex";
-import { SimpleEntryPointProps } from "../../../react-router-relay";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 import { utilsFintechQuery } from "../../../fintechSrc/__generated__/utilsFintechQuery.graphql";
 import { Sider } from "../../../components/Sider";
+import {
+  EntryPointPrepared,
+  EntryPointProps,
+} from "../../../react-router-entrypoints/types";
 
-type Props = SimpleEntryPointProps<{
+export type Queries = {
   authQuery: utilsAuthQuery;
   fintechQuery: utilsFintechQuery;
-}>;
+};
+
+export type PreparedProps = EntryPointPrepared<Queries>;
+
+export type Props = EntryPointProps<Queries, { children: ReactNode }>;
 
 export const baseApp = stylex.create({
   base: {
@@ -87,6 +93,7 @@ export const baseMain = stylex.create({
 });
 
 export const HeaderAuth: FC<Props> = (props) => {
+  console.log(props.props.routeData);
   return (
     <>
       <div {...stylex.props(baseRoutes.base)}>
@@ -98,8 +105,8 @@ export const HeaderAuth: FC<Props> = (props) => {
           }
         >
           <Sider
-            authQuery={props.queries.authQuery}
-            fintechQuery={props.queries.fintechQuery}
+            authQuery={props.prepared.authQuery}
+            fintechQuery={props.prepared.fintechQuery}
           />
         </Suspense>
         <Suspense
@@ -109,7 +116,7 @@ export const HeaderAuth: FC<Props> = (props) => {
             </div>
           }
         >
-          <Header query={props.queries.authQuery} />
+          <Header query={props.prepared.authQuery} />
         </Suspense>
         <Suspense
           fallback={
@@ -118,7 +125,7 @@ export const HeaderAuth: FC<Props> = (props) => {
             </div>
           }
         >
-          <Outlet />
+          {props.props.children}
         </Suspense>
       </div>
     </>

@@ -12,17 +12,24 @@ import { RedirectContainer } from "../../../components/RedirectContainer";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { AddFundsButton } from "../../../fintechSrc/components/AddFundsButton";
-import { SimpleEntryPointProps } from "../../../react-router-relay";
+import {
+  EntryPointPrepared,
+  EntryPointProps,
+} from "../../../react-router-entrypoints/types";
 
-type Props = SimpleEntryPointProps<{
+export type Queries = {
   authQuery: utilsAuthQuery;
-}>;
+};
+
+export type PreparedProps = EntryPointPrepared<Queries>;
+
+export type Props = EntryPointProps<Queries>;
 
 export const AddFunds: FC<Props> = (props) => {
   const { t } = useTranslation();
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.queries.authQuery
+    props.prepared.authQuery
   );
   const [quantity, setQuantity] = useState("");
   const handleQuantityOnChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -1,17 +1,16 @@
 import type AddFunds from "./AddFunds";
 import utilsAuthQueryParameters from "../../__generated__/utilsAuthQuery$parameters";
-import { JSResource, SimpleEntryPoint } from "../../../react-router-relay";
+import { CustomSimpleEntryPoint } from "../../../react-router-entrypoints/createRouter";
+import { JSResource } from "../../../react-router-entrypoints/JSResource";
 
-export const AddFundsEntryPoint: SimpleEntryPoint<typeof AddFunds> = {
+export const AddFundsEntryPoint: CustomSimpleEntryPoint<typeof AddFunds> = {
   root: JSResource("AddFunds", () => import("./AddFunds")),
   getPreloadProps() {
     return {
       queries: {
         authQuery: {
           parameters: utilsAuthQueryParameters,
-          environmentProviderOptions: {
-            enviroment: "auth",
-          },
+          environment: "auth",
           variables: {},
         },
       },

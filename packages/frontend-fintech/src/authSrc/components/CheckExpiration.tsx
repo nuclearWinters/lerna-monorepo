@@ -1,50 +1,87 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
-import { getUserDataCache } from "../../utils";
-import { useIdleTimer } from "react-idle-timer";
+import { Decode, getUserDataCache } from "../../utils";
 import { useLogout } from "../utilsAuth";
 import { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
 
 export const CheckExpiration: FC = () => {
   const logout = useLogout();
-  const [commit] = useMutation<CheckExpirationMutation>(graphql`
+  const [refreshSession] = useMutation<CheckExpirationMutation>(graphql`
     mutation CheckExpirationMutation($input: ExtendSessionInput!) {
       extendSession(input: $input) {
         error
       }
     }
   `);
-  const { isIdle } = useIdleTimer({
-    timeout: 1000 * 60 * 5,
-  });
-  const [count, setCount] = useState(0);
   useEffect(() => {
-    const interval = setInterval(() => {
-      const userData = getUserDataCache();
-      const time = Math.floor(new Date().getTime() / 1000);
-      const active = !isIdle();
-      const difference = userData ? userData.refreshTokenExpireTime - time : 0;
-      const refreshSession =
-        difference < 30 && difference > 0 && active && userData;
-      const logOutFromSession = difference < 0 && !active && userData;
-      if (logOutFromSession) {
-        clearInterval(interval);
-        logout();
-      } else if (refreshSession) {
-        clearInterval(interval);
-        commit({
-          variables: {
-            input: {},
-          },
-          onCompleted: () => {
-            setCount((state) => state + 1);
-          },
-        });
-      }
-    }, 10000);
-    return () => {
-      clearInterval(interval);
+    const userData = getUserDataCache();
+    let timerLogoutID: NodeJS.Timeout;
+    let timerRefreshID: NodeJS.Timeout;
+    const resetTimer = () => {
+      clearTimeout(timerLogoutID);
+      timerLogoutID = setTimeout(logout, 1000 * 60 * 5);
     };
-  }, [commit, isIdle, count, logout]);
+    if (userData) {
+      const { refreshTokenExpireTime } = userData;
+      const now = Date.now();
+      const expireTime = refreshTokenExpireTime * 1000;
+      const refreshSessionTime = expireTime - 30 * 1000;
+      const timeoutDelay = refreshSessionTime - now;
+      if (now < refreshSessionTime) {
+        timerRefreshID = setTimeout(() => {
+          refreshSession({
+            variables: {
+              input: {},
+            },
+          });
+        }, timeoutDelay);
+      } else {
+        logout();
+      }
+    }
+    const localStorageListener = (event: StorageEvent) => {
+      if (event.key === "userData") {
+        const newData = event.newValue;
+        if (newData) {
+          const userData: Decode = JSON.parse(newData);
+          if (userData) {
+            const { refreshTokenExpireTime } = userData;
+            const now = Date.now();
+            const expireTime = refreshTokenExpireTime * 1000;
+            const refreshSessionTime = expireTime - 30 * 1000;
+            const timeoutDelay = refreshSessionTime - now;
+            if (now < refreshSessionTime) {
+              clearTimeout(timerRefreshID);
+              timerRefreshID = setTimeout(() => {
+                refreshSession({
+                  variables: {
+                    input: {},
+                  },
+                });
+              }, timeoutDelay);
+            } else {
+              logout();
+            }
+          }
+        }
+      }
+    };
+    addEventListener("storage", localStorageListener);
+    addEventListener("keydown", resetTimer);
+    addEventListener("mousemove", resetTimer);
+    addEventListener("mousedown", resetTimer);
+    addEventListener("touchstart", resetTimer);
+    addEventListener("click", resetTimer);
+    return () => {
+      clearTimeout(timerLogoutID);
+      clearTimeout(timerRefreshID);
+      removeEventListener("storage", localStorageListener);
+      removeEventListener("keydown", resetTimer);
+      removeEventListener("mousemove", resetTimer);
+      removeEventListener("mousedown", resetTimer);
+      removeEventListener("touchstart", resetTimer);
+      removeEventListener("click", resetTimer);
+    };
+  }, [logout, refreshSession]);
   return null;
 };

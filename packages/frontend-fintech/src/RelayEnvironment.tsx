@@ -9,7 +9,7 @@ import {
   GraphQLResponse,
 } from "relay-runtime";
 import { AUTH_API, FINTECH_API, Decode } from "./utils";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; //TODO: Replace jwt-decode with in-house code
 import { Sink, createClient } from "graphql-sse";
 
 const subscriptionsClientAuth = createClient({

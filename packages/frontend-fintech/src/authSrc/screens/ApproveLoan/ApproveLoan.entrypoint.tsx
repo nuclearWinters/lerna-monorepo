@@ -1,28 +1,26 @@
 import type ApproveLoan from "./ApproveLoan";
 import utilsAuthQueryParameters from "../../__generated__/utilsAuthQuery$parameters";
 import ApproveLoanQueriesQueryParamenters from "../../../fintechSrc/screens/ApproveLoan/__generated__/ApproveLoanQueriesQuery$parameters";
-import { JSResource, SimpleEntryPoint } from "../../../react-router-relay";
+import { JSResource } from "../../../react-router-entrypoints/JSResource";
+import { CustomSimpleEntryPoint } from "../../../react-router-entrypoints/createRouter";
 
-export const ApproveLoanEntryPoint: SimpleEntryPoint<typeof ApproveLoan> = {
-  root: JSResource("ApproveLoan", () => import("./ApproveLoan")),
-  getPreloadProps() {
-    return {
-      queries: {
-        fintechQuery: {
-          parameters: ApproveLoanQueriesQueryParamenters,
-          environmentProviderOptions: {
-            enviroment: "fintech",
+export const ApproveLoanEntryPoint: CustomSimpleEntryPoint<typeof ApproveLoan> =
+  {
+    root: JSResource("ApproveLoan", () => import("./ApproveLoan")),
+    getPreloadProps() {
+      return {
+        queries: {
+          fintechQuery: {
+            parameters: ApproveLoanQueriesQueryParamenters,
+            environment: "fintech",
+            variables: {},
           },
-          variables: {},
-        },
-        authQuery: {
-          parameters: utilsAuthQueryParameters,
-          environmentProviderOptions: {
-            enviroment: "auth",
+          authQuery: {
+            parameters: utilsAuthQueryParameters,
+            environment: "auth",
+            variables: {},
           },
-          variables: {},
         },
-      },
-    };
-  },
-};
+      };
+    },
+  };

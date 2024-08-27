@@ -38,6 +38,7 @@ export default tseslint.config(
     rules: {
       ...eslintPluginReactHooks.configs.recommended.rules,
       "prettier/prettier": ["error", { endOfLine: "auto" }],
+      "@typescript-eslint/consistent-type-definitions": "off",
     },
   }
 );

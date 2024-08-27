@@ -1,19 +1,9 @@
 import {
-  RouterProvider,
-  createBrowserRouter,
-  redirect,
-} from "react-router-dom";
-import {
-  RelayEnvironmentAuth,
-  RelayEnvironmentFintech,
-} from "./RelayEnvironment";
-import {
   defaultBorrower,
   defaultLender,
   defaultSupport,
   getUserDataCache,
 } from "./utils";
-import { useMemo } from "react";
 import { ApproveLoanEntryPoint } from "./authSrc/screens/ApproveLoan/ApproveLoan.entrypoint";
 import { HeaderAuthEntryPoint } from "./authSrc/screens/HeaderAuth/HeaderAuth.entrypoint";
 import { AddLoanEntryPoint } from "./authSrc/screens/AddLoan/AddLoan.entrypoint";
@@ -27,10 +17,13 @@ import { SettingsEntryPoint } from "./authSrc/screens/Settings/Settings.entrypoi
 import { MyInvestmentsEntryPoint } from "./authSrc/screens/MyInvestments/MyInvestments.entrypoints";
 import { LogInEntryPoint } from "./authSrc/screens/LogIn/LogIn.entrypoint";
 import { SignUpEntryPoint } from "./authSrc/screens/SignUp/SignUp.entrypoint";
-import {
-  EntryPointRouteObject,
-  preparePreloadableRoutes,
-} from "./react-router-relay";
+import createRouter, {
+  EntryPointRoute,
+} from "./react-router-entrypoints/createRouter";
+import { RoutingContext } from "./react-router-entrypoints/RoutingContext";
+import { RouterRenderer } from "./react-router-entrypoints/RouteRenderer";
+
+const redirect = (arg: string) => arg;
 
 type inputUser = "lender" | "borrower" | "support";
 
@@ -59,12 +52,15 @@ const redirectPage = (
   return `/login?redirectTo=${path}`;
 };
 
-const MY_ROUTES: EntryPointRouteObject[] = [
+const routes: EntryPointRoute[] = [
   {
-    path: "/",
     entryPoint: HeaderAuthEntryPoint,
-    errorElement: <div>Error</div>,
-    children: [
+    routes: [
+      {
+        path: "/",
+        exact: true,
+        entryPoint: LogInEntryPoint,
+      },
       {
         path: "/login",
         entryPoint: LogInEntryPoint,
@@ -216,22 +212,12 @@ const MY_ROUTES: EntryPointRouteObject[] = [
   },
 ];
 
+const router = createRouter(routes);
+
 export const MyRouter = () => {
-  const router = useMemo(() => {
-    const routes = preparePreloadableRoutes(MY_ROUTES, {
-      getEnvironment(options) {
-        if (options?.environment === "auth") {
-          return RelayEnvironmentAuth;
-        }
-        if (options?.environment === "fintech") {
-          return RelayEnvironmentFintech;
-        }
-        return RelayEnvironmentAuth;
-      },
-    });
-
-    return createBrowserRouter(routes);
-  }, []);
-
-  return <RouterProvider router={router} />;
+  return (
+    <RoutingContext.Provider value={router.context}>
+      <RouterRenderer />
+    </RoutingContext.Provider>
+  );
 };

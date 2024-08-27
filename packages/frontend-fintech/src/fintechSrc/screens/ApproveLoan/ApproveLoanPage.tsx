@@ -17,7 +17,7 @@ import { Space, customSpace } from "../../../components/Space";
 import { Columns, baseColumn } from "../../../components/Colums";
 import { TableColumnName } from "../../../components/TableColumnName";
 import { Table } from "../../../components/Table";
-import { useTranslation } from "../../../utils";
+import { dayDiff, monthDiff, useTranslation } from "../../../utils";
 import {
   ApproveLoansQueriesPaginationFragment,
   approveLoanQueriesRowRefetchableFragment,
@@ -34,7 +34,6 @@ import * as stylex from "@stylexjs/stylex";
 import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
 import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
 import { FaThumbsUp } from "@react-icons/all-files/fa/FaThumbsUp";
-import dayjs from "dayjs";
 import { ApproveLoanQueriesUpdateSubscription } from "./__generated__/ApproveLoanQueriesUpdateSubscription.graphql";
 import { ApproveLoanPageMutation } from "./__generated__/ApproveLoanPageMutation.graphql";
 import { ApproveLoanQueriesRowRefetch_loan$key } from "./__generated__/ApproveLoanQueriesRowRefetch_loan.graphql";
@@ -263,11 +262,13 @@ const columnApproveLoans: {
     id: "expiry",
     header: (t) => <TableColumnName>{t("Termina")}</TableColumnName>,
     cell: ({ info, t }) => {
-      const now = dayjs();
-      const expiry = dayjs(info.expiry);
+      const now = new Date();
+      const expiry = new Date(info.expiry);
+      const months = monthDiff(now, expiry);
+      const days = dayDiff(now, expiry);
       return (
         <td {...stylex.props(baseLoanRowCell.base)}>
-          {expiry.diff(now, "months") || expiry.diff(now, "days")} {t("meses")}
+          {months || days} {months ? t("meses") : t("días")}
         </td>
       );
     },

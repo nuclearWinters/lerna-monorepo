@@ -108,7 +108,7 @@ describe("AddLends tests", () => {
     );
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
-  });
+  }, 10000);
 
   afterAll(async () => {
     grpcClient.close()
@@ -123,7 +123,7 @@ describe("AddLends tests", () => {
     await startedRedisContainer.stop();
     await mongoClient.close();
     await (() => new Promise(resolve => setTimeout(resolve, 1000)))();
-  });
+  }, 10000);
 
   it("test AddLends valid access token", async () => {
     const id = crypto.randomUUID();

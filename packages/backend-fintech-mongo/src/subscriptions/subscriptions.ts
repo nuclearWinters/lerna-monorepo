@@ -31,10 +31,10 @@ export const options: RedisOptions = {
   },
 };
 
-//export const pubsub = new RedisPubSub({
-//  publisher: new Redis(options),
-//  subscriber: new Redis(options),
-//});
+export const pubsub = new RedisPubSub({
+  publisher: new Redis(options),
+  subscriber: new Redis(options),
+});
 
 export const LOAN_INSERT = "LOAN_INSERT";
 export const MY_LOAN_INSERT = "MY_LOAN_INSERT";
