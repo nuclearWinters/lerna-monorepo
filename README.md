@@ -1,14 +1,16 @@
 # Monorepo with GraphQL Microservices and React Relay specifications
 
-This project explores microservices in a monorepository. These microservices expose a GraphQL schema with Relay specifications and support HTTP2 at application layer.
+This project explores microservices in a monorepository. These microservices expose a GraphQL schema with React Relay specifications and support HTTP2 at application layer.
 
-The Frontend is a Single Page Application built with React and Relay. It uses code splitting techniques to reduce the main bundle size and start requesting data from the server sooner with a render-as-you-fetch pattern. It uses Suspense features to handle the loading states and also uses an Atomic CSS Framework to generate a small CSS file.
+Frontend is a Single Page Application built with React and React Relay. It uses code splitting techniques to reduce the main bundle size and starts requesting data from the server sooner thanks to a render-as-you-fetch pattern. It uses Suspense features to handle the loading states. Also, it uses an Atomic CSS Framework to generate a small CSS file.
 
-To handle GraphQL Subscriptions the application is using Server-Sent Events (to support realtime features). It uses Docker to run the microservices and databases (MongoDB and Redis) locally. The project uses an Event Driven Architecture thanks to Kafka.
+To handle GraphQL Subscriptions the application is using Server-Sent Events (to support realtime features). It uses Docker to run the microservices and databases (MongoDB and Redis) locally. Implementing an Event Driven Architecture with Kafka (workers are not indempotent yet).
 
-Authentication and Authorization is done with JWT tokens. The Auth microservice uses gRPC to communicate with other microservices and it uses refresh tokens to handle sessions.
+For Authentication and Authorization we are using JSON Web Tokens with a Refresh Token implementation. Microservices uses gRPC to communicate and verify tokens.
 
-Finally we are testing the project with Jest: We test Kafka events by using testcontainers library, we test MongoDB by using @shelf/jest-mongodb and GraphQL microservices by using Supertest.
+Finally we are testing the project with Jest: We test Kafka events by using the *testcontainers* library, we test MongoDB by using the *@shelf/jest-mongodb* library and GraphQL microservices by using the *supertest* library.
+
+(I'm experimenting with Rust and Cassandra in other folders.)
 
 **Programming Languages:**
 
@@ -55,14 +57,19 @@ Finally we are testing the project with Jest: We test Kafka events by using test
 
 To set up the project locally:
 
-1. Run `npm install` in root folder
+1. Install Docker
 
-2. Install `mkcert` and run `mkcert -cert-file localhost.crt -key-file localhost.key localhost` in `cert` folder
+2. Run `npm install --no-save` in root folder (this will help your IDE to apply linting)
 
-3. Run `make up` in root folder
+3. Run `make setup` in root folder (this will create a volume in Docker in which the dependencies will be stored)
 
-4. Run `npm run populate` in `backend-auth-node` and `backend-fintech-mongo` root folders
+4. Run `make install` in root folder (this will install dependencies by using an Alpine Linux OS)
 
-5. Go to `http://localhost:8000` to see the application
+5. Install `mkcert` and run `mkcert -cert-file localhost.crt -key-file localhost.key localhost` in `cert` folder (this will create a self-signed certificate so node microservices can use HTTP2)
 
-I'm experimenting with Rust and Cassandra in other folders.
+6. Run `make up` in root folder (this will run the instances with Docker Compose)
+
+7. Run `npm run populate` in `backend-auth-node` and `backend-fintech-mongo` root folders (this will populate the mongo database with data)
+
+8. Go to `http://localhost:8000` to see the application
+
