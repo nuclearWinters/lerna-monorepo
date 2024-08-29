@@ -21,7 +21,7 @@ export type ThinQueryParamsObject<
   [K in keyof TPreloadedQueries]: ThinQueryParams<TPreloadedQueries[K]>;
 };
 
-type PreloadedQueries<TPreloadedQueries> =
+export type PreloadedQueries<TPreloadedQueries> =
   TPreloadedQueries extends Record<string, OperationType>
     ? {
         [T in keyof TPreloadedQueries]: PreloadedQuery<TPreloadedQueries[T]>;
@@ -35,10 +35,7 @@ export interface RuntimePropsDefault {
   routeData: RouteData;
 }
 
-export interface EntryPointProps<
-  TPreloadedQueries,
-  TRuntimeProps extends object,
-> {
+export interface EntryPointProps<TPreloadedQueries, TRuntimeProps = object> {
   readonly props: TRuntimeProps & RuntimePropsDefault;
   readonly prepared: PreloadedQueries<TPreloadedQueries>;
 }
@@ -51,7 +48,7 @@ export interface PreloadProps<
 
 export type EntryPointComponent<
   TPreloadedQueries extends Record<string, OperationType>,
-  TRuntimeProps extends object = object,
+  TRuntimeProps,
 > = ComponentType<EntryPointProps<TPreloadedQueries, TRuntimeProps>>;
 
 interface InternalEntryPointRepresentation<
@@ -69,10 +66,7 @@ export type EntryPoint<
   TEntryPointParams extends object = object,
 > = InternalEntryPointRepresentation<
   TEntryPointParams,
-  TEntryPointComponent extends EntryPointComponent<
-    infer TPreloadedQueries,
-    object
-  >
+  TEntryPointComponent extends EntryPointComponent<infer TPreloadedQueries, any>
     ? TPreloadedQueries
     : never
 >;

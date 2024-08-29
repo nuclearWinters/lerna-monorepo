@@ -10,14 +10,14 @@ import { Title } from "../../../components/Title";
 import { Input } from "../../../components/Input";
 import { Space, customSpace } from "../../../components/Space";
 import {
-  borrowerPages,
-  getUserDataCache,
-  lenderPages,
-  supportPages,
+  //borrowerPages,
+  //getUserDataCache,
+  //lenderPages,
+  //supportPages,
   useTranslation,
 } from "../../utilsAuth";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
-import { useSearchParams } from "react-router-dom";
+//import { useSearchParams } from "react-router-dom";
 
 export interface Decode {
   id: string;
@@ -45,8 +45,8 @@ export const LogIn: FC = () => {
   const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "";
+  //const [searchParams] = useSearchParams();
+  //const redirectTo = searchParams.get("redirectTo") || "";
   return (
     <Main notLogged>
       <WrapperSmall>
@@ -84,7 +84,7 @@ export const LogIn: FC = () => {
                     },
                   },
                   onCompleted: () => {
-                    const userData = getUserDataCache();
+                    /*const userData = getUserDataCache();
                     if (userData) {
                       if (userData.isBorrower) {
                         if (borrowerPages.includes(redirectTo)) {
@@ -105,7 +105,7 @@ export const LogIn: FC = () => {
                           window.location.href = "/addInvestments";
                         }
                       }
-                    }
+                    }*/
                   },
                 });
               }}

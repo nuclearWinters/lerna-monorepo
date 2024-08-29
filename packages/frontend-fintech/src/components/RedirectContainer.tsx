@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 
 export const RedirectContainer: FC<{
   allowed: ("borrower" | "lender" | "support")[];
@@ -7,7 +7,8 @@ export const RedirectContainer: FC<{
   isLender: boolean;
   isBorrower: boolean;
 }> = ({ allowed, isBorrower, isLender, isSupport }) => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
+  const navigate = (path: string) => path;
   useEffect(() => {
     const isAllowed =
       (allowed.includes("borrower") && isBorrower) ||

@@ -40,7 +40,11 @@ export const schema = new GraphQLSchema({
   query: Query,
 });
 
-const main = async (db: Db, rdb: RedisClientType, grpcClient: AccountClient) => {
+const main = async (
+  db: Db,
+  rdb: RedisClientType,
+  grpcClient: AccountClient
+) => {
   const handler = createHandler({
     schema,
     context: async (request) => {

@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@grpc/grpc-js": "^1.8.14",
-    "backend-auth": "*",
+    "@lerna-monorepo/backend-auth-node": "file:../backend-auth-node",
     "date-fns": "^3.0.6",
     "graphql": "^16.5.0",
     "graphql-redis-subscriptions": "^2.6.1",
@@ -33,18 +33,18 @@
     "@babel/core": "^7.18.10",
     "@babel/preset-env": "^7.18.10",
     "@babel/preset-typescript": "^7.18.6",
+    "@eslint/js": "^9.9.1",
     "@shelf/jest-mongodb": "^4.2.0",
     "@testcontainers/kafka": "^10.11.0",
     "@testcontainers/redis": "^10.10.4",
+    "@types/eslint__js": "^8.42.3",
     "@types/google-protobuf": "^3.15.6",
     "@types/jest": "^29.0.0",
     "@types/jsonwebtoken": "^9.0.0",
     "@types/node-cron": "^3.0.11",
     "@types/supertest": "^6.0.1",
-    "@typescript-eslint/eslint-plugin": "^7.0.1",
-    "@typescript-eslint/parser": "^7.0.1",
     "babel-jest": "^29.0.0",
-    "eslint": "^9.7.0",
+    "eslint": "^9.9.1",
     "grpc_tools_node_protoc_ts": "^5.3.3",
     "grpc-tools": "^1.12.4",
     "jest": "^29.0.0",
@@ -53,7 +53,8 @@
     "supertest": "^7.0.0",
     "testcontainers": "^10.11.0",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.0.2"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.3.0"
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [

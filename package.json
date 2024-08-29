@@ -9,9 +9,8 @@
     "lerna": "^8.1.6"
   },
   "scripts": {
-    "build": "lerna run build",
-    "test": "lerna run test",
-    "bootstrap": "lerna bootstrap",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
     "cm": "cz",
     "new-version": "lerna version --conventional-commits --yes",
     "pcm": "lerna run --concurrency 1 --stream pcm --since HEAD --exclude-dependents"

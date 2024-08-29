@@ -5,19 +5,22 @@ import { TransactionMongo, UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
 import { Admin, Kafka, Producer } from "kafkajs";
 import { AuthClient } from "@lerna-monorepo/grpc-auth-node";
-import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis"
-import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka"
+import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
+import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
 import TestAgent from "supertest/lib/agent";
 import { REFRESH_TOKEN_EXP_NUMBER } from "@lerna-monorepo/grpc-auth-node/src/utils";
-import { ACCESS_TOKEN_EXP_NUMBER } from "backend-auth/src/utils";
+import { ACCESS_TOKEN_EXP_NUMBER } from "@lerna-monorepo/backend-auth-node/src/utils";
 import { serialize } from "cookie";
 import { AuthService, AuthServer } from "@lerna-monorepo/grpc-auth-node";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { RedisClientType } from "@lerna-monorepo/grpc-auth-node/src/types";
 import { createClient } from "redis";
-import { ACCESSSECRET, REFRESHSECRET } from "@lerna-monorepo/grpc-auth-node/src/config";
+import {
+  ACCESSSECRET,
+  REFRESHSECRET,
+} from "@lerna-monorepo/grpc-auth-node/src/config";
 
 describe("AddLends tests", () => {
   let mongoClient: MongoClient;
@@ -25,15 +28,15 @@ describe("AddLends tests", () => {
   let dbInstanceAuth: Db;
   let producer: Producer;
   let startedRedisContainer: StartedRedisContainer;
-  let grpcClient: AuthClient
-  let pubsub: RedisPubSub
-  let request: TestAgent<supertest.Test>
-  let startedKafkaContainer: StartedKafkaContainer
-  let grpcServer: Server
-  let redisClient: RedisClientType
-  let ioredisPublisherClient: Redis
-  let ioredisSubscriberClient: Redis
-  let admin: Admin
+  let grpcClient: AuthClient;
+  let pubsub: RedisPubSub;
+  let request: TestAgent<supertest.Test>;
+  let startedKafkaContainer: StartedKafkaContainer;
+  let grpcServer: Server;
+  let redisClient: RedisClientType;
+  let ioredisPublisherClient: Redis;
+  let ioredisSubscriberClient: Redis;
+  let admin: Admin;
 
   beforeAll(async () => {
     mongoClient = await MongoClient.connect(
@@ -44,7 +47,8 @@ describe("AddLends tests", () => {
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
     );
     dbInstanceAuth = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ + "-auth"
+      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
+        "-auth"
     );
     startedKafkaContainer = await new KafkaContainer()
       .withExposedPorts(9093)
@@ -102,35 +106,34 @@ describe("AddLends tests", () => {
         }
       }
     );
-    grpcClient = new AuthClient(
-      `localhost:1984`,
-      credentials.createInsecure()
-    );
+    grpcClient = new AuthClient(`localhost:1984`, credentials.createInsecure());
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
   }, 10000);
 
   afterAll(async () => {
-    grpcClient.close()
-    grpcServer.forceShutdown()
+    grpcClient.close();
+    grpcServer.forceShutdown();
     await pubsub.close();
-    ioredisPublisherClient.quit()
-    ioredisSubscriberClient.quit()
-    await producer.disconnect()
+    ioredisPublisherClient.quit();
+    ioredisSubscriberClient.quit();
+    await producer.disconnect();
     await admin.disconnect();
-    await redisClient.disconnect()
-    await startedKafkaContainer.stop()
+    await redisClient.disconnect();
+    await startedKafkaContainer.stop();
     await startedRedisContainer.stop();
     await mongoClient.close();
-    await (() => new Promise(resolve => setTimeout(resolve, 1000)))();
+    await (() => new Promise((resolve) => setTimeout(resolve, 1000)))();
   }, 10000);
 
   it("test AddLends valid access token", async () => {
     const id = crypto.randomUUID();
     const now = new Date();
     now.setMilliseconds(0);
-    const refreshTokenExpireTime = now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime = now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+    const refreshTokenExpireTime =
+      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime =
+      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
     const refreshToken = jwt.sign(
       {
         id,
@@ -140,7 +143,7 @@ describe("AddLends tests", () => {
         refreshTokenExpireTime,
         exp: refreshTokenExpireTime,
       },
-      REFRESHSECRET,
+      REFRESHSECRET
     );
     const accessToken = jwt.sign(
       {
@@ -151,14 +154,14 @@ describe("AddLends tests", () => {
         refreshTokenExpireTime,
         exp: accessTokenExpireTime,
       },
-      ACCESSSECRET,
+      ACCESSSECRET
     );
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
       .send({
         extensions: {
-          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1"
+          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
         },
         query: "",
         variables: {
@@ -189,7 +192,7 @@ describe("AddLends tests", () => {
       .post("/graphql")
       .send({
         extensions: {
-          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1"
+          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
         },
         query: "",
         variables: {
@@ -218,15 +221,17 @@ describe("AddLends tests", () => {
     expect(data2.data.addLends.error).toBeFalsy();
     expect(response2.body.data.addLends.error).toBeFalsy();
     const lends = await admin.fetchTopicOffsets("add-lends");
-    console.log("lends:", lends)
+    console.log("lends:", lends);
   });
 
   it("test AddLends not enough money valid access token", async () => {
     const id = crypto.randomUUID();
     const now = new Date();
     now.setMilliseconds(0);
-    const refreshTokenExpireTime = now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime = now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+    const refreshTokenExpireTime =
+      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime =
+      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
     const refreshToken = jwt.sign(
       {
         id,
@@ -236,7 +241,7 @@ describe("AddLends tests", () => {
         refreshTokenExpireTime,
         exp: refreshTokenExpireTime,
       },
-      REFRESHSECRET,
+      REFRESHSECRET
     );
     const accessToken = jwt.sign(
       {
@@ -247,14 +252,14 @@ describe("AddLends tests", () => {
         refreshTokenExpireTime,
         exp: accessTokenExpireTime,
       },
-      ACCESSSECRET,
+      ACCESSSECRET
     );
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
       .send({
         extensions: {
-          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1"
+          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
         },
         query: "",
         variables: {
@@ -281,8 +286,10 @@ describe("AddLends tests", () => {
     const id = crypto.randomUUID();
     const now = new Date();
     now.setMilliseconds(0);
-    const refreshTokenExpireTime = now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime = now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+    const refreshTokenExpireTime =
+      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime =
+      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
     const refreshToken = jwt.sign(
       {
         id,
@@ -292,7 +299,7 @@ describe("AddLends tests", () => {
         refreshTokenExpireTime,
         exp: refreshTokenExpireTime,
       },
-      REFRESHSECRET,
+      REFRESHSECRET
     );
     const accessToken = jwt.sign(
       {
@@ -303,14 +310,14 @@ describe("AddLends tests", () => {
         refreshTokenExpireTime,
         exp: accessTokenExpireTime,
       },
-      ACCESSSECRET,
+      ACCESSSECRET
     );
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
       .send({
         extensions: {
-          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1"
+          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
         },
         query: "",
         variables: {
@@ -337,8 +344,10 @@ describe("AddLends tests", () => {
     const id = crypto.randomUUID();
     const now = new Date();
     now.setMilliseconds(0);
-    const refreshTokenExpireTime = now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime = now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+    const refreshTokenExpireTime =
+      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime =
+      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
     const refreshToken = jwt.sign(
       {
         id,
@@ -348,7 +357,7 @@ describe("AddLends tests", () => {
         refreshTokenExpireTime,
         exp: refreshTokenExpireTime,
       },
-      REFRESHSECRET,
+      REFRESHSECRET
     );
     const accessToken = jwt.sign(
       {
@@ -359,14 +368,14 @@ describe("AddLends tests", () => {
         refreshTokenExpireTime,
         exp: accessTokenExpireTime,
       },
-      ACCESSSECRET,
+      ACCESSSECRET
     );
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
       .send({
         extensions: {
-          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1"
+          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
         },
         query: "",
         variables: {

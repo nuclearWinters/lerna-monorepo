@@ -9,7 +9,6 @@ import {
 } from "react";
 import { Entry, RoutingContext } from "./RoutingContext";
 import { ErrorBoundary } from "./ErrorBoundary";
-import "./RouteRenderer.css";
 import { EntryPointParams } from "./createRouter";
 import { RegisteredPreparedProps, Resource } from "./JSResource";
 
@@ -20,6 +19,7 @@ export interface RouteData {
   isExact: boolean;
 }
 
+//One component per route?
 const RouteComponent: FC<{
   children?: ReactNode;
   component: Resource;

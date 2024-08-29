@@ -10,6 +10,70 @@ import {
   EntryPointProps,
 } from "../../../react-router-entrypoints/types";
 
+/*type iQueries = {
+  fintechQuery: AccountQueriesQuery;
+  authQuery: utilsAuthQuery;
+};
+
+type iExtraProps = {
+  test: string;
+};
+
+interface iEntryPointProps<TPreloadedQueries, TRuntimeProps = object> {
+  readonly props: TRuntimeProps & { routeData: RouteData };
+  readonly prepared: PreloadedQueries<TPreloadedQueries>;
+}
+
+type iProps = EntryPointProps<iQueries, iExtraProps>;
+
+const Test: FC<iProps> = (props) => {
+  return <div>{props.props.test}</div>;
+};
+
+export interface ThinQueryParams<T> {
+  readonly parameters: string;
+  readonly variables: number;
+  readonly options?: T;
+  readonly environment: "auth" | "fintech";
+}
+
+export type ThinQueryParamsObject<TPreloadedQueries> = {
+  [K in keyof TPreloadedQueries]: ThinQueryParams<TPreloadedQueries[K]>;
+};
+
+export interface PreloadProps<TPreloadedQueries> {
+  readonly queries?: ThinQueryParamsObject<TPreloadedQueries> | undefined;
+}
+
+type EntryPoint<iQueries, iProps> = {
+  root: Resource<FC<iEntryPointProps<iQueries, iProps>>>;
+  getPreloadedProps: () => PreloadProps<iQueries>;
+};
+
+type CustomSimpleEntryPoint<Queries, Props> = EntryPoint<Queries, Props>;
+
+export const accountEntrypointTest: CustomSimpleEntryPoint<iQueries, { children: ReactNode }> = {
+  root: JSResourceTyped("Account", () => import("../Account/Account")),
+  getPreloadedProps: () => {
+    return {
+      queries: {
+        fintechQuery: {
+          parameters: "test1",
+          variables: 1,
+          environment: "auth",
+        },
+        authQuery: {
+          parameters: "test2",
+          variables: 2,
+          environment: "auth",
+        },
+      },
+    };
+  },
+};
+
+test.getPreloadedProps();*/
+
 export type Queries = {
   authQuery: utilsAuthQuery;
   fintechQuery: utilsFintechQuery;
@@ -93,7 +157,7 @@ export const baseMain = stylex.create({
 });
 
 export const HeaderAuth: FC<Props> = (props) => {
-  console.log(props.props.routeData);
+  //console.log(props.prepared.authQuery.dispose);
   return (
     <>
       <div {...stylex.props(baseRoutes.base)}>

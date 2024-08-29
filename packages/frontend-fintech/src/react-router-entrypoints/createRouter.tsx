@@ -25,8 +25,9 @@ export interface EntryPointParams {
 }
 
 export type CustomSimpleEntryPoint<Component = BaseEntryPointComponent> =
-  EntryPoint<Component, EntryPointParams>;
+  EntryPoint<Component>;
 
+//Better entrypoint route
 export interface EntryPointRoute {
   path?: string;
   strict?: boolean;
@@ -41,6 +42,54 @@ export interface EntryPointRoute {
   routes?: EntryPointRoute[];
   loader?: () => Promise<unknown>;
 }
+
+/*type EntryPointRouteTyped = {
+  path?: string;
+  strict?: boolean;
+  exact?: boolean;
+  sensitive?: boolean;
+  entryPoint: {
+    root: Resource;
+    getPreloadProps: (entryPointParams: { params: Record<string, string> }) => {
+      queries?: ThinQueryParamsObject<Record<string, OperationType>>;
+    };
+  };
+};
+
+//do i need fully typed routes?
+//Idea 1: use typeof of the entry point twice, once for the routes, and once for the entrypoint
+
+type EntryPointRoutesTyped = [
+  {
+    entryPoint: typeof accountEntrypointTest;
+    routes: [
+      {
+        path: "/";
+        exact: true;
+        entryPoint: typeof LogInEntryPoint;
+      },
+    ];
+  },
+];
+
+//Idea 2: type only the routes, and let the entrypoint variable infer its type
+
+type EntryPointRoutesTyped = [
+  {
+    entryPoint: CustomSimpleEntryPoint<typeof Account>;
+    routes: [
+      {
+        path: "/";
+        exact: true;
+        entryPoint: typeof LogInEntryPoint;
+      },
+    ];
+  },
+];
+
+//How to connect routes to the entrypoints and the components?
+
+*/
 
 export default function createRouter(
   routes: EntryPointRoute[],

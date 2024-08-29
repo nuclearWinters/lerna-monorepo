@@ -4,7 +4,7 @@ import { FaUserCircle } from "@react-icons/all-files/fa/FaUserCircle";
 import { FaSignOutAlt } from "@react-icons/all-files/fa/FaSignOutAlt";
 import { FC } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
 import { CustomButton } from "./CustomButton";
 import { authUserQuery, useLogout } from "../authSrc/utilsAuth";
@@ -78,7 +78,8 @@ export const Header: FC<{ query: PreloadedQuery<utilsAuthQuery> }> = ({
 }) => {
   const { authUser } = usePreloadedQuery(authUserQuery, query);
   const logout = useLogout();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
+  const navigate = (path: string) => path;
   const navigateTo = (path: string) => () => {
     navigate(path);
   };

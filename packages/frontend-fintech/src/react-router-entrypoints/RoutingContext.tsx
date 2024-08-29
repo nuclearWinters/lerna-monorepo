@@ -21,6 +21,7 @@ export interface Entries {
 
 export const RoutingContext = createContext<null | {
   history: BrowserHistory;
+  //Get the right one?
   get: () => Entries;
   preloadCode: (pathname: string) => void;
   preload: (pathname: string) => void;

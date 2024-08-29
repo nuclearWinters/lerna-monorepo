@@ -85,25 +85,30 @@ type RegisteredDefaultExports =
 
 const resourceMap = new Map<string, Resource>();
 
-interface PromiseDefaultExport {
-  default: RegisteredDefaultExports;
+interface PromiseDefaultExport<T = RegisteredDefaultExports> {
+  default: T;
 }
 
-export interface CustomJSResourceReference {
-  read(): RegisteredDefaultExports;
+export interface CustomJSResourceReference<T> {
+  read(): T;
   getModuleId(): string;
-  getModuleIfRequired(): RegisteredDefaultExports | null;
-  load(): Promise<RegisteredDefaultExports>;
+  getModuleIfRequired(): T | null;
+  load(): Promise<T>;
 }
 
-export class Resource implements CustomJSResourceReference {
+export class Resource<T = RegisteredDefaultExports>
+  implements CustomJSResourceReference<T>
+{
   #error: Error | null = null;
-  #promise: Promise<RegisteredDefaultExports> | null = null;
-  #result: RegisteredDefaultExports | null = null;
+  #promise: Promise<T> | null = null;
+  #result: T | null = null;
   #moduleId: string;
-  #loader: () => Promise<PromiseDefaultExport>;
+  #loader: () => Promise<PromiseDefaultExport<T>>;
 
-  constructor(moduleId: string, loader: () => Promise<PromiseDefaultExport>) {
+  constructor(
+    moduleId: string,
+    loader: () => Promise<PromiseDefaultExport<T>>
+  ) {
     this.#moduleId = moduleId;
     this.#loader = loader;
   }
@@ -126,7 +131,7 @@ export class Resource implements CustomJSResourceReference {
     return promise;
   }
 
-  getModuleIfRequired(): RegisteredDefaultExports | null {
+  getModuleIfRequired(): T | null {
     return this.#result;
   }
 
@@ -156,3 +161,46 @@ export function JSResource(
   }
   return resource;
 }
+
+/*type TypedResource<D> = D extends "Account" ? FC<PropsAccount> : never;
+
+export function JSResourceTyped<
+  D extends "Account" | "AddInvestments",
+  T extends () => D extends "Account"
+    ? Promise<{ default: FC<PropsAccount> }>
+    : never,
+>(moduleId: D, loader: T): Resource<TypedResource<D>> {
+  let resource = resourceMap.get(moduleId);
+  if (resource == null) {
+    resource = new Resource(moduleId, loader);
+    resourceMap.set(moduleId, resource);
+  }
+  return new Resource(moduleId, loader) as Resource<TypedResource<D>>;
+}*/
+
+/*interface Wrapper<T> {
+  value: Promise<T>;
+}
+
+interface Flags {
+  flag1: 1;
+  flag2: "1";
+  flag3: boolean;
+  flag4: number;
+}
+
+function getFlag<T extends keyof Flags>(
+  flag: T,
+  loader: () => Promise<{ default: Flags[T] }>
+): Wrapper<Flags[T]> {
+  const promise = loader().then((result) => {
+    return result.default;
+  });
+  return { value: promise };
+}
+
+const result = getFlag("flag1", () => Promise.resolve({ default: 1 }));
+
+result.value.then((value) => {
+  console.log(value);
+});*/

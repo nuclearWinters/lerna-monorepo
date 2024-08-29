@@ -19,7 +19,7 @@ import { FaFolder } from "@react-icons/all-files/fa/FaFolder";
 import { FaExchangeAlt } from "@react-icons/all-files/fa/FaExchangeAlt";
 import { FC, useMemo } from "react";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
-import { useLocation } from "react-router-dom";
+//import { useLocation } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
 import { fintechUserQuery } from "../utilsFintech";
 import { utilsFintechQuery } from "../__generated__/utilsFintechQuery.graphql";
@@ -90,7 +90,8 @@ export const SiderFintech: FC<{
 
   useSubscription<SiderFintechUserSubscription>(configUser);
 
-  const { pathname: location } = useLocation();
+  //const { pathname: location } = useLocation();
+  const location = "";
 
   if (!user) {
     return null;

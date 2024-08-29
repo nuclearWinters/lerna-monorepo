@@ -1,8 +1,8 @@
 services:
   kafka:
-    image: 'bitnami/kafka:latest'
+    image: "bitnami/kafka:latest"
     ports:
-      - '9092:9092'
+      - "9092:9092"
     environment:
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
@@ -15,9 +15,9 @@ services:
     image: node:20
     volumes:
       - .:/usr/src/service
+      - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/kafka-mongo
-    command:
-      ["./wait-for-it.sh", "kafka:9092", "--", "npm", "run", "start"]
+    command: ["./wait-for-it.sh", "kafka:9092", "--", "npm", "run", "start"]
     depends_on:
       - mongo-fintech
       - kafka
@@ -30,9 +30,9 @@ services:
     image: node:20
     volumes:
       - .:/usr/src/service
+      - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/backend-fintech-mongo
-    command:
-      ["./wait-for-it.sh", "kafka:9092", "--", "npm", "run", "start"]
+    command: ["./wait-for-it.sh", "kafka:9092", "--", "npm", "run", "start"]
     ports:
       - "4000:4000"
     depends_on:
@@ -45,21 +45,25 @@ services:
     image: node:20
     volumes:
       - .:/usr/src/service
+      - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/backend-auth-node
-    command: ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
+    command:
+      ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
     ports:
       - "4002:4002"
     depends_on:
       - mongo-fintech
       - redis-auth
-    
+
   grpc-auth:
     container_name: grpc-auth-node
     image: node:20
     volumes:
       - .:/usr/src/service
+      - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/backend-auth-node
-    command: ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
+    command:
+      ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
     ports:
       - "1983:1983"
     depends_on:
@@ -71,8 +75,10 @@ services:
     image: node:20
     volumes:
       - .:/usr/src/service
+      - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/grpc-fintech-node
-    command: ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
+    command:
+      ["./wait-for-it.sh", "mongo-fintech:27017", "--", "npm", "run", "start"]
     ports:
       - "1984:1984"
     depends_on:
@@ -83,6 +89,7 @@ services:
     image: node:20
     volumes:
       - .:/usr/src/service
+      - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/frontend-fintech
     command: ["npm", "run", "start"]
     ports:
@@ -110,3 +117,6 @@ services:
     logging:
       driver: none
 
+volumes:
+  lerna-node-modules:
+    external: true

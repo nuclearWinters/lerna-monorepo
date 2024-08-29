@@ -1,0 +1,21 @@
+x-base: &base
+  image: node:20
+  volumes:
+    - lerna-node-modules:/usr/src/service/node_modules
+    - .:/usr/src/service/
+  working_dir: /usr/src/service/
+
+services:
+  install:
+    <<: *base
+    command: npm install --legacy-peer-deps
+  outdated:
+    <<: *base
+    command: npm outdated
+  update:
+    <<: *base
+    command: npm update
+
+volumes:
+  lerna-node-modules:
+    external: true
