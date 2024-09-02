@@ -1,15 +1,15 @@
 import { useTranslation } from "../utils";
 import { CheckExpiration } from "../authSrc/components/CheckExpiration";
-import { FaUserCircle } from "@react-icons/all-files/fa/FaUserCircle";
-import { FaSignOutAlt } from "@react-icons/all-files/fa/FaSignOutAlt";
+import FaUserCircle from "../assets/circle-user-solid.svg";
+import FaSignOutAlt from "../assets/right-from-bracket-solid.svg";
 import { FC } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
-//import { useNavigate } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
 import { CustomButton } from "./CustomButton";
 import { authUserQuery, useLogout } from "../authSrc/utilsAuth";
 import { utilsAuthQuery } from "../authSrc/__generated__/utilsAuthQuery.graphql";
-import { Link } from "../react-router-entrypoints/Link";
+import { Link } from "../react-router-elements/Link";
+import { historyPush } from "../react-router-elements/utils";
 
 const baseRoutesHeaderLogged = stylex.create({
   base: {
@@ -30,7 +30,7 @@ const baseRoutesLink = stylex.create({
 
 const baseRoutesIconUser = stylex.create({
   base: {
-    fontSize: "28px",
+    height: "28px",
     margin: "12px 0px 12px 0px",
   },
   logged: {
@@ -69,7 +69,7 @@ const baseRoutesIconLogout = stylex.create({
     margin: "0px 10px",
     cursor: "pointer",
     color: "rgb(62,62,62)",
-    fontSize: "28px",
+    height: "28px",
   },
 });
 
@@ -78,23 +78,22 @@ export const Header: FC<{ query: PreloadedQuery<utilsAuthQuery> }> = ({
 }) => {
   const { authUser } = usePreloadedQuery(authUserQuery, query);
   const logout = useLogout();
-  //const navigate = useNavigate();
-  const navigate = (path: string) => path;
   const navigateTo = (path: string) => () => {
-    navigate(path);
+    historyPush(path);
   };
   const { t } = useTranslation();
   return authUser ? (
     <div {...stylex.props(baseHeader.base)}>
       <CheckExpiration />
       <div {...stylex.props(baseRoutesHeaderLogged.base)}>
-        <FaUserCircle {...stylex.props(baseRoutesIconUser.base)} />
+        <img src={FaUserCircle} {...stylex.props(baseRoutesIconUser.base)} />
         <Link to="/settings" {...stylex.props(baseRoutesLink.base)}>
           {`${authUser?.name || ""} ${authUser?.apellidoPaterno || ""} ${
             authUser?.apellidoMaterno || ""
           }`.toUpperCase()}
         </Link>
-        <FaSignOutAlt
+        <img
+          src={FaSignOutAlt}
           onClick={logout}
           {...stylex.props(baseRoutesIconLogout.base)}
         />
@@ -103,7 +102,8 @@ export const Header: FC<{ query: PreloadedQuery<utilsAuthQuery> }> = ({
   ) : (
     <div {...stylex.props(baseHeader.notLogged)}>
       <div {...stylex.props(baseRoutesHeaderNotLogged.base)}>
-        <FaUserCircle
+        <img
+          src={FaUserCircle}
           {...stylex.props(
             baseRoutesIconUser.base,
             baseRoutesIconUser.notLogged
@@ -112,7 +112,7 @@ export const Header: FC<{ query: PreloadedQuery<utilsAuthQuery> }> = ({
         <CustomButton
           text={t("Iniciar sesión")}
           color="logIn"
-          onClick={navigateTo("/login")}
+          onClick={navigateTo("/")}
         />
         <CustomButton
           text={t("Crear cuenta")}

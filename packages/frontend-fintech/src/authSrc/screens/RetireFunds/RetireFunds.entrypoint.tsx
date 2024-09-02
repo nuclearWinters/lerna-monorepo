@@ -1,20 +1,21 @@
 import type RetireFunds from "./RetireFunds";
 import utilsAuthQueryParameters from "../../__generated__/utilsAuthQuery$parameters";
-import { JSResource } from "../../../react-router-entrypoints/JSResource";
-import { CustomSimpleEntryPoint } from "../../../react-router-entrypoints/createRouter";
+import JSResource from "../../../react-router-elements/JSResource";
+import { EntryPoint } from "react-relay";
 
-export const RetireFundsEntryPoint: CustomSimpleEntryPoint<typeof RetireFunds> =
-  {
-    root: JSResource("RetireFunds", () => import("./RetireFunds")),
-    getPreloadProps() {
-      return {
-        queries: {
-          authQuery: {
-            parameters: utilsAuthQueryParameters,
+export const RetireFundsEntryPoint: EntryPoint<typeof RetireFunds> = {
+  root: JSResource("RetireFunds", () => import("./RetireFunds")),
+  getPreloadProps() {
+    return {
+      queries: {
+        authQuery: {
+          parameters: utilsAuthQueryParameters,
+          environmentProviderOptions: {
             environment: "auth",
-            variables: {},
           },
+          variables: {},
         },
-      };
-    },
-  };
+      },
+    };
+  },
+};

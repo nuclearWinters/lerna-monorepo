@@ -1,5 +1,5 @@
-import { ChangeEvent, FC, useState } from "react";
-import { usePreloadedQuery } from "react-relay/hooks";
+import { ChangeEvent, useState } from "react";
+import { EntryPointComponent, usePreloadedQuery } from "react-relay/hooks";
 import { Label } from "../../../components/Label";
 import { Main } from "../../../components/Main";
 import { WrapperSmall } from "../../../components/WrapperSmall";
@@ -11,24 +11,16 @@ import { authUserQuery, useTranslation } from "../../utilsAuth";
 import { RedirectContainer } from "../../../components/RedirectContainer";
 import { RetireFundsButton } from "../../../fintechSrc/components/RetireFundsButton";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
-import {
-  EntryPointPrepared,
-  EntryPointProps,
-} from "../../../react-router-entrypoints/types";
 
 export type Queries = {
   authQuery: utilsAuthQuery;
 };
 
-export type PreparedProps = EntryPointPrepared<Queries>;
-
-export type Props = EntryPointProps<Queries>;
-
-export const RetireFunds: FC<Props> = (props) => {
+export const RetireFunds: EntryPointComponent<Queries, {}> = (props) => {
   const { t } = useTranslation();
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.prepared.authQuery
+    props.queries.authQuery
   );
   const [quantity, setQuantity] = useState("");
   const handleQuantityOnChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -36,6 +36,7 @@ import {
   TransactionInvestMongoType,
   ScheduledPaymentsMongo,
   ScheduledPaymentsStatus,
+  UUID,
 } from "./types";
 import { base64, unbase64 } from "./utils";
 import { DateScalarType } from "@lerna-monorepo/backend-auth-node";
@@ -180,7 +181,7 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
             type,
           };
         }
-        return { ...(await users.findOne({ id })), type };
+        return { ...(await users.findOne({ id: id as UUID })), type };
       case "Loan":
         return { ...(await loans.findOne({ _id: new ObjectId(id) })), type };
       case "Investment":
@@ -728,7 +729,7 @@ const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
               hasNextPage: edgesMapped.length > (first || 0),
             },
           };
-        } catch (e) {
+        } catch {
           return connectionFromArray([], { first, after });
         }
       },

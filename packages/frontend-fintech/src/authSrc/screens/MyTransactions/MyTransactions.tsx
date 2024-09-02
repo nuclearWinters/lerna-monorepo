@@ -1,9 +1,8 @@
-import { FC } from "react";
-import { RelayEnvironmentProvider, usePreloadedQuery } from "react-relay/hooks";
 import {
-  EntryPointPrepared,
-  EntryPointProps,
-} from "../../../react-router-entrypoints/types";
+  EntryPointComponent,
+  RelayEnvironmentProvider,
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { MyTransactionsPage } from "../../../fintechSrc/screens/MyTransactions/MyTransactionsPage";
 import { MyTransactionsQueriesQuery } from "../../../fintechSrc/screens/MyTransactions/__generated__/MyTransactionsQueriesQuery.graphql";
@@ -15,14 +14,10 @@ export type Queries = {
   authQuery: utilsAuthQuery;
 };
 
-export type PreparedProps = EntryPointPrepared<Queries>;
-
-export type Props = EntryPointProps<Queries>;
-
-export const MyTransactions: FC<Props> = (props) => {
+export const MyTransactions: EntryPointComponent<Queries, {}> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.prepared.authQuery
+    props.queries.authQuery
   );
 
   if (!authUser) {
@@ -31,7 +26,7 @@ export const MyTransactions: FC<Props> = (props) => {
 
   return (
     <RelayEnvironmentProvider environment={RelayEnvironmentFintech}>
-      <MyTransactionsPage fintechQuery={props.prepared.fintechQuery} />
+      <MyTransactionsPage fintechQuery={props.queries.fintechQuery} />
     </RelayEnvironmentProvider>
   );
 };

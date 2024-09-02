@@ -1,7 +1,6 @@
 import { GraphQLID, GraphQLList, GraphQLNonNull } from "graphql";
 import { withFilter } from "graphql-subscriptions";
-import { RedisPubSub } from "graphql-redis-subscriptions";
-import Redis, { RedisOptions } from "ioredis";
+import { RedisOptions } from "ioredis";
 import {
   GraphQLTransactionEdge,
   GraphQLInvestmentEdge,
@@ -31,11 +30,6 @@ export const options: RedisOptions = {
   },
 };
 
-export const pubsub = new RedisPubSub({
-  publisher: new Redis(options),
-  subscriber: new Redis(options),
-});
-
 export const LOAN_INSERT = "LOAN_INSERT";
 export const MY_LOAN_INSERT = "MY_LOAN_INSERT";
 export const TRANSACTION_INSERT = "TRANSACTION_INSERT";
@@ -53,11 +47,12 @@ export const my_loans_subscribe_insert = {
   description: "New my loans",
   args: {},
   subscribe: withFilter(
-    (_payload, _args, context: Context) => context.pubsub.asyncIterator(MY_LOAN_INSERT),
+    (_payload, _args, context: Context) =>
+      context.pubsub.asyncIterator(MY_LOAN_INSERT),
     (payload: PayloadMyLoansInsert, _, { isSupport, id }: Context) => {
       return isSupport
         ? payload.my_loans_subscribe_insert.node.status ===
-        "waiting for approval"
+            "waiting for approval"
         : id === payload.my_loans_subscribe_insert.node.user_id;
     }
   ),
@@ -72,7 +67,8 @@ export const loans_subscribe_insert = {
   description: "New loans",
   args: {},
   subscribe: withFilter(
-    (_payload, _args, context: Context) => context.pubsub.asyncIterator(LOAN_INSERT),
+    (_payload, _args, context: Context) =>
+      context.pubsub.asyncIterator(LOAN_INSERT),
     (payload: PayloadLoansInsert) => {
       return payload.loans_subscribe_insert.node.status === "financing";
     }
@@ -88,7 +84,8 @@ export const transactions_subscribe_insert = {
   args: {},
   description: "New transactions",
   subscribe: withFilter(
-    (_payload, _args, context: Context) => context.pubsub.asyncIterator(TRANSACTION_INSERT),
+    (_payload, _args, context: Context) =>
+      context.pubsub.asyncIterator(TRANSACTION_INSERT),
     (payload: PayloadTransactionInsert, _, context: Context) => {
       return payload.transactions_subscribe_insert.node.user_id === context.id;
     }
@@ -104,7 +101,8 @@ export const investments_subscribe_update = {
   args: {},
   description: "Updated investments",
   subscribe: withFilter(
-    (_payload, _args, context: Context) => context.pubsub.asyncIterator(INVESTMENT_UPDATE),
+    (_payload, _args, context: Context) =>
+      context.pubsub.asyncIterator(INVESTMENT_UPDATE),
     (payload: PayloadInvestmentUpdate, _, context: Context) => {
       return payload.investments_subscribe_update.lender_id === context.id;
     }
@@ -124,7 +122,8 @@ export const loans_subscribe_update = {
   },
   description: "Updated loans",
   subscribe: withFilter(
-    (_payload, _args, context: Context) => context.pubsub.asyncIterator(LOAN_UPDATE),
+    (_payload, _args, context: Context) =>
+      context.pubsub.asyncIterator(LOAN_UPDATE),
     (payload: PayloadLoanUpdate, variables) => {
       return payload.loans_subscribe_update._id === unbase64(variables.gid);
     }
@@ -144,7 +143,8 @@ export const investments_subscribe_insert = {
   },
   description: "New investment",
   subscribe: withFilter(
-    (_payload, _args, context: Context) => context.pubsub.asyncIterator(INVESTMENT_INSERT),
+    (_payload, _args, context: Context) =>
+      context.pubsub.asyncIterator(INVESTMENT_INSERT),
     (payload: PayloadInvestmentInsert, variables, { id }: Context) => {
       return (
         payload.investments_subscribe_insert.node.lender_id === id &&

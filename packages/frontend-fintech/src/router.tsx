@@ -1,4 +1,5 @@
 import {
+  Decode,
   defaultBorrower,
   defaultLender,
   defaultSupport,
@@ -17,207 +18,434 @@ import { SettingsEntryPoint } from "./authSrc/screens/Settings/Settings.entrypoi
 import { MyInvestmentsEntryPoint } from "./authSrc/screens/MyInvestments/MyInvestments.entrypoints";
 import { LogInEntryPoint } from "./authSrc/screens/LogIn/LogIn.entrypoint";
 import { SignUpEntryPoint } from "./authSrc/screens/SignUp/SignUp.entrypoint";
-import createRouter, {
-  EntryPointRoute,
-} from "./react-router-entrypoints/createRouter";
-import { RoutingContext } from "./react-router-entrypoints/RoutingContext";
-import { RouterRenderer } from "./react-router-entrypoints/RouteRenderer";
-
-const redirect = (arg: string) => arg;
+import { Routes } from "./react-router-elements/Router";
+import { Route } from "./react-router-elements/Route";
+import { loadEntryPoint, PreloadedEntryPoint } from "react-relay";
+import {
+  RelayEnvironmentAuth,
+  RelayEnvironmentFintech,
+} from "./RelayEnvironment";
+import { GetEntryPointComponentFromEntryPoint } from "react-relay/relay-hooks/helpers";
+import { RouteLogin } from "./react-router-elements/RouteLogin";
+import { historyReplace } from "./react-router-elements/utils";
 
 type inputUser = "lender" | "borrower" | "support";
 
-const redirectPage = (
-  allowedUsers: inputUser[],
-  path: string
-): string | null => {
-  const data = getUserDataCache();
+const allowedPages = {
+  borrower: [
+    "/account",
+    "/myTransactions",
+    "/addFunds",
+    "/retireFunds",
+    "/settings",
+    "/myLoans",
+    "/addLoan",
+  ],
+  lender: [
+    "/account",
+    "/myTransactions",
+    "/addFunds",
+    "/retireFunds",
+    "/settings",
+    "/myInvestments",
+    "/addInvestments",
+  ],
+  support: ["/approveLoan", "/settings"],
+};
+
+const getRedirectPath = (
+  path: UserPages,
+  data: Decode | null
+): {
+  path: "/myLoans" | "/addInvestments" | "/approveLoan" | "/";
+  params: string | null;
+} | null => {
   if (data) {
     if (
-      (allowedUsers.includes("borrower") && data.isBorrower) ||
-      (allowedUsers.includes("lender") && data.isLender) ||
-      (allowedUsers.includes("support") && data.isSupport)
+      (allowedPages["borrower"].includes(path) && data.isBorrower) ||
+      (allowedPages["lender"].includes(path) && data.isLender) ||
+      (allowedPages["support"].includes(path) && data.isSupport)
     ) {
       return null;
     } else {
       if (data.isBorrower) {
-        return defaultBorrower;
+        return { path: defaultBorrower, params: null };
       } else if (data.isLender) {
-        return defaultLender;
+        return { path: defaultLender, params: null };
       } else {
-        return defaultSupport;
+        return { path: defaultSupport, params: null };
       }
     }
   }
-  return `/login?redirectTo=${path}`;
+  return { path: "/", params: `redirectTo=${path}` };
 };
 
-const routes: EntryPointRoute[] = [
+const headerEntryPointReference = loadEntryPoint(
   {
-    entryPoint: HeaderAuthEntryPoint,
-    routes: [
-      {
-        path: "/",
-        exact: true,
-        entryPoint: LogInEntryPoint,
-      },
-      {
-        path: "/login",
-        entryPoint: LogInEntryPoint,
-        loader: async () => {
-          const data = getUserDataCache();
-          if (data?.isBorrower) {
-            return redirect(defaultBorrower);
-          }
-          if (data?.isSupport) {
-            return redirect(defaultSupport);
-          }
-          if (data?.isLender) {
-            return redirect(defaultLender);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/register",
-        entryPoint: SignUpEntryPoint,
-        loader: async () => {
-          const data = getUserDataCache();
-          if (data?.isBorrower) {
-            return redirect(defaultBorrower);
-          }
-          if (data?.isSupport) {
-            return redirect(defaultSupport);
-          }
-          if (data?.isLender) {
-            return redirect(defaultLender);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/settings",
-        entryPoint: SettingsEntryPoint,
-        loader: async () => {
-          const path = redirectPage(
-            ["borrower", "lender", "support"],
-            "/settings"
-          );
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/account",
-        entryPoint: AccountEntryPoint,
-        loader: async () => {
-          const path = redirectPage(["borrower", "lender"], "/account");
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/myTransactions",
-        entryPoint: MyTransactionsEntryPoint,
-        loader: async () => {
-          const path = redirectPage(["borrower", "lender"], "/myTransactions");
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/addFunds",
-        entryPoint: AddFundsEntryPoint,
-        loader: async () => {
-          const path = redirectPage(["borrower", "lender"], "/addFunds");
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/retireFunds",
-        entryPoint: RetireFundsEntryPoint,
-        loader: async () => {
-          const path = redirectPage(["borrower", "lender"], "/retireFunds");
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/addInvestments",
-        entryPoint: AddInvestmentsEntryPoint,
-        loader: async () => {
-          const path = redirectPage(["lender"], "/addInvestments");
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/addLoan",
-        entryPoint: AddLoanEntryPoint,
-        loader: async () => {
-          const path = redirectPage(["borrower"], "/addLoan");
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/approveLoan",
-        entryPoint: ApproveLoanEntryPoint,
-        loader: async () => {
-          const path = redirectPage(["support"], "/approveLoan");
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/myLoans",
-        entryPoint: MyLoansEntryPoint,
-        loader: async () => {
-          const path = redirectPage(["borrower"], "/myLoans");
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-      {
-        path: "/myInvestments",
-        entryPoint: MyInvestmentsEntryPoint,
-        loader: async () => {
-          const path = redirectPage(["lender"], "/myInvestments");
-          if (path) {
-            return redirect(path);
-          }
-          return {};
-        },
-      },
-    ],
+    getEnvironment: (options) => {
+      return RelayEnvironmentAuth;
+    },
   },
-];
+  HeaderAuthEntryPoint,
+  {}
+);
 
-const router = createRouter(routes);
+export const references = {
+  "/": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof LogInEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        LogInEntryPoint,
+        {}
+      );
+      references["/"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/register": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof SignUpEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        SignUpEntryPoint,
+        {}
+      );
+      references["/register"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/settings": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof SettingsEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        SettingsEntryPoint,
+        {}
+      );
+      references["/settings"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/account": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof AccountEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        AccountEntryPoint,
+        {}
+      );
+      references["/account"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/myTransactions": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof MyTransactionsEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        MyTransactionsEntryPoint,
+        {}
+      );
+      references["/myTransactions"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/addFunds": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof AddFundsEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        AddFundsEntryPoint,
+        {}
+      );
+      references["/addFunds"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/retireFunds": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof RetireFundsEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        RetireFundsEntryPoint,
+        {}
+      );
+      references["/retireFunds"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/addInvestments": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof AddInvestmentsEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        AddInvestmentsEntryPoint,
+        {}
+      );
+      references["/addInvestments"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/addLoan": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof AddLoanEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        AddLoanEntryPoint,
+        {}
+      );
+      references["/addLoan"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/approveLoan": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof ApproveLoanEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        ApproveLoanEntryPoint,
+        {}
+      );
+      references["/approveLoan"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/myLoans": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof MyLoansEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        MyLoansEntryPoint,
+        {}
+      );
+      references["/myLoans"].entrypoint = reference;
+      return reference;
+    },
+  },
+  "/myInvestments": {
+    entrypoint: null as PreloadedEntryPoint<
+      GetEntryPointComponentFromEntryPoint<typeof MyInvestmentsEntryPoint>
+    > | null,
+    loader: () => {
+      const reference = loadEntryPoint(
+        {
+          getEnvironment: (options) => {
+            return options?.environment === "auth"
+              ? RelayEnvironmentAuth
+              : RelayEnvironmentFintech;
+          },
+        },
+        MyInvestmentsEntryPoint,
+        {}
+      );
+      references["/myInvestments"].entrypoint = reference;
+      return reference;
+    },
+  },
+};
+
+const pathname = window.location.pathname;
+const data = getUserDataCache();
+
+const sessionPages = ["/", "/register"];
+
+type SessionPages = "/" | "/register";
+
+const isSessionPage = (path: string): path is SessionPages => {
+  return sessionPages.includes(path);
+};
+
+type UserPages =
+  | "/approveLoan"
+  | "/settings"
+  | "/addInvestments"
+  | "/myInvestments"
+  | "/addLoan"
+  | "/myLoans"
+  | "/account"
+  | "/myTransactions"
+  | "/addFunds"
+  | "/retireFunds";
+
+const isUserPage = (path: string): path is UserPages => {
+  return [
+    "/approveLoan",
+    "/settings",
+    "/addInvestments",
+    "/myInvestments",
+    "/addLoan",
+    "/myLoans",
+    "/account",
+    "/myTransactions",
+    "/addFunds",
+    "/retireFunds",
+  ].includes(path);
+};
+
+if (isSessionPage(pathname)) {
+  if (data?.isBorrower) {
+    references[defaultBorrower].loader();
+    historyReplace(defaultBorrower);
+  }
+  if (data?.isSupport) {
+    references[defaultSupport].loader();
+    historyReplace(defaultSupport);
+  }
+  if (data?.isLender) {
+    references[defaultLender].loader();
+    historyReplace(defaultLender);
+  } else {
+    references[pathname].loader();
+  }
+} else if (isUserPage(pathname)) {
+  const redirectPath = getRedirectPath(pathname, data);
+  if (redirectPath) {
+    references[redirectPath.path].loader();
+    historyReplace(
+      `${redirectPath.path}${redirectPath.params ? `?${redirectPath.params}` : ""}`
+    );
+  } else {
+    references[pathname].loader();
+  }
+}
 
 export const MyRouter = () => {
   return (
-    <RoutingContext.Provider value={router.context}>
-      <RouterRenderer />
-    </RoutingContext.Provider>
+    <Routes entryPointReference={headerEntryPointReference}>
+      <RouteLogin entryPointReference={references["/"].entrypoint} />
+      <Route
+        path="/register"
+        entryPointReference={references["/register"].entrypoint}
+      />
+      <Route
+        path="/settings"
+        entryPointReference={references["/settings"].entrypoint}
+      />
+      <Route
+        path="/account"
+        entryPointReference={references["/account"].entrypoint}
+      />
+      <Route
+        path="/myTransactions"
+        entryPointReference={references["/myTransactions"].entrypoint}
+      />
+      <Route
+        path="/addFunds"
+        entryPointReference={references["/addFunds"].entrypoint}
+      />
+      <Route
+        path="/retireFunds"
+        entryPointReference={references["/retireFunds"].entrypoint}
+      />
+      <Route
+        path="/addInvestments"
+        entryPointReference={references["/addInvestments"].entrypoint}
+      />
+      <Route
+        path="/addLoan"
+        entryPointReference={references["/addLoan"].entrypoint}
+      />
+      <Route
+        path="/approveLoan"
+        entryPointReference={references["/approveLoan"].entrypoint}
+      />
+      <Route
+        path="/myLoans"
+        entryPointReference={references["/myLoans"].entrypoint}
+      />
+      <Route
+        path="/myInvestments"
+        entryPointReference={references["/myInvestments"].entrypoint}
+      />
+    </Routes>
   );
 };

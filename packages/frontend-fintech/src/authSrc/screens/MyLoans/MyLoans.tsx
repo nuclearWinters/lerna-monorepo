@@ -1,10 +1,9 @@
-import { FC } from "react";
-import { RelayEnvironmentProvider, usePreloadedQuery } from "react-relay/hooks";
-import { RedirectContainer } from "../../../components/RedirectContainer";
 import {
-  EntryPointPrepared,
-  EntryPointProps,
-} from "../../../react-router-entrypoints/types";
+  EntryPointComponent,
+  RelayEnvironmentProvider,
+  usePreloadedQuery,
+} from "react-relay/hooks";
+import { RedirectContainer } from "../../../components/RedirectContainer";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { MyLoansPage } from "../../../fintechSrc/screens/MyLoans/MyLoansPage";
 import { authUserQuery, Languages } from "../../utilsAuth";
@@ -16,14 +15,10 @@ export type Queries = {
   authQuery: utilsAuthQuery;
 };
 
-export type PreparedProps = EntryPointPrepared<Queries>;
-
-export type Props = EntryPointProps<Queries>;
-
-export const MyLoans: FC<Props> = (props) => {
+export const MyLoans: EntryPointComponent<Queries, {}> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.prepared.authQuery
+    props.queries.authQuery
   );
 
   if (!authUser) {
@@ -46,7 +41,7 @@ export const MyLoans: FC<Props> = (props) => {
   return (
     <RelayEnvironmentProvider environment={RelayEnvironmentFintech}>
       <MyLoansPage
-        fintechQuery={props.prepared.fintechQuery}
+        fintechQuery={props.queries.fintechQuery}
         language={language as Languages}
       />
     </RelayEnvironmentProvider>

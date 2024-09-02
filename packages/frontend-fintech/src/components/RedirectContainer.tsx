@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-//import { useNavigate } from "react-router-dom";
+import { historyReplace } from "../react-router-elements/utils";
 
 export const RedirectContainer: FC<{
   allowed: ("borrower" | "lender" | "support")[];
@@ -7,8 +7,6 @@ export const RedirectContainer: FC<{
   isLender: boolean;
   isBorrower: boolean;
 }> = ({ allowed, isBorrower, isLender, isSupport }) => {
-  //const navigate = useNavigate();
-  const navigate = (path: string) => path;
   useEffect(() => {
     const isAllowed =
       (allowed.includes("borrower") && isBorrower) ||
@@ -16,11 +14,11 @@ export const RedirectContainer: FC<{
       (allowed.includes("support") && isSupport);
     if (!isAllowed) {
       if (isBorrower) {
-        navigate("/myLoans");
+        historyReplace("/myLoans");
       } else if (isSupport) {
-        navigate("/approveLoan");
+        historyReplace("/approveLoan");
       } else {
-        navigate("/addInvestments");
+        historyReplace("/addInvestments");
       }
     }
   });

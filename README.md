@@ -57,7 +57,7 @@ Finally we are testing the project with Jest: We test Kafka events by using the 
 
 To set up the project locally:
 
-1. Install Docker
+1. Install Docker and NodeJS 20
 
 2. Run `npm install --no-save` in root folder (this will help your IDE to apply linting)
 

@@ -2,6 +2,7 @@ import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { DecodeJWT } from "./types";
 import { AuthClient } from "./proto/auth_grpc_pb";
 import { JWTMiddlewareInput } from "./proto/auth_pb";
+import { Metadata } from "@grpc/grpc-js";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -32,7 +33,11 @@ export const jwt = {
 export const REFRESH_TOKEN_EXP_NUMBER = 900;
 export const ACCESS_TOKEN_EXP_NUMBER = 180;
 
-export const jwtMiddleware = (refreshToken: string, accessToken: string, client: AuthClient) =>
+export const jwtMiddleware = (
+  refreshToken: string,
+  accessToken: string,
+  client: AuthClient
+) =>
   new Promise<{
     id: string;
     isLender: boolean;
@@ -44,7 +49,8 @@ export const jwtMiddleware = (refreshToken: string, accessToken: string, client:
     request.setRefreshToken(refreshToken);
     request.setAccessToken(accessToken);
 
-    client.jwtMiddleware(request, (err, user) => {
+    const metadata = new Metadata({ waitForReady: true });
+    client.jwtMiddleware(request, metadata, (err, user) => {
       if (err) {
         //Should I return error and unauthorized status code?
         resolve({

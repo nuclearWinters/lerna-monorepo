@@ -1,8 +1,8 @@
+import JSResource from "../../../react-router-elements/JSResource";
 import type SignUp from "./SignUp";
-import { CustomSimpleEntryPoint } from "../../../react-router-entrypoints/createRouter";
-import { JSResource } from "../../../react-router-entrypoints/JSResource";
+import { EntryPoint } from "react-relay";
 
-export const SignUpEntryPoint: CustomSimpleEntryPoint<typeof SignUp> = {
+export const SignUpEntryPoint: EntryPoint<typeof SignUp> = {
   root: JSResource("SignUp", () => import("./SignUp")),
   getPreloadProps() {
     return {};

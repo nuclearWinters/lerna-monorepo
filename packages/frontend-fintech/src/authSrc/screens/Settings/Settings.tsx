@@ -2,6 +2,8 @@ import * as stylex from "@stylexjs/stylex";
 import { Spinner } from "../../../components/Spinner";
 import { ChangeEvent, FC, Fragment, useState } from "react";
 import {
+  EntryPointComponent,
+  EntryPointProps,
   graphql,
   useMutation,
   usePaginationFragment,
@@ -31,12 +33,8 @@ import {
 import { SettingsQueriesAuthUserQuery } from "./__generated__/SettingsQueriesAuthUserQuery.graphql";
 import { SettingsQueries_logins_user$key } from "./__generated__/SettingsQueries_logins_user.graphql";
 import { SettingsQueries_sessions_user$key } from "./__generated__/SettingsQueries_sessions_user.graphql";
-import { FaTrashAlt } from "@react-icons/all-files/fa/FaTrashAlt";
+import FaTrashAlt from "../../../assets/trash-alt-solid.svg";
 import { SettingsSessionRowRevokeSessionMutation } from "./__generated__/SettingsSessionRowRevokeSessionMutation.graphql";
-import {
-  EntryPointPrepared,
-  EntryPointProps,
-} from "../../../react-router-entrypoints/types";
 
 const baseLoanRowIcon = stylex.create({
   base: {
@@ -135,7 +133,7 @@ const DeleteCell: FC<{ id: string }> = ({ id }) => {
         });
       }}
     >
-      <FaTrashAlt {...stylex.props(baseLoanRowIcon.base)} />
+      <img src={FaTrashAlt} {...stylex.props(baseLoanRowIcon.base)} />
     </td>
   );
 };
@@ -227,11 +225,7 @@ export type Queries = {
   authQuery: SettingsQueriesAuthUserQuery;
 };
 
-export type PreparedProps = EntryPointPrepared<Queries>;
-
-export type Props = EntryPointProps<Queries>;
-
-export const Settings: FC<Props> = (props) => {
+export const Settings: EntryPointComponent<Queries, {}> = (props) => {
   const { t, changeLanguage } = useTranslation();
   const [commit, isInFlight] = useMutation<SettingsMutation>(graphql`
     mutation SettingsMutation($input: UpdateUserInput!) {
@@ -254,7 +248,7 @@ export const Settings: FC<Props> = (props) => {
   `);
   const { authUser } = usePreloadedQuery(
     settingsFragment,
-    props.prepared.authQuery
+    props.queries.authQuery
   );
   const originLang = authUser?.language as Languages;
   const [formUser, setFormUser] = useState({

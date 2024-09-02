@@ -1,5 +1,5 @@
 import { MongoClient, ObjectId } from "mongodb";
-import { UserLogins, UserMongo, UserSessions } from "./types";
+import { UserLogins, UserMongo, UserSessions, UUID } from "./types";
 
 MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
   async (client) => {
@@ -10,15 +10,18 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     await logins.deleteMany({});
     await users.deleteMany({});
     await sessions.deleteMany({});
+    const user_id_one: UUID = "dab40bfd-b4a4-4874-8978-85f518a9aafb";
+    const user_id_two: UUID = "9e60e466-70f2-4820-a8f3-604086b62ce2";
+    const user_id_three: UUID = "83ae2e46-949a-4a3f-9a9a-9cd09b59fe47";
     await logins.insertOne({
       applicationName: "Lerna Monorepo",
       time: new Date(),
       address: "::1",
-      userId: crypto.randomUUID(),
+      userId: user_id_one,
     });
     await users.insertMany([
       {
-        _id: new ObjectId("607bd608ef9719001cf38fd5"),
+        _id: new ObjectId(),
         isBorrower: false,
         isLender: true,
         isSupport: false,
@@ -33,10 +36,10 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         CURP: "CURP",
         clabe: "clabe",
         mobile: "9831228788",
-        id: crypto.randomUUID(),
+        id: user_id_one,
       },
       {
-        _id: new ObjectId("6095f055f92be2001a15885b"),
+        _id: new ObjectId(),
         isBorrower: true,
         isLender: false,
         isSupport: false,
@@ -51,10 +54,10 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         CURP: "CURP",
         clabe: "clabe",
         mobile: "9831228788",
-        id: crypto.randomUUID(),
+        id: user_id_two,
       },
       {
-        _id: new ObjectId("6095f172f92be2001a15885c"),
+        _id: new ObjectId(),
         isBorrower: false,
         isLender: false,
         isSupport: true,
@@ -69,7 +72,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         CURP: "CURP",
         clabe: "clabe",
         mobile: "9831228788",
-        id: crypto.randomUUID(),
+        id: user_id_three,
       },
     ]);
     process.exit();

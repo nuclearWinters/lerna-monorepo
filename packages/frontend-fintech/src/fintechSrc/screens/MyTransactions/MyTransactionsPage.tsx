@@ -34,7 +34,7 @@ interface Props {
 
 export const MyTransactionsPage: FC<Props> = (props) => {
   const { t } = useTranslation();
-  const [reset, setReset] = useState(0);
+  const [reset, setReset] = useState(Date.now());
   const { user } = usePreloadedQuery(transactionsFragment, props.fintechQuery);
   const { data, loadNext, refetch } = usePaginationFragment<
     MyTransactionsQueriesPaginationUser,
@@ -98,7 +98,7 @@ export const MyTransactionsPage: FC<Props> = (props) => {
             text={t("Reiniciar lista")}
             color="secondary"
             onClick={() => {
-              const time = new Date().getTime();
+              const time = Date.now();
               setReset(time);
               refetch(
                 {

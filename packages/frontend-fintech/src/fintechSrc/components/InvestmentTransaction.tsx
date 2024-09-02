@@ -1,6 +1,6 @@
 import { useFragment, graphql } from "react-relay";
-import { FaFileContract } from "@react-icons/all-files/fa/FaFileContract";
-import { FaUserCircle } from "@react-icons/all-files/fa/FaUserCircle";
+import FaFileContract from "../../assets/file-contract-solid.svg";
+import FaUserCircle from "../../assets/circle-user-solid.svg";
 import { FC } from "react";
 import {
   InvestmentTransaction_transaction$key,
@@ -140,14 +140,16 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
         </div>
         <div {...stylex.props(baseMyTransactionsDescription.base)}>
           {t("Prestado a")}{" "}
-          <FaUserCircle
+          <img
+            src={FaUserCircle}
             onClick={() => {
               navigator.clipboard.writeText(borrower_id);
             }}
             {...stylex.props(baseMyTransactionsIcon.base)}
           />{" "}
           {t("al fondo")}:{" "}
-          <FaFileContract
+          <img
+            src={FaFileContract}
             onClick={() => {
               navigator.clipboard.writeText(loan_id);
             }}

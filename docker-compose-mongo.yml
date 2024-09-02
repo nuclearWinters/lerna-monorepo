@@ -11,10 +11,10 @@ services:
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
     healthcheck:
-        test: kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1
-        interval: 30s
-        timeout: 10s
-        retries: 5
+      test: kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   kafka-mongo:
     image: node:20
@@ -26,8 +26,8 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-    links:
-      - mongo-fintech
+      mongo-fintech:
+        condition: service_completed_successfully
     deploy:
       mode: replicated
       replicas: 2
@@ -45,13 +45,13 @@ services:
     depends_on:
       backend-auth-node:
         condition: service_healthy
-    links:
-      - mongo-fintech
+      mongo-fintech:
+        condition: service_completed_successfully
     healthcheck:
-        test: curl --fail https://localhost:4000/graphql || exit 1
-        interval: 30s
-        timeout: 10s
-        retries: 5
+      test: curl --fail https://localhost:4000/graphql || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   backend-auth-node:
     container_name: backend-auth-node
@@ -60,20 +60,19 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/backend-auth-node
-    command:
-      ["npm", "run", "start"]
+    command: ["npm", "run", "start"]
     ports:
       - "4002:4002"
     depends_on:
       redis-auth:
         condition: service_started
-    links:
-      - mongo-fintech
+      mongo-fintech:
+        condition: service_completed_successfully
     healthcheck:
-        test: curl --fail https://localhost:4002/graphql || exit 1
-        interval: 30s
-        timeout: 10s
-        retries: 5
+      test: curl --fail https://localhost:4002/graphql || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   grpc-auth:
     container_name: grpc-auth-node
@@ -82,15 +81,14 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/backend-auth-node
-    command:
-      ["npm", "run", "start"]
+    command: ["npm", "run", "start"]
     ports:
       - "1983:1983"
     depends_on:
       redis-auth:
         condition: service_started
-    links:
-      - mongo-fintech
+      mongo-fintech:
+        condition: service_completed_successfully
 
   grpc-fintech:
     container_name: grpc-fintech
@@ -99,8 +97,7 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/grpc-fintech-node
-    command:
-      ["npm", "run", "start"]
+    command: ["npm", "run", "start"]
     ports:
       - "1984:1984"
     depends_on:

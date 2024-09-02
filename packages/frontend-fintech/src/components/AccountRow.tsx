@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { FaPlusCircle } from "@react-icons/all-files/fa/FaPlusCircle";
+import FaPlusCircle from "../assets/circle-plus-solid.svg";
 import * as stylex from "@stylexjs/stylex";
 
 interface Props {
@@ -56,7 +56,7 @@ export const AccountRow: FC<Props> = ({ text, value, type }) => {
       >
         {value}
       </div>
-      <FaPlusCircle {...stylex.props(accountRowIcon.base)} />
+      <img src={FaPlusCircle} {...stylex.props(accountRowIcon.base)} />
     </div>
   );
 };

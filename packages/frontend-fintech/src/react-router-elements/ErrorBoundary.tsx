@@ -1,15 +1,15 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
-interface ErrorReactComponent extends Error {
-  source: unknown;
+interface ErrorBoundaryState extends Error {
+  source: string;
 }
 
-export class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { error: ErrorReactComponent | null }
+export default class ErrorBoundary extends React.Component<
+  { children: ReactNode },
+  { error: ErrorBoundaryState | null }
 > {
-  state = { error: null as ErrorReactComponent | null };
-  static getDerivedStateFromError(error: Error) {
+  state = { error: null as ErrorBoundaryState | null };
+  static getDerivedStateFromError(error: ErrorBoundaryState) {
     return {
       error,
     };

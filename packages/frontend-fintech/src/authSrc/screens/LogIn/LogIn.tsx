@@ -1,6 +1,6 @@
 import { Spinner } from "../../../components/Spinner";
-import { ChangeEvent, FC, useState } from "react";
-import { useMutation, graphql } from "react-relay/hooks";
+import { ChangeEvent, useState } from "react";
+import { useMutation, graphql, EntryPointComponent } from "react-relay/hooks";
 import { Label } from "../../../components/Label";
 import { CustomButton } from "../../../components/CustomButton";
 import { Main } from "../../../components/Main";
@@ -10,14 +10,13 @@ import { Title } from "../../../components/Title";
 import { Input } from "../../../components/Input";
 import { Space, customSpace } from "../../../components/Space";
 import {
-  //borrowerPages,
-  //getUserDataCache,
-  //lenderPages,
-  //supportPages,
+  borrowerPages,
+  getUserDataCache,
+  lenderPages,
+  supportPages,
   useTranslation,
 } from "../../utilsAuth";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
-//import { useSearchParams } from "react-router-dom";
 
 export interface Decode {
   id: string;
@@ -28,7 +27,7 @@ export interface Decode {
   exp: number;
 }
 
-export const LogIn: FC = () => {
+export const LogIn: EntryPointComponent<{}, {}> = () => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<LogInMutation>(graphql`
     mutation LogInMutation($input: SignInInput!) {
@@ -45,8 +44,8 @@ export const LogIn: FC = () => {
   const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
-  //const [searchParams] = useSearchParams();
-  //const redirectTo = searchParams.get("redirectTo") || "";
+  const params = new URLSearchParams(window.location.search);
+  const redirectTo = params.get("redirectTo");
   return (
     <Main notLogged>
       <WrapperSmall>
@@ -84,28 +83,28 @@ export const LogIn: FC = () => {
                     },
                   },
                   onCompleted: () => {
-                    /*const userData = getUserDataCache();
+                    const userData = getUserDataCache();
                     if (userData) {
                       if (userData.isBorrower) {
-                        if (borrowerPages.includes(redirectTo)) {
+                        if (redirectTo && borrowerPages.includes(redirectTo)) {
                           window.location.href = redirectTo;
                         } else {
                           window.location.href = "/myLoans";
                         }
                       } else if (userData.isSupport) {
-                        if (supportPages.includes(redirectTo)) {
+                        if (redirectTo && supportPages.includes(redirectTo)) {
                           window.location.href = redirectTo;
                         } else {
                           window.location.href = "/approveLoan";
                         }
                       } else {
-                        if (lenderPages.includes(redirectTo)) {
+                        if (redirectTo && lenderPages.includes(redirectTo)) {
                           window.location.href = redirectTo;
                         } else {
                           window.location.href = "/addInvestments";
                         }
                       }
-                    }*/
+                    }
                   },
                 });
               }}

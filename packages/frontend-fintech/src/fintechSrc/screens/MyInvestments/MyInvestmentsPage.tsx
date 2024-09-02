@@ -29,9 +29,9 @@ import { MyInvestmentsQueriesUpdateSubscription } from "./__generated__/MyInvest
 import { MyInvestmentsQueriesPaginationUser } from "./__generated__/MyInvestmentsQueriesPaginationUser.graphql";
 import { MyInvestmentsQueries_user$key } from "./__generated__/MyInvestmentsQueries_user.graphql";
 import { MyInvestmentsQueriesQuery } from "./__generated__/MyInvestmentsQueriesQuery.graphql";
-import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
+import FaClipboard from "../../../assets/clipboard-solid.svg";
 import * as stylex from "@stylexjs/stylex";
-import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
+import FaSyncAlt from "../../../assets/rotate-solid.svg";
 import { MyInvestmentRowRefetchQuery } from "./__generated__/MyInvestmentRowRefetchQuery.graphql";
 import { MyInvestmentsQueriesRow_investment$key } from "./__generated__/MyInvestmentsQueriesRow_investment.graphql";
 
@@ -161,7 +161,7 @@ const RefetchCell: FC<{
         refetch({}, { fetchPolicy: "network-only" });
       }}
     >
-      <FaSyncAlt {...stylex.props(baseInvestmentRowIcon.base)} />
+      <img src={FaSyncAlt} {...stylex.props(baseInvestmentRowIcon.base)} />
     </td>
   );
 };
@@ -192,7 +192,8 @@ const columns: {
     header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseInvestmentRowClipboard.base)}>
-        <FaClipboard
+        <img
+          src={FaClipboard}
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}
@@ -206,7 +207,8 @@ const columns: {
     header: (t) => <TableColumnName>{t("ID deudor")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseInvestmentRowClipboard.base)}>
-        <FaClipboard
+        <img
+          src={FaClipboard}
           onClick={() => {
             navigator.clipboard.writeText(info.borrower_id);
           }}
@@ -220,7 +222,8 @@ const columns: {
     header: (t) => <TableColumnName>{t("ID deuda")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseInvestmentRowClipboard.base)}>
-        <FaClipboard
+        <img
+          src={FaClipboard}
           onClick={() => {
             navigator.clipboard.writeText(info.loan_id);
           }}

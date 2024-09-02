@@ -4,13 +4,13 @@ import {
   usePreloadedQuery,
 } from "react-relay/hooks";
 import { Languages, useTranslation } from "../utils";
-import { FC, useCallback, useEffect } from "react";
-//import { useLocation, useNavigate } from "react-router-dom";
+import { FC, useEffect } from "react";
 import { authUserQuery } from "../authSrc/utilsAuth";
 import { utilsAuthQuery } from "../authSrc/__generated__/utilsAuthQuery.graphql";
 import { utilsFintechQuery } from "../fintechSrc/__generated__/utilsFintechQuery.graphql";
 import { SiderFintech } from "../fintechSrc/components/SiderFintech";
 import { RelayEnvironmentFintech } from "../RelayEnvironment";
+import { historyReplace, useLocation } from "../react-router-elements/utils";
 
 export const Sider: FC<{
   authQuery: PreloadedQuery<utilsAuthQuery, Record<string, unknown>>;
@@ -22,32 +22,34 @@ export const Sider: FC<{
     authQuery
   );
 
-  //const { pathname: location } = useLocation();
-  //const navigate = useNavigate();
+  const location = useLocation();
 
-  const navigate = useCallback((path: string) => path, []);
-  const location = "";
-
+  //Redirect logic
   useEffect(() => {
+    //If user is not logged, redirect to login page
     if (!authUser) {
-      const isLoggedPage = !["/login", "/register", "/"].includes(location);
+      const isLoggedPage = !["/register", "/"].includes(location);
       if (isLoggedPage) {
-        navigate(`/login${isLoggedPage ? `?redirectTo=${location}` : ""}`);
+        historyReplace(
+          `/${isLoggedPage ? `?redirectTo=${location}` : ""}`
+        );
       }
     } else {
-      const isNotLoggedPage = ["/login", "/register", "/"].includes(location);
+      //If user is logged, redirect to appropriate page
+      const isNotLoggedPage = ["/register", "/"].includes(location);
       if (isNotLoggedPage) {
         if (authUser.isBorrower) {
-          navigate("/myLoans");
+          historyReplace("/myLoans");
         } else if (authUser.isLender) {
-          navigate("/myInvestments");
+          historyReplace("/myInvestments");
         } else if (authUser.isSupport) {
-          navigate("/approveLoan");
+          historyReplace("/approveLoan");
         }
       }
     }
-  }, [authUser, navigate, location]);
+  }, [authUser, location]);
 
+  //Language logic; create a hook for this and use it elsewhere
   useEffect(() => {
     const navigatorLanguage = navigator.language.includes("es") ? "ES" : "EN";
     const language = authUser?.language;

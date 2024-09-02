@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { FaSpinner } from "@react-icons/all-files/fa/FaSpinner";
+import FaSpinner from "../assets/spinner-solid.svg";
 import * as stylex from "@stylexjs/stylex";
 
 export const baseSpinnerBox = stylex.create({
@@ -25,7 +25,7 @@ export const baseSpinnerSpin = stylex.create({
     transform: "translateX(-50%) translateY(-50%)",
     zIndex: "1",
     color: "forestgreen",
-    fontSize: "18px",
+    height: "18px",
     animationName: rotate,
     animationDuration: "2s",
     animationIterationCount: "infinite",
@@ -35,7 +35,7 @@ export const baseSpinnerSpin = stylex.create({
 export const Spinner: FC = () => {
   return (
     <div {...stylex.props(baseSpinnerBox.base)}>
-      <FaSpinner {...stylex.props(baseSpinnerSpin.base)} />
+      <img src={FaSpinner} {...stylex.props(baseSpinnerSpin.base)} />
     </div>
   );
 };

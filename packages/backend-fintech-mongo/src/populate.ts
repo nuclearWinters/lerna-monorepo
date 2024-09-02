@@ -5,6 +5,7 @@ import {
   LoanMongo,
   UserMongo,
   ScheduledPaymentsMongo,
+  UUID,
 } from "./types";
 import { addMonths, startOfMonth } from "date-fns";
 
@@ -22,21 +23,21 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     const scheduledPayments =
       db.collection<ScheduledPaymentsMongo>("scheduledPayments");
     await transactions.deleteMany({});
-    const _id_transaction_1 = new ObjectId("607bd608ef9719001cf38120");
-    const _id_transaction_2 = new ObjectId("607bd608ef9719001cf38121");
-    const _id_transaction_3 = new ObjectId("607bd608ef9719001cf38122");
-    const _id_transaction_4 = new ObjectId("607bd608ef9719001cf38123");
-    const _id_transaction_5 = new ObjectId("607bd608ef9719001cf38124");
-    const _id_transaction_6 = new ObjectId("607bd608ef9719001cf38125");
-    const _id_transaction_7 = new ObjectId("607bd608ef9719001cf38126");
+    const _id_transaction_1 = new ObjectId();
+    const _id_transaction_2 = new ObjectId();
+    const _id_transaction_3 = new ObjectId();
+    const _id_transaction_4 = new ObjectId();
+    const _id_transaction_5 = new ObjectId();
+    const _id_transaction_6 = new ObjectId();
+    const _id_transaction_7 = new ObjectId();
     const now = new Date();
-    const _id_investment_1 = new ObjectId("607bd608ef9716001cf38126");
-    const user_id_one = crypto.randomUUID();
-    const user_id_two = crypto.randomUUID();
-    const user_id_three = crypto.randomUUID();
+    const _id_investment_1 = new ObjectId();
+    const user_id_one: UUID = "dab40bfd-b4a4-4874-8978-85f518a9aafb";
+    const user_id_two: UUID = "9e60e466-70f2-4820-a8f3-604086b62ce2";
+    const user_id_three: UUID = "83ae2e46-949a-4a3f-9a9a-9cd09b59fe47";
     await users.insertMany([
       {
-        _id: new ObjectId("607bd608ef9719001cf38fd5"),
+        _id: new ObjectId(),
         id: user_id_one,
         account_available: 0,
         account_to_be_paid: 0,
@@ -44,7 +45,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         account_withheld: 0,
       },
       {
-        _id: new ObjectId("6095f055f92be2001a15885b"),
+        _id: new ObjectId(),
         id: user_id_two,
         account_available: 0,
         account_to_be_paid: 0,
@@ -52,7 +53,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         account_withheld: 0,
       },
       {
-        _id: new ObjectId("6095f172f92be2001a15885c"),
+        _id: new ObjectId(),
         id: user_id_three,
         account_available: 0,
         account_to_be_paid: 0,

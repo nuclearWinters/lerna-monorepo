@@ -2,7 +2,7 @@ import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Producer } from "kafkajs";
 import { ObjectId, Collection } from "mongodb";
 
-export type UUID = `${string}-${string}-${string}-${string}-${string}`
+export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
 export interface Context {
   users: Collection<UserMongo>;
@@ -12,7 +12,7 @@ export interface Context {
   scheduledPayments: Collection<ScheduledPaymentsMongo>;
   accessToken: string | undefined;
   refreshToken: string | undefined;
-  id?: string;
+  id?: UUID;
   validAccessToken?: string;
   isBorrower: boolean;
   isSupport: boolean;

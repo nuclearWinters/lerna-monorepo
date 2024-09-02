@@ -34,8 +34,8 @@ import { AddInvestmentsQueriesQuery } from "./__generated__/AddInvestmentsQuerie
 import { AddInvestmentsQueriesPaginationQuery } from "./__generated__/AddInvestmentsQueriesPaginationQuery.graphql";
 import { AddInvestmentsQueries_user$key } from "./__generated__/AddInvestmentsQueries_user.graphql";
 import { AddInvestmentsQueriesLoansSubscription } from "./__generated__/AddInvestmentsQueriesLoansSubscription.graphql";
-import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
-import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
+import FaClipboard from "../../../assets/clipboard-solid.svg";
+import FaSyncAlt from "../../../assets/rotate-solid.svg";
 import { AddInvestmentsQueriesUpdateSubscription } from "./__generated__/AddInvestmentsQueriesUpdateSubscription.graphql";
 import { AddInvestmentQueriesRefetchQuery } from "./__generated__/AddInvestmentQueriesRefetchQuery.graphql";
 import { AddInvestmentsQueriesRowRefetch_loan$key } from "./__generated__/AddInvestmentsQueriesRowRefetch_loan.graphql";
@@ -174,7 +174,8 @@ const Cell: FC<{ id: string }> = ({ id }) => {
 
   return (
     <td {...stylex.props(baseLoanRowClipboard.base)}>
-      <FaClipboard
+      <img
+        src={FaClipboard}
         onClick={() => {
           navigator.clipboard.writeText(id);
         }}
@@ -198,7 +199,7 @@ const RefetchCell: FC<{ loan: AddInvestmentsQueriesRowRefetch_loan$key }> = ({
         refetch({}, { fetchPolicy: "network-only" });
       }}
     >
-      <FaSyncAlt {...stylex.props(baseLoanRowIcon.base)} />
+      <img src={FaSyncAlt} {...stylex.props(baseLoanRowIcon.base)} />
     </td>
   );
 };
@@ -234,7 +235,8 @@ const columnAddInvestment: {
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseLoanRowClipboard.base)}>
-        <FaClipboard
+        <img
+          src={FaClipboard}
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}

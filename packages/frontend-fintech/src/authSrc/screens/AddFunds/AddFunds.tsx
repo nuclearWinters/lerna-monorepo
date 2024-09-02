@@ -1,5 +1,9 @@
 import { ChangeEvent, FC, useState } from "react";
-import { RelayEnvironmentProvider, usePreloadedQuery } from "react-relay/hooks";
+import {
+  EntryPointComponent,
+  RelayEnvironmentProvider,
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { Label } from "../../../components/Label";
 import { Main } from "../../../components/Main";
 import { WrapperSmall } from "../../../components/WrapperSmall";
@@ -12,24 +16,16 @@ import { RedirectContainer } from "../../../components/RedirectContainer";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { AddFundsButton } from "../../../fintechSrc/components/AddFundsButton";
-import {
-  EntryPointPrepared,
-  EntryPointProps,
-} from "../../../react-router-entrypoints/types";
 
 export type Queries = {
   authQuery: utilsAuthQuery;
 };
 
-export type PreparedProps = EntryPointPrepared<Queries>;
-
-export type Props = EntryPointProps<Queries>;
-
-export const AddFunds: FC<Props> = (props) => {
+export const AddFunds: EntryPointComponent<Queries, {}> = (props) => {
   const { t } = useTranslation();
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.prepared.authQuery
+    props.queries.authQuery
   );
   const [quantity, setQuantity] = useState("");
   const handleQuantityOnChange = (e: ChangeEvent<HTMLInputElement>) => {

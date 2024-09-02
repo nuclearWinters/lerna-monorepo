@@ -1,29 +1,24 @@
-import { FC } from "react";
-import { RelayEnvironmentProvider, usePreloadedQuery } from "react-relay/hooks";
+import {
+  EntryPointComponent,
+  RelayEnvironmentProvider,
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { utilsAuthQuery } from "../../../authSrc/__generated__/utilsAuthQuery.graphql";
 import { RedirectContainer } from "../../../components/RedirectContainer";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { AddInvestmentsPage } from "../../../fintechSrc/screens/AddInvestments/AddInvestmentsPage";
 import { AddInvestmentsQueriesQuery } from "../../../fintechSrc/screens/AddInvestments/__generated__/AddInvestmentsQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
-import {
-  EntryPointPrepared,
-  EntryPointProps,
-} from "../../../react-router-entrypoints/types";
 
 export type Queries = {
   fintechQuery: AddInvestmentsQueriesQuery;
   authQuery: utilsAuthQuery;
 };
 
-export type PreparedProps = EntryPointPrepared<Queries>;
-
-export type Props = EntryPointProps<Queries>;
-
-export const AddInvestments: FC<Props> = (props) => {
+export const AddInvestments: EntryPointComponent<Queries, {}> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.prepared.authQuery
+    props.queries.authQuery
   );
 
   if (!authUser) {
@@ -45,7 +40,7 @@ export const AddInvestments: FC<Props> = (props) => {
 
   return (
     <RelayEnvironmentProvider environment={RelayEnvironmentFintech}>
-      <AddInvestmentsPage fintechQuery={props.prepared.fintechQuery} />
+      <AddInvestmentsPage fintechQuery={props.queries.fintechQuery} />
     </RelayEnvironmentProvider>
   );
 };

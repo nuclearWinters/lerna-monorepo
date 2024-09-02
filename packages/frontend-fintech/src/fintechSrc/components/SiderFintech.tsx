@@ -8,22 +8,22 @@ import { Icon } from "../../components/Icon";
 import { AccountInfo } from "../../components/AccountInfo";
 import { AccountLink } from "../../components/AccountLink";
 import { useTranslation } from "../../utils";
-import { FaFileAlt } from "@react-icons/all-files/fa/FaFileAlt";
-import { FaCartPlus } from "@react-icons/all-files/fa/FaCartPlus";
-import { FaFunnelDollar } from "@react-icons/all-files/fa/FaFunnelDollar";
-import { FaMoneyCheck } from "@react-icons/all-files/fa/FaMoneyCheck";
-import { FaFileContract } from "@react-icons/all-files/fa/FaFileContract";
-import { FaUserAlt } from "@react-icons/all-files/fa/FaUserAlt";
-import { FaHandHolding } from "@react-icons/all-files/fa/FaHandHolding";
-import { FaFolder } from "@react-icons/all-files/fa/FaFolder";
-import { FaExchangeAlt } from "@react-icons/all-files/fa/FaExchangeAlt";
+import FaFileAlt from "../../assets/file-lines-solid.svg";
+import FaCartPlus from "../../assets/cart-plus-solid.svg";
+import FaFunnelDollar from "../../assets/filter-circle-dollar-solid.svg";
+import FaMoneyCheck from "../../assets/money-check-dollar-solid.svg";
+import FaFileContract from "../../assets/file-contract-solid.svg";
+import FaUserAlt from "../../assets/user-large-solid.svg";
+import FaHandHolding from "../../assets/hand-holding-hand-solid.svg";
+import FaFolder from "../../assets/folder-solid.svg";
+import FaExchangeAlt from "../../assets/hand-holding-dollar-solid.svg";
 import { FC, useMemo } from "react";
 import { GraphQLSubscriptionConfig } from "relay-runtime";
-//import { useLocation } from "react-router-dom";
 import * as stylex from "@stylexjs/stylex";
 import { fintechUserQuery } from "../utilsFintech";
 import { utilsFintechQuery } from "../__generated__/utilsFintechQuery.graphql";
 import { SiderFintechUserSubscription } from "./__generated__/SiderFintechUserSubscription.graphql";
+import { useLocation } from "../../react-router-elements/utils";
 
 const baseRoutesIcon = stylex.create({
   base: {
@@ -90,8 +90,7 @@ export const SiderFintech: FC<{
 
   useSubscription<SiderFintechUserSubscription>(configUser);
 
-  //const { pathname: location } = useLocation();
-  const location = "";
+  const location = useLocation();
 
   if (!user) {
     return null;
@@ -114,43 +113,72 @@ export const SiderFintech: FC<{
               type={"available"}
             />
             <AccountLink
-              icon={<FaFileAlt {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img src={FaFileAlt} {...stylex.props(baseRoutesIcon.base)} />
+              }
               title={t("Mi cuenta")}
               path="/account"
               location={location}
             />
             <AccountLink
-              icon={<FaMoneyCheck {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img
+                  src={FaMoneyCheck}
+                  {...stylex.props(baseRoutesIcon.base)}
+                />
+              }
               title={t("Pedir prestamo")}
               path="/addLoan"
               location={location}
             />
             <AccountLink
-              icon={<FaFileContract {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img
+                  src={FaFileContract}
+                  {...stylex.props(baseRoutesIcon.base)}
+                />
+              }
               title={t("Mis prestamos")}
               path="/myLoans"
               location={location}
             />
             <AccountLink
-              icon={<FaFunnelDollar {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img
+                  src={FaFunnelDollar}
+                  {...stylex.props(baseRoutesIcon.base)}
+                />
+              }
               title={t("Agregar fondos")}
               path="/addFunds"
               location={location}
             />
             <AccountLink
-              icon={<FaHandHolding {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img
+                  src={FaHandHolding}
+                  {...stylex.props(baseRoutesIcon.base)}
+                />
+              }
               title={t("Retirar fondos")}
               path="/retireFunds"
               location={location}
             />
             <AccountLink
-              icon={<FaUserAlt {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img src={FaUserAlt} {...stylex.props(baseRoutesIcon.base)} />
+              }
               title="Settings"
               path="/settings"
               location={location}
             />
             <AccountLink
-              icon={<FaExchangeAlt {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img
+                  src={FaExchangeAlt}
+                  {...stylex.props(baseRoutesIcon.base)}
+                />
+              }
               title={t("Mis movimientos")}
               path="/myTransactions"
               location={location}
@@ -160,13 +188,20 @@ export const SiderFintech: FC<{
           <>
             <Icon />
             <AccountLink
-              icon={<FaFileContract {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img
+                  src={FaFileContract}
+                  {...stylex.props(baseRoutesIcon.base)}
+                />
+              }
               title={t("Aprobar prestamo")}
               path="/approveLoan"
               location={location}
             />
             <AccountLink
-              icon={<FaUserAlt {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img src={FaUserAlt} {...stylex.props(baseRoutesIcon.base)} />
+              }
               title="Settings"
               path="/settings"
               location={location}
@@ -186,43 +221,66 @@ export const SiderFintech: FC<{
               type={"available"}
             />
             <AccountLink
-              icon={<FaFileAlt {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img src={FaFileAlt} {...stylex.props(baseRoutesIcon.base)} />
+              }
               title={t("Mi cuenta")}
               path="/account"
               location={location}
             />
             <AccountLink
-              icon={<FaCartPlus {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img src={FaCartPlus} {...stylex.props(baseRoutesIcon.base)} />
+              }
               title={t("Comprar")}
               path="/addInvestments"
               location={location}
             />
             <AccountLink
-              icon={<FaFunnelDollar {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img
+                  src={FaFunnelDollar}
+                  {...stylex.props(baseRoutesIcon.base)}
+                />
+              }
               title={t("Agregar fondos")}
               path="/addFunds"
               location={location}
             />
             <AccountLink
-              icon={<FaHandHolding {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img
+                  src={FaHandHolding}
+                  {...stylex.props(baseRoutesIcon.base)}
+                />
+              }
               title={t("Retirar fondos")}
               path="/retireFunds"
               location={location}
             />
             <AccountLink
-              icon={<FaFolder {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img src={FaFolder} {...stylex.props(baseRoutesIcon.base)} />
+              }
               title={t("Mis inversiones")}
               path="/myInvestments"
               location={location}
             />
             <AccountLink
-              icon={<FaExchangeAlt {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img
+                  src={FaExchangeAlt}
+                  {...stylex.props(baseRoutesIcon.base)}
+                />
+              }
               title={t("Mis movimientos")}
               path="/myTransactions"
               location={location}
             />
             <AccountLink
-              icon={<FaUserAlt {...stylex.props(baseRoutesIcon.base)} />}
+              icon={
+                <img src={FaUserAlt} {...stylex.props(baseRoutesIcon.base)} />
+              }
               title={t("Configuración")}
               path="/settings"
               location={location}

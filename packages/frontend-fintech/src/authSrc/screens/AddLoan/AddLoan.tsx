@@ -1,5 +1,5 @@
-import { ChangeEvent, FC, useState } from "react";
-import { usePreloadedQuery } from "react-relay/hooks";
+import { ChangeEvent, useState } from "react";
+import { EntryPointComponent, usePreloadedQuery } from "react-relay/hooks";
 import { Label } from "../../../components/Label";
 import { Main } from "../../../components/Main";
 import { WrapperSmall } from "../../../components/WrapperSmall";
@@ -12,24 +12,16 @@ import { authUserQuery, useTranslation } from "../../utilsAuth";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 import { RedirectContainer } from "../../../components/RedirectContainer";
 import { AddLoanButton } from "../../../fintechSrc/components/AddLoanButton";
-import {
-  EntryPointPrepared,
-  EntryPointProps,
-} from "../../../react-router-entrypoints/types";
 
 export type Queries = {
   authQuery: utilsAuthQuery;
 };
 
-export type PreparedProps = EntryPointPrepared<Queries>;
-
-export type Props = EntryPointProps<Queries>;
-
-export const AddLoan: FC<Props> = (props) => {
+export const AddLoan: EntryPointComponent<Queries, {}> = (props) => {
   const { t } = useTranslation();
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.prepared.authQuery
+    props.queries.authQuery
   );
   const [form, setForm] = useState({
     goal: "",

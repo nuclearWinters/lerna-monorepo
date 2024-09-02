@@ -64,14 +64,25 @@ export const schema = new GraphQLSchema({
   subscription: Subscription,
 });
 
-const main = async (db: Db, producer: Producer, grpcClient: AuthClient, pubsub: RedisPubSub) => {
+const main = async (
+  db: Db,
+  producer: Producer,
+  grpcClient: AuthClient,
+  pubsub: RedisPubSub
+) => {
   if (producer) {
     await producer.connect();
   }
   const handler = createHandler({
     schema,
     context: async (request) => {
-      const context = await getContextSSE(request, db, producer, grpcClient, pubsub);
+      const context = await getContextSSE(
+        request,
+        db,
+        producer,
+        grpcClient,
+        pubsub
+      );
       dataDrivenDependencies.reset();
       return context;
     },
@@ -83,7 +94,13 @@ const main = async (db: Db, producer: Producer, grpcClient: AuthClient, pubsub: 
           schema,
           document: parse(query[1]),
           variableValues: params.variables,
-          contextValue: await getContextSSE(request, db, producer, grpcClient, pubsub),
+          contextValue: await getContextSSE(
+            request,
+            db,
+            producer,
+            grpcClient,
+            pubsub
+          ),
         };
       }
       return [null, { status: 404, statusText: "Not Found" }];
@@ -121,7 +138,7 @@ const main = async (db: Db, producer: Producer, grpcClient: AuthClient, pubsub: 
         } else if (req.url.startsWith("/graphql")) {
           await handler(req, res);
         }
-      } catch (err) {
+      } catch {
         res.writeHead(500).end();
       }
     }

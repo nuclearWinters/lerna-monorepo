@@ -58,7 +58,6 @@ describe("AddFunds tests", () => {
       clientId: "my-app",
       brokers: [`${name}:${port}`],
     });
-    console.log("beforeAll5");
     const admin = kafka.admin();
     await admin.connect();
     await admin.createTopics({

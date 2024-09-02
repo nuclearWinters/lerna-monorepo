@@ -1,30 +1,24 @@
-import { FC } from "react";
-
-import { RelayEnvironmentProvider, usePreloadedQuery } from "react-relay/hooks";
+import {
+  EntryPointComponent,
+  RelayEnvironmentProvider,
+  usePreloadedQuery,
+} from "react-relay/hooks";
 import { RedirectContainer } from "../../../components/RedirectContainer";
 import { ApproveLoansPage } from "../../../fintechSrc/screens/ApproveLoan/ApproveLoanPage";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { ApproveLoanQueriesQuery } from "../../../fintechSrc/screens/ApproveLoan/__generated__/ApproveLoanQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
-import {
-  EntryPointProps,
-  EntryPointPrepared,
-} from "../../../react-router-entrypoints/types";
 
 export type Queries = {
   fintechQuery: ApproveLoanQueriesQuery;
   authQuery: utilsAuthQuery;
 };
 
-export type PreparedProps = EntryPointPrepared<Queries>;
-
-export type Props = EntryPointProps<Queries>;
-
-export const ApproveLoans: FC<Props> = (props) => {
+export const ApproveLoans: EntryPointComponent<Queries, {}> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
-    props.prepared.authQuery
+    props.queries.authQuery
   );
 
   if (!authUser) {
@@ -46,7 +40,7 @@ export const ApproveLoans: FC<Props> = (props) => {
 
   return (
     <RelayEnvironmentProvider environment={RelayEnvironmentFintech}>
-      <ApproveLoansPage fintechQuery={props.prepared.fintechQuery} />
+      <ApproveLoansPage fintechQuery={props.queries.fintechQuery} />
     </RelayEnvironmentProvider>
   );
 };

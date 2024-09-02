@@ -27,9 +27,9 @@ import { MyLoansQueriesPaginationUser } from "./__generated__/MyLoansQueriesPagi
 import { MyLoansQueries_user$key } from "./__generated__/MyLoansQueries_user.graphql";
 import { MyLoansQueriesQuery } from "./__generated__/MyLoansQueriesQuery.graphql";
 import { MyLoansQueriesSubscription } from "./__generated__/MyLoansQueriesSubscription.graphql";
-import { FaPlusSquare } from "@react-icons/all-files/fa/FaPlusSquare";
-import { FaClipboard } from "@react-icons/all-files/fa/FaClipboard";
-import { FaSyncAlt } from "@react-icons/all-files/fa/FaSyncAlt";
+import FaPlusSquare from "../../../assets/square-plus-solid.svg";
+import FaClipboard from "../../../assets/clipboard-solid.svg";
+import FaSyncAlt from "../../../assets/rotate-solid.svg";
 import * as stylex from "@stylexjs/stylex";
 import { ScheduledPaymentRow } from "../../components/ScheduledPaymentRow";
 import { MyLoansQueriesUpdateSubscription } from "./__generated__/MyLoansQueriesUpdateSubscription.graphql";
@@ -200,7 +200,7 @@ const Cell: FC<{ id: string }> = ({ id }) => {
 
   return (
     <td {...stylex.props(baseLoanRowClipboard.base)}>
-      <FaClipboard
+      <img src={FaClipboard}
         onClick={() => {
           navigator.clipboard.writeText(id);
         }}
@@ -224,7 +224,7 @@ const RefetchCell: FC<{ loan: MyLoansQueriesRowRefetch_loan$key }> = ({
         refetch({}, { fetchPolicy: "network-only" });
       }}
     >
-      <FaSyncAlt {...stylex.props(baseLoanRowIcon.base)} />
+      <img src={FaSyncAlt} {...stylex.props(baseLoanRowIcon.base)} />
     </td>
   );
 };
@@ -257,7 +257,7 @@ const columnMyLoans: {
         {info.status === "PAID" ||
           info.status === "PAST_DUE" ||
           (info.status === "TO_BE_PAID" && (
-            <FaPlusSquare
+            <img src={FaPlusSquare}
               onClick={() => {
                 setShowSubTable((state) => (info.id === state ? "" : info.id));
               }}
@@ -277,7 +277,7 @@ const columnMyLoans: {
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseLoanRowClipboard.base)}>
-        <FaClipboard
+        <img src={FaClipboard}
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}

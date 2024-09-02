@@ -1,7 +1,6 @@
 import { main } from "../app";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectId } from "mongodb";
-import { TransactionMongo, UserMongo } from "../types";
+import { Db, MongoClient } from "mongodb";
 import { base64Name, jwt } from "../utils";
 import { Admin, Kafka, Producer } from "kafkajs";
 import { AuthClient } from "@lerna-monorepo/grpc-auth-node";
@@ -220,8 +219,7 @@ describe("AddLends tests", () => {
     const data2 = JSON.parse(stream2[3].replace("data: ", ""));
     expect(data2.data.addLends.error).toBeFalsy();
     expect(response2.body.data.addLends.error).toBeFalsy();
-    const lends = await admin.fetchTopicOffsets("add-lends");
-    console.log("lends:", lends);
+    await admin.fetchTopicOffsets("add-lends");
   });
 
   it("test AddLends not enough money valid access token", async () => {
