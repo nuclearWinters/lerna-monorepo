@@ -274,7 +274,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     await investments.insertMany([
       {
         _id: _id_investment_1,
-        borrower_id: "wHHR1SUBT0dspoF4YUOw2",
+        borrower_id: user_id_two,
         lender_id: user_id_one,
         loan_oid: new ObjectId("609875a48f2814002aaefe25"),
         created_at: new Date(),

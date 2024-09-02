@@ -1,3 +1,4 @@
+import { RedisPubSub } from "graphql-redis-subscriptions";
 import {
   InvestmentMongo,
   LoanMongo,
@@ -6,7 +7,6 @@ import {
 } from "../types";
 import { base64 } from "../utils";
 import {
-  pubsub,
   USER,
   TRANSACTION_INSERT,
   INVESTMENT_INSERT,
@@ -16,13 +16,16 @@ import {
   MY_LOAN_INSERT,
 } from "./subscriptions";
 
-export const publishUser = (user: UserMongo) => {
+export const publishUser = (user: UserMongo, pubsub: RedisPubSub) => {
   pubsub.publish(USER, {
     user_subscribe: user,
   });
 };
 
-export const publishTransactionInsert = (transaction: TransactionMongo) => {
+export const publishTransactionInsert = (
+  transaction: TransactionMongo,
+  pubsub: RedisPubSub
+) => {
   pubsub.publish(TRANSACTION_INSERT, {
     transactions_subscribe_insert: {
       node: transaction,
@@ -31,7 +34,7 @@ export const publishTransactionInsert = (transaction: TransactionMongo) => {
   });
 };
 
-export const publishLoanInsert = (loan: LoanMongo) => {
+export const publishLoanInsert = (loan: LoanMongo, pubsub: RedisPubSub) => {
   pubsub.publish(LOAN_INSERT, {
     loans_subscribe_insert: {
       node: loan,
@@ -40,7 +43,7 @@ export const publishLoanInsert = (loan: LoanMongo) => {
   });
 };
 
-export const publishMyLoanInsert = (loan: LoanMongo) => {
+export const publishMyLoanInsert = (loan: LoanMongo, pubsub: RedisPubSub) => {
   pubsub.publish(MY_LOAN_INSERT, {
     my_loans_subscribe_insert: {
       node: loan,
@@ -49,7 +52,10 @@ export const publishMyLoanInsert = (loan: LoanMongo) => {
   });
 };
 
-export const publishInvestmentInsert = (investment: InvestmentMongo) => {
+export const publishInvestmentInsert = (
+  investment: InvestmentMongo,
+  pubsub: RedisPubSub
+) => {
   pubsub.publish(INVESTMENT_INSERT, {
     investments_subscribe_insert: {
       node: investment,
@@ -58,13 +64,16 @@ export const publishInvestmentInsert = (investment: InvestmentMongo) => {
   });
 };
 
-export const publishLoanUpdate = (loan: LoanMongo) => {
+export const publishLoanUpdate = (loan: LoanMongo, pubsub: RedisPubSub) => {
   pubsub.publish(LOAN_UPDATE, {
     loans_subscribe_update: loan,
   });
 };
 
-export const publishInvestmentUpdate = (investment: InvestmentMongo) => {
+export const publishInvestmentUpdate = (
+  investment: InvestmentMongo,
+  pubsub: RedisPubSub
+) => {
   pubsub.publish(INVESTMENT_UPDATE, {
     investments_subscribe_update: investment,
   });

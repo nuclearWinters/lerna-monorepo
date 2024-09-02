@@ -1,47 +1,89 @@
-import { app } from "./app";
+import { main } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "./types";
-import { jwt } from "./utils";
-
-jest.mock("graphql-redis-subscriptions", () => ({
-  RedisPubSub: jest.fn().mockImplementation(() => {
-    return {};
-  }),
-}));
-
-jest.mock("ioredis", () =>
-  jest.fn().mockImplementation(() => {
-    return {};
-  })
-);
-
-const request = supertest(app);
+import { base64Name, jwt } from "./utils";
+import TestAgent from "supertest/lib/agent";
+import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
+import {
+  AuthClient,
+  AuthServer,
+  AuthService,
+} from "@lerna-monorepo/grpc-auth-node";
+import { RedisPubSub } from "graphql-redis-subscriptions";
+import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
+import { RedisClientType } from "@lerna-monorepo/grpc-auth-node/src/types";
+import { Producer } from "kafkajs";
+import { createClient } from "redis";
+import {
+  ACCESS_TOKEN_EXP_NUMBER,
+  REFRESH_TOKEN_EXP_NUMBER,
+} from "@lerna-monorepo/grpc-auth-node/src/utils";
+import {
+  ACCESSSECRET,
+  REFRESHSECRET,
+} from "@lerna-monorepo/grpc-auth-node/src/config";
+import { serialize } from "cookie";
 
 describe("QueryLoans tests", () => {
-  let client: MongoClient;
-  let dbInstance: Db;
+  let mongoClient: MongoClient;
+  let dbInstanceFintech: Db;
+  let dbInstanceAuth: Db;
+  let producer: Producer;
+  let startedRedisContainer: StartedRedisContainer;
+  let grpcClient: AuthClient;
+  let pubsub: RedisPubSub;
+  let request: TestAgent<supertest.Test>;
+  let grpcServer: Server;
+  let redisClient: RedisClientType;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(
+    mongoClient = await MongoClient.connect(
       (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
       {}
     );
-    dbInstance = client.db(
+    dbInstanceFintech = mongoClient.db(
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
     );
-    app.locals.db = dbInstance;
+    dbInstanceAuth = mongoClient.db(
+      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
+        "-auth"
+    );
+    startedRedisContainer = await new RedisContainer().start();
+    redisClient = createClient({
+      url: startedRedisContainer.getConnectionUrl(),
+    });
+    await redisClient.connect();
+    grpcServer = new Server();
+    grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
+    grpcServer.bindAsync(
+      "0.0.0.0:1986",
+      ServerCredentials.createInsecure(),
+      (err) => {
+        if (err) {
+          return;
+        }
+      }
+    );
+    grpcClient = new AuthClient("0.0.0.0:1986", credentials.createInsecure());
+    const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
+    request = supertest(server, { http2: true });
   });
 
   afterAll(async () => {
-    await client.close();
+    grpcClient.close();
+    grpcServer.forceShutdown();
+    await redisClient.disconnect();
+    await startedRedisContainer.stop();
+    await mongoClient.close();
   });
 
   it("test LoanConnection valid access token", async () => {
-    const loans = dbInstance.collection<LoanMongo>("loans");
-    const users = dbInstance.collection<UserMongo>("users");
+    const loans = dbInstanceFintech.collection<LoanMongo>("loans");
+    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const user_id = crypto.randomUUID();
     await users.insertOne({
-      id: "wHHR1SUBT0dspoF4YUO23",
+      id: user_id,
       account_total: 0,
       account_available: 0,
       account_to_be_paid: 0,
@@ -50,10 +92,12 @@ describe("QueryLoans tests", () => {
     const loan1_oid = new ObjectId();
     const loan2_oid = new ObjectId();
     const loan3_oid = new ObjectId();
+    const loan4_oid = new ObjectId();
+    const loan5_oid = new ObjectId();
     await loans.insertMany([
       {
         _id: loan1_oid,
-        user_id: "wHHR1SUBT0dspoF4YUO23",
+        user_id,
         score: "AAA",
         roi: 17,
         goal: 100000,
@@ -67,7 +111,7 @@ describe("QueryLoans tests", () => {
       },
       {
         _id: loan2_oid,
-        user_id: "wHHR1SUBT0dspoF4YUO23",
+        user_id,
         score: "BBB",
         roi: 20,
         goal: 50000,
@@ -81,7 +125,35 @@ describe("QueryLoans tests", () => {
       },
       {
         _id: loan3_oid,
-        user_id: "wHHR1SUBT0dspoF4YUO23",
+        user_id,
+        score: "CCC",
+        roi: 24,
+        goal: 150000,
+        term: 3,
+        raised: 0,
+        status: "financing",
+        expiry: new Date(),
+        pending: 0,
+        payments_done: 0,
+        payments_delayed: 0,
+      },
+      {
+        _id: loan4_oid,
+        user_id,
+        score: "CCC",
+        roi: 24,
+        goal: 150000,
+        term: 3,
+        raised: 0,
+        status: "financing",
+        expiry: new Date(),
+        pending: 0,
+        payments_done: 0,
+        payments_delayed: 0,
+      },
+      {
+        _id: loan5_oid,
+        user_id,
         score: "CCC",
         roi: 24,
         goal: 150000,
@@ -94,62 +166,65 @@ describe("QueryLoans tests", () => {
         payments_delayed: 0,
       },
     ]);
+    const now = new Date();
+    now.setMilliseconds(0);
+    const refreshTokenExpireTime =
+      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
+    const accessTokenExpireTime =
+      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+    const refreshToken = jwt.sign(
+      {
+        id: user_id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: refreshTokenExpireTime,
+      },
+      REFRESHSECRET
+    );
+    const accessToken = jwt.sign(
+      {
+        id: user_id,
+        isBorrower: false,
+        isLender: true,
+        isSupport: false,
+        refreshTokenExpireTime,
+        exp: accessTokenExpireTime,
+      },
+      ACCESSSECRET
+    );
+    const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
-        query: `query GetLoansConnection($first: Int, $after: String!) {
-          user {
-            myLoans(first: $first, after: $after) {
-              edges {
-                cursor
-                node {
-                  id
-                  user_id
-                  score
-                  ROI
-                  goal
-                  term
-                  raised
-                  expiry
-                  status
-                }
-              }
-            }
-          }
-        }`,
+        extensions: {
+          doc_id: "74997cad3da3ce985529fbd30726bd41",
+        },
+        query: "",
         variables: {
-          first: 2,
+          id: base64Name(user_id, "User"),
+          count: 2,
           after: "",
+          reset: Date.now(),
         },
         operationName: "GetLoansConnection",
       })
-      .set("Accept", "application/json")
-      .set(
-        "Authorization",
-        jwt.sign(
-          {
-            id: "wHHR1SUBT0dspoF4YUO23",
-            isBorrower: true,
-            isLender: false,
-            isSupport: false,
-          },
-          "ACCESSSECRET",
-          {
-            expiresIn: "15m",
-          }
-        )
-      )
-      .set("Cookie", `id=wHHR1SUBT0dspoF4YUO23;isBorrower=true;`);
-    expect(response.body.data.user.myLoans.edges.length).toBe(2);
-    expect(response.body.data.user.myLoans.edges[0].cursor).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.id).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.user_id).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.score).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.ROI).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.goal).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.term).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.raised).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.expiry).toBeTruthy();
-    expect(response.body.data.user.myLoans.edges[0].node.status).toBeTruthy();
+      .set("Accept", "text/event-stream")
+      .set("Authorization", accessToken)
+      .set("Cookie", requestCookies);
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.node.loansFinancing.edges.length).toBe(2);
+    expect(data.data.node.loansFinancing.edges[0].cursor).toBeTruthy();
+    expect(data.data.node.loansFinancing.edges[0].node.id).toBeTruthy();
+    expect(data.data.node.loansFinancing.edges[0].node.user_id).toBeTruthy();
+    expect(data.data.node.loansFinancing.edges[0].node.score).toBeTruthy();
+    expect(data.data.node.loansFinancing.edges[0].node.ROI).toBeTruthy();
+    expect(data.data.node.loansFinancing.edges[0].node.goal).toBeTruthy();
+    expect(data.data.node.loansFinancing.edges[0].node.term).toBeTruthy();
+    expect(data.data.node.loansFinancing.edges[0].node.raised).toBeTruthy();
+    expect(data.data.node.loansFinancing.edges[0].node.expiry).toBeTruthy();
   });
 });

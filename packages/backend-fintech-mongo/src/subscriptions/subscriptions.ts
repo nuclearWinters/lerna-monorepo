@@ -1,6 +1,5 @@
 import { GraphQLID, GraphQLList, GraphQLNonNull } from "graphql";
 import { withFilter } from "graphql-subscriptions";
-import { RedisOptions } from "ioredis";
 import {
   GraphQLTransactionEdge,
   GraphQLInvestmentEdge,
@@ -20,15 +19,6 @@ import {
   UserMongo,
 } from "../types";
 import { unbase64 } from "../utils";
-import { REDIS } from "../config";
-
-export const options: RedisOptions = {
-  host: REDIS,
-  port: 6379,
-  retryStrategy: (times) => {
-    return Math.min(times * 50, 2000);
-  },
-};
 
 export const LOAN_INSERT = "LOAN_INSERT";
 export const MY_LOAN_INSERT = "MY_LOAN_INSERT";

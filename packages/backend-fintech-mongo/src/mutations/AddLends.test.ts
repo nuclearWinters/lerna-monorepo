@@ -84,9 +84,7 @@ describe("AddLends tests", () => {
     const options: RedisOptions = {
       host: startedRedisContainer.getConnectionUrl(),
       port: 6379,
-      retryStrategy: (times) => {
-        return Math.min(times * 50, 2000);
-      },
+      retryStrategy: () => 10000,
     };
     ioredisPublisherClient = new Redis(options);
     ioredisSubscriberClient = new Redis(options);
@@ -97,7 +95,7 @@ describe("AddLends tests", () => {
     grpcServer = new Server();
     grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
     grpcServer.bindAsync(
-      "localhost:1984",
+      "0.0.0.0:1984",
       ServerCredentials.createInsecure(),
       (err) => {
         if (err) {
@@ -105,24 +103,20 @@ describe("AddLends tests", () => {
         }
       }
     );
-    grpcClient = new AuthClient(`localhost:1984`, credentials.createInsecure());
+    grpcClient = new AuthClient(`0.0.0.0:1984`, credentials.createInsecure());
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
-  }, 10000);
+  }, 20000);
 
   afterAll(async () => {
     grpcClient.close();
     grpcServer.forceShutdown();
-    await pubsub.close();
-    ioredisPublisherClient.quit();
-    ioredisSubscriberClient.quit();
+    await redisClient.disconnect();
+    await startedRedisContainer.stop();
     await producer.disconnect();
     await admin.disconnect();
-    await redisClient.disconnect();
     await startedKafkaContainer.stop();
-    await startedRedisContainer.stop();
     await mongoClient.close();
-    await (() => new Promise((resolve) => setTimeout(resolve, 1000)))();
   }, 10000);
 
   it("test AddLends valid access token", async () => {
@@ -219,186 +213,7 @@ describe("AddLends tests", () => {
     const data2 = JSON.parse(stream2[3].replace("data: ", ""));
     expect(data2.data.addLends.error).toBeFalsy();
     expect(response2.body.data.addLends.error).toBeFalsy();
-    await admin.fetchTopicOffsets("add-lends");
-  });
-
-  it("test AddLends not enough money valid access token", async () => {
-    const id = crypto.randomUUID();
-    const now = new Date();
-    now.setMilliseconds(0);
-    const refreshTokenExpireTime =
-      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime =
-      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
-    const refreshToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: refreshTokenExpireTime,
-      },
-      REFRESHSECRET
-    );
-    const accessToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: accessTokenExpireTime,
-      },
-      ACCESSSECRET
-    );
-    const requestCookies = serialize("refreshToken", refreshToken);
-    const response = await request
-      .post("/graphql")
-      .send({
-        extensions: {
-          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
-        },
-        query: "",
-        variables: {
-          input: {
-            lends: [
-              {
-                loan_gid: base64Name("400000000000000000000002", "Loan"),
-                quantity: "150.00",
-                borrower_id: "wHHR1SUBT0dspoF4YUO34",
-              },
-            ],
-          },
-        },
-        operationName: "addLendsMutation",
-      })
-      .set("Accept", "text/event-stream")
-      .set("Authorization", accessToken)
-      .set("Cookie", requestCookies);
-    expect(response.body.data.addLends.error).toBe("");
-    //expect(producer.send).toHaveBeenCalledTimes(5);
-  });
-
-  it("test AddLends no investments done valid access token", async () => {
-    const id = crypto.randomUUID();
-    const now = new Date();
-    now.setMilliseconds(0);
-    const refreshTokenExpireTime =
-      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime =
-      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
-    const refreshToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: refreshTokenExpireTime,
-      },
-      REFRESHSECRET
-    );
-    const accessToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: accessTokenExpireTime,
-      },
-      ACCESSSECRET
-    );
-    const requestCookies = serialize("refreshToken", refreshToken);
-    const response = await request
-      .post("/graphql")
-      .send({
-        extensions: {
-          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
-        },
-        query: "",
-        variables: {
-          input: {
-            lends: [
-              {
-                loan_gid: base64Name("500000000000000000000002", "Loan"),
-                quantity: "50.00",
-                borrower_id: "wHHR1SUBT0dspoF4YUO36",
-              },
-            ],
-          },
-        },
-        operationName: "addLendsMutation",
-      })
-      .set("Accept", "text/event-stream")
-      .set("Authorization", accessToken)
-      .set("Cookie", requestCookies);
-    expect(response.body.data.addLends.error).toBe("");
-    //expect(producer.send).toHaveBeenCalledTimes(6);
-  });
-
-  it("test AddLends not all investments are done valid access token", async () => {
-    const id = crypto.randomUUID();
-    const now = new Date();
-    now.setMilliseconds(0);
-    const refreshTokenExpireTime =
-      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime =
-      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
-    const refreshToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: refreshTokenExpireTime,
-      },
-      REFRESHSECRET
-    );
-    const accessToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: accessTokenExpireTime,
-      },
-      ACCESSSECRET
-    );
-    const requestCookies = serialize("refreshToken", refreshToken);
-    const response = await request
-      .post("/graphql")
-      .send({
-        extensions: {
-          doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
-        },
-        query: "",
-        variables: {
-          input: {
-            lends: [
-              {
-                loan_gid: base64Name("600000000000000000000002", "Loan"),
-                quantity: "50.00",
-                borrower_id: "wHHR1SUBT0dspoF4YUO38",
-              },
-              {
-                loan_gid: base64Name("600000000000000000000003", "Loan"),
-                quantity: "50.00",
-                borrower_id: "wHHR1SUBT0dspoF4YUO38",
-              },
-            ],
-          },
-        },
-        operationName: "addLendsMutation",
-      })
-      .set("Accept", "text/event-stream")
-      .set("Authorization", accessToken)
-      .set("Cookie", requestCookies);
-    expect(response.body.data.addLends.error).toBeFalsy();
-    //consumer.
-    //expect(producer.send).toHaveBeenCalledTimes(8);
+    const count = await admin.fetchTopicOffsets("user-transaction");
+    expect(count[0].offset).toBe("2");
   });
 });

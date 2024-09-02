@@ -3,10 +3,9 @@ import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "../types";
 import { jwt } from "../utils";
-import { Kafka, Producer } from "kafkajs";
+import { Producer } from "kafkajs";
 import { AuthClient } from "@lerna-monorepo/grpc-auth-node";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
-import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
 import TestAgent from "supertest/lib/agent";
@@ -31,7 +30,6 @@ describe("AddLoan tests", () => {
   let grpcClient: AuthClient;
   let pubsub: RedisPubSub;
   let request: TestAgent<supertest.Test>;
-  let startedKafkaContainer: StartedKafkaContainer;
   let grpcServer: Server;
   let redisClient: RedisClientType;
   let ioredisPublisherClient: Redis;
@@ -49,34 +47,6 @@ describe("AddLoan tests", () => {
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
         "-auth"
     );
-    startedKafkaContainer = await new KafkaContainer()
-      .withExposedPorts(9093)
-      .start();
-    const name = startedKafkaContainer.getHost();
-    const port = startedKafkaContainer.getMappedPort(9093);
-    const kafka = new Kafka({
-      clientId: "my-app",
-      brokers: [`${name}:${port}`],
-    });
-    const admin = kafka.admin();
-    await admin.connect();
-    await admin.createTopics({
-      validateOnly: false,
-      topics: [
-        {
-          topic: "add-lends",
-        },
-        {
-          topic: "user-transaction",
-        },
-        {
-          topic: "loan-transaction",
-        },
-      ],
-    });
-    await admin.disconnect();
-    producer = kafka.producer();
-    await producer.connect();
     startedRedisContainer = await new RedisContainer().start();
     redisClient = createClient({
       url: startedRedisContainer.getConnectionUrl(),
@@ -85,9 +55,7 @@ describe("AddLoan tests", () => {
     const options: RedisOptions = {
       host: startedRedisContainer.getConnectionUrl(),
       port: 6379,
-      retryStrategy: (times) => {
-        return Math.min(times * 50, 2000);
-      },
+      retryStrategy: () => 10000,
     };
     ioredisPublisherClient = new Redis(options);
     ioredisSubscriberClient = new Redis(options);
@@ -114,15 +82,9 @@ describe("AddLoan tests", () => {
   afterAll(async () => {
     grpcClient.close();
     grpcServer.forceShutdown();
-    await pubsub.close();
-    ioredisPublisherClient.quit();
-    ioredisSubscriberClient.quit();
-    await producer.disconnect();
     await redisClient.disconnect();
-    await startedKafkaContainer.stop();
     await startedRedisContainer.stop();
     await mongoClient.close();
-    await (() => new Promise((resolve) => setTimeout(resolve, 1000)))();
   });
 
   it("test AddLoan valid access token", async () => {
@@ -168,6 +130,7 @@ describe("AddLoan tests", () => {
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
         extensions: {
           doc_id: "8fb70b700252819b04a0357e79c75aa6",
@@ -184,7 +147,9 @@ describe("AddLoan tests", () => {
       .set("Accept", "text/event-stream")
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
-    expect(response.body.data.addLoan.error).toBeFalsy();
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.addLoan.error).toBeFalsy();
     const user = await users.findOne({
       id,
     });

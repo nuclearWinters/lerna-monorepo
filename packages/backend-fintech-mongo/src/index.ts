@@ -2,9 +2,6 @@ import { main } from "./app";
 import { MongoClient } from "mongodb";
 import { MONGO_DB, REDIS } from "./config";
 import { credentials } from "@grpc/grpc-js";
-import { checkEveryDay, checkEveryMonth } from "./cronJobs";
-import { dayFunction } from "./cronJobDay";
-import { monthFunction } from "./cronJobMonth";
 import { Kafka } from "kafkajs";
 import { AuthClient } from "@lerna-monorepo/grpc-auth-node"
 import { RedisPubSub } from "graphql-redis-subscriptions";
@@ -26,8 +23,6 @@ Promise.all([
     `backend-auth-node:1983`,
     credentials.createInsecure()
   );
-  checkEveryDay(() => dayFunction(db, producer));
-  checkEveryMonth(() => monthFunction(db, producer));
   const options: RedisOptions = {
     host: REDIS,
     port: 6379,

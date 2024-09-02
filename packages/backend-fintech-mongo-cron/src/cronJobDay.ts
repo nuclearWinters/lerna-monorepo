@@ -31,6 +31,7 @@ export const dayFunction = async (
       dailyMoratory * Math.abs(differenceInDays(scheduledDate, now));
     const delayedTotal = amortize + moratory;
     //Se actualiza el usuario del deudor al mover dinero de cuenta
+    console.log("passed1");
     producer.send({
       topic: "user-transaction",
       messages: [

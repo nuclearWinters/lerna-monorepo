@@ -31,7 +31,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     loan: Input,
-    { loans, id }: Context
+    { loans, id, pubsub }: Context
   ): Promise<Payload> => {
     try {
       if (!id) {
@@ -53,19 +53,22 @@ export const AddLoanMutation = mutationWithClientMutationId({
         ...loan,
       };
       await loans.insertOne(docLoan);
-      publishMyLoanInsert({
-        _id: loan_oid,
-        user_id: id,
-        score: "AAA",
-        raised: 0,
-        expiry,
-        roi: 17.0,
-        status: "waiting for approval",
-        pending: loan.goal,
-        payments_delayed: 0,
-        payments_done: 0,
-        ...loan,
-      });
+      publishMyLoanInsert(
+        {
+          _id: loan_oid,
+          user_id: id,
+          score: "AAA",
+          raised: 0,
+          expiry,
+          roi: 17.0,
+          status: "waiting for approval",
+          pending: loan.goal,
+          payments_delayed: 0,
+          payments_done: 0,
+          ...loan,
+        },
+        pubsub
+      );
       return {
         error: "",
       };

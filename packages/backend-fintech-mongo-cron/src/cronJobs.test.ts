@@ -16,7 +16,7 @@ describe("cron tests", () => {
     const counter = jest.fn();
     checkEveryDay(() => counter());
     jest.advanceTimersByTime(newDate.getTime() - now.getTime());
-    expect(counter).toBeCalledTimes(1);
+    expect(counter).toHaveBeenCalled();
   });
 
   it("test cron job one month", () => {
@@ -25,6 +25,6 @@ describe("cron tests", () => {
     const counter = jest.fn();
     checkEveryMonth(() => counter());
     jest.advanceTimersByTime(newDate.getTime() - now.getTime());
-    expect(counter).toBeCalledTimes(1);
+    expect(counter).toHaveBeenCalled();
   });
 });

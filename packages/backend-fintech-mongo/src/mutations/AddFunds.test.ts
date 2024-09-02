@@ -1,9 +1,9 @@
 import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { TransactionMongo, UserMongo } from "../types";
+import { UserMongo } from "../types";
 import { jwt } from "../utils";
-import { Kafka, Producer } from "kafkajs";
+import { Admin, Kafka, Producer } from "kafkajs";
 import { AuthClient } from "@lerna-monorepo/grpc-auth-node";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
@@ -36,6 +36,7 @@ describe("AddFunds tests", () => {
   let redisClient: RedisClientType;
   let ioredisPublisherClient: Redis;
   let ioredisSubscriberClient: Redis;
+  let admin: Admin;
 
   beforeAll(async () => {
     mongoClient = await MongoClient.connect(
@@ -58,7 +59,7 @@ describe("AddFunds tests", () => {
       clientId: "my-app",
       brokers: [`${name}:${port}`],
     });
-    const admin = kafka.admin();
+    admin = kafka.admin();
     await admin.connect();
     await admin.createTopics({
       validateOnly: false,
@@ -85,9 +86,7 @@ describe("AddFunds tests", () => {
     const options: RedisOptions = {
       host: startedRedisContainer.getConnectionUrl(),
       port: 6379,
-      retryStrategy: (times) => {
-        return Math.min(times * 50, 2000);
-      },
+      retryStrategy: () => 10000,
     };
     ioredisPublisherClient = new Redis(options);
     ioredisSubscriberClient = new Redis(options);
@@ -98,7 +97,7 @@ describe("AddFunds tests", () => {
     grpcServer = new Server();
     grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
     grpcServer.bindAsync(
-      "localhost:1983",
+      "0.0.0.0:1983",
       ServerCredentials.createInsecure(),
       (err) => {
         if (err) {
@@ -106,7 +105,7 @@ describe("AddFunds tests", () => {
         }
       }
     );
-    grpcClient = new AuthClient(`localhost:1983`, credentials.createInsecure());
+    grpcClient = new AuthClient(`0.0.0.0:1983`, credentials.createInsecure());
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
   }, 20000);
@@ -114,23 +113,20 @@ describe("AddFunds tests", () => {
   afterAll(async () => {
     grpcClient.close();
     grpcServer.forceShutdown();
-    await pubsub.close();
-    ioredisPublisherClient.quit();
-    ioredisSubscriberClient.quit();
-    await producer.disconnect();
     await redisClient.disconnect();
-    await startedKafkaContainer.stop();
     await startedRedisContainer.stop();
+    await producer.disconnect();
+    await admin.disconnect();
+    await startedKafkaContainer.stop();
     await mongoClient.close();
-    await (() => new Promise((resolve) => setTimeout(resolve, 1000)))();
   }, 10000);
 
   it("test AddFunds increase valid access token", async () => {
     const users = dbInstanceFintech.collection<UserMongo>("users");
-    const _id = new ObjectId();
+    const user_oid = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({
-      _id,
+      _id: user_oid,
       id,
       account_available: 100000,
       account_to_be_paid: 0,
@@ -187,6 +183,8 @@ describe("AddFunds tests", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[3].replace("data: ", ""));
     expect(data.data.addFunds.error).toBeFalsy();
+    const count = await admin.fetchTopicOffsets("user-transaction");
+    expect(count[0].offset).toBe("1");
   }, 10000);
 
   it("test AddFunds decrease valid access token", async () => {
@@ -251,6 +249,8 @@ describe("AddFunds tests", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[3].replace("data: ", ""));
     expect(data.data.addFunds.error).toBeFalsy();
+    const count = await admin.fetchTopicOffsets("user-transaction");
+    expect(count[0].offset).toBe("2");
   }, 10000);
 
   it("test AddFunds increase invalid access token and valid refresh token", async () => {
@@ -316,12 +316,12 @@ describe("AddFunds tests", () => {
     expect(data.data.addFunds.error).toBeFalsy();
     expect(response.headers["accesstoken"]).toBeTruthy();
     expect(response.headers["accesstoken"]).not.toBe(accessToken);
+    const count = await admin.fetchTopicOffsets("user-transaction");
+    expect(count[0].offset).toBe("3");
   }, 10000);
 
   it("test AddFunds try decrease more than available valid refresh token", async () => {
     const users = dbInstanceFintech.collection<UserMongo>("users");
-    const transactions =
-      dbInstanceFintech.collection<TransactionMongo>("transactions");
     const user_oid = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({
@@ -382,19 +382,8 @@ describe("AddFunds tests", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[3].replace("data: ", ""));
     expect(data.data.addFunds.error).toBe("");
-    const user = await users.findOne({
-      id,
-    });
-    expect(user).toEqual({
-      _id: user_oid,
-      id,
-      account_available: 100000,
-      account_to_be_paid: 0,
-      account_total: 100000,
-      account_withheld: 0,
-    });
-    const allTransactions = await transactions.find({ user_id: id }).toArray();
-    expect(allTransactions.length).toBe(0);
+    const count = await admin.fetchTopicOffsets("user-transaction");
+    expect(count[0].offset).toBe("4");
   }, 10000);
 
   it("test AddFunds try increase cero valid refresh token", async () => {
@@ -459,21 +448,7 @@ describe("AddFunds tests", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[3].replace("data: ", ""));
     expect(data.data.addFunds.error).toBe("La cantidad no puede ser cero.");
-    const user = await users.findOne({
-      id,
-    });
-    expect(user).toEqual({
-      _id: user_oid,
-      id,
-      account_available: 100000,
-      account_to_be_paid: 0,
-      account_total: 100000,
-      account_withheld: 0,
-    });
-
-    const transactions =
-      dbInstanceFintech.collection<TransactionMongo>("transactions");
-    const allTransactions = await transactions.find({ user_id: id }).toArray();
-    expect(allTransactions.length).toBe(0);
+    const count = await admin.fetchTopicOffsets("user-transaction");
+    expect(count[0].offset).toBe("4");
   }, 20000);
 });

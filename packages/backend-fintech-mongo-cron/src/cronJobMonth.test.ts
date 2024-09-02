@@ -6,79 +6,81 @@ import {
   UserMongo,
   ScheduledPaymentsMongo,
 } from "./types";
-jest.mock("kafkajs", () => {
-  return {
-    Kafka: function () {
-      return {
-        producer: () => ({
-          send: jest.fn(),
-          connect: () => Promise.resolve(jest.fn()),
-        }),
-      };
-    },
-  };
-});
-import { Kafka, Producer } from "kafkajs";
+import { Admin, Kafka, Producer } from "kafkajs";
 import { monthFunction } from "./cronJobMonth";
-
-jest.mock("./subscriptions/subscriptionsUtils", () => ({
-  publishUser: jest.fn,
-  publishTransactionInsert: jest.fn,
-  publishLoanUpdate: jest.fn,
-  publishInvestmentUpdate: jest.fn,
-}));
-
-jest.mock("graphql-redis-subscriptions", () => ({
-  RedisPubSub: jest.fn().mockImplementation(() => {
-    return {};
-  }),
-}));
-
-jest.mock("ioredis", () =>
-  jest.fn().mockImplementation(() => {
-    return {};
-  })
-);
+import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
+import { KAFKA } from "./config";
 
 describe("cronJobs tests", () => {
-  let client: MongoClient;
-  let dbInstance: Db;
+  let mongoClient: MongoClient;
+  let dbInstanceFintech: Db;
   let producer: Producer;
+  let startedKafkaContainer: StartedKafkaContainer;
+  let admin: Admin;
 
   beforeAll(async () => {
-    client = await MongoClient.connect(
+    mongoClient = await MongoClient.connect(
       (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
       {}
     );
-    dbInstance = client.db(
+    dbInstanceFintech = mongoClient.db(
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
     );
+    startedKafkaContainer = await new KafkaContainer()
+      .withExposedPorts(9093)
+      .start();
+    const name = startedKafkaContainer.getHost();
+    const port = startedKafkaContainer.getMappedPort(9093);
     const kafka = new Kafka({
-      clientId: "my-app",
-      brokers: ["kafka:9092"],
+      clientId: KAFKA,
+      brokers: [`${name}:${port}`],
+    });
+    admin = kafka.admin();
+    await admin.connect();
+    await admin.createTopics({
+      validateOnly: false,
+      topics: [
+        {
+          topic: "add-lends",
+        },
+        {
+          topic: "user-transaction",
+        },
+        {
+          topic: "loan-transaction",
+        },
+      ],
     });
     producer = kafka.producer();
     await producer.connect();
-  });
+  }, 30000);
 
   afterAll(async () => {
-    await client.close();
-  });
+    await producer.disconnect();
+    await admin.disconnect();
+    await startedKafkaContainer.stop();
+    await mongoClient.close();
+  }, 10000);
 
   it("monthFunction test", async () => {
-    const users = dbInstance.collection<UserMongo>("users");
-    const loans = dbInstance.collection<LoanMongo>("loans");
-    const investments = dbInstance.collection<InvestmentMongo>("investments");
+    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const loans = dbInstanceFintech.collection<LoanMongo>("loans");
+    const investments =
+      dbInstanceFintech.collection<InvestmentMongo>("investments");
     const scheduledPayments =
-      dbInstance.collection<ScheduledPaymentsMongo>("scheduledPayments");
+      dbInstanceFintech.collection<ScheduledPaymentsMongo>("scheduledPayments");
     const now = new Date();
     const user1_oid = new ObjectId();
     const user2_oid = new ObjectId();
     const user3_oid = new ObjectId();
+    const user1_id = crypto.randomUUID();
+    const user2_id = crypto.randomUUID();
+    const user3_id = crypto.randomUUID();
+    const user4_id = crypto.randomUUID();
     await users.insertMany([
       {
         _id: user1_oid,
-        id: "wHHR1SUBT0dspoF4YUOw7",
+        id: user1_id,
         account_available: 1000000,
         account_to_be_paid: 0,
         account_total: 1000000,
@@ -86,7 +88,7 @@ describe("cronJobs tests", () => {
       },
       {
         _id: user2_oid,
-        id: "wHHR1SUBT0dspoF4YUOw8",
+        id: user2_id,
         account_available: 100000,
         account_to_be_paid: 203956,
         account_total: 303956,
@@ -94,7 +96,7 @@ describe("cronJobs tests", () => {
       },
       {
         _id: user3_oid,
-        id: "wHHR1SUBT0dspoF4YUOw9",
+        id: user3_id,
         account_available: 0,
         account_to_be_paid: 0,
         account_total: 0,
@@ -158,7 +160,7 @@ describe("cronJobs tests", () => {
     await loans.insertMany([
       {
         _id: loan1_oid,
-        user_id: "wHHR1SUBT0dspoF4YUOw7",
+        user_id: user1_id,
         score: "AAA",
         roi: 17,
         goal: 100000,
@@ -172,7 +174,7 @@ describe("cronJobs tests", () => {
       },
       {
         _id: loan2_oid,
-        user_id: "wHHR1SUBT0dspoF4YUOw7",
+        user_id: user1_id,
         score: "AAA",
         roi: 17,
         goal: 100000,
@@ -186,7 +188,7 @@ describe("cronJobs tests", () => {
       },
       {
         _id: loan3_oid,
-        user_id: "wHHR1SUBT0dspoF4YUO10",
+        user_id: user4_id,
         score: "AAA",
         roi: 17,
         goal: 100000,
@@ -200,7 +202,7 @@ describe("cronJobs tests", () => {
       },
       {
         _id: loan4_oid,
-        user_id: "wHHR1SUBT0dspoF4YUOw9",
+        user_id: user3_id,
         score: "AAA",
         roi: 17,
         goal: 100000,
@@ -219,8 +221,8 @@ describe("cronJobs tests", () => {
     await investments.insertMany([
       {
         _id: invest1_oid,
-        borrower_id: "wHHR1SUBT0dspoF4YUOw7",
-        lender_id: "wHHR1SUBT0dspoF4YUOw8",
+        borrower_id: user1_id,
+        lender_id: user2_id,
         loan_oid: loan1_oid,
         quantity: 100000,
         status: "up to date",
@@ -238,8 +240,8 @@ describe("cronJobs tests", () => {
       },
       {
         _id: invest2_oid,
-        borrower_id: "wHHR1SUBT0dspoF4YUOw7",
-        lender_id: "wHHR1SUBT0dspoF4YUOw8",
+        borrower_id: user1_id,
+        lender_id: user2_id,
         loan_oid: loan2_oid,
         quantity: 100000,
         status: "up to date",
@@ -257,8 +259,8 @@ describe("cronJobs tests", () => {
       },
       {
         _id: invest3_oid,
-        borrower_id: "wHHR1SUBT0dspoF4YUOw9",
-        lender_id: "wHHR1SUBT0dspoF4YUOw8",
+        borrower_id: user3_id,
+        lender_id: user2_id,
         loan_oid: loan4_oid,
         quantity: 100000,
         status: "up to date",
@@ -275,6 +277,9 @@ describe("cronJobs tests", () => {
         status_type: "on_going",
       },
     ]);
-    await monthFunction(dbInstance, producer);
+    await monthFunction(dbInstanceFintech, producer);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const count = await admin.fetchTopicOffsets("user-transaction");
+    expect(count[0].offset).toBe("3");
   });
 });

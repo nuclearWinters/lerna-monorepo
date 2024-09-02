@@ -37,7 +37,10 @@ export const ApproveLoanMutation = mutationWithClientMutationId<
       resolve: ({ loan }): LoanMongo | null => loan,
     },
   },
-  mutateAndGetPayload: async ({ loan_gid }, { loans, id, isSupport }) => {
+  mutateAndGetPayload: async (
+    { loan_gid },
+    { loans, id, isSupport, pubsub }
+  ) => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");
@@ -54,8 +57,8 @@ export const ApproveLoanMutation = mutationWithClientMutationId<
       if (!loan) {
         throw new Error("No se encontró la deuda.");
       }
-      publishLoanUpdate(loan);
-      publishLoanInsert(loan);
+      publishLoanUpdate(loan, pubsub);
+      publishLoanInsert(loan, pubsub);
       return { error: "", loan };
     } catch (e) {
       return {

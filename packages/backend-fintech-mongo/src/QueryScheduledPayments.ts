@@ -24,7 +24,7 @@ const QueryScheduledPayments = {
         .find({ loan_oid })
         .toArray();
       return scheduledPaymentsList;
-    } catch (e) {
+    } catch {
       return [];
     }
   },

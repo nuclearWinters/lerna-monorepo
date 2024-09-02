@@ -1,28 +1,6 @@
-import { RedisPubSub } from "graphql-redis-subscriptions";
-import { Producer } from "kafkajs";
-import { ObjectId, Collection } from "mongodb";
+import { ObjectId } from "mongodb";
 
 export type UUID = `${string}-${string}-${string}-${string}-${string}`;
-
-export interface Context {
-  users: Collection<UserMongo>;
-  loans: Collection<LoanMongo>;
-  investments: Collection<InvestmentMongo>;
-  transactions: Collection<TransactionMongo>;
-  scheduledPayments: Collection<ScheduledPaymentsMongo>;
-  accessToken: string | undefined;
-  refreshToken: string | undefined;
-  id?: UUID;
-  validAccessToken?: string;
-  isBorrower: boolean;
-  isSupport: boolean;
-  isLender: boolean;
-  logins?: unknown;
-  authusers?: unknown;
-  sessions?: unknown;
-  producer: Producer;
-  pubsub: RedisPubSub;
-}
 
 export interface UserMongo {
   account_available: number;
@@ -30,21 +8,6 @@ export interface UserMongo {
   account_total: number;
   account_withheld: number;
   id: UUID;
-}
-
-export interface ILoanEdge {
-  node: LoanMongoRedis;
-  cursor: string;
-}
-
-export interface IInvestmentEdge {
-  node: InvestmentMongoRedis;
-  cursor: string;
-}
-
-export interface ITransactionEdge {
-  node: TransactionMongo;
-  cursor: string;
 }
 
 export type TransactionInvestMongoType = "collect" | "invest";
@@ -90,14 +53,6 @@ export interface ScheduledPaymentsMongo {
   scheduled_date: Date;
 }
 
-export interface IScheduledPaymentsMongoRedis {
-  _id: string;
-  loan_oid: string;
-  amortize: number;
-  status: ScheduledPaymentsStatus;
-  scheduled_date: string;
-}
-
 export interface LoanMongo {
   _id?: ObjectId;
   user_id: UUID;
@@ -107,21 +62,6 @@ export interface LoanMongo {
   term: number;
   raised: number;
   expiry: Date;
-  status: ILoanStatus;
-  pending: number;
-  payments_done: number;
-  payments_delayed: number;
-}
-
-export interface LoanMongoRedis {
-  _id: string;
-  user_id: UUID;
-  score: string;
-  roi: number;
-  goal: number;
-  term: number;
-  raised: number;
-  expiry: string;
   status: ILoanStatus;
   pending: number;
   payments_done: number;
@@ -155,32 +95,4 @@ export interface InvestmentMongo {
   interest_to_earn: number;
   paid_already: number;
   to_be_paid: number;
-}
-
-export interface InvestmentMongoRedis {
-  _id: string;
-  borrower_id: string;
-  lender_id: string;
-  loan_oid: string;
-  quantity: number;
-  created_at: string;
-  updated_at: string;
-  status: IInvestmentStatus;
-  roi: number;
-  term: number;
-  payments: number;
-  moratory: number;
-  amortize: number;
-  interest_to_earn: number;
-  paid_already: number;
-  to_be_paid: number;
-}
-
-export interface DecodeJWT {
-  id: string;
-  isLender: boolean;
-  isBorrower: boolean;
-  isSupport: boolean;
-  iat: number;
-  exp: number;
 }

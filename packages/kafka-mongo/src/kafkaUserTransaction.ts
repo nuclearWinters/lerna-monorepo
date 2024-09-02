@@ -30,7 +30,6 @@ export const UserTransaction = async (
     withheldFromToBePaid,
     user_id,
     loan_id,
-    borrower_id,
     scheduled_id,
     isDelayed,
     nextTopic,

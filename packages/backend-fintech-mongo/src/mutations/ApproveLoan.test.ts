@@ -3,10 +3,9 @@ import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "../types";
 import { base64Name, jwt } from "../utils";
-import { Kafka, Producer } from "kafkajs";
+import { Producer } from "kafkajs";
 import { AuthClient } from "@lerna-monorepo/grpc-auth-node";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
-import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
 import TestAgent from "supertest/lib/agent";
@@ -31,7 +30,6 @@ describe("ApproveLoan tests", () => {
   let grpcClient: AuthClient;
   let pubsub: RedisPubSub;
   let request: TestAgent<supertest.Test>;
-  let startedKafkaContainer: StartedKafkaContainer;
   let grpcServer: Server;
   let redisClient: RedisClientType;
   let ioredisPublisherClient: Redis;
@@ -49,34 +47,6 @@ describe("ApproveLoan tests", () => {
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
         "-auth"
     );
-    startedKafkaContainer = await new KafkaContainer()
-      .withExposedPorts(9093)
-      .start();
-    const name = startedKafkaContainer.getHost();
-    const port = startedKafkaContainer.getMappedPort(9093);
-    const kafka = new Kafka({
-      clientId: "my-app",
-      brokers: [`${name}:${port}`],
-    });
-    const admin = kafka.admin();
-    await admin.connect();
-    await admin.createTopics({
-      validateOnly: false,
-      topics: [
-        {
-          topic: "add-lends",
-        },
-        {
-          topic: "user-transaction",
-        },
-        {
-          topic: "loan-transaction",
-        },
-      ],
-    });
-    await admin.disconnect();
-    producer = kafka.producer();
-    await producer.connect();
     startedRedisContainer = await new RedisContainer().start();
     redisClient = createClient({
       url: startedRedisContainer.getConnectionUrl(),
@@ -85,9 +55,7 @@ describe("ApproveLoan tests", () => {
     const options: RedisOptions = {
       host: startedRedisContainer.getConnectionUrl(),
       port: 6379,
-      retryStrategy: (times) => {
-        return Math.min(times * 50, 2000);
-      },
+      retryStrategy: () => 10000,
     };
     ioredisPublisherClient = new Redis(options);
     ioredisSubscriberClient = new Redis(options);
@@ -95,10 +63,11 @@ describe("ApproveLoan tests", () => {
       publisher: ioredisPublisherClient,
       subscriber: ioredisSubscriberClient,
     });
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     grpcServer = new Server();
     grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
     grpcServer.bindAsync(
-      "localhost:1987",
+      "0.0.0.0:1987",
       ServerCredentials.createInsecure(),
       (err) => {
         if (err) {
@@ -106,24 +75,18 @@ describe("ApproveLoan tests", () => {
         }
       }
     );
-    grpcClient = new AuthClient(`localhost:1987`, credentials.createInsecure());
+    grpcClient = new AuthClient(`0.0.0.0:1987`, credentials.createInsecure());
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
-  });
+  }, 20000);
 
   afterAll(async () => {
     grpcClient.close();
     grpcServer.forceShutdown();
-    await pubsub.close();
-    ioredisPublisherClient.quit();
-    ioredisSubscriberClient.quit();
-    await producer.disconnect();
     await redisClient.disconnect();
-    await startedKafkaContainer.stop();
     await startedRedisContainer.stop();
     await mongoClient.close();
-    await (() => new Promise((resolve) => setTimeout(resolve, 1000)))();
-  });
+  }, 10000);
 
   it("test ApproveLoan valid access token", async () => {
     const users = dbInstanceFintech.collection<UserMongo>("users");
@@ -173,10 +136,10 @@ describe("ApproveLoan tests", () => {
       now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
     const refreshToken = jwt.sign(
       {
-        id,
+        id: support_id,
         isBorrower: false,
-        isLender: true,
-        isSupport: false,
+        isLender: false,
+        isSupport: true,
         refreshTokenExpireTime,
         exp: refreshTokenExpireTime,
       },
@@ -184,10 +147,10 @@ describe("ApproveLoan tests", () => {
     );
     const accessToken = jwt.sign(
       {
-        id,
+        id: support_id,
         isBorrower: false,
-        isLender: true,
-        isSupport: false,
+        isLender: false,
+        isSupport: true,
         refreshTokenExpireTime,
         exp: accessTokenExpireTime,
       },
@@ -196,15 +159,12 @@ describe("ApproveLoan tests", () => {
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
-        query: `mutation ApproveLoanMutation($input: ApproveLoanInput!) {
-          approveLoan(input: $input) {
-            error
-            loan {
-              id
-            }
-          }
-        }`,
+        extensions: {
+          doc_id: "6fd0f5290ad731d160369f4bbae87b78",
+        },
+        query: "",
         variables: {
           input: {
             loan_gid: base64Name(loan_oid.toHexString(), "Loan"),
@@ -215,8 +175,10 @@ describe("ApproveLoan tests", () => {
       .set("Accept", "text/event-stream")
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
-    expect(response.body.data.approveLoan.error).toBeFalsy();
-    expect(response.body.data.approveLoan.loan).toBeTruthy();
+    const stream = response.text.split("\n");
+    const data = JSON.parse(stream[3].replace("data: ", ""));
+    expect(data.data.approveLoan.error).toBeFalsy();
+    expect(data.data.approveLoan.loan).toBeTruthy();
     const user = await users.findOne({
       id: support_id,
     });
