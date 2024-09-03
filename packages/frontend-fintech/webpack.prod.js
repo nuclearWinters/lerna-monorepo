@@ -1,7 +1,8 @@
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const StylexPlugin = require("@stylexjs/webpack-plugin");
 const fs = require("fs");
+
+process.env.NODE_ENV = "production";
 
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
@@ -23,6 +24,17 @@ module.exports = {
         .relative(resolveApp("src"), info.absoluteResourcePath)
         .replace(/\\/g, "/"),
   },
+  module: {
+    rules: [
+      {
+        test: /\.(js|ts)x?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+        },
+      },
+    ],
+  },
   devtool: "source-map",
   plugins: [
     new StylexPlugin({
@@ -34,10 +46,6 @@ module.exports = {
         type: "commonJS",
         rootDir: __dirname,
       },
-    }),
-    new HtmlWebpackPlugin({
-      filename: "index.html",
-      template: resolveApp("public/index.html"),
     }),
   ],
 };

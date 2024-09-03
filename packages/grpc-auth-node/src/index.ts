@@ -10,13 +10,13 @@ Promise.all([
   MongoClient.connect(MONGO_DB, {}),
   createClient({
     url: REDIS,
-  }).connect()
+  }).connect(),
 ]).then(async ([mongoClient, redisClient]) => {
   const authdb = mongoClient.db("auth");
   const server = new Server();
   server.addService(AuthService, AuthServer(authdb, redisClient));
   server.bindAsync(
-    "backend-auth-node:1983",
+    "grpc-auth-node:1983",
     ServerCredentials.createInsecure(),
     (err) => {
       if (err) {
@@ -24,4 +24,4 @@ Promise.all([
       }
     }
   );
-})
+});

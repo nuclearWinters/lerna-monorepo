@@ -83,7 +83,9 @@ const getRedirectPath = (
 const headerEntryPointReference = loadEntryPoint(
   {
     getEnvironment: (options) => {
-      return RelayEnvironmentAuth;
+      return options?.environment === "auth"
+        ? RelayEnvironmentAuth
+        : RelayEnvironmentFintech;
     },
   },
   HeaderAuthEntryPoint,

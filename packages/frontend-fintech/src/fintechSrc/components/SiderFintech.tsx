@@ -67,16 +67,13 @@ const subscriptionUser = graphql`
 `;
 
 export const SiderFintech: FC<{
-  fintechQuery: PreloadedQuery<utilsFintechQuery, Record<string, unknown>>;
+  fintechQuery: PreloadedQuery<utilsFintechQuery>;
   isBorrower: boolean;
   isSupport: boolean;
   isLender: boolean;
 }> = ({ fintechQuery, isBorrower, isSupport, isLender }) => {
   const { t } = useTranslation();
-  const { user } = usePreloadedQuery<utilsFintechQuery>(
-    fintechUserQuery,
-    fintechQuery
-  );
+  const { user } = usePreloadedQuery(fintechUserQuery, fintechQuery);
 
   const configUser = useMemo<
     GraphQLSubscriptionConfig<SiderFintechUserSubscription>

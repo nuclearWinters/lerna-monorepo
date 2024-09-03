@@ -27,13 +27,13 @@ services:
       kafka:
         condition: service_healthy
       mongo-fintech:
-        condition: service_completed_successfully
+        condition: service_started
     deploy:
       mode: replicated
       replicas: 2
 
-  backend-fintech:
-    container_name: backend-fintech
+  backend-fintech-mongo:
+    container_name: backend-fintech-mongo
     image: node:20
     volumes:
       - .:/usr/src/service
@@ -43,15 +43,10 @@ services:
     ports:
       - "4000:4000"
     depends_on:
-      backend-auth-node:
-        condition: service_healthy
       mongo-fintech:
-        condition: service_completed_successfully
-    healthcheck:
-      test: curl --fail https://localhost:4000/graphql || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
+        condition: service_started
+      kafka:
+        condition: service_healthy
 
   backend-auth-node:
     container_name: backend-auth-node
@@ -64,34 +59,29 @@ services:
     ports:
       - "4002:4002"
     depends_on:
-      redis-auth:
+      redis-fintech:
         condition: service_started
       mongo-fintech:
-        condition: service_completed_successfully
-    healthcheck:
-      test: curl --fail https://localhost:4002/graphql || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
+        condition: service_started
 
-  grpc-auth:
+  grpc-auth-node:
     container_name: grpc-auth-node
     image: node:20
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
-    working_dir: /usr/src/service/packages/backend-auth-node
+    working_dir: /usr/src/service/packages/grpc-auth-node
     command: ["npm", "run", "start"]
     ports:
       - "1983:1983"
     depends_on:
-      redis-auth:
+      redis-fintech:
         condition: service_started
       mongo-fintech:
-        condition: service_completed_successfully
+        condition: service_started
 
-  grpc-fintech:
-    container_name: grpc-fintech
+  grpc-fintech-node:
+    container_name: grpc-fintech-node
     image: node:20
     volumes:
       - .:/usr/src/service
@@ -113,6 +103,11 @@ services:
     command: ["npm", "run", "start"]
     ports:
       - "8000:8000"
+    environment:
+      WDS_SOCKET_HOST: 127.0.0.1
+      CHOKIDAR_USEPOLLING: true
+      WATCHPACK_POLLING: true
+      NODE_ENV: development
 
   mongo-fintech:
     container_name: mongo-fintech
@@ -125,8 +120,8 @@ services:
       driver: none
     entrypoint: ["/usr/bin/mongod", "--bind_ip_all"]
 
-  redis-auth:
-    container_name: redis-auth
+  redis-fintech:
+    container_name: redis-fintech
     command: redis-server --appendonly yes
     image: redis
     ports:

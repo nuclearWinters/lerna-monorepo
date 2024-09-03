@@ -12,7 +12,7 @@ import { Producer } from "kafkajs";
 import { parse } from "cookie";
 import { Request } from "graphql-sse/lib";
 import { Http2ServerRequest, Http2ServerResponse } from "http2";
-import { AuthClient, jwtMiddleware } from "@lerna-monorepo/grpc-auth-node"
+import { AuthClient, jwtMiddleware } from "@lerna-monorepo/grpc-auth-node";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 
 export const jwt = {

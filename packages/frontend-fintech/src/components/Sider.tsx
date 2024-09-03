@@ -13,14 +13,11 @@ import { RelayEnvironmentFintech } from "../RelayEnvironment";
 import { historyReplace, useLocation } from "../react-router-elements/utils";
 
 export const Sider: FC<{
-  authQuery: PreloadedQuery<utilsAuthQuery, Record<string, unknown>>;
-  fintechQuery: PreloadedQuery<utilsFintechQuery, Record<string, unknown>>;
+  authQuery: PreloadedQuery<utilsAuthQuery>;
+  fintechQuery: PreloadedQuery<utilsFintechQuery>;
 }> = ({ authQuery, fintechQuery }) => {
   const { changeLanguage } = useTranslation();
-  const { authUser } = usePreloadedQuery<utilsAuthQuery>(
-    authUserQuery,
-    authQuery
-  );
+  const { authUser } = usePreloadedQuery(authUserQuery, authQuery);
 
   const location = useLocation();
 
@@ -30,9 +27,7 @@ export const Sider: FC<{
     if (!authUser) {
       const isLoggedPage = !["/register", "/"].includes(location);
       if (isLoggedPage) {
-        historyReplace(
-          `/${isLoggedPage ? `?redirectTo=${location}` : ""}`
-        );
+        historyReplace(`/${isLoggedPage ? `?redirectTo=${location}` : ""}`);
       }
     } else {
       //If user is logged, redirect to appropriate page

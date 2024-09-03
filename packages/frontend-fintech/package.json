@@ -4,7 +4,7 @@
   "description": " app built from zero",
   "main": "build/index.tsx",
   "scripts": {
-    "start": "NODE_ENV=development && webpack serve --config webpack.config.js --env env=dev",
+    "start": "webpack serve --config webpack.config.js --env env=dev",
     "build": "webpack --config webpack.config.js --env env=prod && node copyPublicAssets.js",
     "serve": "",
     "pcm": "lint-staged",
@@ -12,7 +12,8 @@
     "relayAuth": "relay-compiler ./relayAuth.config.json",
     "relayFintech": "relay-compiler ./relayFintech.config.json",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "persist-server": "node ./relayLocalPersisting.js",
+    "persist-server-auth": "node ./relayLocalPersistingAuth.js",
+    "persist-server-fintech": "node ./relayLocalPersistingFintech.js",
     "lint": "npx eslint ."
   },
   "dependencies": {

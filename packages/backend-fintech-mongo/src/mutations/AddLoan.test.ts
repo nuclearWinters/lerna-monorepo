@@ -74,7 +74,7 @@ describe("AddLoan tests", () => {
         }
       }
     );
-    grpcClient = new AuthClient(`localhost:1986`, credentials.createInsecure());
+    grpcClient = new AuthClient(`0.0.0.0:1986`, credentials.createInsecure());
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
   });

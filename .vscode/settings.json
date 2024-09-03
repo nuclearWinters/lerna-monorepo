@@ -2,6 +2,7 @@
   "eslint.workingDirectories": [
     "packages/frontend-fintech",
     "packages/backend-fintech-mongo",
+    "packages/backend-fintech-mongo-cron",
     "packages/backend-auth-node",
     "packages/kafka-mongo",
     "packages/grpc-auth-node",

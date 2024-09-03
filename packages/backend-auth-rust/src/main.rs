@@ -1116,7 +1116,7 @@ impl Default for AuthService {
         client_options.server_api = Some(server_api);
         let client: Client = Client::with_options(client_options).unwrap();
         let db: Database = client.database("auth");
-        let redis_client: RedisClient = RedisClient::open("redis://redis-auth/").unwrap();
+        let redis_client: RedisClient = RedisClient::open("redis://redis-fintech/").unwrap();
         let redis_connection: RedisConnection = redis_client.get_connection().unwrap();
         AuthService {
             redis: Arc::new(Mutex::new(redis_connection)),
@@ -1340,7 +1340,7 @@ async fn main() -> GraphQLResult<()> {
     let auth_users: Collection<AuthUserMongo> = db.collection::<AuthUserMongo>("users");
     let auth_sessions: Collection<SessionsMongo> = db.collection::<SessionsMongo>("sessions");
     let auth_logins: Collection<LoginsMongo> = db.collection::<LoginsMongo>("logins");
-    let redis_client: RedisClient = RedisClient::open("redis://redis-auth/")?;
+    let redis_client: RedisClient = RedisClient::open("redis://redis-fintech/")?;
     let redis_connection: RedisConnection = redis_client.get_connection()?;
     let grpc_client: AuthClient<Channel> = AuthClient::connect("http://backend-auth-node:1983").await?;
     let schema: Schema<Query, Mutation, EmptySubscription> = Schema::build(Query, Mutation, EmptySubscription)
