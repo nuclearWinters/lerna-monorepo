@@ -56,8 +56,6 @@ services:
       - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/backend-fintech-mongo-cron
     command: ["npm", "run", "start"]
-    ports:
-      - "4000:4000"
     depends_on:
       mongo-fintech:
         condition: service_started

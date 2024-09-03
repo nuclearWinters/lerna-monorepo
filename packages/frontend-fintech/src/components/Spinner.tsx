@@ -35,7 +35,7 @@ export const baseSpinnerSpin = stylex.create({
 export const Spinner: FC = () => {
   return (
     <div {...stylex.props(baseSpinnerBox.base)}>
-      <img src={FaSpinner} {...stylex.props(baseSpinnerSpin.base)} />
+      <FaSpinner {...stylex.props(baseSpinnerSpin.base)} />
     </div>
   );
 };

@@ -61,7 +61,7 @@ const basePrestarWrapper = stylex.create({
 
 const baseLoanRowIcon = stylex.create({
   base: {
-    fontSize: "18px",
+    height: "18px",
     color: "rgb(255,90,96)",
     margin: "auto",
   },
@@ -174,8 +174,7 @@ const Cell: FC<{ id: string }> = ({ id }) => {
 
   return (
     <td {...stylex.props(baseLoanRowClipboard.base)}>
-      <img
-        src={FaClipboard}
+      <FaClipboard
         onClick={() => {
           navigator.clipboard.writeText(id);
         }}
@@ -199,7 +198,7 @@ const RefetchCell: FC<{ loan: AddInvestmentsQueriesRowRefetch_loan$key }> = ({
         refetch({}, { fetchPolicy: "network-only" });
       }}
     >
-      <img src={FaSyncAlt} {...stylex.props(baseLoanRowIcon.base)} />
+      <FaSyncAlt {...stylex.props(baseLoanRowIcon.base)} />
     </td>
   );
 };
@@ -235,8 +234,7 @@ const columnAddInvestment: {
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseLoanRowClipboard.base)}>
-        <img
-          src={FaClipboard}
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}

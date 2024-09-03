@@ -65,7 +65,7 @@ const baseLoanRowClipboard = stylex.create({
 
 const baseLoanRowIcon = stylex.create({
   base: {
-    fontSize: "18px",
+    height: "18px",
     color: "rgb(255,90,96)",
     margin: "auto",
   },
@@ -149,7 +149,7 @@ const ApproveLoanCell: FC<{
         });
       }}
     >
-      <img src={FaThumbsUp} {...stylex.props(baseLoanRowIcon.base)} />
+      <FaThumbsUp {...stylex.props(baseLoanRowIcon.base)} />
     </td>
   );
 };
@@ -168,7 +168,7 @@ const RefetchCell: FC<{ loan: ApproveLoanQueriesRowRefetch_loan$key }> = ({
         refetch({}, { fetchPolicy: "network-only" });
       }}
     >
-      <img src={FaSyncAlt} {...stylex.props(baseLoanRowIcon.base)} />
+      <FaSyncAlt {...stylex.props(baseLoanRowIcon.base)} />
     </td>
   );
 };
@@ -196,8 +196,7 @@ const columnApproveLoans: {
     header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseLoanRowClipboard.base)}>
-        <img
-          src={FaClipboard}
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}
@@ -211,8 +210,7 @@ const columnApproveLoans: {
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseLoanRowClipboard.base)}>
-        <img
-          src={FaClipboard}
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}

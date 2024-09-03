@@ -38,7 +38,7 @@ import { SettingsSessionRowRevokeSessionMutation } from "./__generated__/Setting
 
 const baseLoanRowIcon = stylex.create({
   base: {
-    fontSize: "18px",
+    height: "18px",
     color: "rgb(255,90,96)",
     margin: "auto",
   },
@@ -133,7 +133,7 @@ const DeleteCell: FC<{ id: string }> = ({ id }) => {
         });
       }}
     >
-      <img src={FaTrashAlt} {...stylex.props(baseLoanRowIcon.base)} />
+      <FaTrashAlt {...stylex.props(baseLoanRowIcon.base)} />
     </td>
   );
 };

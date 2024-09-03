@@ -97,7 +97,7 @@ const baseLoanRowBorrowerIconBox = stylex.create({
 
 const baseLoanRowBorrowerIcon = stylex.create({
   base: {
-    fontSize: "18px",
+    height: "18px",
     color: "rgb(62,62,62)",
     cursor: "pointer",
     backgroundColor: "rgb(245,245,245)",
@@ -200,7 +200,7 @@ const Cell: FC<{ id: string }> = ({ id }) => {
 
   return (
     <td {...stylex.props(baseLoanRowClipboard.base)}>
-      <img src={FaClipboard}
+      <FaClipboard
         onClick={() => {
           navigator.clipboard.writeText(id);
         }}
@@ -224,7 +224,7 @@ const RefetchCell: FC<{ loan: MyLoansQueriesRowRefetch_loan$key }> = ({
         refetch({}, { fetchPolicy: "network-only" });
       }}
     >
-      <img src={FaSyncAlt} {...stylex.props(baseLoanRowIcon.base)} />
+      <FaSyncAlt {...stylex.props(baseLoanRowIcon.base)} />
     </td>
   );
 };
@@ -257,7 +257,7 @@ const columnMyLoans: {
         {info.status === "PAID" ||
           info.status === "PAST_DUE" ||
           (info.status === "TO_BE_PAID" && (
-            <img src={FaPlusSquare}
+            <FaPlusSquare
               onClick={() => {
                 setShowSubTable((state) => (info.id === state ? "" : info.id));
               }}
@@ -277,7 +277,7 @@ const columnMyLoans: {
     header: (t) => <TableColumnName>{t("Solicitante")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseLoanRowClipboard.base)}>
-        <img src={FaClipboard}
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}

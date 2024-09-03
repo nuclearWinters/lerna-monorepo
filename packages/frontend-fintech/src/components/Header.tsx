@@ -86,14 +86,13 @@ export const Header: FC<{ query: PreloadedQuery<utilsAuthQuery> }> = ({
     <div {...stylex.props(baseHeader.base)}>
       <CheckExpiration />
       <div {...stylex.props(baseRoutesHeaderLogged.base)}>
-        <img src={FaUserCircle} {...stylex.props(baseRoutesIconUser.base)} />
+        <FaUserCircle {...stylex.props(baseRoutesIconUser.base)} />
         <Link to="/settings" {...stylex.props(baseRoutesLink.base)}>
           {`${authUser?.name || ""} ${authUser?.apellidoPaterno || ""} ${
             authUser?.apellidoMaterno || ""
           }`.toUpperCase()}
         </Link>
-        <img
-          src={FaSignOutAlt}
+        <FaSignOutAlt
           onClick={logout}
           {...stylex.props(baseRoutesIconLogout.base)}
         />
@@ -102,8 +101,7 @@ export const Header: FC<{ query: PreloadedQuery<utilsAuthQuery> }> = ({
   ) : (
     <div {...stylex.props(baseHeader.notLogged)}>
       <div {...stylex.props(baseRoutesHeaderNotLogged.base)}>
-        <img
-          src={FaUserCircle}
+        <FaUserCircle
           {...stylex.props(
             baseRoutesIconUser.base,
             baseRoutesIconUser.notLogged

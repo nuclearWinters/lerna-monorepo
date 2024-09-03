@@ -11,7 +11,7 @@ import { getLongDateName, useTranslation } from "../../utils";
 
 export const baseMyTransactionsIcon = stylex.create({
   base: {
-    fontSize: "18px",
+    height: "18px",
     color: "rgba(255,90,96,0.5)",
     margin: "0px 4px",
     cursor: "pointer",
@@ -140,16 +140,14 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
         </div>
         <div {...stylex.props(baseMyTransactionsDescription.base)}>
           {t("Prestado a")}{" "}
-          <img
-            src={FaUserCircle}
+          <FaUserCircle
             onClick={() => {
               navigator.clipboard.writeText(borrower_id);
             }}
             {...stylex.props(baseMyTransactionsIcon.base)}
           />{" "}
           {t("al fondo")}:{" "}
-          <img
-            src={FaFileContract}
+          <FaFileContract
             onClick={() => {
               navigator.clipboard.writeText(loan_id);
             }}

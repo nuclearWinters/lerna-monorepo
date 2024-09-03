@@ -25,6 +25,7 @@
     "relay-runtime": "^17.0.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
     "typescript-eslint": "^8.3.0",
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",

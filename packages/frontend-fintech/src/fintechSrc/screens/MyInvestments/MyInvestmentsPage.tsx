@@ -69,7 +69,7 @@ const baseInvestmentRowStatus = stylex.create({
 
 const baseInvestmentRowIcon = stylex.create({
   base: {
-    fontSize: "18px",
+    height: "18px",
     color: "rgb(90,96,255)",
     minWidth: "60px",
   },
@@ -161,7 +161,7 @@ const RefetchCell: FC<{
         refetch({}, { fetchPolicy: "network-only" });
       }}
     >
-      <img src={FaSyncAlt} {...stylex.props(baseInvestmentRowIcon.base)} />
+      <FaSyncAlt {...stylex.props(baseInvestmentRowIcon.base)} />
     </td>
   );
 };
@@ -192,8 +192,7 @@ const columns: {
     header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseInvestmentRowClipboard.base)}>
-        <img
-          src={FaClipboard}
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.id);
           }}
@@ -207,8 +206,7 @@ const columns: {
     header: (t) => <TableColumnName>{t("ID deudor")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseInvestmentRowClipboard.base)}>
-        <img
-          src={FaClipboard}
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.borrower_id);
           }}
@@ -222,8 +220,7 @@ const columns: {
     header: (t) => <TableColumnName>{t("ID deuda")}</TableColumnName>,
     cell: ({ info }) => (
       <td {...stylex.props(baseInvestmentRowClipboard.base)}>
-        <img
-          src={FaClipboard}
+        <FaClipboard
           onClick={() => {
             navigator.clipboard.writeText(info.loan_id);
           }}

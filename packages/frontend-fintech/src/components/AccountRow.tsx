@@ -29,7 +29,7 @@ export const accountRowIcon = stylex.create({
     bottom: "-10px",
     right: "10px",
     backgroundColor: "white",
-    fontSize: "18px",
+    height: "18px",
   },
 });
 
@@ -56,7 +56,7 @@ export const AccountRow: FC<Props> = ({ text, value, type }) => {
       >
         {value}
       </div>
-      <img src={FaPlusCircle} {...stylex.props(accountRowIcon.base)} />
+      <FaPlusCircle {...stylex.props(accountRowIcon.base)} />
     </div>
   );
 };
