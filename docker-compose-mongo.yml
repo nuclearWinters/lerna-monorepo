@@ -48,6 +48,22 @@ services:
       kafka:
         condition: service_healthy
 
+  backend-fintech-mongo-cron:
+    container_name: backend-fintech-mongo-cron
+    image: node:20
+    volumes:
+      - .:/usr/src/service
+      - lerna-node-modules:/usr/src/service/node_modules
+    working_dir: /usr/src/service/packages/backend-fintech-mongo-cron
+    command: ["npm", "run", "start"]
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongo-fintech:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+
   backend-auth-node:
     container_name: backend-auth-node
     image: node:20
