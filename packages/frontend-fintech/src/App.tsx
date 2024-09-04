@@ -1,9 +1,9 @@
-import { createContext, Dispatch, FC, SetStateAction, useState } from "react";
+import { FC, useState } from "react";
 import { RelayEnvironmentProvider } from "react-relay/hooks";
 import { RelayEnvironmentAuth } from "./RelayEnvironment";
 import { MyRouter } from "./router";
 import * as stylex from "@stylexjs/stylex";
-import { Languages } from "./utils";
+import { LanguageContext, Languages } from "./utils";
 
 export const baseApp = stylex.create({
   base: {
@@ -13,10 +13,6 @@ export const baseApp = stylex.create({
     backgroundColor: "rgb(248,248,248)",
   },
 });
-
-export const LanguageContext = createContext<
-  [Languages, Dispatch<SetStateAction<Languages>>]
->([navigator.language.includes("es") ? "ES" : "EN", () => ({})]);
 
 export const App: FC = () => {
   const [language, setLanguage] = useState<Languages>(

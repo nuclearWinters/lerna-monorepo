@@ -14,7 +14,7 @@ services:
     command: npm outdated
   update:
     <<: *base
-    command: npm update
+    command: npm update --legacy-peer-deps
 
 volumes:
   lerna-node-modules:

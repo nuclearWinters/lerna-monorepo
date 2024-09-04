@@ -6,12 +6,12 @@
   "scripts": {
     "start": "webpack serve --config webpack.config.js --env env=dev",
     "build": "webpack --config webpack.config.js --env env=prod && node copyPublicAssets.js",
+    "analyze": "webpack --config webpack.config.js --env env=analyzer",
     "serve": "",
     "pcm": "lint-staged",
     "test": "jest --bail",
     "relayAuth": "relay-compiler ./relayAuth.config.json",
     "relayFintech": "relay-compiler ./relayFintech.config.json",
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "persist-server-auth": "node ./relayLocalPersistingAuth.js",
     "persist-server-fintech": "node ./relayLocalPersistingFintech.js",
     "lint": "npx eslint ."
@@ -64,14 +64,20 @@
     "react-refresh": "^0.14.2",
     "relay-compiler": "^17.0.0",
     "relay-config": "^12.0.1",
-    "source-map-explorer": "^2.5.3",
     "source-map-loader": "^5.0.0",
     "ts-loader": "^9.3.1",
     "typescript": "^5.5.4",
     "webpack": "^5.93.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^5.0.0",
-    "webpack-merge": "^6.0.1"
+    "webpack-merge": "^6.0.1",
+    "webpack-bundle-analyzer": "^4.10.2",
+    "relay-test-utils": "^17.0.0",
+    "@types/relay-test-utils": "^17.0.0",
+    "@testing-library/dom": "^10.4.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@testing-library/jest-dom": "^6.5.0"
   },
   "author": "Armando Rueda",
   "license": "ISC",
@@ -83,8 +89,19 @@
     ]
   },
   "jest": {
+    "transform": {
+      ".(ts|tsx)": "babel-jest"
+    },
     "modulePathIgnorePatterns": [
-      "build/"
+      "<rootDir>/build/",
+      "<rootDir>/node_modules/"
+    ],
+    "moduleNameMapper": {
+      "\\.svg": "<rootDir>/__mocks__/svg.js"
+    },
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": [
+      "<rootDir>/setupTests.ts"
     ]
   },
   "browserslist": {

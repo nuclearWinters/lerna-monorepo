@@ -29,8 +29,6 @@ import { GetEntryPointComponentFromEntryPoint } from "react-relay/relay-hooks/he
 import { RouteLogin } from "./react-router-elements/RouteLogin";
 import { historyReplace } from "./react-router-elements/utils";
 
-type inputUser = "lender" | "borrower" | "support";
-
 const allowedPages = {
   borrower: [
     "/account",
@@ -336,6 +334,7 @@ export const references = {
 };
 
 const pathname = window.location.pathname;
+console.log("getUserDataCache:", getUserDataCache);
 const data = getUserDataCache();
 
 const sessionPages = ["/", "/register"];

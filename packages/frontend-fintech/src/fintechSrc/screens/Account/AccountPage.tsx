@@ -11,7 +11,7 @@ import { accountFragment } from "./AccountQueries";
 import { AccountQueriesQuery } from "./__generated__/AccountQueriesQuery.graphql";
 
 interface Props {
-  fintechQuery: PreloadedQuery<AccountQueriesQuery, Record<string, unknown>>;
+  fintechQuery: PreloadedQuery<AccountQueriesQuery>;
 }
 
 export const AccountPage: FC<Props> = (props) => {

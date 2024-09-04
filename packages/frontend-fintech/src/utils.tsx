@@ -1,6 +1,9 @@
-import { LanguageContext } from "./App";
 import { resources } from "./i18n";
-import { useContext } from "react";
+import { createContext, Dispatch, SetStateAction, useContext } from "react";
+
+export const LanguageContext = createContext<
+  [Languages, Dispatch<SetStateAction<Languages>>]
+>([navigator.language.includes("es") ? "ES" : "EN", () => ({})]);
 
 export interface Decode {
   id: string;

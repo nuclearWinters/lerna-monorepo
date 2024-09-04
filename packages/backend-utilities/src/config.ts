@@ -8,5 +8,6 @@ export const REFRESH_TOKEN_EXP_NUMBER = 900;
 export const ACCESS_TOKEN_EXP_NUMBER = 180;
 export const KAFKA = process.env.KAFKA || "kafka:9092";
 export const KAFKA_ID = process.env.KAFKA_ID || "my-app";
-export const GRPC_AUTH = process.env.KAFKA_ID || "grpc-auth-node:1983";
-export const GRPC_FINTECH = process.env.KAFKA_ID || "grpc-fintech-node:1984";
+export const GRPC_AUTH = process.env.GRPC_AUTH || "grpc-auth-node:1983";
+export const GRPC_FINTECH =
+  process.env.GRPC_FINTECH || "grpc-fintech-node:1984";

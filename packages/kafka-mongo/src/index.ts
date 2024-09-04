@@ -1,5 +1,4 @@
 import { MongoClient } from "mongodb";
-import { MONGO_DB, KAFKA, KAFKA_ID } from "../../backend-utilities";
 import {
   InvestmentMongo,
   LoanMongo,
@@ -9,6 +8,7 @@ import {
 } from "./types";
 import { runKafkaConsumer } from "./kafka";
 import { Kafka } from "kafkajs";
+import { MONGO_DB, KAFKA, KAFKA_ID } from "../../backend-utilities/src/config";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,
