@@ -1,9 +1,9 @@
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import Redis, { RedisOptions } from "ioredis";
-import { REDIS } from "@lerna-monorepo/backend-utilities";
+import { IOREDIS } from "../../../backend-utilities";
 
 export const options: RedisOptions = {
-  host: REDIS,
+  host: IOREDIS,
   port: 6379,
   retryStrategy: (times) => {
     return Math.min(times * 50, 2000);

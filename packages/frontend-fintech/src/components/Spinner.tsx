@@ -5,7 +5,7 @@ import * as stylex from "@stylexjs/stylex";
 export const baseSpinnerBox = stylex.create({
   base: {
     padding: "10px 10px",
-    fontSize: "20px",
+    fontSize: "1.25rem",
     width: "200px",
     position: "relative",
     alignSelf: "center",

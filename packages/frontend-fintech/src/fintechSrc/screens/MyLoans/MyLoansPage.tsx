@@ -97,7 +97,7 @@ const baseLoanRowBorrowerIconBox = stylex.create({
 
 const baseLoanRowBorrowerIcon = stylex.create({
   base: {
-    height: "18px",
+    height: "1rem",
     color: "rgb(62,62,62)",
     cursor: "pointer",
     backgroundColor: "rgb(245,245,245)",
@@ -121,7 +121,7 @@ const baseLoanRowClipboard = stylex.create({
 
 const baseLoanRowIcon = stylex.create({
   base: {
-    fontSize: "18px",
+    height: "1rem",
     color: "rgb(255,90,96)",
   },
 });
@@ -140,7 +140,7 @@ const baseLoanRowScoreCircle = stylex.create({
     backgroundColor: "rgb(102,141,78)",
     width: "30px",
     height: "30px",
-    fontSize: "10px",
+    fontSize: "0.625rem",
     fontWeight: "bold",
     color: "white",
     textAlign: "center",

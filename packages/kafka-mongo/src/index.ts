@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { MONGO_DB } from "@lerna-monorepo/backend-utilities";
+import { MONGO_DB, KAFKA, KAFKA_ID } from "../../backend-utilities";
 import {
   InvestmentMongo,
   LoanMongo,
@@ -11,8 +11,8 @@ import { runKafkaConsumer } from "./kafka";
 import { Kafka } from "kafkajs";
 
 const kafka = new Kafka({
-  clientId: "my-app",
-  brokers: ["kafka:9092"],
+  clientId: KAFKA_ID,
+  brokers: [KAFKA],
 });
 
 const producer = kafka.producer();

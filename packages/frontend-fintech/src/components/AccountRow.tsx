@@ -14,7 +14,7 @@ export const accountRowBox = stylex.create({
     borderBottomColor: "rgb(203,203,203)",
     borderBottomStyle: "solid",
     borderBottomWidth: "1px",
-    fontSize: "20px",
+    fontSize: "1.25rem",
     padding: "14px 0px",
     justifyContent: "space-between",
     flex: "1",
@@ -29,7 +29,7 @@ export const accountRowIcon = stylex.create({
     bottom: "-10px",
     right: "10px",
     backgroundColor: "white",
-    height: "18px",
+    height: "1rem",
   },
 });
 
@@ -37,7 +37,7 @@ export const accountRowValue = stylex.create({
   base: {
     color: "black",
     fontWeight: "bold",
-    fontSize: "18px",
+    fontSize: "1.125rem",
   },
   available: {
     color: "rgb(58,179,152)",

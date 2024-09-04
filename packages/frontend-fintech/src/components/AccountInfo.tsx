@@ -31,7 +31,7 @@ const baseAccountInfoTitle = stylex.create({
 
 const baseAccountInfoValue = stylex.create({
   base: {
-    fontSize: "16px",
+    fontSize: "1rem",
     fontWeight: "bold",
   },
   total: {

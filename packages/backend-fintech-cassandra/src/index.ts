@@ -9,6 +9,7 @@ import cassandra from "cassandra-driver";
 import { UserCassandra } from "./types";
 import { Kafka } from "kafkajs";
 import { runKafkaConsumer } from "./kafka";
+import { KAFKA, KAFKA_ID } from "@lerna-monorepo/backend-utilities";
 
 const client = new cassandra.Client({
   contactPoints: ["cassandra-fintech"],
@@ -17,8 +18,8 @@ const client = new cassandra.Client({
 });
 
 const kafka = new Kafka({
-  clientId: "my-app",
-  brokers: ["kafka:9092"],
+  clientId: KAFKA_ID,
+  brokers: [KAFKA],
 });
 
 const producer = kafka.producer();

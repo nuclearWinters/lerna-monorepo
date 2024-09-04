@@ -40,14 +40,14 @@ export const accountLinkIcon = stylex.create({
     left: "0px",
     top: "0px",
     bottom: "0px",
-    width: "4px",
+    width: ".25rem",
     backgroundColor: "rgb(255,90,96)",
   },
 });
 
 export const accountLinkTitle = stylex.create({
   base: {
-    fontSize: "16px",
+    fontSize: "1rem",
   },
   selected: {
     color: "rgb(255,90,96)",

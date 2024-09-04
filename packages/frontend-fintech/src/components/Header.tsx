@@ -30,7 +30,7 @@ const baseRoutesLink = stylex.create({
 
 const baseRoutesIconUser = stylex.create({
   base: {
-    height: "28px",
+    height: "1.75rem",
     margin: "12px 0px 12px 0px",
   },
   logged: {
@@ -69,7 +69,7 @@ const baseRoutesIconLogout = stylex.create({
     margin: "0px 10px",
     cursor: "pointer",
     color: "rgb(62,62,62)",
-    height: "28px",
+    height: "1.75rem",
   },
 });
 

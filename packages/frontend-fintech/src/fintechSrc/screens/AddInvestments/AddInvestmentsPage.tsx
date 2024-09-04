@@ -61,7 +61,7 @@ const basePrestarWrapper = stylex.create({
 
 const baseLoanRowIcon = stylex.create({
   base: {
-    height: "18px",
+    height: "1rem",
     color: "rgb(255,90,96)",
     margin: "auto",
   },
@@ -123,7 +123,7 @@ const baseLoanRowScoreCircle = stylex.create({
     backgroundColor: "rgb(102,141,78)",
     width: "30px",
     height: "30px",
-    fontSize: "10px",
+    fontSize: "0.625rem",
     fontWeight: "bold",
     color: "white",
     textAlign: "center",

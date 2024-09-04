@@ -16,7 +16,7 @@ export const baseSelect = stylex.create({
     borderColor: "rgba(118,118,118,0.3)",
     borderWidth: "1px",
     borderRadius: "8px",
-    fontSize: "20px",
+    fontSize: "1.25rem",
     color: "rgb(62,62,62)",
     padding: "6px 6px",
   },

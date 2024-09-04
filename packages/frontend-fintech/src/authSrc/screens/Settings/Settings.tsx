@@ -38,7 +38,7 @@ import { SettingsSessionRowRevokeSessionMutation } from "./__generated__/Setting
 
 const baseLoanRowIcon = stylex.create({
   base: {
-    height: "18px",
+    height: "1rem",
     color: "rgb(255,90,96)",
     margin: "auto",
   },

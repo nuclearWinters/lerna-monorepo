@@ -13,7 +13,7 @@ interface Props
 
 export const checkboxStyle = stylex.create({
   base: {
-    fontSize: "20px",
+    fontSize: "1.25rem",
     color: "rgb(62,62,62)",
   },
 });

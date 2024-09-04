@@ -1,11 +1,7 @@
 import { MongoClient } from "mongodb";
 import { createClient } from "redis";
 import { main } from "./app";
-import {
-  AccountClient,
-  REDIS,
-  MONGO_DB,
-} from "@lerna-monorepo/backend-utilities";
+import { AccountClient, REDIS, MONGO_DB } from "../../backend-utilities";
 import { credentials } from "@grpc/grpc-js";
 
 Promise.all([

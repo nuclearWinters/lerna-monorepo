@@ -2,9 +2,9 @@ import { MongoClient } from "mongodb";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
 import {
   AccountServer,
-  MONGO_DB,
   AccountService,
 } from "@lerna-monorepo/backend-utilities";
+import { MONGO_DB } from "../../backend-utilities";
 
 MongoClient.connect(MONGO_DB, {}).then(async (mongoClient) => {
   const fintechdb = mongoClient.db("fintech");

@@ -9,7 +9,7 @@ interface Props {
 export const baseTitleAccountValue = stylex.create({
   base: {
     color: "rgb(1,120,221)",
-    fontSize: "22px",
+    fontSize: "1.375rem",
     fontWeight: "bold",
     marginTop: "8px",
   },
@@ -21,7 +21,7 @@ export const baseTitleAccountBox = stylex.create({
     borderBottomStyle: "solid",
     borderBottomWidth: "1px",
     textAlign: "center",
-    fontSize: "26px",
+    fontSize: "1.625rem",
     padding: "14px 0px",
   },
 });

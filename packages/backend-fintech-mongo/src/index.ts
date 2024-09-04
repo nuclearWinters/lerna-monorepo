@@ -2,13 +2,20 @@ import { main } from "./app";
 import { MongoClient } from "mongodb";
 import { credentials } from "@grpc/grpc-js";
 import { Kafka } from "kafkajs";
-import { AuthClient, MONGO_DB, REDIS } from "@lerna-monorepo/backend-utilities";
+import { AuthClient } from "@lerna-monorepo/backend-utilities";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
+import {
+  MONGO_DB,
+  KAFKA,
+  KAFKA_ID,
+  IOREDIS,
+  GRPC_AUTH,
+} from "../../backend-utilities";
 
 const kafka = new Kafka({
-  clientId: "my-app",
-  brokers: ["kafka:9092"],
+  clientId: KAFKA_ID,
+  brokers: [KAFKA],
 });
 
 const producer = kafka.producer();
@@ -16,12 +23,9 @@ const producer = kafka.producer();
 Promise.all([MongoClient.connect(MONGO_DB, {}), producer.connect()]).then(
   async ([client]) => {
     const db = client.db("fintech");
-    const grpcClient = new AuthClient(
-      `grpc-auth-node:1983`,
-      credentials.createInsecure()
-    );
+    const grpcClient = new AuthClient(GRPC_AUTH, credentials.createInsecure());
     const options: RedisOptions = {
-      host: REDIS,
+      host: IOREDIS,
       port: 6379,
       retryStrategy: (times) => {
         return Math.min(times * 50, 2000);

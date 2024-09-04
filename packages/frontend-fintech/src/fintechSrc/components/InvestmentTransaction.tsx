@@ -11,7 +11,7 @@ import { getLongDateName, useTranslation } from "../../utils";
 
 export const baseMyTransactionsIcon = stylex.create({
   base: {
-    height: "18px",
+    height: "1rem",
     color: "rgba(255,90,96,0.5)",
     margin: "0px 4px",
     cursor: "pointer",
@@ -41,7 +41,7 @@ export const baseMyTransactionsBar = stylex.create({
 
 export const baseMyTransactionsStatus = stylex.create({
   base: {
-    fontSize: "18px",
+    fontSize: "1.125rem",
   },
   substraction: {
     color: "#CD5C5C",
@@ -56,7 +56,7 @@ export const baseMyTransactionsQuantity = stylex.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "20px",
+    fontSize: "1.25rem",
     fontWeight: "bold",
   },
   substraction: {
@@ -69,7 +69,7 @@ export const baseMyTransactionsQuantity = stylex.create({
 
 export const baseMyTransactionsDescription = stylex.create({
   base: {
-    fontSize: "16px",
+    fontSize: "1rem",
     padding: "4px 0px",
   },
 });

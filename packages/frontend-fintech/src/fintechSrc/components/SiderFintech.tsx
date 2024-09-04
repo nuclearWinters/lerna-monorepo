@@ -27,7 +27,7 @@ import { useLocation } from "../../react-router-elements/utils";
 
 const baseRoutesIcon = stylex.create({
   base: {
-    height: "28px",
+    height: "1.8rem",
   },
 });
 

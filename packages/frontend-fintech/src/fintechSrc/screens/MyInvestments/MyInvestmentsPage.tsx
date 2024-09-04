@@ -69,7 +69,7 @@ const baseInvestmentRowStatus = stylex.create({
 
 const baseInvestmentRowIcon = stylex.create({
   base: {
-    height: "18px",
+    height: "1rem",
     color: "rgb(90,96,255)",
     minWidth: "60px",
   },

@@ -21,6 +21,7 @@ import {
   AuthClient,
   jwt,
   base64Name,
+  KAFKA_ID,
 } from "@lerna-monorepo/backend-utilities";
 
 describe("AddLends tests", () => {
@@ -57,7 +58,7 @@ describe("AddLends tests", () => {
     const name = startedKafkaContainer.getHost();
     const port = startedKafkaContainer.getMappedPort(9093);
     const kafka = new Kafka({
-      clientId: "my-app",
+      clientId: KAFKA_ID,
       brokers: [`${name}:${port}`],
     });
     admin = kafka.admin();

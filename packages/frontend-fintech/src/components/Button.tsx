@@ -30,7 +30,7 @@ export const button = stylex.create({
     textAlign: "center",
     color: "white",
     fontWeight: "bold",
-    fontSize: "20px",
+    fontSize: "1.25rem",
     alignSelf: "center",
     width: {
       default: "200px",
@@ -39,7 +39,7 @@ export const button = stylex.create({
   },
   auth: {
     color: "rgb(245, 245, 245)",
-    fontSize: "18px",
+    fontSize: "1.125rem",
     paddingTop: "6px",
     paddingBottom: "6px",
     textAlign: "center",

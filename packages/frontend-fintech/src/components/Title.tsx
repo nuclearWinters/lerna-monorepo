@@ -4,7 +4,7 @@ import * as stylex from "@stylexjs/stylex";
 export const baseTitle = stylex.create({
   base: {
     textAlign: "center",
-    fontSize: "26px",
+    fontSize: "1.625rem",
     padding: "14px 0px",
     borderBottomColor: "rgb(203,203,203)",
     borderBottomStyle: "solid",

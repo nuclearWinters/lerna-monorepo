@@ -7,7 +7,7 @@ interface Props {
 
 export const baseLabel = stylex.create({
   base: {
-    fontSize: "14px",
+    fontSize: "0.875rem",
     color: "rgb(62,62,62)",
     padding: "20px 0px 6px 0px",
     margin: "0px 14px",
@@ -16,7 +16,7 @@ export const baseLabel = stylex.create({
 
 export const baseRequired = stylex.create({
   base: {
-    fontSize: "14px",
+    fontSize: "0.875rem",
     color: "red",
   },
 });
