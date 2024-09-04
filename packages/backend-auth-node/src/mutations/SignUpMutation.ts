@@ -5,16 +5,18 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
 } from "graphql";
-import { ACCESSSECRET, NODE_ENV, REFRESHSECRET } from "../config";
 import { Context } from "../types";
 import bcrypt from "bcryptjs";
+import { serialize } from "cookie";
 import {
+  createUser,
+  ACCESSSECRET,
+  NODE_ENV,
+  REFRESHSECRET,
   ACCESS_TOKEN_EXP_NUMBER,
   jwt,
   REFRESH_TOKEN_EXP_NUMBER,
-} from "../utils";
-import { serialize } from "cookie";
-import { createUser } from "@lerna-monorepo/grpc-fintech-node"
+} from "@lerna-monorepo/backend-utilities";
 
 interface Input {
   email: string;
@@ -54,7 +56,16 @@ export const SignUpMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
-    { authusers, req, logins, ip, sessions, deviceName, deviceType, grpcClient }: Context
+    {
+      authusers,
+      req,
+      logins,
+      ip,
+      sessions,
+      deviceName,
+      deviceType,
+      grpcClient,
+    }: Context
   ): Promise<Payload> => {
     try {
       const user = await authusers.findOne({ email });

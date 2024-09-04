@@ -1,9 +1,11 @@
 import { MongoClient } from "mongodb";
-import { MONGO_DB } from "./config";
 import { createClient } from "redis";
-import { REDIS } from "./config";
 import { main } from "./app";
-import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
+import {
+  AccountClient,
+  REDIS,
+  MONGO_DB,
+} from "@lerna-monorepo/backend-utilities";
 import { credentials } from "@grpc/grpc-js";
 
 Promise.all([

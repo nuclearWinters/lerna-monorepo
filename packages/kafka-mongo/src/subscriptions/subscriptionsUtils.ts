@@ -4,7 +4,7 @@ import {
   TransactionMongo,
   UserMongo,
 } from "../types";
-import { base64 } from "../utils";
+import { base64 } from "@lerna-monorepo/backend-utilities";
 import {
   pubsub,
   USER,

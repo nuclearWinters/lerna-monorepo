@@ -4,7 +4,7 @@ import { Context, UserSessions } from "../types";
 import { ObjectId } from "mongodb";
 import { GraphQLSession } from "../AuthUserQuery";
 import { serialize } from "cookie";
-import { NODE_ENV } from "../config";
+import { NODE_ENV } from "@lerna-monorepo/backend-utilities";
 
 interface Input {
   sessionId: string;

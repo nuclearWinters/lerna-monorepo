@@ -1,44 +1,17 @@
 import { Db } from "mongodb";
-import {
-  UserMongo,
-  UserLogins,
-  UserSessions,
-  RedisClientType,
-} from "./types";
-import jsonwebtoken, { SignOptions } from "jsonwebtoken";
-import { DecodeJWT } from "./types";
+import { UserMongo, UserLogins, UserSessions } from "./types";
 //import DeviceDetector from "node-device-detector";
 import { Request } from "graphql-sse";
 import { Http2ServerRequest, Http2ServerResponse } from "http2";
 import { parse } from "cookie";
-import { ACCESSSECRET, REFRESHSECRET } from "./config";
-import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
-
-export const jwt = {
-  decode: (token: string): string | DecodeJWT | null => {
-    const decoded = jsonwebtoken.decode(token);
-    return decoded as string | DecodeJWT | null;
-  },
-  verify: (token: string, password: string): DecodeJWT | undefined => {
-    const decoded = jsonwebtoken.verify(token, password);
-    return decoded as DecodeJWT | undefined;
-  },
-  sign: (
-    data: {
-      id: string;
-      isBorrower: boolean;
-      isLender: boolean;
-      isSupport: boolean;
-      refreshTokenExpireTime: number;
-      exp: number;
-    },
-    secret: string,
-    options?: SignOptions
-  ): string => {
-    const token = jsonwebtoken.sign(data, secret, options);
-    return token;
-  },
-};
+import {
+  AccountClient,
+  ACCESSSECRET,
+  REFRESHSECRET,
+  ACCESS_TOKEN_EXP_NUMBER,
+  jwt,
+  RedisClientType,
+} from "@lerna-monorepo/backend-utilities";
 
 export const getUser = async (
   accessToken: string,
@@ -180,19 +153,4 @@ export const getContextSSE = async (
     req,
     grpcClient,
   };
-};
-
-export const base64Name = (i: string, name: string): string => {
-  return Buffer.from(name + ":" + i, "utf8").toString("base64");
-};
-
-export const REFRESH_TOKEN_EXP_NUMBER = 900;
-export const ACCESS_TOKEN_EXP_NUMBER = 180;
-
-export const base64 = (i: string): string => {
-  return Buffer.from("arrayconnection:" + i, "utf8").toString("base64");
-};
-
-export const unbase64 = (i: string): string => {
-  return Buffer.from(i, "base64").toString("utf8").split(":")[1];
 };

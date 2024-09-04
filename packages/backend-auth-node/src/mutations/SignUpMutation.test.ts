@@ -5,10 +5,12 @@ import { UserMongo } from "../types";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { createClient, RedisClientType } from "redis";
 import TestAgent from "supertest/lib/agent";
-import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
+import {
+  AccountClient,
+  AccountService,
+  AccountServer,
+} from "@lerna-monorepo/backend-utilities";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import { AccountService } from "@lerna-monorepo/grpc-fintech-node/src/proto/account_grpc_pb";
-import { AccountServer } from "@lerna-monorepo/grpc-fintech-node/src/grpc";
 
 describe("SignUpMutation tests", () => {
   let client: MongoClient;
@@ -18,7 +20,7 @@ describe("SignUpMutation tests", () => {
   let request: TestAgent<supertest.Test>;
   let grpcClient: AccountClient;
   let startedRedisContainer: StartedRedisContainer;
-  let grpcServer: Server
+  let grpcServer: Server;
 
   beforeAll(async () => {
     client = await MongoClient.connect(
@@ -29,7 +31,8 @@ describe("SignUpMutation tests", () => {
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
     );
     dbInstanceFintech = client.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ + "-fintech"
+      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
+        "-fintech"
     );
     startedRedisContainer = await new RedisContainer().start();
     redisClient = createClient({
@@ -56,8 +59,8 @@ describe("SignUpMutation tests", () => {
   });
 
   afterAll(async () => {
-    grpcClient.close()
-    grpcServer.forceShutdown()
+    grpcClient.close();
+    grpcServer.forceShutdown();
     await redisClient.disconnect();
     await startedRedisContainer.stop();
     await client.close();
@@ -71,7 +74,7 @@ describe("SignUpMutation tests", () => {
       .trustLocalhost()
       .send({
         extensions: {
-          doc_id: "0780cb2c2df8b07a96bc5e98037d56fa"
+          doc_id: "0780cb2c2df8b07a96bc5e98037d56fa",
         },
         query: "",
         variables: {
@@ -92,7 +95,12 @@ describe("SignUpMutation tests", () => {
     if (!new_user_data) {
       throw new Error("User not found.");
     }
-    const { _id: new_user_oid, password: new_password, id: new_user_id, ...new_user_other_data } = new_user_data
+    const {
+      _id: new_user_oid,
+      password: new_password,
+      id: new_user_id,
+      ...new_user_other_data
+    } = new_user_data;
     expect(ObjectId.isValid(new_user_oid)).toBeTruthy();
     expect(new_password).toBeTruthy();
     expect(new_user_id).toBeTruthy();
@@ -120,7 +128,7 @@ describe("SignUpMutation tests", () => {
       .trustLocalhost()
       .send({
         extensions: {
-          doc_id: "0780cb2c2df8b07a96bc5e98037d56fa"
+          doc_id: "0780cb2c2df8b07a96bc5e98037d56fa",
         },
         query: "",
         variables: {
@@ -142,7 +150,12 @@ describe("SignUpMutation tests", () => {
     if (!new_user_data) {
       throw new Error("User not found.");
     }
-    const { _id: new_user_oid, password: new_password, id: new_user_id, ...new_user_other_data } = new_user_data
+    const {
+      _id: new_user_oid,
+      password: new_password,
+      id: new_user_id,
+      ...new_user_other_data
+    } = new_user_data;
     expect(ObjectId.isValid(new_user_oid)).toBeTruthy();
     expect(new_password).toBeTruthy();
     expect(new_user_id).toBeTruthy();
@@ -170,7 +183,7 @@ describe("SignUpMutation tests", () => {
       .trustLocalhost()
       .send({
         extensions: {
-          doc_id: "0780cb2c2df8b07a96bc5e98037d56fa"
+          doc_id: "0780cb2c2df8b07a96bc5e98037d56fa",
         },
         query: "",
         variables: {
@@ -191,7 +204,12 @@ describe("SignUpMutation tests", () => {
     if (!new_user_data) {
       throw new Error("User not found.");
     }
-    const { _id: new_user_oid, password: new_password, id: new_user_id, ...new_user_other_data } = new_user_data
+    const {
+      _id: new_user_oid,
+      password: new_password,
+      id: new_user_id,
+      ...new_user_other_data
+    } = new_user_data;
     expect(ObjectId.isValid(new_user_oid)).toBeTruthy();
     expect(new_password).toBeTruthy();
     expect(new_user_id).toBeTruthy();

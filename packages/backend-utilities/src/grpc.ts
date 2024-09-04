@@ -1,18 +1,60 @@
+import { ACCESS_TOKEN_EXP_NUMBER, ACCESSSECRET, jwt, REFRESHSECRET } from ".";
+import { AccountClient, IAccountServer } from "./protoAccount/account_grpc_pb";
+import { CreateUserInput, CreateUserPayload } from "./protoAccount/account_pb";
+import { AuthClient, IAuthServer } from "./protoAuth/auth_grpc_pb";
+import { JWTMiddlewareInput, JWTMiddlewarePayload } from "./protoAuth/auth_pb";
 import {
+  Metadata,
   ServerUnaryCall,
   sendUnaryData,
   ServiceError,
-  Metadata,
 } from "@grpc/grpc-js";
-import {
-  JWTMiddlewareInput,
-  JWTMiddlewarePayload,
-} from "./proto/auth_pb";
-import { IAuthServer } from "./proto/auth_grpc_pb";
-import { ACCESS_TOKEN_EXP_NUMBER, jwt } from "./utils";
-import { REFRESHSECRET, ACCESSSECRET } from "./config";
-import { RedisClientType, UserSessions } from "./types";
 import { Db } from "mongodb";
+import { RedisClientType, UserSessions } from "./types";
+
+export const jwtMiddleware = (
+  refreshToken: string,
+  accessToken: string,
+  client: AuthClient
+) =>
+  new Promise<{
+    id: string;
+    isLender: boolean;
+    isBorrower: boolean;
+    isSupport: boolean;
+    validAccessToken: string;
+  }>((resolve) => {
+    const request = new JWTMiddlewareInput();
+    request.setRefreshToken(refreshToken);
+    request.setAccessToken(accessToken);
+
+    const metadata = new Metadata({ waitForReady: true });
+    client.jwtMiddleware(request, metadata, (err, user) => {
+      if (err) {
+        //Should I return error and unauthorized status code?
+        resolve({
+          id: "",
+          isLender: false,
+          isBorrower: false,
+          isSupport: false,
+          validAccessToken: "",
+        });
+      } else {
+        const id = user.getId();
+        const isLender = user.getIsLender();
+        const isBorrower = user.getIsBorrower();
+        const isSupport = user.getIsSupport();
+        const validAccessToken = user.getValidAccessToken();
+        resolve({
+          id,
+          isLender,
+          isBorrower,
+          isSupport,
+          validAccessToken,
+        });
+      }
+    });
+  });
 
 export const AuthServer = (authdb: Db, rdb: RedisClientType): IAuthServer => ({
   async jwtMiddleware(
@@ -85,6 +127,51 @@ export const AuthServer = (authdb: Db, rdb: RedisClientType): IAuthServer => ({
           },
         }
       );
+      callback(null, payload);
+    } catch (e) {
+      const error: ServiceError = {
+        name: "Error Auth Service",
+        message: e instanceof Error ? e.message : "",
+        code: 1,
+        details: "",
+        metadata: new Metadata(),
+      };
+      callback(error, null);
+    }
+  },
+});
+
+export const createUser = (
+  id: string,
+  client: AccountClient
+): Promise<CreateUserPayload> => {
+  return new Promise<CreateUserPayload>((resolve, reject) => {
+    const request = new CreateUserInput();
+    request.setId(id);
+
+    client.createUser(request, (err, user) => {
+      if (err) reject(err);
+      else resolve(user);
+    });
+  });
+};
+
+export const AccountServer = (db: Db): IAccountServer => ({
+  async createUser(
+    call: ServerUnaryCall<CreateUserInput, CreateUserPayload>,
+    callback: sendUnaryData<CreateUserPayload>
+  ): Promise<void> {
+    try {
+      const id = call.request.getId();
+      const payload = new CreateUserPayload();
+      await db.collection("users").insertOne({
+        id,
+        account_available: 0,
+        account_to_be_paid: 0,
+        account_total: 0,
+        account_withheld: 0,
+      });
+      payload.setDone("");
       callback(null, payload);
     } catch (e) {
       const error: ServiceError = {

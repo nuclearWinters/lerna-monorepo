@@ -2,7 +2,7 @@
   "name": "@lerna-monorepo/backend-auth-node",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
-  "main": "src/exports.ts",
+  "main": "src/index.ts",
   "scripts": {
     "start": "ts-node-dev --transpile-only ./src/index.ts",
     "populate": "npx tsc && node ./build/populate.js",
@@ -16,9 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@grpc/grpc-js": "^1.11.1",
-    "@lerna-monorepo/backend-fintech-mongo": "^1.0.1",
-    "@lerna-monorepo/grpc-auth-node": "^1.0.1",
-    "@lerna-monorepo/grpc-fintech-node": "^1.0.1",
+    "@lerna-monorepo/backend-utilities": "^1.0.1",
     "bcryptjs": "^2.4.3",
     "cookie": "^0.6.0",
     "date-fns": "^3.0.6",

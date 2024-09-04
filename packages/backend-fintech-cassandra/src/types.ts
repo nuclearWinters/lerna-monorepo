@@ -124,12 +124,3 @@ export interface InvestmentCassandra {
   paid_already: number;
   to_be_paid: number;
 }
-
-export interface DecodeJWT {
-  id: string;
-  isLender: boolean;
-  isBorrower: boolean;
-  isSupport: boolean;
-  iat: number;
-  exp: number;
-}

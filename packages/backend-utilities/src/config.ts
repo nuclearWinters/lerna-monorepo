@@ -3,3 +3,7 @@ export const REFRESHSECRET = process.env.REFRESHSECRET || "REFRESHSECRET";
 export const ACCESSSECRET = process.env.ACCESSSECRET || "ACCESSSECRET";
 export const REDIS = process.env.REDIS || "redis://redis-fintech:6379";
 export const NODE_ENV = process.env.NODE_ENV || "development";
+export const REFRESH_TOKEN_EXP_NUMBER = 900;
+export const ACCESS_TOKEN_EXP_NUMBER = 180;
+export const KAFKA = process.env.KAFKA || "kafka:9092";
+export const KAFKA_ID = process.env.KAFKA_ID || "my-app";

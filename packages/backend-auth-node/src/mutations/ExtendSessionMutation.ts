@@ -1,12 +1,14 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import { Context } from "../types";
-import { ACCESSSECRET, NODE_ENV, REFRESHSECRET } from "../config";
 import {
   ACCESS_TOKEN_EXP_NUMBER,
   jwt,
   REFRESH_TOKEN_EXP_NUMBER,
-} from "../utils";
+  ACCESSSECRET,
+  NODE_ENV,
+  REFRESHSECRET,
+} from "@lerna-monorepo/backend-utilities";
 import { serialize } from "cookie";
 
 type Payload = {

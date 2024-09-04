@@ -1,6 +1,5 @@
+import { UUID } from "@lerna-monorepo/backend-utilities";
 import { ObjectId } from "mongodb";
-
-export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
 export interface UserMongo {
   account_available: number;

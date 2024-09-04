@@ -2,28 +2,25 @@ import { main } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { InvestmentMongo, UserMongo } from "./types";
-import { base64Name, jwt } from "./utils";
 import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import {
-  AuthClient,
-  AuthServer,
-  AuthService,
-} from "@lerna-monorepo/grpc-auth-node";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import { RedisClientType } from "@lerna-monorepo/grpc-auth-node/src/types";
 import { Producer } from "kafkajs";
 import { createClient } from "redis";
+import { serialize } from "cookie";
 import {
-  ACCESS_TOKEN_EXP_NUMBER,
+  RedisClientType,
   REFRESH_TOKEN_EXP_NUMBER,
-} from "@lerna-monorepo/grpc-auth-node/src/utils";
-import {
+  ACCESS_TOKEN_EXP_NUMBER,
+  AuthService,
+  AuthServer,
   ACCESSSECRET,
   REFRESHSECRET,
-} from "@lerna-monorepo/grpc-auth-node/src/config";
-import { serialize } from "cookie";
+  AuthClient,
+  jwt,
+  base64Name,
+} from "@lerna-monorepo/backend-utilities";
 
 describe("QueryInvestments tests", () => {
   let mongoClient: MongoClient;

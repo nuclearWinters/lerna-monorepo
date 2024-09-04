@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { MONGO_DB } from "./config";
+import { MONGO_DB } from "@lerna-monorepo/backend-utilities";
 import {
   InvestmentMongo,
   LoanMongo,

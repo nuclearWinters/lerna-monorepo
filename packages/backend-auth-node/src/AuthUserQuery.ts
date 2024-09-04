@@ -4,8 +4,6 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLBoolean,
-  GraphQLScalarType,
-  Kind,
   GraphQLFloat,
 } from "graphql";
 import {
@@ -20,8 +18,13 @@ import {
 } from "graphql-relay";
 import { Filter } from "mongodb";
 import { Languages } from "./mutations/SignUpMutation";
-import { Context, UserLogins, UserMongo, UserSessions, UUID } from "./types";
-import { base64, unbase64 } from "./utils";
+import { Context, UserLogins, UserMongo, UserSessions } from "./types";
+import {
+  base64,
+  DateScalarType,
+  unbase64,
+  UUID,
+} from "@lerna-monorepo/backend-utilities";
 
 const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   async (globalId, { authusers }) => {
@@ -35,26 +38,6 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   },
   (obj: { type: string }) => obj.type
 );
-
-export const DateScalarType = new GraphQLScalarType({
-  name: "Date",
-  serialize: (value) => {
-    if (value instanceof Date) {
-      return value.getTime();
-    }
-  },
-  parseValue: (value) => {
-    if (typeof value === "number") {
-      return new Date(value);
-    }
-  },
-  parseLiteral(ast) {
-    if (ast.kind === Kind.INT) {
-      return new Date(parseInt(ast.value, 10));
-    }
-    return null;
-  },
-});
 
 export const GraphQLSession = new GraphQLObjectType<UserSessions>({
   name: "Session",

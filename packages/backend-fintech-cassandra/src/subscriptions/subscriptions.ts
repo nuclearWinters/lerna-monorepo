@@ -20,8 +20,7 @@ import {
   LoanCassandra,
   UserCassandra,
 } from "../types";
-import { unbase64 } from "../utils";
-import { REDIS } from "../config";
+import { REDIS, unbase64 } from "@lerna-monorepo/backend-utilities";
 
 export const options: RedisOptions = {
   host: REDIS,

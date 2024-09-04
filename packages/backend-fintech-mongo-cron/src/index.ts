@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { KAFKA, KAFKA_ID, MONGO_DB } from "./config";
+import { KAFKA, KAFKA_ID, MONGO_DB } from "@lerna-monorepo/backend-utilities";
 import { checkEveryDay, checkEveryMonth } from "./cronJobs";
 import { dayFunction } from "./cronJobDay";
 import { monthFunction } from "./cronJobMonth";

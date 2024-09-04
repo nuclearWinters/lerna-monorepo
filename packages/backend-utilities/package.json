@@ -1,5 +1,5 @@
 {
-  "name": "@lerna-monorepo/grpc-auth-node",
+  "name": "@lerna-monorepo/backend-utilities",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
   "main": "src/index.ts",
@@ -16,10 +16,14 @@
   "license": "ISC",
   "dependencies": {
     "@grpc/grpc-js": "^1.11.1",
+    "bcryptjs": "^2.4.3",
+    "cookie": "^0.6.0",
     "date-fns": "^3.0.6",
+    "graphql": "^16.5.0",
+    "graphql-relay": "^0.10.2",
+    "graphql-sse": "^2.5.3",
     "jsonwebtoken": "^9.0.0",
-    "redis": "^4.6.15",
-    "@lerna-monorepo/backend-utilities": "^1.0.1"
+    "redis": "^4.6.15"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",
@@ -27,7 +31,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@eslint/js": "^9.9.1",
     "@shelf/jest-mongodb": "^4.3.2",
-    "@testcontainers/redis": "^10.10.4",
+    "@testcontainers/redis": "^10.11.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/cookie": "^0.6.0",
     "@types/cookie-parser": "^1.4.3",
@@ -52,7 +56,8 @@
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [
       "eslint --cache --fix",
-      "prettier --write"
+      "prettier --write",
+      "jest --findRelatedTests --bail --passWithNoTests"
     ]
   }
 }

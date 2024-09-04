@@ -5,8 +5,7 @@ import { UserMongo } from "../types";
 import { createClient, RedisClientType } from "redis";
 import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
-import { jwt } from "../utils";
+import { AccountClient, jwt } from "@lerna-monorepo/backend-utilities";
 import { serialize } from "cookie";
 
 describe("UpdateUser tests", () => {
@@ -72,7 +71,7 @@ describe("UpdateUser tests", () => {
         refreshTokenExpireTime,
         exp: refreshTokenExpireTime,
       },
-      "REFRESHSECRET",
+      "REFRESHSECRET"
     );
     const accessToken = jwt.sign(
       {
@@ -83,7 +82,7 @@ describe("UpdateUser tests", () => {
         refreshTokenExpireTime,
         exp: accessTokenExpireTime,
       },
-      "ACCESSSECRET",
+      "ACCESSSECRET"
     );
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request

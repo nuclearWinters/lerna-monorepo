@@ -6,7 +6,7 @@ import { UserMongo } from "../types";
 import { createClient, RedisClientType } from "redis";
 import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
+import { AccountClient } from "@lerna-monorepo/backend-utilities";
 
 describe("SignInMutation tests", () => {
   let client: MongoClient;
@@ -65,7 +65,7 @@ describe("SignInMutation tests", () => {
       .trustLocalhost()
       .send({
         extensions: {
-          doc_id: "95e2b3e28198459a859cd2b7075ac533"
+          doc_id: "95e2b3e28198459a859cd2b7075ac533",
         },
         query: "",
         variables: {
@@ -89,7 +89,7 @@ describe("SignInMutation tests", () => {
       .trustLocalhost()
       .send({
         extensions: {
-          doc_id: "95e2b3e28198459a859cd2b7075ac533"
+          doc_id: "95e2b3e28198459a859cd2b7075ac533",
         },
         query: "",
         variables: {
@@ -113,7 +113,7 @@ describe("SignInMutation tests", () => {
       .trustLocalhost()
       .send({
         extensions: {
-          doc_id: "95e2b3e28198459a859cd2b7075ac533"
+          doc_id: "95e2b3e28198459a859cd2b7075ac533",
         },
         query: "",
         variables: {

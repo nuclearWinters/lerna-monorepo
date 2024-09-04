@@ -9,11 +9,13 @@ import { LogOutMutation } from "./mutations/LogOutMutation";
 import { RevokeSessionMutation } from "./mutations/RevokeSessionMutation";
 import { createSecureServer } from "http2";
 import { createHandler } from "graphql-sse/lib/use/http2";
-import { RedisClientType } from "./types";
 import { Db } from "mongodb";
 import fs from "fs";
 import queryMap from "./queryMapAuth.json";
-import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
+import {
+  AccountClient,
+  RedisClientType,
+} from "@lerna-monorepo/backend-utilities";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",

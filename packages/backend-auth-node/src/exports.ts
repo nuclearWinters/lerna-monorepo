@@ -1,1 +1,0 @@
-export { DateScalarType } from "./AuthUserQuery";

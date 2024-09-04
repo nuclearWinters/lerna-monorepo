@@ -2,24 +2,25 @@ import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { LoanMongo, UserMongo } from "../types";
-import { jwt } from "../utils";
 import { Producer } from "kafkajs";
-import { AuthClient } from "@lerna-monorepo/grpc-auth-node";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
 import TestAgent from "supertest/lib/agent";
-import { REFRESH_TOKEN_EXP_NUMBER } from "@lerna-monorepo/grpc-auth-node/src/utils";
-import { ACCESS_TOKEN_EXP_NUMBER } from "@lerna-monorepo/backend-auth-node/src/utils";
 import { serialize } from "cookie";
-import { AuthService, AuthServer } from "@lerna-monorepo/grpc-auth-node";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import { RedisClientType } from "@lerna-monorepo/grpc-auth-node/src/types";
 import { createClient } from "redis";
 import {
+  RedisClientType,
+  REFRESH_TOKEN_EXP_NUMBER,
+  ACCESS_TOKEN_EXP_NUMBER,
+  AuthService,
+  AuthServer,
   ACCESSSECRET,
   REFRESHSECRET,
-} from "@lerna-monorepo/grpc-auth-node/src/config";
+  AuthClient,
+  jwt,
+} from "@lerna-monorepo/backend-utilities";
 
 describe("AddLoan tests", () => {
   let mongoClient: MongoClient;

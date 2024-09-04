@@ -1,27 +1,9 @@
-import { ObjectId, Collection } from "mongodb";
-import { Request } from "graphql-sse";
-import { Http2ServerRequest, Http2ServerResponse } from "http2";
-import {
-  AccountClient,
-  RedisClientType,
-  UUID,
-} from "@lerna-monorepo/backend-utilities";
+import { ObjectId } from "mongodb";
+import { createClient } from "redis";
 
-export interface Context {
-  authusers: Collection<UserMongo>;
-  logins: Collection<UserLogins>;
-  sessions: Collection<UserSessions>;
-  rdb: RedisClientType;
-  accessToken?: string;
-  refreshToken?: string;
-  validAccessToken?: string;
-  id?: UUID;
-  ip?: string;
-  deviceType: string;
-  deviceName: string;
-  req: Request<Http2ServerRequest, { res: Http2ServerResponse }>;
-  grpcClient: AccountClient;
-}
+export type RedisClientType = ReturnType<typeof createClient>;
+
+export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
 export interface UserLogins {
   _id?: ObjectId;
@@ -58,4 +40,14 @@ export interface UserMongo {
   clabe: string;
   mobile: string;
   id: UUID;
+}
+
+export interface DecodeJWT {
+  id: UUID;
+  isLender: boolean;
+  isBorrower: boolean;
+  isSupport: boolean;
+  iat: number;
+  exp: number;
+  refreshTokenExpireTime: number;
 }

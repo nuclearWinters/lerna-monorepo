@@ -22,7 +22,7 @@ import { Producer } from "kafkajs";
 import { createHandler } from "graphql-sse/lib/use/http2";
 import fs from "fs";
 import queryMap from "./queryMap.json";
-import { AuthClient } from "@lerna-monorepo/grpc-auth-node";
+import { AuthClient } from "@lerna-monorepo/backend-utilities";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 
 const Query = new GraphQLObjectType({

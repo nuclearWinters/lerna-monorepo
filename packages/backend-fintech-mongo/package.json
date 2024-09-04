@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@grpc/grpc-js": "^1.8.14",
-    "@lerna-monorepo/backend-auth-node": "file:../backend-auth-node",
+    "@lerna-monorepo/backend-utilities": "^1.0.1",
     "date-fns": "^3.0.6",
     "graphql": "^16.5.0",
     "graphql-redis-subscriptions": "^2.6.1",

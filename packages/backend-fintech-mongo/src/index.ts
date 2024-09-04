@@ -1,9 +1,8 @@
 import { main } from "./app";
 import { MongoClient } from "mongodb";
-import { MONGO_DB, REDIS } from "./config";
 import { credentials } from "@grpc/grpc-js";
 import { Kafka } from "kafkajs";
-import { AuthClient } from "@lerna-monorepo/grpc-auth-node";
+import { AuthClient, MONGO_DB, REDIS } from "@lerna-monorepo/backend-utilities";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
 

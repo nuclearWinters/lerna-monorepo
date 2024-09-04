@@ -1,7 +1,7 @@
 import { GraphQLID, GraphQLList, GraphQLNonNull } from "graphql";
 import { GraphQLScheduledPayments } from "./Nodes";
 import { Context, ScheduledPaymentsMongo } from "./types";
-import { unbase64 } from "./utils";
+import { unbase64 } from "@lerna-monorepo/backend-utilities";
 import { ObjectId } from "mongodb";
 
 const QueryScheduledPayments = {

@@ -1,8 +1,7 @@
+import { UUID } from "@lerna-monorepo/backend-utilities";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Producer } from "kafkajs";
 import { ObjectId, Collection } from "mongodb";
-
-export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
 export interface Context {
   users: Collection<UserMongo>;
@@ -174,13 +173,4 @@ export interface InvestmentMongoRedis {
   interest_to_earn: number;
   paid_already: number;
   to_be_paid: number;
-}
-
-export interface DecodeJWT {
-  id: string;
-  isLender: boolean;
-  isBorrower: boolean;
-  isSupport: boolean;
-  iat: number;
-  exp: number;
 }

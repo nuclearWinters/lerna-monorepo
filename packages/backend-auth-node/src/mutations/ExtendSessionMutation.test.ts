@@ -3,12 +3,11 @@ import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { UserMongo } from "../types";
-import { jwt } from "../utils";
 import TestAgent from "supertest/lib/agent";
 import { RedisClientType } from "redis";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { createClient } from "redis";
-import { AccountClient } from "@lerna-monorepo/grpc-fintech-node";
+import { AccountClient, jwt } from "@lerna-monorepo/backend-utilities";
 import { parse, serialize } from "cookie";
 
 describe("ExtendSessionMutation tests", () => {
@@ -74,7 +73,7 @@ describe("ExtendSessionMutation tests", () => {
         refreshTokenExpireTime,
         exp: refreshTokenExpireTime,
       },
-      "REFRESHSECRET",
+      "REFRESHSECRET"
     );
     const accessToken = jwt.sign(
       {
@@ -85,7 +84,7 @@ describe("ExtendSessionMutation tests", () => {
         refreshTokenExpireTime,
         exp: accessTokenExpireTime,
       },
-      "ACCESSSECRET",
+      "ACCESSSECRET"
     );
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
@@ -93,7 +92,7 @@ describe("ExtendSessionMutation tests", () => {
       .trustLocalhost()
       .send({
         extensions: {
-          doc_id: "4e65856e4f21af21cfd702bbdea624e4"
+          doc_id: "4e65856e4f21af21cfd702bbdea624e4",
         },
         query: "",
         variables: {
@@ -103,16 +102,13 @@ describe("ExtendSessionMutation tests", () => {
       })
       .set("Accept", "text/event-stream")
       .set("Authorization", accessToken)
-      .set(
-        "Cookie",
-        requestCookies,
-      );
+      .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[3].replace("data: ", ""));
     expect(data.data.extendSession.error).toBeFalsy();
-    const responseCookies = response.headers["set-cookie"][0]
+    const responseCookies = response.headers["set-cookie"][0];
     expect(responseCookies).toBeTruthy();
-    const parsedCookies = parse(responseCookies)
+    const parsedCookies = parse(responseCookies);
     expect(parsedCookies.refreshToken).not.toBe(refreshToken);
   });
 
@@ -122,7 +118,7 @@ describe("ExtendSessionMutation tests", () => {
       .trustLocalhost()
       .send({
         extensions: {
-          doc_id: "4e65856e4f21af21cfd702bbdea624e4"
+          doc_id: "4e65856e4f21af21cfd702bbdea624e4",
         },
         query: `mutation extendSessionMutation($input: ExtendSessionInput!) {
           extendSession(input: $input) {
