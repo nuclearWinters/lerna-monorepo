@@ -36,12 +36,12 @@ import {
   TransactionInvestMongoType,
   ScheduledPaymentsMongo,
   ScheduledPaymentsStatus,
-  UUID,
 } from "./types";
 import {
   DateScalarType,
   base64,
   unbase64,
+  UUID,
 } from "@lerna-monorepo/backend-utilities";
 
 interface ArgsInvestments extends ConnectionArguments {

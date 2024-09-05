@@ -9,7 +9,7 @@ import {
   useRefetchableFragment,
   useSubscription,
 } from "react-relay/hooks";
-import { AddInvestmentsMutation } from "./__generated__/AddInvestmentsMutation.graphql";
+import { AddInvestmentsPageMutation } from "./__generated__/AddInvestmentsPageMutation.graphql";
 import { Spinner } from "../../../components/Spinner";
 import { CustomButton } from "../../../components/CustomButton";
 import { Main } from "../../../components/Main";
@@ -367,8 +367,8 @@ export const AddInvestmentsPage: FC<Props> = (props) => {
   const { t } = useTranslation();
   const [reset, setReset] = useState(0);
   const { user } = usePreloadedQuery(addInvestmentFragment, props.fintechQuery);
-  const [commit, isInFlight] = useMutation<AddInvestmentsMutation>(graphql`
-    mutation AddInvestmentsMutation($input: AddLendsInput!) {
+  const [commit, isInFlight] = useMutation<AddInvestmentsPageMutation>(graphql`
+    mutation AddInvestmentsPageMutation($input: AddLendsInput!) {
       addLends(input: $input) {
         error
       }

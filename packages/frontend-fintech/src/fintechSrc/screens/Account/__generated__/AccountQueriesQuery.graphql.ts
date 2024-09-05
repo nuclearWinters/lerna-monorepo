@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4fef15b51470c6950273b04606b885a2>>
+ * @generated SignedSource<<e93638c692c4cd07fe1760dc9463b5dc>>
  * @relayHash aa6ec069076aa222be921f4b6568a17c
  * @lightSyntaxTransform
  * @nogrep
@@ -112,7 +112,7 @@ return {
     ]
   },
   "params": {
-    "id": "aa6ec069076aa222be921f4b6568a17c",
+    "id": "aa6ec069076aa222be921f4b6568a17c\r",
     "metadata": {},
     "name": "AccountQueriesQuery",
     "operationKind": "query",
@@ -123,6 +123,7 @@ return {
 
 (node as any).hash = "6cc7b20c1216248722cb5cad631cfee6";
 
-require('relay-runtime').PreloadableQueryRegistry.set(node.params.id, node);
+import { PreloadableQueryRegistry } from 'relay-runtime';
+PreloadableQueryRegistry.set(node.params.id, node);
 
 export default node;

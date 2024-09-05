@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import {
   EntryPointComponent,
   RelayEnvironmentProvider,

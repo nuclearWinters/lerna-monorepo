@@ -3,7 +3,6 @@ import { Spinner } from "../../../components/Spinner";
 import { ChangeEvent, FC, Fragment, useState } from "react";
 import {
   EntryPointComponent,
-  EntryPointProps,
   graphql,
   useMutation,
   usePaginationFragment,

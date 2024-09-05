@@ -1,8 +1,8 @@
-import { LanguageContext } from "../App";
 import { resources } from "../i18n";
 import { useContext } from "react";
 import { graphql, useMutation } from "react-relay";
 import { utilsAuthLogOutMutation } from "./__generated__/utilsAuthLogOutMutation.graphql";
+import { LanguageContext } from "../utils";
 
 export interface Decode {
   id: string;

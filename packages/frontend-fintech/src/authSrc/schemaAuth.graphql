@@ -1,0 +1,168 @@
+directive @defer on FRAGMENT_SPREAD | INLINE_FRAGMENT
+directive @stream on FIELD
+
+input RevokeSessionInput {
+  sessionId: String!
+  clientMutationId: String
+}
+
+type RevokeSessionPayload {
+  error: String!
+  clientMutationId: String
+  session: Session
+}
+
+input SignInInput {
+  password: String!
+  email: String!
+  clientMutationId: String
+}
+
+type SignInPayload {
+  error: String!
+  clientMutationId: String
+}
+
+input SignUpInput {
+  password: String!
+  email: String!
+  clientMutationId: String
+  isLender: Boolean!
+  language: Languages!
+}
+
+type SignUpPayload {
+  error: String!
+  clientMutationId: String
+}
+
+input LogOutInput {
+  clientMutationId: String
+}
+
+type LogOutPayload {
+  error: String!
+  clientMutationId: String
+}
+
+input ExtendSessionInput {
+  clientMutationId: String
+}
+
+type ExtendSessionPayload {
+  error: String!
+  clientMutationId: String
+}
+
+input UpdateUserInput {
+  clientMutationId: String
+  name: String!
+  apellidoPaterno: String!
+  apellidoMaterno: String!
+  RFC: String!
+  CURP: String!
+  clabe: String!
+  mobile: String!
+  email: String!
+  language: Languages!
+}
+
+type UpdateUserPayload {
+  error: String!
+  clientMutationId: String
+  authUser: AuthUser!
+}
+
+type Mutation {
+  signIn(input: SignInInput!): SignInPayload!
+  signUp(input: SignUpInput!): SignUpPayload!
+  updateUser(input: UpdateUserInput!): UpdateUserPayload!
+  extendSession(input: ExtendSessionInput!): ExtendSessionPayload!
+  logOut(input: LogOutInput!): LogOutPayload!
+  revokeSession(input: RevokeSessionInput!): RevokeSessionPayload!
+}
+
+type Query {
+  authUser: AuthUser
+  node(id: ID!): Node
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+enum Languages {
+  EN
+  ES
+}
+
+type Session implements Node {
+  id: ID!
+  applicationName: String!
+  type: String!
+  deviceName: String!
+  address: String!
+  lastTimeAccessed: Date!
+  userId: String!
+  expirationDate: Date!
+}
+
+type SessionEdge {
+  node: Session
+  cursor: String!
+}
+
+type SessionsConnection {
+  pageInfo: PageInfo!
+  edges: [SessionEdge]
+}
+
+type Login implements Node {
+  id: ID!
+  applicationName: String!
+  time: Date!
+  address: String!
+  userId: String!
+}
+
+type LoginEdge {
+  node: Login
+  cursor: String!
+}
+
+type LoginsConnection {
+  pageInfo: PageInfo!
+  edges: [LoginEdge]
+}
+
+type AuthUser implements Node {
+  id: ID!
+  name: String!
+  apellidoPaterno: String!
+  apellidoMaterno: String!
+  RFC: String!
+  CURP: String!
+  clabe: String!
+  mobile: String!
+  isLender: Boolean!
+  isBorrower: Boolean!
+  isSupport: Boolean!
+  language: Languages!
+  email: String!
+  logins(after: String, first: Int, reset: Float): LoginsConnection
+  sessions(after: String, first: Int, reset: Float): SessionsConnection
+}
+
+scalar Date

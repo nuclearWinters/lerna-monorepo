@@ -1,7 +1,12 @@
 import { MongoClient } from "mongodb";
 import { createClient } from "redis";
 import { main } from "./app";
-import { AccountClient, REDIS, MONGO_DB } from "../../backend-utilities";
+import {
+  AccountClient,
+  REDIS,
+  MONGO_DB,
+  GRPC_FINTECH,
+} from "../../backend-utilities";
 import { credentials } from "@grpc/grpc-js";
 
 Promise.all([
@@ -12,7 +17,7 @@ Promise.all([
 ]).then(async ([mongoClient, redisClient]) => {
   const authdb = mongoClient.db("auth");
   const grpcClient = new AccountClient(
-    `grpc-fintech-node:1984`,
+    GRPC_FINTECH,
     credentials.createInsecure()
   );
   const serverHTTP2 = await main(authdb, redisClient, grpcClient);

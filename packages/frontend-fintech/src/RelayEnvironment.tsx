@@ -149,10 +149,13 @@ function registerModuleLoaders(modules: string[]) {
     if (module.endsWith("$normalization.graphql")) {
       registerLoader(
         module,
-        () => import(`./fintechSrc/components/__generated__/${module}`)
+        () => import(`./fintechSrc/components/__generated__/${module}.ts`)
       );
     } else {
-      registerLoader(module, () => import(`./fintechSrc/components/${module}`));
+      registerLoader(
+        module,
+        () => import(`./fintechSrc/components/${module}.tsx`)
+      );
     }
   });
 }

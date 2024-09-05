@@ -1,11 +1,4 @@
-import {
-  FC,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { ReactNode, useEffect, useRef, useState, useTransition } from "react";
 import { matchPath, register, unregister } from "./utils";
 import {
   EntryPoint,

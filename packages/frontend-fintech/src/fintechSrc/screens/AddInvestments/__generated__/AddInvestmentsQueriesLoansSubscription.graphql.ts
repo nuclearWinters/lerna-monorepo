@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<dc838dfa07a094a606f37d553ea5c5e5>>
+ * @generated SignedSource<<50494373fbcf0bf4a4358867bbfa84cc>>
  * @relayHash c8d2db1404642d51ff2ab22c8b8f98e1
  * @lightSyntaxTransform
  * @nogrep
@@ -191,7 +191,7 @@ return {
     ]
   },
   "params": {
-    "id": "c8d2db1404642d51ff2ab22c8b8f98e1",
+    "id": "c8d2db1404642d51ff2ab22c8b8f98e1\r",
     "metadata": {},
     "name": "AddInvestmentsQueriesLoansSubscription",
     "operationKind": "subscription",

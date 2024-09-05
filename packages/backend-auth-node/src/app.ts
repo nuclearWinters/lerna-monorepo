@@ -73,7 +73,11 @@ const main = async (
     },
     async (req, res) => {
       try {
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:8000");
+        const origins = ["http://localhost:8000", "http://localhost:5173"];
+        const origin = req.headers.origin;
+        if (origin && origins.includes(origin)) {
+          res.setHeader("Access-Control-Allow-Origin", origin);
+        }
         res.setHeader(
           "Access-Control-Allow-Methods",
           "GET, POST, PUT, PATCH, DELETE, OPTIONS"
@@ -90,7 +94,7 @@ const main = async (
         } else if (req?.url?.startsWith("/graphql")) {
           await handler(req, res);
         }
-      } catch (err) {
+      } catch {
         res.writeHead(500).end();
       }
     }

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<eab90ba1bee4523f405578e063951063>>
+ * @generated SignedSource<<01141caefbd1e685a736665a7933dfa3>>
  * @relayHash 95e917f2d6bae2e6488eedb4b1649b47
  * @lightSyntaxTransform
  * @nogrep
@@ -246,7 +246,7 @@ return {
     ]
   },
   "params": {
-    "id": "95e917f2d6bae2e6488eedb4b1649b47",
+    "id": "95e917f2d6bae2e6488eedb4b1649b47\r",
     "metadata": {},
     "name": "ApproveLoanQueriesQuery",
     "operationKind": "query",
@@ -257,6 +257,7 @@ return {
 
 (node as any).hash = "c4e8291c66f824d110e53d27651e836d";
 
-require('relay-runtime').PreloadableQueryRegistry.set(node.params.id, node);
+import { PreloadableQueryRegistry } from 'relay-runtime';
+PreloadableQueryRegistry.set(node.params.id, node);
 
 export default node;

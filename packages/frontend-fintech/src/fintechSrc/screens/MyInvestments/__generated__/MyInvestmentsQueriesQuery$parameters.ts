@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d5da7b4d85a6a2fa69c30d93d1761b17>>
+ * @generated SignedSource<<cd0344ed0b6c688a4e500a2b9786baa8>>
  * @relayHash f107789267f87404db9a5dcc1324db00
  * @lightSyntaxTransform
  * @nogrep
@@ -11,18 +11,18 @@
 
 // @relayRequestID f107789267f87404db9a5dcc1324db00
 
-import { PreloadableConcreteRequest } from "relay-runtime";
-import { MyInvestmentsQueriesQuery } from "./MyInvestmentsQueriesQuery.graphql";
+import { PreloadableConcreteRequest } from 'relay-runtime';
+import { MyInvestmentsQueriesQuery } from './MyInvestmentsQueriesQuery.graphql';
 
 const node: PreloadableConcreteRequest<MyInvestmentsQueriesQuery> = {
-  kind: "PreloadableConcreteRequest",
-  params: {
-    id: "f107789267f87404db9a5dcc1324db00",
-    metadata: {},
-    name: "MyInvestmentsQueriesQuery",
-    operationKind: "query",
-    text: null,
-  },
+  "kind": "PreloadableConcreteRequest",
+  "params": {
+    "id": "f107789267f87404db9a5dcc1324db00\r",
+    "metadata": {},
+    "name": "MyInvestmentsQueriesQuery",
+    "operationKind": "query",
+    "text": null
+  }
 };
 
 export default node;

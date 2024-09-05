@@ -12,7 +12,7 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
     healthcheck:
       test: kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 5
 
@@ -113,10 +113,10 @@ services:
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
-    working_dir: /usr/src/service/packages/frontend-fintech
-    command: ["npm", "run", "start"]
+    working_dir: /usr/src/service/packages/frontend-fintech-vite
+    command: ["npm", "run", "dev"]
     ports:
-      - "8000:8000"
+      - "5173:5173"
     environment:
       WDS_SOCKET_HOST: 127.0.0.1
       CHOKIDAR_USEPOLLING: true
@@ -133,6 +133,11 @@ services:
     logging:
       driver: none
     entrypoint: ["/usr/bin/mongod", "--bind_ip_all"]
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   redis-fintech:
     container_name: redis-fintech
