@@ -6,7 +6,13 @@ import svgr from "vite-plugin-svgr";
 import commonjs from "vite-plugin-commonjs";
 
 export default defineConfig({
-  plugins: [relay, react(), stylex(), svgr(), commonjs()],
+  plugins: [
+    relay,
+    react(),
+    stylex(),
+    svgr({ include: "**/*.svg" }),
+    commonjs(),
+  ],
   build: {
     commonjsOptions: { transformMixedEsModules: true },
   },

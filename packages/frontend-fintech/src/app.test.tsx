@@ -3,5 +3,3 @@ describe("app frontend tests", () => {
     expect(true).toBeTruthy();
   });
 });
-
-export const variable = "";

@@ -27,7 +27,7 @@ services:
       kafka:
         condition: service_healthy
       mongo-fintech:
-        condition: service_started
+        condition: service_healthy
     deploy:
       mode: replicated
       replicas: 2
@@ -44,7 +44,7 @@ services:
       - "4000:4000"
     depends_on:
       mongo-fintech:
-        condition: service_started
+        condition: service_healthy
       kafka:
         condition: service_healthy
 
@@ -58,7 +58,7 @@ services:
     command: ["npm", "run", "start"]
     depends_on:
       mongo-fintech:
-        condition: service_started
+        condition: service_healthy
       kafka:
         condition: service_healthy
 
@@ -76,7 +76,7 @@ services:
       redis-fintech:
         condition: service_started
       mongo-fintech:
-        condition: service_started
+        condition: service_healthy
 
   grpc-auth-node:
     container_name: grpc-auth-node
@@ -92,7 +92,7 @@ services:
       redis-fintech:
         condition: service_started
       mongo-fintech:
-        condition: service_started
+        condition: service_healthy
 
   grpc-fintech-node:
     container_name: grpc-fintech-node
@@ -105,7 +105,8 @@ services:
     ports:
       - "1984:1984"
     depends_on:
-      - mongo-fintech
+      mongo-fintech:
+        condition: service_healthy
 
   frontend-fintech:
     container_name: frontend-fintech

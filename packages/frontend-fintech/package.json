@@ -7,7 +7,6 @@
     "start": "webpack serve --config webpack.config.js --env env=dev",
     "build": "webpack --config webpack.config.js --env env=prod && node copyPublicAssets.js",
     "analyze": "webpack --config webpack.config.js --env env=analyzer",
-    "serve": "",
     "pcm": "lint-staged",
     "test": "jest --bail",
     "relayAuth": "relay-compiler ./relayAuth.config.json",
