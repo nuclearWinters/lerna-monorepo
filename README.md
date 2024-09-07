@@ -8,7 +8,7 @@ To handle GraphQL Subscriptions the application is using Server-Sent Events (to 
 
 For Authentication and Authorization we are using JSON Web Tokens with a Refresh Token implementation. Microservices uses gRPC to communicate and verify tokens.
 
-Finally we are testing the project with Jest: We test Kafka events by using the *testcontainers* library, we test MongoDB by using the *@shelf/jest-mongodb* library and GraphQL microservices by using the *supertest* library.
+Finally we are testing the project with Jest: We test Kafka events by using the _testcontainers_ library, we test MongoDB by using the _@shelf/jest-mongodb_ library and GraphQL microservices by using the _supertest_ library.
 
 (I'm experimenting with Rust and Cassandra in other folders.)
 
@@ -72,4 +72,3 @@ To set up the project locally:
 7. Run `npm run populate` in `backend-auth-node` and `backend-fintech-mongo` root folders (this will populate the mongo database with data)
 
 8. Go to `http://localhost:8000` to see the application
-
