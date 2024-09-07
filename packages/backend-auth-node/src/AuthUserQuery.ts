@@ -214,7 +214,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
               hasNextPage: edgesMapped.length > (first || 0),
             },
           };
-        } catch (e) {
+        } catch {
           return connectionFromArray([], { first, after });
         }
       },
@@ -269,7 +269,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
               hasNextPage: edgesMapped.length > (first || 0),
             },
           };
-        } catch (e) {
+        } catch {
           return connectionFromArray([], { first, after });
         }
       },
