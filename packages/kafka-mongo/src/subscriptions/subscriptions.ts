@@ -1,6 +1,6 @@
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import Redis, { RedisOptions } from "ioredis";
-import { IOREDIS } from "../../../backend-utilities";
+import { IOREDIS } from "@lerna-monorepo/backend-utilities";
 
 export const options: RedisOptions = {
   host: IOREDIS,

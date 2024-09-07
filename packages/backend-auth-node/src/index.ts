@@ -6,7 +6,7 @@ import {
   REDIS,
   MONGO_DB,
   GRPC_FINTECH,
-} from "../../backend-utilities";
+} from "@lerna-monorepo/backend-utilities";
 import { credentials } from "@grpc/grpc-js";
 
 Promise.all([

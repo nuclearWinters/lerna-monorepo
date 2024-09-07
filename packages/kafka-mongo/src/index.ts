@@ -8,7 +8,7 @@ import {
 } from "./types";
 import { runKafkaConsumer } from "./kafka";
 import { Kafka } from "kafkajs";
-import { MONGO_DB, KAFKA, KAFKA_ID } from "../../backend-utilities/src/config";
+import { MONGO_DB, KAFKA, KAFKA_ID } from "@lerna-monorepo/backend-utilities";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,

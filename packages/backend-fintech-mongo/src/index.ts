@@ -2,7 +2,6 @@ import { main } from "./app";
 import { MongoClient } from "mongodb";
 import { credentials } from "@grpc/grpc-js";
 import { Kafka } from "kafkajs";
-import { AuthClient } from "@lerna-monorepo/backend-utilities";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
 import {
@@ -11,7 +10,8 @@ import {
   KAFKA_ID,
   IOREDIS,
   GRPC_AUTH,
-} from "../../backend-utilities";
+  AuthClient,
+} from "@lerna-monorepo/backend-utilities";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,

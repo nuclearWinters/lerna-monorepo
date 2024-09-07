@@ -8,13 +8,13 @@ x-base: &base
 services:
   install:
     <<: *base
-    command: npm install --legacy-peer-deps
+    command: npm install
   outdated:
     <<: *base
     command: npm outdated
   update:
     <<: *base
-    command: npm update --legacy-peer-deps
+    command: npm update
 
 volumes:
   lerna-node-modules:
