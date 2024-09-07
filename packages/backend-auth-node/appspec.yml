@@ -4,6 +4,7 @@ files:
   - source: /
     destination: /home/ec2-user/lerna-monorepo
     overwrite: true
+file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
     - location: backend-auth-node/scripts/start_server.sh
