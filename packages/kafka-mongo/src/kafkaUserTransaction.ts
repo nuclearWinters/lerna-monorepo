@@ -5,13 +5,13 @@ import {
   ScheduledPaymentsMongo,
   TransactionMongo,
   UserMongo,
-} from "./types";
+} from "./types.js";
 import { Collection, ObjectId } from "mongodb";
 import {
   publishInvestmentUpdate,
   publishLoanUpdate,
   publishUser,
-} from "./subscriptions/subscriptionsUtils";
+} from "./subscriptions/subscriptionsUtils.js";
 
 export const UserTransaction = async (
   messageValue: string,

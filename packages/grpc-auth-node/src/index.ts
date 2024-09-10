@@ -2,12 +2,12 @@ import { MongoClient } from "mongodb";
 import { createClient } from "redis";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
 import {
-  AuthService,
-  AuthServer,
   MONGO_DB,
   REDIS,
   GRPC_AUTH,
-} from "@lerna-monorepo/backend-utilities";
+} from "@lerna-monorepo/backend-utilities/config";
+import { AuthService } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
+import { AuthServer } from "@lerna-monorepo/backend-utilities/grpc";
 
 Promise.all([
   MongoClient.connect(MONGO_DB, {}),

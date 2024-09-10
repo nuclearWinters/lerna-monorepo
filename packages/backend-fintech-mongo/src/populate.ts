@@ -5,9 +5,9 @@ import {
   LoanMongo,
   UserMongo,
   ScheduledPaymentsMongo,
-} from "./types";
+} from "./types.js";
 import { addMonths, startOfMonth } from "date-fns";
-import { UUID } from "@lerna-monorepo/backend-utilities";
+import { UUID } from "@lerna-monorepo/backend-utilities/types";
 
 MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
   async (client) => {

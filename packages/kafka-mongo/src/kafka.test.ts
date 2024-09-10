@@ -1,6 +1,6 @@
 import { Kafka } from "kafkajs";
 import { KafkaContainer } from "@testcontainers/kafka";
-import { runKafkaConsumer } from "./kafka";
+import { runKafkaConsumer } from "./kafka.js";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import {
   InvestmentMongo,
@@ -8,7 +8,7 @@ import {
   ScheduledPaymentsMongo,
   TransactionMongo,
   UserMongo,
-} from "./types";
+} from "./types.js";
 import { addMonths, startOfMonth } from "date-fns";
 
 jest.mock("ioredis", () =>

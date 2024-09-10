@@ -5,12 +5,13 @@ import {
   TransactionMongo,
   InvestmentMongo,
   ScheduledPaymentsMongo,
-} from "./types";
+} from "./types.js";
 import { Producer } from "kafkajs";
 import { parse } from "cookie";
-import { Request } from "graphql-sse/lib";
+import { Request } from "graphql-sse";
 import { Http2ServerRequest, Http2ServerResponse } from "http2";
-import { AuthClient, jwtMiddleware } from "@lerna-monorepo/backend-utilities";
+import { jwtMiddleware } from "@lerna-monorepo/backend-utilities/grpc";
+import type { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 
 export const getContextSSE = async (

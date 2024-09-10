@@ -5,10 +5,14 @@ import {
   ScheduledPaymentsMongo,
   TransactionMongo,
   UserMongo,
-} from "./types";
-import { runKafkaConsumer } from "./kafka";
+} from "./types.js";
+import { runKafkaConsumer } from "./kafka.js";
 import { Kafka } from "kafkajs";
-import { MONGO_DB, KAFKA, KAFKA_ID } from "@lerna-monorepo/backend-utilities";
+import {
+  MONGO_DB,
+  KAFKA,
+  KAFKA_ID,
+} from "@lerna-monorepo/backend-utilities/config";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,

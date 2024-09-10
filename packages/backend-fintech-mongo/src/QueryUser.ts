@@ -1,5 +1,5 @@
-import { GraphQLUser } from "./Nodes";
-import { Context, UserMongo } from "./types";
+import { GraphQLUser } from "./Nodes.js";
+import { Context, UserMongo } from "./types.js";
 
 const QueryUser = {
   type: GraphQLUser,

@@ -1,7 +1,7 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull } from "graphql";
-import { Context } from "../types";
-import { MXNScalarType } from "../Nodes";
+import { Context } from "../types.js";
+import { MXNScalarType } from "../Nodes.js";
 
 interface Input {
   quantity: number;

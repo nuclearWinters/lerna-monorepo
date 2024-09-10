@@ -5,11 +5,11 @@ import {
   LoanMongo,
   UserMongo,
   ScheduledPaymentsMongo,
-} from "./types";
+} from "./types.js";
 import { Admin, Kafka, Producer } from "kafkajs";
-import { monthFunction } from "./cronJobMonth";
+import { monthFunction } from "./cronJobMonth.js";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
-import { KAFKA } from "@lerna-monorepo/backend-utilities";
+import { KAFKA } from "@lerna-monorepo/backend-utilities/config";
 
 describe("cronJobs tests", () => {
   let mongoClient: MongoClient;

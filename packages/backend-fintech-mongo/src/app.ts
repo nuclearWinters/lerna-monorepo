@@ -1,10 +1,10 @@
 import { GraphQLSchema, GraphQLObjectType, parse } from "graphql";
-import { QueryUser } from "./QueryUser";
-import { dataDrivenDependencies, nodeField } from "./Nodes";
-import { AddLendsMutation } from "./mutations/AddLends";
-import { AddFundsMutation } from "./mutations/AddFunds";
-import { AddLoanMutation } from "./mutations/AddLoan";
-import { getContextSSE } from "./utils";
+import { QueryUser } from "./QueryUser.js";
+import { dataDrivenDependencies, nodeField } from "./Nodes.js";
+import { AddLendsMutation } from "./mutations/AddLends.js";
+import { AddFundsMutation } from "./mutations/AddFunds.js";
+import { AddLoanMutation } from "./mutations/AddLoan.js";
+import { getContextSSE } from "./utils.js";
 import {
   investments_subscribe_insert,
   loans_subscribe_insert,
@@ -13,16 +13,16 @@ import {
   investments_subscribe_update,
   loans_subscribe_update,
   my_loans_subscribe_insert,
-} from "./subscriptions/subscriptions";
-import { ApproveLoanMutation } from "./mutations/ApproveLoan";
-import { QueryScheduledPayments } from "./QueryScheduledPayments";
+} from "./subscriptions/subscriptions.js";
+import { ApproveLoanMutation } from "./mutations/ApproveLoan.js";
+import { QueryScheduledPayments } from "./QueryScheduledPayments.js";
 import { createSecureServer } from "http2";
 import { Db } from "mongodb";
 import { Producer } from "kafkajs";
 import { createHandler } from "graphql-sse/lib/use/http2";
 import fs from "fs";
 import queryMap from "./queryMap.json";
-import { AuthClient } from "@lerna-monorepo/backend-utilities";
+import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 
 const Query = new GraphQLObjectType({

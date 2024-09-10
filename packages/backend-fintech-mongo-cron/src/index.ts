@@ -1,8 +1,12 @@
 import { MongoClient } from "mongodb";
-import { KAFKA, KAFKA_ID, MONGO_DB } from "@lerna-monorepo/backend-utilities";
-import { checkEveryDay, checkEveryMonth } from "./cronJobs";
-import { dayFunction } from "./cronJobDay";
-import { monthFunction } from "./cronJobMonth";
+import {
+  KAFKA,
+  KAFKA_ID,
+  MONGO_DB,
+} from "@lerna-monorepo/backend-utilities/config";
+import { checkEveryDay, checkEveryMonth } from "./cronJobs.js";
+import { dayFunction } from "./cronJobDay.js";
+import { monthFunction } from "./cronJobMonth.js";
 import { Kafka } from "kafkajs";
 
 const kafka = new Kafka({

@@ -6,10 +6,10 @@ import {
   ScheduledPaymentsMongo,
   TransactionMongo,
   UserMongo,
-} from "./types";
-import { LoanTransaction } from "./kafkaLoanTransaction";
-import { UserTransaction } from "./kafkaUserTransaction";
-import { AddLends } from "./kafkaLendTransaction";
+} from "./types.js";
+import { LoanTransaction } from "./kafkaLoanTransaction.js";
+import { UserTransaction } from "./kafkaUserTransaction.js";
+import { AddLends } from "./kafkaLendTransaction.js";
 
 export const runKafkaConsumer = async (
   consumer: Consumer,

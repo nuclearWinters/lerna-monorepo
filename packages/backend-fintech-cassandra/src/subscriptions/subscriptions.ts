@@ -1,7 +1,7 @@
 import { GraphQLID, GraphQLList, GraphQLNonNull } from "graphql";
 import { withFilter } from "graphql-subscriptions";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import Redis, { RedisOptions } from "ioredis";
+import { RedisOptions, Redis } from "ioredis";
 import {
   GraphQLTransactionEdge,
   GraphQLInvestmentEdge,
@@ -10,7 +10,7 @@ import {
   InvestmentStatus,
   GraphQLInvestment,
   GraphQLLoan,
-} from "../Nodes";
+} from "../Nodes.js";
 import {
   Context,
   IInvestmentEdge,
@@ -19,8 +19,9 @@ import {
   ITransactionEdge,
   LoanCassandra,
   UserCassandra,
-} from "../types";
-import { REDIS, unbase64 } from "@lerna-monorepo/backend-utilities";
+} from "../types.js";
+import { REDIS } from "@lerna-monorepo/backend-utilities/config";
+import { unbase64 } from "@lerna-monorepo/backend-utilities/index";
 
 export const options: RedisOptions = {
   host: REDIS,

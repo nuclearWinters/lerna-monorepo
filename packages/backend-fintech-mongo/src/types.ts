@@ -1,4 +1,4 @@
-import { UUID } from "@lerna-monorepo/backend-utilities";
+import { UUID } from "@lerna-monorepo/backend-utilities/types";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Producer } from "kafkajs";
 import { ObjectId, Collection } from "mongodb";

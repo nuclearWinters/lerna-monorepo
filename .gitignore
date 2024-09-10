@@ -12,3 +12,4 @@ redis/**
 *.crt
 *.key
 target/
+tsconfig.tsbuildinfo

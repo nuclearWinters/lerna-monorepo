@@ -11,7 +11,7 @@ import { createSecureServer } from "http2";
 import { createHandler } from "graphql-sse/lib/use/http2";
 import { Db } from "mongodb";
 import fs from "fs";
-import queryMap from "./queryMapAuth.json" with { type: "json" };
+import * as queryMap from "./queryMapAuth.json" with { type: "json" };
 import { RedisClientType } from "@lerna-monorepo/backend-utilities/types";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
 
@@ -52,7 +52,7 @@ const main = async (
     },
     onSubscribe: async (request, params) => {
       const doc_id = params.extensions?.doc_id;
-      const query = queryMap.find((query) => query[0] === doc_id);
+      const query = queryMap.default.find((query) => query[0] === doc_id);
       if (query) {
         return {
           schema,

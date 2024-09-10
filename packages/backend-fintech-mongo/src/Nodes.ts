@@ -22,7 +22,7 @@ import {
   forwardConnectionArgs,
 } from "graphql-relay";
 import { Filter } from "mongodb";
-import {
+import type {
   Context,
   InvestmentMongo,
   LoanMongo,
@@ -36,13 +36,13 @@ import {
   TransactionInvestMongoType,
   ScheduledPaymentsMongo,
   ScheduledPaymentsStatus,
-} from "./types";
+} from "./types.js";
 import {
   DateScalarType,
   base64,
   unbase64,
-  UUID,
-} from "@lerna-monorepo/backend-utilities";
+} from "@lerna-monorepo/backend-utilities/index";
+import type { UUID } from "@lerna-monorepo/backend-utilities/types";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatus[];

@@ -1,28 +1,28 @@
-import { main } from "../app";
+import { main } from "../app.js";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { UserMongo } from "../types";
+import { UserMongo } from "../types.js";
 import { Admin, Kafka, Producer } from "kafkajs";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent";
+import TestAgent from "supertest/lib/agent.js";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
 import {
-  RedisClientType,
   REFRESH_TOKEN_EXP_NUMBER,
   ACCESS_TOKEN_EXP_NUMBER,
-  AuthService,
-  AuthServer,
   ACCESSSECRET,
   REFRESHSECRET,
-  AuthClient,
-  jwt,
   KAFKA_ID,
-} from "@lerna-monorepo/backend-utilities";
+} from "@lerna-monorepo/backend-utilities/config";
+import { AuthService } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
+import { jwt } from "@lerna-monorepo/backend-utilities/index";
+import { RedisClientType } from "@lerna-monorepo/backend-utilities/types";
+import { AuthServer } from "@lerna-monorepo/backend-utilities/grpc";
+import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 
 describe("AddFunds tests", () => {
   let mongoClient: MongoClient;

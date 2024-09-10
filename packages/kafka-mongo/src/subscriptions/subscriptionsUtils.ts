@@ -3,8 +3,8 @@ import {
   LoanMongo,
   TransactionMongo,
   UserMongo,
-} from "../types";
-import { base64 } from "@lerna-monorepo/backend-utilities";
+} from "../types.js";
+import { base64 } from "@lerna-monorepo/backend-utilities/index";
 import {
   pubsub,
   USER,
@@ -14,7 +14,7 @@ import {
   INVESTMENT_UPDATE,
   LOAN_UPDATE,
   MY_LOAN_INSERT,
-} from "./subscriptions";
+} from "./subscriptions.js";
 
 export const publishUser = (user: UserMongo) => {
   pubsub.publish(USER, {
