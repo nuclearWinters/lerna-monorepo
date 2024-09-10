@@ -15,6 +15,9 @@ services:
   update:
     <<: *base
     command: npm update
+  proto:
+    <<: *base
+    command: npm run proto
 
 volumes:
   lerna-node-modules:

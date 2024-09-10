@@ -5,7 +5,7 @@
 /* eslint-disable */
 
 import * as grpc from "@grpc/grpc-js";
-import * as account_pb from "./account_pb";
+import * as account_pb from "./account_pb.cjs";
 
 interface IAccountService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
     createUser: IAccountService_IcreateUser;

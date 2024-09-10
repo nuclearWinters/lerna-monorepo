@@ -1,8 +1,8 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull } from "graphql";
-import { Context, UserMongo } from "../types";
-import { Languages } from "./SignUpMutation";
-import { GraphQLAuthUser } from "../AuthUserQuery";
+import { Context, UserMongo } from "../types.js";
+import { Languages } from "./SignUpMutation.js";
+import { GraphQLAuthUser } from "../AuthUserQuery.js";
 
 interface Input {
   name: string;

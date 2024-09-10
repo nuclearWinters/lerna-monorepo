@@ -1,8 +1,24 @@
-import { ACCESS_TOKEN_EXP_NUMBER, ACCESSSECRET, jwt, REFRESHSECRET } from ".";
-import { AccountClient, IAccountServer } from "./protoAccount/account_grpc_pb";
-import { CreateUserInput, CreateUserPayload } from "./protoAccount/account_pb";
-import { AuthClient, IAuthServer } from "./protoAuth/auth_grpc_pb";
-import { JWTMiddlewareInput, JWTMiddlewarePayload } from "./protoAuth/auth_pb";
+import {
+  ACCESS_TOKEN_EXP_NUMBER,
+  ACCESSSECRET,
+  REFRESHSECRET,
+} from "./config.js";
+import { jwt } from "./index.js";
+import type {
+  AccountClient,
+  IAccountServer,
+} from "./protoAccount/account_grpc_pb.cjs";
+import Account from "./protoAccount/account_pb.cjs";
+import type { AuthClient, IAuthServer } from "./protoAuth/auth_grpc_pb.cjs";
+import type {
+  JWTMiddlewareInput as AuthJWTMiddlewareInput,
+  JWTMiddlewarePayload as AuthJWTMiddlewarePayload,
+} from "./protoAuth/auth_pb.cjs";
+import type {
+  CreateUserInput as AccountCreateUserInput,
+  CreateUserPayload as AccountCreateUserPayload,
+} from "./protoAccount/account_pb.cjs";
+import Auth from "./protoAuth/auth_pb.cjs";
 import {
   Metadata,
   ServerUnaryCall,
@@ -10,7 +26,10 @@ import {
   ServiceError,
 } from "@grpc/grpc-js";
 import { Db } from "mongodb";
-import { RedisClientType, UserSessions } from "./types";
+import { RedisClientType, UserSessions } from "./types.js";
+
+const { CreateUserInput, CreateUserPayload } = Account;
+const { JWTMiddlewareInput, JWTMiddlewarePayload } = Auth;
 
 export const jwtMiddleware = (
   refreshToken: string,
@@ -58,8 +77,8 @@ export const jwtMiddleware = (
 
 export const AuthServer = (authdb: Db, rdb: RedisClientType): IAuthServer => ({
   async jwtMiddleware(
-    call: ServerUnaryCall<JWTMiddlewareInput, JWTMiddlewarePayload>,
-    callback: sendUnaryData<JWTMiddlewarePayload>
+    call: ServerUnaryCall<AuthJWTMiddlewareInput, AuthJWTMiddlewarePayload>,
+    callback: sendUnaryData<AuthJWTMiddlewarePayload>
   ): Promise<void> {
     try {
       const refreshToken = call.request.getRefreshToken();
@@ -144,8 +163,8 @@ export const AuthServer = (authdb: Db, rdb: RedisClientType): IAuthServer => ({
 export const createUser = (
   id: string,
   client: AccountClient
-): Promise<CreateUserPayload> => {
-  return new Promise<CreateUserPayload>((resolve, reject) => {
+): Promise<AccountCreateUserPayload> => {
+  return new Promise<AccountCreateUserPayload>((resolve, reject) => {
     const request = new CreateUserInput();
     request.setId(id);
 
@@ -158,8 +177,8 @@ export const createUser = (
 
 export const AccountServer = (db: Db): IAccountServer => ({
   async createUser(
-    call: ServerUnaryCall<CreateUserInput, CreateUserPayload>,
-    callback: sendUnaryData<CreateUserPayload>
+    call: ServerUnaryCall<AccountCreateUserInput, AccountCreateUserPayload>,
+    callback: sendUnaryData<AccountCreateUserPayload>
   ): Promise<void> {
     try {
       const id = call.request.getId();

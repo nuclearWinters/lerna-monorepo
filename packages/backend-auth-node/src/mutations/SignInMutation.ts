@@ -1,15 +1,15 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
-import { Context } from "../types";
+import { Context } from "../types.js";
 import bcrypt from "bcryptjs";
 import {
   ACCESS_TOKEN_EXP_NUMBER,
-  jwt,
   REFRESH_TOKEN_EXP_NUMBER,
   REFRESHSECRET,
   ACCESSSECRET,
   NODE_ENV,
-} from "@lerna-monorepo/backend-utilities";
+} from "@lerna-monorepo/backend-utilities/config";
+import { jwt } from "@lerna-monorepo/backend-utilities/index";
 import { serialize } from "cookie";
 
 interface Input {

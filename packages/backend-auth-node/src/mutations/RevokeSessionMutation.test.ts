@@ -1,18 +1,17 @@
-import { main } from "../app";
+import { main } from "../app.js";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo, UserSessions } from "../types";
+import { UserMongo, UserSessions } from "../types.js";
 import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent";
+import TestAgent from "supertest/lib/agent.js";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import {
-  AccountClient,
   ACCESS_TOKEN_EXP_NUMBER,
-  base64Name,
-  jwt,
   REFRESH_TOKEN_EXP_NUMBER,
-} from "@lerna-monorepo/backend-utilities";
+} from "@lerna-monorepo/backend-utilities/config";
+import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+import { jwt, base64Name } from "@lerna-monorepo/backend-utilities/index";
 import { parse, serialize } from "cookie";
 import { isBefore } from "date-fns";
 

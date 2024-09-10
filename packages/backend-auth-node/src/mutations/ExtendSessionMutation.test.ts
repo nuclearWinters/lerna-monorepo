@@ -1,13 +1,14 @@
-import { main } from "../app";
+import { main } from "../app.js";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo } from "../types";
-import TestAgent from "supertest/lib/agent";
+import { UserMongo } from "../types.js";
+import TestAgent from "supertest/lib/agent.js";
 import { RedisClientType } from "redis";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { createClient } from "redis";
-import { AccountClient, jwt } from "@lerna-monorepo/backend-utilities";
+import { jwt } from "@lerna-monorepo/backend-utilities/index";
+import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
 import { parse, serialize } from "cookie";
 
 describe("ExtendSessionMutation tests", () => {

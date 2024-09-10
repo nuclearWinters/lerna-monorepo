@@ -2,15 +2,51 @@
   "name": "@lerna-monorepo/backend-utilities",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
-  "main": "src/index.ts",
+  "exports": {
+    "./config": {
+      "types": "./src/config.ts",
+      "default": "./build/config.js"
+    },
+    "./index": {
+      "types": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./types": {
+      "types": "./src/types.ts",
+      "default": "./build/types.js"
+    },
+    "./grpc": {
+      "types": "./src/grpc.ts",
+      "default": "./build/grpc.js"
+    },
+    "./protoAuth/auth_grpc_pb": {
+      "types": "./src/protoAuth/auth_grpc_pb.d.cts",
+      "default": "./build/protoAuth/auth_grpc_pb.cjs"
+    },
+    "./protoAuth/auth_pb": {
+      "types": "./src/protoAuth/auth_pb.d.cts",
+      "default": "./build/protoAuth/auth_pb.cjs"
+    },
+    "./protoAccount/account_grpc_pb": {
+      "types": "./src/protoAccount/account_grpc_pb.d.cts",
+      "default": "./build/protoAccount/account_grpc_pb.cjs"
+    },
+    "./protoAccount/account_pb": {
+      "types": "./src/protoAccount/account_pb.d.cts",
+      "default": "./build/protoAccount/account_pb.cjs"
+    }
+  },
+  "type": "module",
   "scripts": {
     "start": "ts-node-dev --transpile-only ./src/index.ts",
     "populate": "npx tsc && node ./build/populate.js",
-    "build": "npx tsc",
+    "build": "npx tsc && node ./copyCode.mjs",
     "serve": "node ./build/index.js",
     "pcm": "lint-staged",
     "test": "jest --bail",
-    "proto": "sh src/proto/build.sh"
+    "protoAuth": "grpc_tools_node_protoc --plugin=protoc-gen-ts=../../node_modules/.bin/protoc-gen-ts --ts_out=grpc_js:src/protoAuth --proto_path=src/protoAuth --js_out=import_style=commonjs,binary:src/protoAuth --grpc_out=grpc_js:src/protoAuth ./src/protoAuth/*.proto",
+    "protoAccount": "grpc_tools_node_protoc --plugin=protoc-gen-ts=../../node_modules/.bin/protoc-gen-ts --ts_out=grpc_js:src/protoAccount --proto_path=src/protoAccount --js_out=import_style=commonjs,binary:src/protoAccount --grpc_out=grpc_js:src/protoAccount ./src/protoAccount/*.proto",
+    "proto": "npm run protoAuth && npm run protoAccount"
   },
   "author": "Armando Rueda",
   "license": "ISC",

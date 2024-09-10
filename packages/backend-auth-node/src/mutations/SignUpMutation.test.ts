@@ -1,15 +1,15 @@
-import { main } from "../app";
+import { main } from "../app.js";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
-import { UserMongo } from "../types";
+import { UserMongo } from "../types.js";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent";
+import TestAgent from "supertest/lib/agent.js";
 import {
   AccountClient,
   AccountService,
-  AccountServer,
-} from "@lerna-monorepo/backend-utilities";
+} from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+import { AccountServer } from "@lerna-monorepo/backend-utilities/grpc";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 
 describe("SignUpMutation tests", () => {

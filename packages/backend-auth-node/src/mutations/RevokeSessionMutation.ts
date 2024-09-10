@@ -1,10 +1,10 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
-import { Context, UserSessions } from "../types";
+import { Context, UserSessions } from "../types.js";
 import { ObjectId } from "mongodb";
-import { GraphQLSession } from "../AuthUserQuery";
+import { GraphQLSession } from "../AuthUserQuery.js";
 import { serialize } from "cookie";
-import { NODE_ENV } from "@lerna-monorepo/backend-utilities";
+import { NODE_ENV } from "@lerna-monorepo/backend-utilities/config";
 
 interface Input {
   sessionId: string;

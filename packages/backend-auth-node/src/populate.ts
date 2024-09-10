@@ -1,6 +1,6 @@
 import { MongoClient, ObjectId } from "mongodb";
-import { UserLogins, UserMongo, UserSessions } from "./types";
-import { UUID } from "@lerna-monorepo/backend-utilities";
+import { UserLogins, UserMongo, UserSessions } from "./types.js";
+import { UUID } from "@lerna-monorepo/backend-utilities/types";
 
 MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
   async (client) => {

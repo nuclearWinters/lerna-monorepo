@@ -1,21 +1,19 @@
 import { GraphQLSchema, GraphQLObjectType, parse } from "graphql";
-import { SignUpMutation } from "./mutations/SignUpMutation";
-import { SignInMutation } from "./mutations/SignInMutation";
-import { getContextSSE } from "./utils";
-import { QueryUser, nodeField } from "./AuthUserQuery";
-import { UpdateUserMutation } from "./mutations/UpdateUserMutation";
-import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation";
-import { LogOutMutation } from "./mutations/LogOutMutation";
-import { RevokeSessionMutation } from "./mutations/RevokeSessionMutation";
+import { SignUpMutation } from "./mutations/SignUpMutation.js";
+import { SignInMutation } from "./mutations/SignInMutation.js";
+import { getContextSSE } from "./utils.js";
+import { QueryUser, nodeField } from "./AuthUserQuery.js";
+import { UpdateUserMutation } from "./mutations/UpdateUserMutation.js";
+import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation.js";
+import { LogOutMutation } from "./mutations/LogOutMutation.js";
+import { RevokeSessionMutation } from "./mutations/RevokeSessionMutation.js";
 import { createSecureServer } from "http2";
 import { createHandler } from "graphql-sse/lib/use/http2";
 import { Db } from "mongodb";
 import fs from "fs";
-import queryMap from "./queryMapAuth.json";
-import {
-  AccountClient,
-  RedisClientType,
-} from "@lerna-monorepo/backend-utilities";
+import queryMap from "./queryMapAuth.json" with { type: "json" };
+import { RedisClientType } from "@lerna-monorepo/backend-utilities/types";
+import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",

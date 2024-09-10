@@ -10,3 +10,5 @@ outdated:
 	docker-compose -f docker-compose.builder.yml run --rm outdated
 update:
 	docker-compose -f docker-compose.builder.yml run --rm update
+proto:
+	docker-compose -f docker-compose.builder.yml run --rm proto

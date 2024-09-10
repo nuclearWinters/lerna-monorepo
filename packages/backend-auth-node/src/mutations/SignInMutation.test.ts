@@ -1,12 +1,12 @@
-import { main } from "../app";
+import { main } from "../app.js";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo } from "../types";
+import { UserMongo } from "../types.js";
 import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent";
+import TestAgent from "supertest/lib/agent.js";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { AccountClient } from "@lerna-monorepo/backend-utilities";
+import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
 
 describe("SignInMutation tests", () => {
   let client: MongoClient;

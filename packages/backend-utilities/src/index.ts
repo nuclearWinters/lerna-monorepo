@@ -1,14 +1,6 @@
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { GraphQLScalarType, Kind } from "graphql";
-import { DecodeJWT } from "./types";
-
-export * from "./config";
-export * from "./types";
-export * from "./grpc";
-export * from "./protoAuth/auth_pb";
-export * from "./protoAuth/auth_grpc_pb";
-export * from "./protoAccount/account_pb";
-export * from "./protoAccount/account_grpc_pb";
+import { DecodeJWT } from "./types.js";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {

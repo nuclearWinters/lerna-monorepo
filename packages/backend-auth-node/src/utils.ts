@@ -1,17 +1,17 @@
 import { Db } from "mongodb";
-import { UserMongo, UserLogins, UserSessions } from "./types";
+import { UserMongo, UserLogins, UserSessions } from "./types.js";
 //import DeviceDetector from "node-device-detector";
 import { Request } from "graphql-sse";
 import { Http2ServerRequest, Http2ServerResponse } from "http2";
 import { parse } from "cookie";
 import {
-  AccountClient,
   ACCESSSECRET,
   REFRESHSECRET,
   ACCESS_TOKEN_EXP_NUMBER,
-  jwt,
-  RedisClientType,
-} from "@lerna-monorepo/backend-utilities";
+} from "@lerna-monorepo/backend-utilities/config";
+import { jwt } from "@lerna-monorepo/backend-utilities/index";
+import { RedisClientType } from "@lerna-monorepo/backend-utilities/types";
+import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
 
 export const getUser = async (
   accessToken: string,
@@ -51,7 +51,7 @@ export const getUser = async (
         isSupport: userAccess.isSupport,
         validAccessToken: accessToken,
       };
-    } catch (e) {
+    } catch {
       return {
         id: "",
         isBorrower: false,

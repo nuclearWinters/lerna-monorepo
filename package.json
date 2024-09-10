@@ -13,7 +13,8 @@
     "test": "npm run test --workspaces",
     "cm": "cz",
     "new-version": "lerna version --conventional-commits --yes",
-    "pcm": "lerna run --concurrency 1 --stream pcm --since HEAD --exclude-dependents"
+    "pcm": "lerna run --concurrency 1 --stream pcm --since HEAD --exclude-dependents",
+    "proto": "npm run proto --workspaces --if-present"
   },
   "workspaces": [
     "packages/backend-auth-node",

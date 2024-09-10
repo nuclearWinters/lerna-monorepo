@@ -1,7 +1,7 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
-import { Context } from "../types";
-import { NODE_ENV } from "@lerna-monorepo/backend-utilities";
+import { Context } from "../types.js";
+import { NODE_ENV } from "@lerna-monorepo/backend-utilities/config";
 import { serialize } from "cookie";
 
 type Payload = {

@@ -17,14 +17,14 @@ import {
   nodeDefinitions,
 } from "graphql-relay";
 import { Filter } from "mongodb";
-import { Languages } from "./mutations/SignUpMutation";
-import { Context, UserLogins, UserMongo, UserSessions } from "./types";
+import { Languages } from "./mutations/SignUpMutation.js";
+import { Context, UserLogins, UserMongo, UserSessions } from "./types.js";
+import { UUID } from "@lerna-monorepo/backend-utilities/types";
 import {
   base64,
-  DateScalarType,
   unbase64,
-  UUID,
-} from "@lerna-monorepo/backend-utilities";
+  DateScalarType,
+} from "@lerna-monorepo/backend-utilities/index";
 
 const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   async (globalId, { authusers }) => {

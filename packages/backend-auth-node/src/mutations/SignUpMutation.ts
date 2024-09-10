@@ -5,18 +5,18 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
 } from "graphql";
-import { Context } from "../types";
+import { Context } from "../types.js";
 import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
 import {
-  createUser,
   ACCESSSECRET,
   NODE_ENV,
   REFRESHSECRET,
   ACCESS_TOKEN_EXP_NUMBER,
-  jwt,
   REFRESH_TOKEN_EXP_NUMBER,
-} from "@lerna-monorepo/backend-utilities";
+} from "@lerna-monorepo/backend-utilities/config";
+import { jwt } from "@lerna-monorepo/backend-utilities/index";
+import { createUser } from "@lerna-monorepo/backend-utilities/grpc";
 
 interface Input {
   email: string;

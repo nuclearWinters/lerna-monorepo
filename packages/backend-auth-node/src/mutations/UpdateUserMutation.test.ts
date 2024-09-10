@@ -1,11 +1,12 @@
-import { main } from "../app";
+import { main } from "../app.js";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { UserMongo } from "../types";
+import { UserMongo } from "../types.js";
 import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent";
+import TestAgent from "supertest/lib/agent.js";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { AccountClient, jwt } from "@lerna-monorepo/backend-utilities";
+import { jwt } from "@lerna-monorepo/backend-utilities/index";
+import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
 import { serialize } from "cookie";
 
 describe("UpdateUser tests", () => {

@@ -9,8 +9,7 @@
     "build": "npx tsc",
     "serve": "node ./build/index.js",
     "pcm": "lint-staged",
-    "test": "jest --bail",
-    "proto": "sh src/proto/build.sh"
+    "test": "jest --bail"
   },
   "author": "Armando Rueda",
   "license": "ISC",

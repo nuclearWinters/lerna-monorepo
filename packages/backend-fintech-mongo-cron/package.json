@@ -9,8 +9,7 @@
     "build": "npx tsc",
     "serve": "node ./build/index.js",
     "pcm": "lint-staged",
-    "test": "jest --bail --detectOpenHandles",
-    "proto": "sh src/proto/build.sh"
+    "test": "jest --bail --detectOpenHandles"
   },
   "author": "Armando Rueda",
   "license": "ISC",
