@@ -18,6 +18,9 @@ services:
   proto:
     <<: *base
     command: npm run proto
+  build:
+    <<: *base
+    command: npm run build
 
 volumes:
   lerna-node-modules:

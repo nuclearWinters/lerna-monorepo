@@ -12,3 +12,5 @@ update:
 	docker-compose -f docker-compose.builder.yml run --rm update
 proto:
 	docker-compose -f docker-compose.builder.yml run --rm proto
+build:
+	docker-compose -f docker-compose.builder.yml run --rm build

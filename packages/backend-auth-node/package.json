@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "ts-node-dev --transpile-only ./src/index.ts",
-    "populate": "npx tsc && node ./build/populate.js",
-    "build": "npx tsc",
+    "populate": "../../node_modules/typescript/bin/tsc && node ./build/populate.js",
+    "build": "../../node_modules/typescript/bin/tsc",
     "serve": "node ./build/index.js",
     "pcm": "lint-staged",
     "test": "jest --bail"

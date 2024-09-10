@@ -9,7 +9,7 @@
     "lerna": "^8.1.6"
   },
   "scripts": {
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces",
     "cm": "cz",
     "new-version": "lerna version --conventional-commits --yes",
