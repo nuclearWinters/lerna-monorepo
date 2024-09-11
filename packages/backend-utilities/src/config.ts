@@ -11,3 +11,5 @@ export const KAFKA_ID = process.env.KAFKA_ID || "my-app";
 export const GRPC_AUTH = process.env.GRPC_AUTH || "grpc-auth-node:1983";
 export const GRPC_FINTECH =
   process.env.GRPC_FINTECH || "grpc-fintech-node:1984";
+export const KAFKA_USERNAME = process.env.KAFKA_USERNAME || "";
+export const KAFKA_PASSWORD = process.env.KAFKA_PASSWORD || "";
