@@ -12,7 +12,6 @@ Finally we are testing the project with Jest: We test Kafka events by using the 
 
 (I'm experimenting with Rust and Cassandra in other folders.)
 
-
 **Programming Languages:**
 
 - Javascript
