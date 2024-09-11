@@ -30,7 +30,10 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-MongoClient.connect(MONGO_DB, {}).then(async (client) => {
+Promise.all([
+  MongoClient.connect(MONGO_DB, {}),
+  producer.connect(),
+]).then(async ([client]) => {
   const db = client.db("fintech");
   checkEveryDay(() => dayFunction(db, producer));
   checkEveryMonth(() => monthFunction(db, producer));
