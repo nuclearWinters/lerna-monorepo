@@ -9,7 +9,7 @@ import {
 import { Admin, Kafka, Producer } from "kafkajs";
 import { dayFunction } from "./cronJobDay.js";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
-import { KAFKA } from "@lerna-monorepo/backend-utilities/config";
+import { KAFKA_ID } from "@lerna-monorepo/backend-utilities/config";
 
 describe("cronJobs tests", () => {
   let mongoClient: MongoClient;
@@ -32,7 +32,7 @@ describe("cronJobs tests", () => {
     const name = startedKafkaContainer.getHost();
     const port = startedKafkaContainer.getMappedPort(9093);
     const kafka = new Kafka({
-      clientId: KAFKA,
+      clientId: KAFKA_ID,
       brokers: [`${name}:${port}`],
     });
     admin = kafka.admin();
