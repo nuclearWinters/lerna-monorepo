@@ -3,9 +3,9 @@ cd /home/ec2-user/lerna-monorepo/packages/backend-fintech-mongo-cron
 aws s3 cp s3://lerna-monorepo-secrets/prod/prod.json prod.json
 KAFKA_ID=cron-fintech
 NODE_ENV=production
-MONGO_DB=`sed -n 's/^\s*"MONGO_DB":\s*"\(.*\)",/\1/p' prod.json`
-KAFKA=`sed -n 's/^\s*"KAFKA":\s*"\(.*\)",/\1/p' prod.json`
-KAFKA_USERNAME=`sed -n 's/^\s*"KAFKA_USERNAME":\s*"\(.*\)",/\1/p' prod.json`
-KAFKA_PASSWORD=`sed -n 's/^\s*"KAFKA_PASSWORD":\s*"\(.*\)",/\1/p' prod.json`
+MONGO_DB=`jq ".MONGO_DB" prod.json | sed -e 's/^"//' -e 's/"$//'`
+KAFKA=`jq ".KAFKA" prod.json | sed -e 's/^"//' -e 's/"$//'`
+KAFKA_USERNAME=`jq ".KAFKA_USERNAME" prod.json | sed -e 's/^"//' -e 's/"$//'`
+KAFKA_PASSWORD=`jq ".KAFKA_PASSWORD" prod.json | sed -e 's/^"//' -e 's/"$//'`
 rm prod.json
 MONGO_DB=$MONGO_DB KAFKA_ID=$KAFKA_ID NODE_ENV=$NODE_ENV KAFKA=$KAFKA KAFKA_USERNAME=$KAFKA_USERNAME KAFKA_PASSWORD=$KAFKA_PASSWORD npm run serve
