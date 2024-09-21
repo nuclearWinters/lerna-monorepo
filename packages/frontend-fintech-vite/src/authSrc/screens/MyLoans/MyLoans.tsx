@@ -6,9 +6,10 @@ import {
 import { RedirectContainer } from "../../../components/RedirectContainer";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { MyLoansPage } from "../../../fintechSrc/screens/MyLoans/MyLoansPage";
-import { authUserQuery, Languages } from "../../utilsAuth";
+import { authUserQuery } from "../../utilsAuth";
 import { MyLoansQueriesQuery } from "../../../fintechSrc/screens/MyLoans/__generated__/MyLoansQueriesQuery.graphql";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
+import { Languages } from "../../../utils";
 
 export type Queries = {
   fintechQuery: MyLoansQueriesQuery;

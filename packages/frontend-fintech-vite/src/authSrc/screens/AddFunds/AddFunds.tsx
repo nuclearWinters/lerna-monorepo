@@ -11,11 +11,12 @@ import { FormSmall } from "../../../components/FormSmall";
 import { Title } from "../../../components/Title";
 import { Input } from "../../../components/Input";
 import { Space, customSpace } from "../../../components/Space";
-import { authUserQuery, useTranslation } from "../../utilsAuth";
+import { authUserQuery } from "../../utilsAuth";
 import { RedirectContainer } from "../../../components/RedirectContainer";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { AddFundsButton } from "../../../fintechSrc/components/AddFundsButton";
+import { useTranslation } from "../../../utils";
 
 export type Queries = {
   authQuery: utilsAuthQuery;

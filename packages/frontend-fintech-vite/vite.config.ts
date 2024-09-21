@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import stylex from "vite-plugin-stylex";
 import svgr from "vite-plugin-svgr";
-import commonjs from "vite-plugin-commonjs";
+//import commonjs from "vite-plugin-commonjs";
 
 export default defineConfig({
   plugins: [
@@ -11,9 +11,9 @@ export default defineConfig({
     react(),
     stylex(),
     svgr({ include: "**/*.svg" }),
-    commonjs(),
+    //commonjs(),
   ],
-  build: {
-    commonjsOptions: { transformMixedEsModules: true },
-  },
+  //build: {
+  //  commonjsOptions: { transformMixedEsModules: true },
+  //},
 });

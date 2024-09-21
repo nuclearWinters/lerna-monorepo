@@ -8,10 +8,11 @@ import { Title } from "../../../components/Title";
 import { Input } from "../../../components/Input";
 import { Select } from "../../../components/Select";
 import { Space, customSpace } from "../../../components/Space";
-import { authUserQuery, useTranslation } from "../../utilsAuth";
+import { authUserQuery } from "../../utilsAuth";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 import { RedirectContainer } from "../../../components/RedirectContainer";
 import { AddLoanButton } from "../../../fintechSrc/components/AddLoanButton";
+import { useTranslation } from "../../../utils";
 
 export type Queries = {
   authQuery: utilsAuthQuery;

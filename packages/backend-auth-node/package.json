@@ -2,7 +2,6 @@
   "name": "@lerna-monorepo/backend-auth-node",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
-  "main": "src/index.ts",
   "type": "module",
   "scripts": {
     "start": "ts-node-dev --transpile-only ./src/index.ts",

@@ -15,7 +15,7 @@ import {
   lenderPages,
   supportPages,
   useTranslation,
-} from "../../utilsAuth";
+} from "../../../utils";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
 
 export interface Decode {
