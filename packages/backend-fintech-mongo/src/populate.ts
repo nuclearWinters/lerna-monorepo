@@ -62,9 +62,13 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
       },
     ]);
 
+    const loan_oid_one = new ObjectId();
+    const loan_oid_two = new ObjectId();
+    const loan_oid_three = new ObjectId();
+
     await loans.insertMany([
       {
-        _id: new ObjectId("609875a48f2814002aaefe24"),
+        _id: new ObjectId(),
         user_id: user_id_two,
         score: "AAA",
         raised: 0,
@@ -78,7 +82,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         payments_done: 0,
       },
       {
-        _id: new ObjectId("609875a48f2814002aaefe25"),
+        _id: loan_oid_one,
         user_id: user_id_two,
         score: "AAA",
         raised: 9500000,
@@ -92,7 +96,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         payments_done: 0,
       },
       {
-        _id: new ObjectId("609875a48f2814002aaefe26"),
+        _id: new ObjectId(),
         user_id: user_id_two,
         score: "AAA",
         raised: 0,
@@ -106,7 +110,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         payments_done: 0,
       },
       {
-        _id: new ObjectId("609875a48f2814002aaefe27"),
+        _id: loan_oid_two,
         user_id: user_id_two,
         score: "AAA",
         raised: 10000000,
@@ -120,7 +124,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         pending: 0,
       },
       {
-        _id: new ObjectId("609875a48f2814002aaefe28"),
+        _id: new ObjectId(),
         user_id: user_id_two,
         score: "AAA",
         raised: 0,
@@ -134,7 +138,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         payments_done: 0,
       },
       {
-        _id: new ObjectId("609875a48f2814002aaefe29"),
+        _id: new ObjectId(),
         user_id: user_id_two,
         score: "AAA",
         raised: 0,
@@ -148,7 +152,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         payments_done: 0,
       },
       {
-        _id: new ObjectId("609875a48f2814002aaefe30"),
+        _id: new ObjectId(),
         user_id: user_id_two,
         score: "AAA",
         raised: 0,
@@ -162,7 +166,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         payments_done: 0,
       },
       {
-        _id: new ObjectId("609875a48f2814002aaefe31"),
+        _id: new ObjectId(),
         user_id: user_id_two,
         score: "AAA",
         raised: 0,
@@ -176,7 +180,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         payments_done: 0,
       },
       {
-        _id: new ObjectId("609875a48f2814002aaefe32"),
+        _id: loan_oid_three,
         user_id: user_id_two,
         score: "AAA",
         raised: 5000000,
@@ -194,77 +198,77 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
     await scheduledPayments.insertMany([
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        loan_oid: loan_oid_three,
         scheduled_date: startOfMonth(addMonths(new Date(), 1)),
         amortize: 1039853,
         status: "to be paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        loan_oid: loan_oid_three,
         scheduled_date: startOfMonth(addMonths(new Date(), 2)),
         amortize: 1039853,
         status: "to be paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        loan_oid: loan_oid_three,
         scheduled_date: startOfMonth(addMonths(new Date(), 3)),
         amortize: 1039853,
         status: "to be paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        loan_oid: loan_oid_three,
         scheduled_date: startOfMonth(addMonths(new Date(), 4)),
         amortize: 1039853,
         status: "to be paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe32"),
+        loan_oid: loan_oid_three,
         scheduled_date: startOfMonth(addMonths(new Date(), 5)),
         amortize: 1039853,
         status: "to be paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        loan_oid: loan_oid_two,
         scheduled_date: startOfMonth(addMonths(new Date(), -6)),
         amortize: 1744326,
         status: "paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        loan_oid: loan_oid_two,
         scheduled_date: startOfMonth(addMonths(new Date(), -5)),
         amortize: 1744326,
         status: "paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        loan_oid: loan_oid_two,
         scheduled_date: startOfMonth(addMonths(new Date(), -4)),
         amortize: 1744326,
         status: "paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        loan_oid: loan_oid_two,
         scheduled_date: startOfMonth(addMonths(new Date(), -3)),
         amortize: 1744326,
         status: "paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        loan_oid: loan_oid_two,
         scheduled_date: startOfMonth(addMonths(new Date(), -2)),
         amortize: 1744326,
         status: "paid",
       },
       {
         _id: new ObjectId(),
-        loan_oid: new ObjectId("609875a48f2814002aaefe27"),
+        loan_oid: loan_oid_two,
         scheduled_date: startOfMonth(addMonths(new Date(), -1)),
         amortize: 1744326,
         status: "paid",
@@ -276,7 +280,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true", {}).then(
         _id: _id_investment_1,
         borrower_id: user_id_two,
         lender_id: user_id_one,
-        loan_oid: new ObjectId("609875a48f2814002aaefe25"),
+        loan_oid: loan_oid_one,
         created_at: new Date(),
         quantity: 9500000,
         updated_at: new Date(),

@@ -41,7 +41,7 @@ services:
     working_dir: /usr/src/service/packages/backend-fintech-mongo
     command: ["npm", "run", "start"]
     ports:
-      - "4000:4000"
+      - "443:4000"
     depends_on:
       mongo-fintech:
         condition: service_healthy
@@ -71,7 +71,7 @@ services:
     working_dir: /usr/src/service/packages/backend-auth-node
     command: ["npm", "run", "start"]
     ports:
-      - "4002:4002"
+      - "443:4002"
     depends_on:
       redis-fintech:
         condition: service_started
@@ -87,7 +87,7 @@ services:
     working_dir: /usr/src/service/packages/grpc-auth-node
     command: ["npm", "run", "start"]
     ports:
-      - "1983:1983"
+      - "443:1983"
     depends_on:
       redis-fintech:
         condition: service_started
@@ -103,7 +103,7 @@ services:
     working_dir: /usr/src/service/packages/grpc-fintech-node
     command: ["npm", "run", "start"]
     ports:
-      - "1984:1984"
+      - "443:1984"
     depends_on:
       mongo-fintech:
         condition: service_healthy

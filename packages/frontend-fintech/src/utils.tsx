@@ -17,10 +17,10 @@ export interface Decode {
 export type Languages = "EN" | "ES";
 
 export const AUTH_API =
-  process.env.REALTIME_GATEWAY || "https://localhost:4002/graphql";
+  process.env.AUTH_API || "https://localhost:4002/graphql";
 
 export const FINTECH_API =
-  process.env.REALTIME_GATEWAY || "https://localhost:4000/graphql";
+  process.env.FINTECH_API || "https://localhost:4000/graphql";
 
 export const useTranslation = () => {
   const [language, changeLanguage] = useContext(LanguageContext);

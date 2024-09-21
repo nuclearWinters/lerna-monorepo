@@ -12,6 +12,7 @@ import {
   GRPC_AUTH,
 } from "@lerna-monorepo/backend-utilities/config";
 import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
+import fs from "fs";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,
@@ -23,7 +24,14 @@ const producer = kafka.producer();
 Promise.all([MongoClient.connect(MONGO_DB, {}), producer.connect()]).then(
   async ([client]) => {
     const db = client.db("fintech");
-    const grpcClient = new AuthClient(GRPC_AUTH, credentials.createInsecure());
+    const grpcClient = new AuthClient(
+      GRPC_AUTH,
+      credentials.createSsl(
+        null,
+        fs.readFileSync("../../certs/localhost.key"),
+        fs.readFileSync("../../certs/localhost.crt")
+      )
+    );
     const options: RedisOptions = {
       host: IOREDIS,
       port: 6379,
@@ -36,6 +44,6 @@ Promise.all([MongoClient.connect(MONGO_DB, {}), producer.connect()]).then(
       subscriber: new Redis(options),
     });
     const serverHTTP2 = await main(db, producer, grpcClient, pubsub);
-    serverHTTP2.listen(4000);
+    serverHTTP2.listen(443);
   }
 );

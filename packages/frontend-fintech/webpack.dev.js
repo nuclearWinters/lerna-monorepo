@@ -43,12 +43,6 @@ module.exports = {
     modules: [path.resolve(__dirname, "src"), "node_modules"],
   },
   plugins: [
-    new webpack.DefinePlugin({
-      "process.env": {
-        AUTH_API: null,
-        FINTECH_API: null,
-      },
-    }),
     new webpack.EnvironmentPlugin({
       AUTH_API: null,
       FINTECH_API: null,

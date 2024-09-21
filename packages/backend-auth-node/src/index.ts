@@ -8,6 +8,7 @@ import {
 } from "@lerna-monorepo/backend-utilities/config";
 import { credentials } from "@grpc/grpc-js";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+import fs from "fs";
 
 Promise.all([
   MongoClient.connect(MONGO_DB, {}),
@@ -18,8 +19,12 @@ Promise.all([
   const authdb = mongoClient.db("auth");
   const grpcClient = new AccountClient(
     GRPC_FINTECH,
-    credentials.createInsecure()
+    credentials.createSsl(
+      null,
+      fs.readFileSync("../../certs/localhost.key"),
+      fs.readFileSync("../../certs/localhost.crt")
+    )
   );
   const serverHTTP2 = await main(authdb, redisClient, grpcClient);
-  serverHTTP2.listen(process.env.PORT || 4002);
+  serverHTTP2.listen(443);
 });
