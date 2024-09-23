@@ -12,7 +12,7 @@ MongoClient.connect(MONGO_DB, {}).then(async (mongoClient) => {
   const server = new Server();
   server.addService(AccountService, AccountServer(fintechdb));
   server.bindAsync(
-    "locahost:443",
+    "localhost:443",
     ServerCredentials.createSsl(
       isProduction ? fs.readFileSync("../../rootCA.pem") : null,
       [
