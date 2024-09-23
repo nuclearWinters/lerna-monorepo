@@ -4,7 +4,7 @@
   "description": "Backend typescript express relay mongodb",
   "type": "module",
   "scripts": {
-    "start": "ts-node-dev --transpile-only ./src/index.ts",
+    "start": "tsx watch ./src/index.ts",
     "populate": "npx tsc && node ./build/populate.js",
     "build": "npx tsc || ../../node_modules/typescript/bin/tsc",
     "serve": "node ./build/index.js",
@@ -15,11 +15,12 @@
   "license": "ISC",
   "dependencies": {
     "@grpc/grpc-js": "^1.11.1",
-    "date-fns": "^3.0.6",
+    "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.0",
     "redis": "^4.6.15"
   },
   "devDependencies": {
+    "tsx": "^4.19.1",
     "@babel/core": "^7.24.5",
     "@babel/preset-env": "^7.24.5",
     "@babel/preset-typescript": "^7.18.6",

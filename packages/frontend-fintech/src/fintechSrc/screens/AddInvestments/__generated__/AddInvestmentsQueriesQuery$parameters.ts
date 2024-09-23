@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<29f6dfc80406d7c78452bd403d7b5ada>>
+ * @generated SignedSource<<5155115232f4d9bc7d4e687faf73f47d>>
  * @relayHash 658dbc4b6935df57beacdb336718b0e1
  * @lightSyntaxTransform
  * @nogrep
@@ -17,7 +17,7 @@ import { AddInvestmentsQueriesQuery } from './AddInvestmentsQueriesQuery.graphql
 const node: PreloadableConcreteRequest<AddInvestmentsQueriesQuery> = {
   "kind": "PreloadableConcreteRequest",
   "params": {
-    "id": "658dbc4b6935df57beacdb336718b0e1\r",
+    "id": "658dbc4b6935df57beacdb336718b0e1",
     "metadata": {},
     "name": "AddInvestmentsQueriesQuery",
     "operationKind": "query",

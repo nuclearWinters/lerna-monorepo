@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<49a4b60f7dbc561774a27e971bba99c2>>
+ * @generated SignedSource<<65eb9a8ac41e7662c154876976086eae>>
  * @relayHash 5779bdaed33088e4b35465d39b5fa485
  * @lightSyntaxTransform
  * @nogrep
@@ -236,7 +236,7 @@ return {
     ]
   },
   "params": {
-    "id": "5779bdaed33088e4b35465d39b5fa485\r",
+    "id": "5779bdaed33088e4b35465d39b5fa485",
     "metadata": {},
     "name": "MyInvestmentsQueriesSubscription",
     "operationKind": "subscription",

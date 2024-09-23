@@ -20,7 +20,7 @@ Promise.all([
   const grpcClient = new AccountClient(
     GRPC_FINTECH,
     credentials.createSsl(
-      null,
+      fs.readFileSync("../../rootCA.pem"),
       fs.readFileSync("../../certs/localhost.key"),
       fs.readFileSync("../../certs/localhost.crt")
     )

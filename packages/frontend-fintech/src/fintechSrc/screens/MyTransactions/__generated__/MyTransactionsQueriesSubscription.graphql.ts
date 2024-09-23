@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<70ec80968b2a91a3ae33937eb543cd1d>>
+ * @generated SignedSource<<07580f511223a6e0f480f611914ba7c1>>
  * @relayHash a6e009cfced9ddb83b7b78ef4b72713f
  * @lightSyntaxTransform
  * @nogrep
@@ -206,7 +206,7 @@ return {
     ]
   },
   "params": {
-    "id": "a6e009cfced9ddb83b7b78ef4b72713f\r",
+    "id": "a6e009cfced9ddb83b7b78ef4b72713f",
     "metadata": {},
     "name": "MyTransactionsQueriesSubscription",
     "operationKind": "subscription",

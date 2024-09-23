@@ -59,13 +59,13 @@ To set up the project locally:
 
 1. Install Docker and NodeJS 20
 
-2. Run `npm install --no-save` in root folder (this will help your IDE to apply linting)
+2. Run `npm ci` in root folder (this will help your IDE to apply linting)
 
 3. Run `make setup` in root folder (this will create a volume in Docker in which the dependencies will be stored)
 
 4. Run `make install` in root folder (this will install dependencies by using an Alpine Linux OS)
 
-5. Install `mkcert` and run `mkcert -cert-file localhost.crt -key-file localhost.key localhost` in `cert` folder (this will create a self-signed certificate so node microservices can use HTTP2)
+5. Install `mkcert` and run `mkcert -cert-file localhost.crt -key-file localhost.key localhost` in `certs` folder (this will create a self-signed certificate so node microservices can use HTTP2). Then run `mkcert -CAROOT` to locate te `rootCA.pem` file and copy it to the `certs` folder.
 
 6. Run `make up` in root folder (this will run the instances with Docker Compose)
 

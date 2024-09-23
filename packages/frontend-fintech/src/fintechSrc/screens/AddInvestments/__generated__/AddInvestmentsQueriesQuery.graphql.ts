@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0e7d3d4ee387cde854e148f7de2f9eba>>
+ * @generated SignedSource<<2a6ce6c8faaf1cf39fc6963dadefe7eb>>
  * @relayHash 658dbc4b6935df57beacdb336718b0e1
  * @lightSyntaxTransform
  * @nogrep
@@ -246,7 +246,7 @@ return {
     ]
   },
   "params": {
-    "id": "658dbc4b6935df57beacdb336718b0e1\r",
+    "id": "658dbc4b6935df57beacdb336718b0e1",
     "metadata": {},
     "name": "AddInvestmentsQueriesQuery",
     "operationKind": "query",

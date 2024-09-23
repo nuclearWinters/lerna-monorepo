@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cd2f380c739a46eb1d5ab01d5e16845b>>
+ * @generated SignedSource<<59f1cadb080ef533fd141ca4db72bd47>>
  * @relayHash a06f5cec712f9c7d149194a18314cb7c
  * @lightSyntaxTransform
  * @nogrep
@@ -149,7 +149,7 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "id": "a06f5cec712f9c7d149194a18314cb7c\r",
+    "id": "a06f5cec712f9c7d149194a18314cb7c",
     "metadata": {},
     "name": "AddInvestmentsQueriesUpdateSubscription",
     "operationKind": "subscription",

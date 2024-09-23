@@ -114,10 +114,10 @@ services:
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
-    working_dir: /usr/src/service/packages/frontend-fintech-vite
-    command: ["npm", "run", "dev"]
+    working_dir: /usr/src/service/packages/frontend-fintech
+    command: ["npm", "run", "start"]
     ports:
-      - "5173:5173"
+      - "8000:8000"
     environment:
       WDS_SOCKET_HOST: 127.0.0.1
       CHOKIDAR_USEPOLLING: true

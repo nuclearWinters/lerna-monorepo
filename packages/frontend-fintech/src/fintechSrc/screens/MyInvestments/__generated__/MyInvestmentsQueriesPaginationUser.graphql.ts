@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5503ae50c6a33acddcf4bcf38c913ed7>>
+ * @generated SignedSource<<f2edafbdc129bdeb1fa2ee9e5dbe2121>>
  * @relayHash fa1e028210325a70201ab2012ab3ca9a
  * @lightSyntaxTransform
  * @nogrep
@@ -353,7 +353,7 @@ return {
     ]
   },
   "params": {
-    "id": "fa1e028210325a70201ab2012ab3ca9a\r",
+    "id": "fa1e028210325a70201ab2012ab3ca9a",
     "metadata": {},
     "name": "MyInvestmentsQueriesPaginationUser",
     "operationKind": "query",

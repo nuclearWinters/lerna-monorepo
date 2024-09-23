@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<01141caefbd1e685a736665a7933dfa3>>
+ * @generated SignedSource<<c1137df66a9f3eda98aa5e1d020df624>>
  * @relayHash 95e917f2d6bae2e6488eedb4b1649b47
  * @lightSyntaxTransform
  * @nogrep
@@ -246,7 +246,7 @@ return {
     ]
   },
   "params": {
-    "id": "95e917f2d6bae2e6488eedb4b1649b47\r",
+    "id": "95e917f2d6bae2e6488eedb4b1649b47",
     "metadata": {},
     "name": "ApproveLoanQueriesQuery",
     "operationKind": "query",

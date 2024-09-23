@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<80d45cf3e11b5ad097c77de2479b09c2>>
+ * @generated SignedSource<<3e35e3fca84fc02211406831d5e5b14c>>
  * @relayHash a81fae9077e9217e6f447b7bf7f9b08f
  * @lightSyntaxTransform
  * @nogrep
@@ -141,7 +141,7 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "id": "a81fae9077e9217e6f447b7bf7f9b08f\r",
+    "id": "a81fae9077e9217e6f447b7bf7f9b08f",
     "metadata": {},
     "name": "ApproveLoanQueriesUpdateSubscription",
     "operationKind": "subscription",

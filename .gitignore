@@ -11,5 +11,6 @@ redis/**
 *.mongodb
 *.crt
 *.key
+*.pem
 target/
 tsconfig.tsbuildinfo

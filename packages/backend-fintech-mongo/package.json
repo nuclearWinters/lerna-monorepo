@@ -4,7 +4,7 @@
   "description": "Backend typescript express relay mongodb",
   "type": "module",
   "scripts": {
-    "start": "ts-node-dev --transpile-only ./src/index.ts",
+    "start": "tsx watch ./src/index.ts",
     "populate": "npx tsc && node ./build/populate.js",
     "build": "npx tsc || ../../node_modules/typescript/bin/tsc",
     "serve": "node ./build/index.js",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.8.14",
     "@lerna-monorepo/backend-utilities": "^1.0.1",
-    "date-fns": "^3.0.6",
+    "date-fns": "^4.1.0",
     "graphql": "^16.5.0",
     "graphql-redis-subscriptions": "^2.6.1",
     "graphql-relay": "^0.10.0",
@@ -28,6 +28,7 @@
     "mongodb": "^6.2.0"
   },
   "devDependencies": {
+    "tsx": "^4.19.1",
     "@babel/core": "^7.18.10",
     "@babel/preset-env": "^7.18.10",
     "@babel/preset-typescript": "^7.18.6",

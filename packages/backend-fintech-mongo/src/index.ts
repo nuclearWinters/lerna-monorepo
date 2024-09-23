@@ -27,7 +27,7 @@ Promise.all([MongoClient.connect(MONGO_DB, {}), producer.connect()]).then(
     const grpcClient = new AuthClient(
       GRPC_AUTH,
       credentials.createSsl(
-        null,
+        fs.readFileSync("../../rootCA.pem"),
         fs.readFileSync("../../certs/localhost.key"),
         fs.readFileSync("../../certs/localhost.crt")
       )

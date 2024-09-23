@@ -24,7 +24,7 @@
     "packages/grpc-auth-node",
     "packages/grpc-fintech-node",
     "packages/kafka-mongo",
-    "packages/frontend-fintech-vite"
+    "packages/frontend-fintech"
   ],
   "config": {
     "commitizen": {

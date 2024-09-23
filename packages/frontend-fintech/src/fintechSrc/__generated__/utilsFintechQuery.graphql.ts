@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6bedb61e2c7731493342f2c237955317>>
+ * @generated SignedSource<<7254c5e4f465af89c53f196837a0c92c>>
  * @relayHash 4c2f9c3a8c4d01b00ca3c5981806271f
  * @lightSyntaxTransform
  * @nogrep
@@ -78,7 +78,7 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "id": "4c2f9c3a8c4d01b00ca3c5981806271f\r",
+    "id": "4c2f9c3a8c4d01b00ca3c5981806271f",
     "metadata": {},
     "name": "utilsFintechQuery",
     "operationKind": "query",
