@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/ec2-user/lerna-monorepo/packages/backend-fintech-mongo-cron
+cd /home/ec2-user/lerna-monorepo/packages/grpc-fintech-node
 aws s3 cp s3://lerna-monorepo-secrets/prod/prod.json prod.json
 KAFKA_ID=grpc-auth-node
 NODE_ENV=production

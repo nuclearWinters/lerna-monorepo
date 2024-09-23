@@ -5,6 +5,8 @@ import { AccountService } from "@lerna-monorepo/backend-utilities/protoAccount/a
 import { AccountServer } from "@lerna-monorepo/backend-utilities/grpc";
 import fs from "fs";
 
+const isProduction = NODE_ENV === "production";
+
 MongoClient.connect(MONGO_DB, {}).then(async (mongoClient) => {
   const fintechdb = mongoClient.db("fintech");
   const server = new Server();
@@ -12,14 +14,14 @@ MongoClient.connect(MONGO_DB, {}).then(async (mongoClient) => {
   server.bindAsync(
     "locahost:443",
     ServerCredentials.createSsl(
-      fs.readFileSync("../../rootCA.pem"),
+      isProduction ? fs.readFileSync("../../rootCA.pem") : null,
       [
         {
           private_key: fs.readFileSync("../../certs/localhost.key"),
           cert_chain: fs.readFileSync("../../certs/localhost.crt"),
         },
       ],
-      NODE_ENV === "production"
+      isProduction
     ),
     (err) => {
       if (err) {

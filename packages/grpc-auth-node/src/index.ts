@@ -10,6 +10,8 @@ import { AuthService } from "@lerna-monorepo/backend-utilities/protoAuth/auth_gr
 import { AuthServer } from "@lerna-monorepo/backend-utilities/grpc";
 import fs from "fs";
 
+const isProduction = NODE_ENV === "production";
+
 Promise.all([
   MongoClient.connect(MONGO_DB, {}),
   createClient({
@@ -22,14 +24,14 @@ Promise.all([
   server.bindAsync(
     "localhost:443",
     ServerCredentials.createSsl(
-      fs.readFileSync("../../rootCA.pem"),
+      isProduction ? fs.readFileSync("../../rootCA.pem") : null,
       [
         {
           private_key: fs.readFileSync("../../certs/localhost.key"),
           cert_chain: fs.readFileSync("../../certs/localhost.crt"),
         },
       ],
-      NODE_ENV === "production"
+      isProduction
     ),
     (err) => {
       if (err) {
