@@ -1,18 +1,14 @@
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { RedisOptions, Redis } from "ioredis";
-import { IOREDIS } from "@lerna-monorepo/backend-utilities/config";
+import { Redis } from "ioredis";
+import { REDIS } from "@lerna-monorepo/backend-utilities/config";
 
-export const options: RedisOptions = {
-  host: IOREDIS,
-  port: 6379,
-  retryStrategy: (times) => {
-    return Math.min(times * 50, 2000);
-  },
+const retryStrategy = (times: number) => {
+  return Math.min(times * 50, 2000);
 };
 
 export const pubsub = new RedisPubSub({
-  publisher: new Redis(options),
-  subscriber: new Redis(options),
+  publisher: new Redis(REDIS, { retryStrategy }),
+  subscriber: new Redis(REDIS, { retryStrategy }),
 });
 
 export const LOAN_INSERT = "LOAN_INSERT";

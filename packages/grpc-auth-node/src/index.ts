@@ -24,7 +24,7 @@ Promise.all([
   server.bindAsync(
     "localhost:443",
     ServerCredentials.createSsl(
-      isProduction ? fs.readFileSync("../../rootCA.pem") : null,
+      isProduction ? null : fs.readFileSync("../../rootCA.pem"),
       [
         {
           private_key: fs.readFileSync("../../certs/localhost.key"),
