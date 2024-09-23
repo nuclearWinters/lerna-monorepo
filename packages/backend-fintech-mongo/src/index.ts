@@ -10,9 +10,12 @@ import {
   KAFKA_ID,
   REDIS,
   GRPC_AUTH,
+  NODE_ENV,
 } from "@lerna-monorepo/backend-utilities/config";
 import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import fs from "fs";
+
+const isProduction = NODE_ENV === "production";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,
@@ -27,7 +30,7 @@ Promise.all([MongoClient.connect(MONGO_DB, {}), producer.connect()]).then(
     const grpcClient = new AuthClient(
       GRPC_AUTH,
       credentials.createSsl(
-        fs.readFileSync("../../rootCA.pem"),
+        isProduction ? null : fs.readFileSync("../../rootCA.pem"),
         fs.readFileSync("../../certs/localhost.key"),
         fs.readFileSync("../../certs/localhost.crt")
       )
