@@ -21,7 +21,7 @@ import { Db } from "mongodb";
 import { Producer } from "kafkajs";
 import { createHandler } from "graphql-sse/lib/use/http2";
 import fs from "fs";
-import queryMap from "./queryMap.json";
+import * as queryMap from "./queryMap.json" with { type: "json" };
 import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 
@@ -88,7 +88,7 @@ const main = async (
     },
     onSubscribe: async (request, params) => {
       const doc_id = params.extensions?.doc_id;
-      const query = queryMap.find((query) => query[0] === doc_id);
+      const query = queryMap.default.find((query) => query[0] === doc_id);
       if (query) {
         return {
           schema,
