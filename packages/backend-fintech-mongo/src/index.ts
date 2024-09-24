@@ -1,7 +1,7 @@
 import { main } from "./app.js";
 import { MongoClient } from "mongodb";
 import { credentials } from "@grpc/grpc-js";
-import { Kafka } from "kafkajs";
+import { Kafka, logLevel } from "kafkajs";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis } from "ioredis";
 import {
@@ -11,6 +11,8 @@ import {
   REDIS,
   GRPC_AUTH,
   NODE_ENV,
+  KAFKA_PASSWORD,
+  KAFKA_USERNAME,
 } from "@lerna-monorepo/backend-utilities/config";
 import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import fs from "fs";
@@ -20,6 +22,15 @@ const isProduction = NODE_ENV === "production";
 const kafka = new Kafka({
   clientId: KAFKA_ID,
   brokers: [KAFKA],
+  ssl: isProduction ? true : false,
+  sasl: isProduction
+    ? {
+        mechanism: "scram-sha-256",
+        username: KAFKA_USERNAME,
+        password: KAFKA_PASSWORD,
+      }
+    : undefined,
+  logLevel: isProduction ? logLevel.ERROR : undefined,
 });
 
 const producer = kafka.producer();

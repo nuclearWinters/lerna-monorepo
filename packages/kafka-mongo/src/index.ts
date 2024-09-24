@@ -7,16 +7,30 @@ import {
   UserMongo,
 } from "./types.js";
 import { runKafkaConsumer } from "./kafka.js";
-import { Kafka } from "kafkajs";
+import { Kafka, logLevel } from "kafkajs";
 import {
   MONGO_DB,
   KAFKA,
   KAFKA_ID,
+  NODE_ENV,
+  KAFKA_USERNAME,
+  KAFKA_PASSWORD,
 } from "@lerna-monorepo/backend-utilities/config";
+
+const isProduction = NODE_ENV === "production";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,
   brokers: [KAFKA],
+  ssl: isProduction ? true : false,
+  sasl: isProduction
+    ? {
+        mechanism: "scram-sha-256",
+        username: KAFKA_USERNAME,
+        password: KAFKA_PASSWORD,
+      }
+    : undefined,
+  logLevel: isProduction ? logLevel.ERROR : undefined,
 });
 
 const producer = kafka.producer();
