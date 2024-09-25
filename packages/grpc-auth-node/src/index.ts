@@ -5,6 +5,7 @@ import {
   MONGO_DB,
   NODE_ENV,
   REDIS,
+  GRPC_AUTH,
 } from "@lerna-monorepo/backend-utilities/config";
 import { AuthService } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { AuthServer } from "@lerna-monorepo/backend-utilities/grpc";
@@ -22,13 +23,13 @@ Promise.all([
   const server = new Server();
   server.addService(AuthService, AuthServer(authdb, redisClient));
   server.bindAsync(
-    "localhost:443",
+    GRPC_AUTH,
     ServerCredentials.createSsl(
-      isProduction ? null : fs.readFileSync("../../rootCA.pem"),
+      fs.readFileSync("../../certs/minica.pem"),
       [
         {
-          private_key: fs.readFileSync("../../certs/localhost.key"),
-          cert_chain: fs.readFileSync("../../certs/localhost.crt"),
+          private_key: fs.readFileSync("../../certs/key.pem"),
+          cert_chain: fs.readFileSync("../../certs/cert.pem"),
         },
       ],
       isProduction

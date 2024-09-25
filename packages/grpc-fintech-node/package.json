@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "start": "tsx watch ./src/index.ts",
-    "populate": "npx tsc && node ./build/populate.js",
     "build": "npx tsc || ../../node_modules/typescript/bin/tsc",
     "serve": "node ./build/index.js",
     "pcm": "lint-staged",

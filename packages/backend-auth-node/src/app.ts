@@ -14,6 +14,9 @@ import fs from "fs";
 import * as queryMap from "./queryMapAuth.json" with { type: "json" };
 import { RedisClientType } from "@lerna-monorepo/backend-utilities/types";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+import { NODE_ENV } from "@lerna-monorepo/backend-utilities/config";
+
+const isProduction = NODE_ENV === "production";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -66,8 +69,12 @@ const main = async (
   });
   const server = createSecureServer(
     {
-      key: fs.readFileSync("../../certs/localhost.key"),
-      cert: fs.readFileSync("../../certs/localhost.crt"),
+      key: isProduction
+        ? fs.readFileSync("../../cert/privkey.pem")
+        : fs.readFileSync("../../certs/key.pem"),
+      cert: isProduction
+        ? fs.readFileSync("../../cert/fullchain.pem")
+        : fs.readFileSync("../../certs/cert.pem"),
     },
     async (req, res) => {
       try {

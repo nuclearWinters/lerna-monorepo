@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "popuate": "npm run populate --workspaces --if-present",
     "test": "npm run test --workspaces",
     "cm": "cz",
     "new-version": "lerna version --conventional-commits --yes",

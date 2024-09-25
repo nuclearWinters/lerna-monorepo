@@ -86,8 +86,6 @@ services:
       - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/grpc-auth-node
     command: ["npm", "run", "start"]
-    ports:
-      - "1983:443"
     depends_on:
       redis-fintech:
         condition: service_started
@@ -102,8 +100,6 @@ services:
       - lerna-node-modules:/usr/src/service/node_modules
     working_dir: /usr/src/service/packages/grpc-fintech-node
     command: ["npm", "run", "start"]
-    ports:
-      - "1984:443"
     depends_on:
       mongo-fintech:
         condition: service_healthy

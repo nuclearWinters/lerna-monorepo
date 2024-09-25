@@ -24,6 +24,9 @@ import fs from "fs";
 import * as queryMap from "./queryMap.json" with { type: "json" };
 import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
+import { NODE_ENV } from "@lerna-monorepo/backend-utilities/config";
+
+const isProduction = NODE_ENV === "production";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -116,8 +119,12 @@ const main = async (
   });
   const server = createSecureServer(
     {
-      key: fs.readFileSync("../../certs/localhost.key"),
-      cert: fs.readFileSync("../../certs/localhost.crt"),
+      key: isProduction
+        ? fs.readFileSync("../../cert/privkey.pem")
+        : fs.readFileSync("../../certs/key.pem"),
+      cert: isProduction
+        ? fs.readFileSync("../../cert/fullchain.pem")
+        : fs.readFileSync("../../certs/cert.pem"),
     },
     async (req, res) => {
       try {

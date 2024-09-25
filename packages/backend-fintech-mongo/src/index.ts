@@ -41,9 +41,9 @@ Promise.all([MongoClient.connect(MONGO_DB, {}), producer.connect()]).then(
     const grpcClient = new AuthClient(
       GRPC_AUTH,
       credentials.createSsl(
-        isProduction ? null : fs.readFileSync("../../rootCA.pem"),
-        fs.readFileSync("../../certs/localhost.key"),
-        fs.readFileSync("../../certs/localhost.crt")
+        fs.readFileSync("../../certs/minica.pem"),
+        fs.readFileSync("../../certs/key.pem"),
+        fs.readFileSync("../../certs/cert.pem")
       )
     );
     const retryStrategy = (times: number) => {
