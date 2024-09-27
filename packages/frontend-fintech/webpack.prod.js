@@ -1,6 +1,7 @@
 const path = require("path");
 const StylexPlugin = require("@stylexjs/webpack-plugin");
 const fs = require("fs");
+const webpack = require("webpack");
 
 process.env.NODE_ENV = "production";
 
@@ -37,6 +38,10 @@ module.exports = {
   },
   devtool: "source-map",
   plugins: [
+    new webpack.EnvironmentPlugin({
+      AUTH_API: "https://auth.relay-graphql-monorepo.com",
+      FINTECH_API: "https://fintech.relay-graphql-monorepo.com",
+    }),
     new StylexPlugin({
       filename: "static/css/styles.[contenthash].css",
       dev: false,

@@ -82,7 +82,11 @@ const main = async (
     },
     async (req, res) => {
       try {
-        const origins = ["http://localhost:8000", "http://localhost:5173"];
+        const origins = [
+          "http://localhost:8000",
+          "http://localhost:5173",
+          "https://relay-graphql-monorepo.com",
+        ];
         const origin = req.headers.origin;
         if (origin && origins.includes(origin)) {
           res.setHeader("Access-Control-Allow-Origin", origin);
