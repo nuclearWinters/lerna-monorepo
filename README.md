@@ -65,10 +65,10 @@ To set up the project locally:
 
 4. Run `make install` in root folder (this will install dependencies by using an Alpine Linux OS)
 
-5. Install `minica` and run `minica --domains localhost`. Then copy `minica.pem`, `cert.pem` and `key.pem` from `minica` to `certs` project folder (this will create a self-signed certificate so node microservices can use HTTP2).
+5. Install [minica](https://github.com/jsha/minica) and run `minica --domains localhost`. Then copy `minica.pem`, `cert.pem` and `key.pem` from `minica` to `certs` project folder (this will create a self-signed certificate so node microservices can use HTTP2).
 
 6. Run `make up` in root folder (this will run the instances with Docker Compose)
 
-7. Run `npm run populate` in `backend-auth-node` and `backend-fintech-mongo` root folders (this will populate the mongo database with data)
+7. Run `npm run populate` in root folder (this will populate the mongo database with data)
 
 8. Go to `http://localhost:8000` to see the application

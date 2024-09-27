@@ -70,10 +70,14 @@ const main = async (
   const server = createSecureServer(
     {
       key: isProduction
-        ? fs.readFileSync("../../cert/privkey.pem")
+        ? fs.readFileSync(
+            "/etc/letsencrypt/live/auth.relay-graphql-monorepo.com/privkey.pem"
+          )
         : fs.readFileSync("../../certs/key.pem"),
       cert: isProduction
-        ? fs.readFileSync("../../cert/fullchain.pem")
+        ? fs.readFileSync(
+            "/etc/letsencrypt/live/auth.relay-graphql-monorepo.com/fullchain.pem"
+          )
         : fs.readFileSync("../../certs/cert.pem"),
     },
     async (req, res) => {
