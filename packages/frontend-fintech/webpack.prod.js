@@ -39,8 +39,8 @@ module.exports = {
   devtool: "source-map",
   plugins: [
     new webpack.EnvironmentPlugin({
-      AUTH_API: "https://auth.relay-graphql-monorepo.com",
-      FINTECH_API: "https://fintech.relay-graphql-monorepo.com",
+      AUTH_API: "https://auth.relay-graphql-monorepo.com/graphql",
+      FINTECH_API: "https://fintech.relay-graphql-monorepo.com/graphql",
     }),
     new StylexPlugin({
       filename: "static/css/styles.[contenthash].css",
