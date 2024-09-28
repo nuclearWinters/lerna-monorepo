@@ -119,16 +119,16 @@ const main = async (
   });
   const server = createSecureServer(
     {
-      key: isProduction
-        ? fs.readFileSync(
-            "/etc/letsencrypt/live/fintech.relay-graphql-monorepo.com/privkey.pem"
-          )
-        : fs.readFileSync("../../certs/key.pem"),
-      cert: isProduction
-        ? fs.readFileSync(
-            "/etc/letsencrypt/live/fintech.relay-graphql-monorepo.com/fullchain.pem"
-          )
-        : fs.readFileSync("../../certs/cert.pem"),
+      key: fs.readFileSync(
+        isProduction
+          ? "/etc/letsencrypt/live/fintech.relay-graphql-monorepo.com/privkey.pem"
+          : "../../certs/key.pem"
+      ),
+      cert: fs.readFileSync(
+        isProduction
+          ? "/etc/letsencrypt/live/fintech.relay-graphql-monorepo.com/fullchain.pem"
+          : "../../certs/cert.pem"
+      ),
     },
     async (req, res) => {
       try {
