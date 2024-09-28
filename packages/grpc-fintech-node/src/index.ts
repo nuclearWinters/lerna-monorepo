@@ -16,7 +16,7 @@ MongoClient.connect(MONGO_DB, {}).then(async (mongoClient) => {
   const server = new Server();
   server.addService(AccountService, AccountServer(fintechdb));
   server.bindAsync(
-    GRPC_FINTECH,
+    isProduction ? "0.0.0.0:443" : GRPC_FINTECH,
     ServerCredentials.createSsl(
       fs.readFileSync("../../certs/minica.pem"),
       [
