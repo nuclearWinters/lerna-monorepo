@@ -1,7 +1,7 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import { Context } from "../types.js";
-import { NODE_ENV } from "@lerna-monorepo/backend-utilities/config";
+import { IS_PRODUCTION } from "@lerna-monorepo/backend-utilities/config";
 import { serialize } from "cookie";
 
 type Payload = {
@@ -31,7 +31,8 @@ export const LogOutMutation = mutationWithClientMutationId({
           httpOnly: true,
           expires: now,
           secure: true,
-          sameSite: NODE_ENV === "production" ? "lax" : "none",
+          sameSite: IS_PRODUCTION ? "strict" : "none",
+          domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
         })
       );
       const time = now.getTime();

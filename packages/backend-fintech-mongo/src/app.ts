@@ -24,9 +24,7 @@ import fs from "fs";
 import * as queryMap from "./queryMap.json" with { type: "json" };
 import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { NODE_ENV } from "@lerna-monorepo/backend-utilities/config";
-
-const isProduction = NODE_ENV === "production";
+import { IS_PRODUCTION } from "@lerna-monorepo/backend-utilities/config";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -120,19 +118,19 @@ const main = async (
   const server = createSecureServer(
     {
       key: fs.readFileSync(
-        isProduction
+        IS_PRODUCTION
           ? "/etc/letsencrypt/live/fintech.relay-graphql-monorepo.com/privkey.pem"
           : "../../certs/key.pem"
       ),
       cert: fs.readFileSync(
-        isProduction
+        IS_PRODUCTION
           ? "/etc/letsencrypt/live/fintech.relay-graphql-monorepo.com/fullchain.pem"
           : "../../certs/cert.pem"
       ),
     },
     async (req, res) => {
       try {
-        const origins = isProduction
+        const origins = IS_PRODUCTION
           ? ["https://relay-graphql-monorepo.com"]
           : ["http://localhost:8000", "http://localhost:5173"];
         const origin = req.headers.origin;

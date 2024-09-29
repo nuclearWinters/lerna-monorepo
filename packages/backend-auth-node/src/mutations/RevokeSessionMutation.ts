@@ -4,7 +4,7 @@ import { Context, UserSessions } from "../types.js";
 import { ObjectId } from "mongodb";
 import { GraphQLSession } from "../AuthUserQuery.js";
 import { serialize } from "cookie";
-import { NODE_ENV } from "@lerna-monorepo/backend-utilities/config";
+import { IS_PRODUCTION } from "@lerna-monorepo/backend-utilities/config";
 
 interface Input {
   sessionId: string;
@@ -61,7 +61,8 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
               httpOnly: true,
               expires: now,
               secure: true,
-              sameSite: NODE_ENV === "production" ? "lax" : "none",
+              sameSite: IS_PRODUCTION ? "strict" : "none",
+              domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
             })
           );
         }

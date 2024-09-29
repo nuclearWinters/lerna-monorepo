@@ -10,27 +10,25 @@ import {
   KAFKA_ID,
   REDIS,
   GRPC_AUTH,
-  NODE_ENV,
+  IS_PRODUCTION,
   KAFKA_PASSWORD,
   KAFKA_USERNAME,
 } from "@lerna-monorepo/backend-utilities/config";
 import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import fs from "fs";
 
-const isProduction = NODE_ENV === "production";
-
 const kafka = new Kafka({
   clientId: KAFKA_ID,
   brokers: [KAFKA],
-  ssl: isProduction ? true : false,
-  sasl: isProduction
+  ssl: IS_PRODUCTION ? true : false,
+  sasl: IS_PRODUCTION
     ? {
         mechanism: "scram-sha-256",
         username: KAFKA_USERNAME,
         password: KAFKA_PASSWORD,
       }
     : undefined,
-  logLevel: isProduction ? logLevel.ERROR : undefined,
+  logLevel: IS_PRODUCTION ? logLevel.ERROR : undefined,
 });
 
 const producer = kafka.producer();

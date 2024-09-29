@@ -7,7 +7,7 @@ import {
   REFRESH_TOKEN_EXP_NUMBER,
   REFRESHSECRET,
   ACCESSSECRET,
-  NODE_ENV,
+  IS_PRODUCTION,
 } from "@lerna-monorepo/backend-utilities/config";
 import { jwt } from "@lerna-monorepo/backend-utilities/index";
 import { serialize } from "cookie";
@@ -85,7 +85,8 @@ export const SignInMutation = mutationWithClientMutationId<
           httpOnly: true,
           expires: refreshTokenExpireDate,
           secure: true,
-          sameSite: NODE_ENV === "production" ? "lax" : "none",
+          sameSite: IS_PRODUCTION ? "strict" : "none",
+          domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
         })
       );
       req.context.res.setHeader("accessToken", accessToken);

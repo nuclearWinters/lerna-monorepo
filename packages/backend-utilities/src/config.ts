@@ -11,3 +11,4 @@ export const GRPC_AUTH = process.env.GRPC_AUTH || "grpc-auth-node:443";
 export const GRPC_FINTECH = process.env.GRPC_FINTECH || "grpc-fintech-node:443";
 export const KAFKA_USERNAME = process.env.KAFKA_USERNAME || "";
 export const KAFKA_PASSWORD = process.env.KAFKA_PASSWORD || "";
+export const IS_PRODUCTION = NODE_ENV === "production";

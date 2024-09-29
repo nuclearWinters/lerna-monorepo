@@ -12,25 +12,23 @@ import {
   MONGO_DB,
   KAFKA,
   KAFKA_ID,
-  NODE_ENV,
+  IS_PRODUCTION,
   KAFKA_USERNAME,
   KAFKA_PASSWORD,
 } from "@lerna-monorepo/backend-utilities/config";
 
-const isProduction = NODE_ENV === "production";
-
 const kafka = new Kafka({
   clientId: KAFKA_ID,
   brokers: [KAFKA],
-  ssl: isProduction ? true : false,
-  sasl: isProduction
+  ssl: IS_PRODUCTION ? true : false,
+  sasl: IS_PRODUCTION
     ? {
         mechanism: "scram-sha-256",
         username: KAFKA_USERNAME,
         password: KAFKA_PASSWORD,
       }
     : undefined,
-  logLevel: isProduction ? logLevel.ERROR : undefined,
+  logLevel: IS_PRODUCTION ? logLevel.ERROR : undefined,
 });
 
 const producer = kafka.producer();

@@ -5,8 +5,8 @@ import {
   ACCESS_TOKEN_EXP_NUMBER,
   REFRESH_TOKEN_EXP_NUMBER,
   ACCESSSECRET,
-  NODE_ENV,
   REFRESHSECRET,
+  IS_PRODUCTION,
 } from "@lerna-monorepo/backend-utilities/config";
 import { jwt } from "@lerna-monorepo/backend-utilities/index";
 import { serialize } from "cookie";
@@ -67,7 +67,8 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
           httpOnly: true,
           expires: refreshTokenExpireDate,
           secure: true,
-          sameSite: NODE_ENV === "production" ? "lax" : "none",
+          sameSite: IS_PRODUCTION ? "strict" : "none",
+          domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
         })
       );
       const accessToken = jwt.sign(

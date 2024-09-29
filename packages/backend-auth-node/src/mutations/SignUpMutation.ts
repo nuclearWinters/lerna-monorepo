@@ -10,7 +10,7 @@ import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
 import {
   ACCESSSECRET,
-  NODE_ENV,
+  IS_PRODUCTION,
   REFRESHSECRET,
   ACCESS_TOKEN_EXP_NUMBER,
   REFRESH_TOKEN_EXP_NUMBER,
@@ -122,7 +122,8 @@ export const SignUpMutation = mutationWithClientMutationId({
           httpOnly: true,
           expires: refreshTokenExpireDate,
           secure: true,
-          sameSite: NODE_ENV === "production" ? "lax" : "none",
+          sameSite: IS_PRODUCTION ? "strict" : "none",
+          domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
         })
       );
       req.context.res.setHeader("accessToken", accessToken);
