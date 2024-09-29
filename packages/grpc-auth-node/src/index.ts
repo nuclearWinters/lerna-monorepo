@@ -34,8 +34,9 @@ Promise.all([
     ),
     (err) => {
       if (err) {
-        return;
+        throw err;
       }
+      return;
     }
   );
 });

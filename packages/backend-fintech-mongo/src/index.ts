@@ -33,25 +33,45 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-Promise.all([MongoClient.connect(MONGO_DB, {}), producer.connect()]).then(
-  async ([client]) => {
-    const db = client.db("fintech");
-    const grpcClient = new AuthClient(
+const retryStrategy = (times: number) => {
+  return Math.min(times * 50, 2000);
+};
+
+const pubsub = new RedisPubSub({
+  publisher: new Redis(REDIS, { retryStrategy }),
+  subscriber: new Redis(REDIS, { retryStrategy }),
+});
+
+const getGRPCClient = () =>
+  new Promise<AuthClient>((resolve, reject) => {
+    const client = new AuthClient(
       GRPC_AUTH,
       credentials.createSsl(
         fs.readFileSync("../../certs/minica.pem"),
         fs.readFileSync("../../certs/key.pem"),
-        fs.readFileSync("../../certs/cert.pem")
+        fs.readFileSync("../../certs/cert.pem"),
+        IS_PRODUCTION
+          ? undefined
+          : {
+              checkServerIdentity: () => undefined,
+            }
       )
     );
-    const retryStrategy = (times: number) => {
-      return Math.min(times * 50, 2000);
-    };
-    const pubsub = new RedisPubSub({
-      publisher: new Redis(REDIS, { retryStrategy }),
-      subscriber: new Redis(REDIS, { retryStrategy }),
+    client.waitForReady(Date.now() + 5000, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(client);
+      }
     });
-    const serverHTTP2 = await main(db, producer, grpcClient, pubsub);
-    serverHTTP2.listen(443);
-  }
-);
+  });
+
+Promise.all([
+  MongoClient.connect(MONGO_DB),
+  getGRPCClient(),
+  producer.connect(),
+]).then(async ([mongoClient, grpcClient]) => {
+  const db = mongoClient.db("fintech");
+  const serverHTTP2 = await main(db, producer, grpcClient, pubsub);
+  serverHTTP2.listen(443);
+});

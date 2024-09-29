@@ -27,8 +27,9 @@ MongoClient.connect(MONGO_DB, {}).then(async (mongoClient) => {
     ),
     (err) => {
       if (err) {
-        return;
+        throw err;
       }
+      return;
     }
   );
 });
