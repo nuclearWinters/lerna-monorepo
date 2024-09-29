@@ -7,5 +7,7 @@ NODE_ENV=production
 MONGO_DB=`jq ".MONGO_DB" prod.json | sed -e 's/^"//' -e 's/"$//'`
 REDIS=`jq ".REDIS" prod.json | sed -e 's/^"//' -e 's/"$//'`
 GRPC_AUTH=`jq ".GRPC_AUTH" prod.json | sed -e 's/^"//' -e 's/"$//'`
+REFRESHSECRET=`jq ".REFRESHSECRET" prod.json | sed -e 's/^"//' -e 's/"$//'`
+ACCESSSECRET=`jq ".ACCESSSECRET" prod.json | sed -e 's/^"//' -e 's/"$//'`
 rm prod.json
-(GRPC_AUTH=$GRPC_AUTH MONGO_DB=$MONGO_DB NODE_ENV=$NODE_ENV REDIS=$REDIS npm run serve > /dev/null 2> /dev/null < /dev/null &)
+(REFRESHSECRET=$REFRESHSECRET ACCESSSECRET=$ACCESSSECRET GRPC_AUTH=$GRPC_AUTH MONGO_DB=$MONGO_DB NODE_ENV=$NODE_ENV REDIS=$REDIS npm run serve > /dev/null 2> /dev/null < /dev/null &)
