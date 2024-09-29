@@ -20,9 +20,9 @@ services:
       KAFKA_NUM_PARTITIONS: 3
     healthcheck:
       test: /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 5
+      retries: 15
 
   kafka-mongo:
     image: node:20
@@ -140,9 +140,9 @@ services:
     entrypoint: ["/usr/bin/mongod", "--bind_ip_all"]
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 5
+      retries: 15
 
   redis-fintech:
     container_name: redis-fintech
