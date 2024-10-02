@@ -10,64 +10,6 @@ import {
 } from "relay-runtime";
 import { AUTH_API, FINTECH_API, Decode } from "./utils";
 import { jwtDecode } from "./utils";
-import { Sink, createClient } from "graphql-sse";
-
-const subscriptionsClientAuth = createClient({
-  url: AUTH_API,
-  headers: {
-    Authorization: sessionStorage.getItem("accessToken") ?? "",
-  },
-  credentials: "include",
-  fetchFn: async (url: string, config: RequestInit) => {
-    const response = await fetch(url, config);
-    const accesstoken = response.headers.get("accessToken");
-    if (accesstoken && sessionStorage.getItem("accessToken") !== accesstoken) {
-      const decoded = jwtDecode<Decode>(accesstoken);
-      sessionStorage.setItem("accessToken", accesstoken);
-      sessionStorage.setItem("userData", JSON.stringify(decoded));
-    }
-    if (sessionStorage.getItem("accessToken") && !accesstoken) {
-      sessionStorage.removeItem("accessToken");
-      sessionStorage.removeItem("userData");
-      return window.location.reload();
-    }
-    return response;
-  },
-});
-
-const subscriptionsClientFintech = createClient({
-  url: FINTECH_API,
-  headers: {
-    Authorization: sessionStorage.getItem("accessToken") ?? "",
-  },
-  credentials: "include",
-  fetchFn: async (url: string, config: RequestInit) => {
-    const response = await fetch(url, config);
-    const accesstoken = response.headers.get("accessToken");
-    if (accesstoken && sessionStorage.getItem("accessToken") !== accesstoken) {
-      const decoded = jwtDecode<Decode>(accesstoken);
-      sessionStorage.setItem("accessToken", accesstoken);
-      sessionStorage.setItem("userData", JSON.stringify(decoded));
-    }
-    if (sessionStorage.getItem("accessToken") && !accesstoken) {
-      sessionStorage.removeItem("accessToken");
-      sessionStorage.removeItem("userData");
-      return window.location.reload();
-    }
-    return response;
-  },
-  on: {
-    message: (message) => {
-      if (message.event === "next") {
-        if (Array.isArray(message.data?.extensions?.modules)) {
-          registerModuleLoaders(message.data.extensions.modules);
-        }
-        return {};
-      }
-      return {};
-    },
-  },
-});
 
 const subscribeRelayAuth = (
   operation: RequestParameters,
@@ -78,17 +20,59 @@ const subscribeRelayAuth = (
     if (!(text || id)) {
       return sink.error(new Error("Operation text or id cannot be empty"));
     }
-    return subscriptionsClientAuth.subscribe(
-      {
+    fetch(AUTH_API, {
+      credentials: "include",
+      method: "POST",
+      body: JSON.stringify({
         operationName: name,
-        query: text || "",
-        variables,
         extensions: {
           doc_id: id,
         },
+        variables,
+      }),
+      headers: {
+        Authorization: sessionStorage.getItem("accessToken") ?? "",
       },
-      sink as Sink
-    );
+    })
+      .then((response) => {
+        const reader = response?.body?.getReader();
+        const accesstoken = response.headers.get("accessToken");
+        if (
+          accesstoken &&
+          sessionStorage.getItem("accessToken") !== accesstoken
+        ) {
+          const decoded = jwtDecode<Decode>(accesstoken);
+          sessionStorage.setItem("accessToken", accesstoken);
+          sessionStorage.setItem("userData", JSON.stringify(decoded));
+        }
+        if (sessionStorage.getItem("accessToken") && !accesstoken) {
+          sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("userData");
+          return window.location.reload();
+        }
+        const decoder = new TextDecoder();
+        if (!reader) throw new Error("No body");
+        return new Promise<void>((resolve) => {
+          reader.read().then(function pump({
+            done,
+            value,
+          }): undefined | Promise<undefined> {
+            if (done) {
+              resolve();
+              return;
+            }
+            const result = decoder.decode(value);
+            const stream = result.split("\n");
+            const unparsed = stream[1].replace("data: ", "");
+            const data = unparsed === "data:" ? null : JSON.parse(unparsed);
+            sink.next(data);
+            return reader.read().then(pump);
+          });
+        });
+      })
+      .then(() => sink.complete())
+      .catch((err) => sink.error(err));
+    return () => {};
   });
 };
 
@@ -101,17 +85,63 @@ const subscribeRelayFintech = (
     if (!(text || id)) {
       return sink.error(new Error("Operation text or id cannot be empty"));
     }
-    return subscriptionsClientFintech.subscribe(
-      {
+    fetch(FINTECH_API, {
+      credentials: "include",
+      method: "POST",
+      body: JSON.stringify({
         operationName: name,
-        query: text || "",
-        variables,
         extensions: {
           doc_id: id,
         },
+        variables,
+      }),
+      headers: {
+        Authorization: sessionStorage.getItem("accessToken") ?? "",
       },
-      sink as Sink
-    );
+    })
+      .then((response) => {
+        const reader = response?.body?.getReader();
+        const accesstoken = response.headers.get("accessToken");
+        if (
+          accesstoken &&
+          sessionStorage.getItem("accessToken") !== accesstoken
+        ) {
+          const decoded = jwtDecode<Decode>(accesstoken);
+          sessionStorage.setItem("accessToken", accesstoken);
+          sessionStorage.setItem("userData", JSON.stringify(decoded));
+        }
+        if (sessionStorage.getItem("accessToken") && !accesstoken) {
+          sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("userData");
+          return window.location.reload();
+        }
+        const decoder = new TextDecoder();
+        if (!reader) throw new Error("No body");
+        return new Promise<void>((resolve) => {
+          reader.read().then(function pump({
+            done,
+            value,
+          }): undefined | Promise<undefined> {
+            if (done) {
+              resolve();
+              return;
+            }
+            const result = decoder.decode(value);
+            const stream = result.split("\n");
+            const unparsed = stream[1].replace("data: ", "");
+            const data = unparsed === "data:" ? null : JSON.parse(unparsed);
+            console.log(data);
+            if (Array.isArray(data?.extensions?.modules)) {
+              registerModuleLoaders(data.extensions.modules);
+            }
+            sink.next(data);
+            return reader.read().then(pump);
+          });
+        });
+      })
+      .then(() => sink.complete())
+      .catch((err) => sink.error(err));
+    return () => {};
   });
 };
 
@@ -130,14 +160,14 @@ const operationLoader = {
   },
 };
 
-const RelayEnvironmentAuth = new Environment({
+export const RelayEnvironmentAuth = new Environment({
   network: networkAuth,
   store: new Store(new RecordSource(), { operationLoader }),
   operationLoader,
   isServer: false,
 });
 
-const RelayEnvironmentFintech = new Environment({
+export const RelayEnvironmentFintech = new Environment({
   network: networkFintech,
   store: new Store(new RecordSource(), { operationLoader }),
   operationLoader,
@@ -232,5 +262,3 @@ export function registerLoader(
     );
   }
 }
-
-export { RelayEnvironmentAuth, RelayEnvironmentFintech };

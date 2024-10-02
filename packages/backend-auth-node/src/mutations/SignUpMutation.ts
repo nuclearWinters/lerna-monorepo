@@ -58,7 +58,7 @@ export const SignUpMutation = mutationWithClientMutationId({
     { email, password, isLender, language }: Input,
     {
       authusers,
-      req,
+      res,
       logins,
       ip,
       sessions,
@@ -116,7 +116,7 @@ export const SignUpMutation = mutationWithClientMutationId({
         ACCESSSECRET
       );
       const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1000);
-      req.context.res.appendHeader(
+      res.appendHeader(
         "Set-Cookie",
         serialize("refreshToken", refreshToken, {
           httpOnly: true,
@@ -126,7 +126,7 @@ export const SignUpMutation = mutationWithClientMutationId({
           domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
         })
       );
-      req.context.res.setHeader("accessToken", accessToken);
+      res.setHeader("accessToken", accessToken);
       await createUser(id, grpcClient);
       await logins.insertOne({
         applicationName: "Lerna Monorepo",

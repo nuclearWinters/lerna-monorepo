@@ -40,7 +40,7 @@ export const SignInMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { email, password },
-    { authusers, rdb, req, logins, ip, sessions, deviceType, deviceName }
+    { authusers, rdb, res, logins, ip, sessions, deviceType, deviceName }
   ) => {
     try {
       const user = await authusers.findOne({ email });
@@ -79,7 +79,7 @@ export const SignInMutation = mutationWithClientMutationId<
         ACCESSSECRET
       );
       const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1000);
-      req.context.res.appendHeader(
+      res.appendHeader(
         "Set-Cookie",
         serialize("refreshToken", refreshToken, {
           httpOnly: true,
@@ -89,7 +89,7 @@ export const SignInMutation = mutationWithClientMutationId<
           domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
         })
       );
-      req.context.res.setHeader("accessToken", accessToken);
+      res.setHeader("accessToken", accessToken);
       await logins.insertOne({
         applicationName: "Lerna Monorepo",
         address: ip || "",

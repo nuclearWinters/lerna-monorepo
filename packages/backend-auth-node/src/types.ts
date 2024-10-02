@@ -1,5 +1,4 @@
 import { ObjectId, Collection } from "mongodb";
-import { Request } from "graphql-sse";
 import { Http2ServerRequest, Http2ServerResponse } from "http2";
 import { RedisClientType, UUID } from "@lerna-monorepo/backend-utilities/types";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
@@ -16,7 +15,8 @@ export interface Context {
   ip?: string;
   deviceType: string;
   deviceName: string;
-  req: Request<Http2ServerRequest, { res: Http2ServerResponse }>;
+  req: Http2ServerRequest;
+  res: Http2ServerResponse;
   grpcClient: AccountClient;
 }
 

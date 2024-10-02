@@ -35,7 +35,7 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { sessionId }: Input,
-    { rdb, id, sessions, refreshToken, req }: Context
+    { rdb, id, sessions, refreshToken, res }: Context
   ): Promise<Payload> => {
     try {
       if (!id) {
@@ -54,8 +54,8 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
       if (session) {
         await rdb.set(session.refreshToken, time, { EX: 60 * 15 });
         if (refreshToken === session.refreshToken) {
-          req.context.res.setHeader("accessToken", "");
-          req.context.res.appendHeader(
+          res.setHeader("accessToken", "");
+          res.appendHeader(
             "Set-Cookie",
             serialize("refreshToken", "", {
               httpOnly: true,

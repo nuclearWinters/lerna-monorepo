@@ -1,4 +1,4 @@
-import { GraphQLSchema, GraphQLObjectType, parse } from "graphql";
+import { GraphQLSchema, GraphQLObjectType } from "graphql";
 import { SignUpMutation } from "./mutations/SignUpMutation.js";
 import { SignInMutation } from "./mutations/SignInMutation.js";
 import { getContextSSE } from "./utils.js";
@@ -8,13 +8,13 @@ import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation.js";
 import { LogOutMutation } from "./mutations/LogOutMutation.js";
 import { RevokeSessionMutation } from "./mutations/RevokeSessionMutation.js";
 import { createSecureServer } from "http2";
-import { createHandler } from "graphql-sse/lib/use/http2";
 import { Db } from "mongodb";
 import fs from "fs";
 import * as queryMap from "./queryMapAuth.json" with { type: "json" };
 import { RedisClientType } from "@lerna-monorepo/backend-utilities/types";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
 import { IS_PRODUCTION } from "@lerna-monorepo/backend-utilities/config";
+import { createHandler } from "@lerna-monorepo/backend-utilities/index";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -48,22 +48,10 @@ const main = async (
 ) => {
   const handler = createHandler({
     schema,
-    context: async (request) => {
-      return await getContextSSE(request, db, rdb, grpcClient);
+    context: async (req, res) => {
+      return await getContextSSE(req, res, db, rdb, grpcClient);
     },
-    onSubscribe: async (request, params) => {
-      const doc_id = params.extensions?.doc_id;
-      const query = queryMap.default.find((query) => query[0] === doc_id);
-      if (query) {
-        return {
-          schema,
-          document: parse(query[1]),
-          variableValues: params.variables,
-          contextValue: await getContextSSE(request, db, rdb, grpcClient),
-        };
-      }
-      return [null, { status: 404, statusText: "Not Found" }];
-    },
+    queryMap: queryMap.default,
   });
   const server = createSecureServer(
     {

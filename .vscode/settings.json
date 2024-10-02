@@ -9,5 +9,6 @@
     "packages/grpc-fintech-node",
   ],
   "editor.formatOnSave": true,
-  "editor.indentSize": 2
+  "editor.indentSize": 2,
+  "files.autoSave": "off"
 }

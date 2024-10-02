@@ -27,7 +27,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     _: unknown,
-    { rdb, refreshToken, id, req }: Context
+    { rdb, refreshToken, id, res }: Context
   ): Promise<Payload> => {
     try {
       if (!id) {
@@ -61,7 +61,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
         REFRESHSECRET
       );
       const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1000);
-      req.context.res.appendHeader(
+      res.appendHeader(
         "Set-Cookie",
         serialize("refreshToken", newRefreshToken, {
           httpOnly: true,
@@ -82,7 +82,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
         },
         ACCESSSECRET
       );
-      req.context.res.setHeader("accessToken", accessToken);
+      res.setHeader("accessToken", accessToken);
       return {
         error: "",
       };

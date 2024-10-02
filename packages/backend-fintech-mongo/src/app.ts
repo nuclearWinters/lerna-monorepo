@@ -1,4 +1,4 @@
-import { GraphQLSchema, GraphQLObjectType, parse } from "graphql";
+import { GraphQLSchema, GraphQLObjectType } from "graphql";
 import { QueryUser } from "./QueryUser.js";
 import { dataDrivenDependencies, nodeField } from "./Nodes.js";
 import { AddLendsMutation } from "./mutations/AddLends.js";
@@ -19,12 +19,12 @@ import { QueryScheduledPayments } from "./QueryScheduledPayments.js";
 import { createSecureServer } from "http2";
 import { Db } from "mongodb";
 import { Producer } from "kafkajs";
-import { createHandler } from "graphql-sse/lib/use/http2";
 import fs from "fs";
 import * as queryMap from "./queryMap.json" with { type: "json" };
 import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { IS_PRODUCTION } from "@lerna-monorepo/backend-utilities/config";
+import { createHandler } from "@lerna-monorepo/backend-utilities/index";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -76,9 +76,10 @@ const main = async (
   }
   const handler = createHandler({
     schema,
-    context: async (request) => {
+    context: async (req, res) => {
       const context = await getContextSSE(
-        request,
+        req,
+        res,
         db,
         producer,
         grpcClient,
@@ -87,33 +88,8 @@ const main = async (
       dataDrivenDependencies.reset();
       return context;
     },
-    onSubscribe: async (request, params) => {
-      const doc_id = params.extensions?.doc_id;
-      const query = queryMap.default.find((query) => query[0] === doc_id);
-      if (query) {
-        return {
-          schema,
-          document: parse(query[1]),
-          variableValues: params.variables,
-          contextValue: await getContextSSE(
-            request,
-            db,
-            producer,
-            grpcClient,
-            pubsub
-          ),
-        };
-      }
-      return [null, { status: 404, statusText: "Not Found" }];
-    },
-    onOperation: (_ctx, _req, _args, result) => {
-      return {
-        ...result,
-        extensions: {
-          modules: dataDrivenDependencies.getModules(),
-        },
-      };
-    },
+    queryMap: queryMap.default,
+    dataDrivenDependencies: dataDrivenDependencies,
   });
   const server = createSecureServer(
     {

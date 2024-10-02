@@ -20,12 +20,12 @@ export const LogOutMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     _: unknown,
-    { req, refreshToken, rdb, sessions }: Context
+    { res, refreshToken, rdb, sessions }: Context
   ): Promise<Payload> => {
     try {
       const now = new Date();
       now.setMilliseconds(0);
-      req.context.res.appendHeader(
+      res.appendHeader(
         "Set-Cookie",
         serialize("refreshToken", "", {
           httpOnly: true,
