@@ -49,13 +49,13 @@ export const GraphQLSession = new GraphQLObjectType<UserSessions>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ applicationName }): string => applicationName,
     },
-    type: {
+    deviceOS: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ type }): string => type,
+      resolve: ({ deviceOS }): string => deviceOS,
     },
-    deviceName: {
+    deviceBrowser: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ deviceName }): string => deviceName,
+      resolve: ({ deviceBrowser }): string => deviceBrowser,
     },
     address: {
       type: new GraphQLNonNull(GraphQLString),

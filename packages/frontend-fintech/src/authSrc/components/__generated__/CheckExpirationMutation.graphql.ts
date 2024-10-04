@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5f74a280567703322368bd4db112d890>>
+ * @generated SignedSource<<62fcd4f9b55e53acdb4d252788c1e54c>>
  * @relayHash 4e65856e4f21af21cfd702bbdea624e4
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 4e65856e4f21af21cfd702bbdea624e4
 
-import { ConcreteRequest, Mutation } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type ExtendSessionInput = {
   clientMutationId?: string | null | undefined;
 };

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b44cc77b0d48d24378d46997e162a92c>>
+ * @generated SignedSource<<27b8e0540c91dd364f835f95a8c84ca4>>
  * @relayHash adf8a141164c9d25336db3b811342820
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID adf8a141164c9d25336db3b811342820
 
-import { ConcreteRequest, Mutation } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type LogOutInput = {
   clientMutationId?: string | null | undefined;
 };

@@ -1,6 +1,5 @@
 import { Db } from "mongodb";
 import { UserMongo, UserLogins, UserSessions } from "./types.js";
-//import DeviceDetector from "node-device-detector";
 import { Http2ServerRequest, Http2ServerResponse } from "http2";
 import { parse } from "cookie";
 import {
@@ -112,8 +111,7 @@ export const getContextSSE = async (
   rdb: RedisClientType,
   grpcClient: AccountClient
 ): Promise<Record<string, unknown>> => {
-  //const ip = req.headers.get("x-forwarded-for") || req.socket.remoteAddress;
-  const ip = "";
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
   const accessToken = req.headers.authorization || "";
   const cookies = parse(req.headers.cookie || "");
   const refreshToken = cookies.refreshToken || "";
@@ -126,19 +124,7 @@ export const getContextSSE = async (
   if (validAccessToken) {
     res.setHeader("accessToken", validAccessToken);
   }
-  //const userAgent = req.headers["user-agent"];
-  //const detector = new DeviceDetector({
-  //  clientIndexes: true,
-  //  deviceIndexes: true,
-  //  deviceAliasCode: false,
-  //});
-  const deviceName = "";
-  const deviceType = "";
-  /*if (userAgent) {
-    const result = detector.detect(userAgent);
-    deviceName = `${result.os.name} ${result.os.version}`;
-    deviceType = `${result.device.type} ${result.client.type} ${result.client.name}`;
-  }*/
+  const userAgent = req.headers["user-agent"];
   return {
     authusers: authdb.collection<UserMongo>("users"),
     logins: authdb.collection<UserLogins>("logins"),
@@ -148,8 +134,7 @@ export const getContextSSE = async (
     refreshToken,
     id,
     ip,
-    deviceName,
-    deviceType,
+    userAgent,
     req,
     grpcClient,
     res,

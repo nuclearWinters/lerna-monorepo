@@ -33,8 +33,8 @@ export const settingsSessionsPaginationFragment = graphql`
         node {
           id
           applicationName
-          type
-          deviceName
+          deviceOS
+          deviceBrowser
           address
           lastTimeAccessed
           expirationDate

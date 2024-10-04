@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b6249dd858dbffedb9eeddc873071ff7>>
+ * @generated SignedSource<<bc22d621e3321fc98b5f26572364153e>>
  * @relayHash 42158b2d4898c10429bee6ac923b8bbc
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 42158b2d4898c10429bee6ac923b8bbc
 
-import { ConcreteRequest, Mutation } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type Languages = "EN" | "ES" | "%future added value";
 export type UpdateUserInput = {
   CURP: string;

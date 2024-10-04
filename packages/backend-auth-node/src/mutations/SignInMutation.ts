@@ -11,6 +11,7 @@ import {
 } from "@lerna-monorepo/backend-utilities/config";
 import { jwt } from "@lerna-monorepo/backend-utilities/index";
 import { serialize } from "cookie";
+import { parse as woothee } from "woothee";
 
 interface Input {
   email: string;
@@ -40,7 +41,7 @@ export const SignInMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { email, password },
-    { authusers, rdb, res, logins, ip, sessions, deviceType, deviceName }
+    { authusers, rdb, res, logins, ip, sessions, userAgent }
   ) => {
     try {
       const user = await authusers.findOne({ email });
@@ -96,12 +97,15 @@ export const SignInMutation = mutationWithClientMutationId<
         time: now,
         userId: user.id,
       });
+      const data = woothee(userAgent);
+      const deviceOS = `${data.os} ${data.version}`;
+      const deviceBrowser = `${data.category} ${data.name} ${data.version} ${data.vendor}`;
       await sessions.insertOne({
         refreshToken,
         lastTimeAccessed: now,
         applicationName: "Lerna Monorepo",
-        type: deviceType,
-        deviceName: deviceName,
+        deviceOS,
+        deviceBrowser,
         address: ip || "",
         userId: user.id,
         expirationDate: refreshTokenExpireDate,

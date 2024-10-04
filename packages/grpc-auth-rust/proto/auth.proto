@@ -1,0 +1,19 @@
+syntax = "proto3";
+package authPackage;
+
+service Auth {
+    rpc jwtMiddleware(JWTMiddlewareInput) returns (JWTMiddlewarePayload) {};
+}
+
+message JWTMiddlewareInput {
+    string refresh_token = 1;
+    string access_token = 3;
+}
+
+message JWTMiddlewarePayload {
+    string valid_access_token = 1;
+    string id = 2;
+    bool is_lender = 3;
+    bool is_borrower = 4;
+    bool is_support = 5;
+}

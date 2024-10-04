@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<81bcb4c44c3cd4286df4963c09194e78>>
+ * @generated SignedSource<<40feed78a0d5bef62e03eb01555b8305>>
  * @relayHash 95e2b3e28198459a859cd2b7075ac533
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 95e2b3e28198459a859cd2b7075ac533
 
-import { ConcreteRequest, Mutation } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type SignInInput = {
   clientMutationId?: string | null | undefined;
   email: string;

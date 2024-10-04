@@ -17,6 +17,7 @@ import {
 } from "@lerna-monorepo/backend-utilities/config";
 import { jwt } from "@lerna-monorepo/backend-utilities/index";
 import { createUser } from "@lerna-monorepo/backend-utilities/grpc";
+import { parse as woothee } from "woothee";
 
 interface Input {
   email: string;
@@ -56,16 +57,7 @@ export const SignUpMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
-    {
-      authusers,
-      res,
-      logins,
-      ip,
-      sessions,
-      deviceName,
-      deviceType,
-      grpcClient,
-    }: Context
+    { authusers, res, logins, ip, sessions, userAgent, grpcClient }: Context
   ): Promise<Payload> => {
     try {
       const user = await authusers.findOne({ email });
@@ -134,12 +126,15 @@ export const SignUpMutation = mutationWithClientMutationId({
         time: now,
         userId: id,
       });
+      const data = woothee(userAgent);
+      const deviceOS = `${data.os} ${data.version}`;
+      const deviceBrowser = `${data.category} ${data.name} ${data.version} ${data.vendor}`;
       await sessions.insertOne({
         refreshToken,
         lastTimeAccessed: now,
         applicationName: "Lerna Monorepo",
-        type: deviceType,
-        deviceName,
+        deviceOS,
+        deviceBrowser,
         address: ip || "",
         userId: id,
         expirationDate: refreshTokenExpireDate,

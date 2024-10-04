@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@stylexjs/stylex": "^0.7.5",
-    "graphql-sse": "^2.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-relay": "^18.0.0",
@@ -74,9 +73,7 @@
     "relay-test-utils": "^18.0.0",
     "@types/relay-test-utils": "^17.0.0",
     "@testing-library/dom": "^10.4.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "@testing-library/user-event": "^14.5.2",
-    "@testing-library/jest-dom": "^6.5.0"
+    "jest-environment-jsdom": "^29.7.0"
   },
   "author": "Armando Rueda",
   "license": "ISC",

@@ -144,8 +144,8 @@ const columnSession: {
     info: {
       id: string;
       applicationName: string;
-      type: string;
-      deviceName: string;
+      deviceOS: string;
+      deviceBrowser: string;
       address: string;
       lastTimeAccessed: string;
     };
@@ -157,32 +157,32 @@ const columnSession: {
     id: "id",
     header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
     cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.applicationName}</td>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.id}</td>
     ),
   },
   {
     id: "applicationName",
     header: (t) => <TableColumnName>{t("Aplicacion")}</TableColumnName>,
     cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.type}</td>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.applicationName}</td>
     ),
   },
   {
-    id: "type",
+    id: "deviceBrowser",
     header: (t) => (
       <TableColumnName>{t("Tipo de dispositivo")}</TableColumnName>
     ),
     cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.type}</td>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.deviceBrowser}</td>
     ),
   },
   {
-    id: "deviceName",
+    id: "deviceOS",
     header: (t) => (
       <TableColumnName>{t("Nombre del dispositivo")}</TableColumnName>
     ),
     cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.deviceName}</td>
+      <td {...stylex.props(baseLoanRowCell.base)}>{info.deviceOS}</td>
     ),
   },
   {
@@ -461,8 +461,8 @@ export const Settings: EntryPointComponent<Queries, {}> = (props) => {
               const {
                 id,
                 applicationName,
-                type,
-                deviceName,
+                deviceOS,
+                deviceBrowser,
                 address,
                 lastTimeAccessed,
               } = node;
@@ -474,8 +474,8 @@ export const Settings: EntryPointComponent<Queries, {}> = (props) => {
                         info: {
                           id,
                           applicationName,
-                          type,
-                          deviceName,
+                          deviceOS,
+                          deviceBrowser,
                           address,
                           lastTimeAccessed,
                         },

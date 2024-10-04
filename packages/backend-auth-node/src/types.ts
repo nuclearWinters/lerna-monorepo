@@ -13,8 +13,7 @@ export interface Context {
   validAccessToken?: string;
   id?: UUID;
   ip?: string;
-  deviceType: string;
-  deviceName: string;
+  userAgent: string;
   req: Http2ServerRequest;
   res: Http2ServerResponse;
   grpcClient: AccountClient;
@@ -31,8 +30,8 @@ export interface UserLogins {
 export interface UserSessions {
   _id?: ObjectId;
   applicationName: "Lerna Monorepo";
-  type: string;
-  deviceName: string;
+  deviceOS: string;
+  deviceBrowser: string;
   address: string;
   lastTimeAccessed: Date;
   userId: UUID;

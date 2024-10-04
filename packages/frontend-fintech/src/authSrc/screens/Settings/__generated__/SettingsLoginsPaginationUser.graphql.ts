@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a03f9cc8bae523fdde6e424a582a0a91>>
+ * @generated SignedSource<<dfbb8f9f3741a112b5c040ccae32b7e2>>
  * @relayHash 4c778455fdea93462afd1c5097ca6dcf
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 4c778455fdea93462afd1c5097ca6dcf
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type SettingsLoginsPaginationUser$variables = {
   count?: number | null | undefined;

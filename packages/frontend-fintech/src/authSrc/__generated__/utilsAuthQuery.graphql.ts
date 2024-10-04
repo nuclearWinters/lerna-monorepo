@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<eab8318e64499c582737f736a07512ef>>
+ * @generated SignedSource<<681b12c9ab6e93dd032edd95c8a16ee8>>
  * @relayHash 3ae5b78d54494c2df3035d0d2ea23521
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 3ae5b78d54494c2df3035d0d2ea23521
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type Languages = "EN" | "ES" | "%future added value";
 export type utilsAuthQuery$variables = Record<PropertyKey, never>;
 export type utilsAuthQuery$data = {

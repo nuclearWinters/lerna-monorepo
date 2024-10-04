@@ -1,6 +1,6 @@
 /**
- * @generated SignedSource<<c40609b38daa761a96e3c70a8129f62a>>
- * @relayHash 24d910bc131e2fa99d30993701210592
+ * @generated SignedSource<<ac8ba0e7e9d94f11d53c006d90a5cfb5>>
+ * @relayHash 50828915cf88e304b829f609067fb51a
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,9 +9,9 @@
 /* eslint-disable */
 // @ts-nocheck
 
-// @relayRequestID 24d910bc131e2fa99d30993701210592
+// @relayRequestID 50828915cf88e304b829f609067fb51a
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type SettingsSessionsPaginationUser$variables = {
   count?: number | null | undefined;
@@ -193,14 +193,14 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "type",
+                            "name": "deviceOS",
                             "storageKey": null
                           },
                           {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "deviceName",
+                            "name": "deviceBrowser",
                             "storageKey": null
                           },
                           {
@@ -287,7 +287,7 @@ return {
     ]
   },
   "params": {
-    "id": "24d910bc131e2fa99d30993701210592",
+    "id": "50828915cf88e304b829f609067fb51a",
     "metadata": {},
     "name": "SettingsSessionsPaginationUser",
     "operationKind": "query",
@@ -296,6 +296,6 @@ return {
 };
 })();
 
-(node as any).hash = "ce2c2b2d1e08e8e20c4c02a65cd080b0";
+(node as any).hash = "009f566e1fd050c5ef6e48651d6d99b4";
 
 export default node;

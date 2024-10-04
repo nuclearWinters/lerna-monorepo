@@ -21,9 +21,7 @@
     "date-fns": "^4.1.0",
     "graphql": "^16.5.0",
     "graphql-relay": "^0.10.2",
-    "graphql-sse": "^2.5.3",
     "jsonwebtoken": "^9.0.0",
-    "node-device-detector": "^2.1.2",
     "redis": "^4.6.15"
   },
   "devDependencies": {
@@ -36,7 +34,6 @@
     "@testcontainers/redis": "^10.11.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/cookie": "^0.6.0",
-    "@types/cookie-parser": "^1.4.3",
     "@types/eslint__js": "^8.42.3",
     "@types/jest": "^29.2.4",
     "@types/jsonwebtoken": "^9.0.0",

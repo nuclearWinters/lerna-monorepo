@@ -1,31 +1,20 @@
 [package]
-name = "backend-auth-rust"
+name = "rust-backend-auth"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-async-graphql = "7.0.11"
-async-graphql-axum = "7.0.11"
 tokio = { version = "1.0.2", features = ["macros", "rt-multi-thread"] }
-axum = "0.7.7"
 mongodb = "3.1.0"
-base64 = "0.22.1"
 serde = { version = "1.0.210", features = ["derive"] }
 jsonwebtoken = "9.3.0"
-bcrypt = "0.15.1"
-cookie = "0.18.1"
 redis = "0.27.2"
 serde_json = "1.0.128"
 tonic = "0.12.3"
 prost = "0.13.3"
-woothee = "0.13.0"
-uuid = "1.10.0"
-tower-http = { version = "0.6.1", features = ["cors"] }
-axum-server = { version = "0.7", features = ["tls-rustls"] }
-axum-extra = { version = "0.9.4", features = ["typed-header"] }
-futures = { version = "0.3" }
+futures = "0.3.30"
 
 [build-dependencies]
 tonic-build = "0.12.3"

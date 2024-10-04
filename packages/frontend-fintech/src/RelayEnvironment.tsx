@@ -130,7 +130,6 @@ const subscribeRelayFintech = (
             const stream = result.split("\n");
             const unparsed = stream[1].replace("data: ", "");
             const data = unparsed === "data:" ? null : JSON.parse(unparsed);
-            console.log(data);
             if (Array.isArray(data?.extensions?.modules)) {
               registerModuleLoaders(data.extensions.modules);
             }

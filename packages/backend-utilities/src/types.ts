@@ -16,8 +16,8 @@ export interface UserLogins {
 export interface UserSessions {
   _id?: ObjectId;
   applicationName: "Lerna Monorepo";
-  type: string;
-  deviceName: string;
+  deviceOS: string;
+  deviceBrowser: string;
   address: string;
   lastTimeAccessed: Date;
   userId: UUID;

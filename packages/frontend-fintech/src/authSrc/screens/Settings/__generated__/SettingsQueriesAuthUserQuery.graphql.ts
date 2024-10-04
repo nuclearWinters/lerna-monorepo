@@ -1,6 +1,6 @@
 /**
- * @generated SignedSource<<22dfb242d76cd993fe3b62e5863d1475>>
- * @relayHash dc570781771a4c3630c2402ec2ae4ffe
+ * @generated SignedSource<<dfaf72b50bffe377e24e33a57f27e721>>
+ * @relayHash dbd864b10f90725bd592557b7454f679
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,9 +9,9 @@
 /* eslint-disable */
 // @ts-nocheck
 
-// @relayRequestID dc570781771a4c3630c2402ec2ae4ffe
+// @relayRequestID dbd864b10f90725bd592557b7454f679
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type Languages = "EN" | "ES" | "%future added value";
 export type SettingsQueriesAuthUserQuery$variables = Record<PropertyKey, never>;
@@ -330,14 +330,14 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "type",
+                        "name": "deviceOS",
                         "storageKey": null
                       },
                       {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "deviceName",
+                        "name": "deviceBrowser",
                         "storageKey": null
                       },
                       (v12/*: any*/),
@@ -382,7 +382,7 @@ return {
     ]
   },
   "params": {
-    "id": "dc570781771a4c3630c2402ec2ae4ffe",
+    "id": "dbd864b10f90725bd592557b7454f679",
     "metadata": {},
     "name": "SettingsQueriesAuthUserQuery",
     "operationKind": "query",

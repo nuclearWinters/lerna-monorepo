@@ -71,8 +71,8 @@ describe("RevokeSessionMutation tests", () => {
     await sessions.insertOne({
       _id: other_session_oid,
       applicationName: "Lerna Monorepo",
-      type: "lender",
-      deviceName: "Lender",
+      deviceOS: "lender",
+      deviceBrowser: "Lender",
       address: "::1",
       lastTimeAccessed: new Date(),
       userId: other_user_id,
@@ -206,8 +206,8 @@ describe("RevokeSessionMutation tests", () => {
     await sessions.insertOne({
       _id: other_session_oid,
       applicationName: "Lerna Monorepo",
-      type: "lender",
-      deviceName: "Lender",
+      deviceOS: "lender",
+      deviceBrowser: "Lender",
       address: "::1",
       lastTimeAccessed: new Date(),
       userId: user_id,

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5dea3bfc6e0a96378eb37c01dedd4447>>
+ * @generated SignedSource<<71b411dd502f0522df53e7194e7a3570>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type SettingsQueries_sessions_user$data = {
   readonly id: string;
@@ -17,11 +17,11 @@ export type SettingsQueries_sessions_user$data = {
       readonly node: {
         readonly address: string;
         readonly applicationName: string;
-        readonly deviceName: string;
+        readonly deviceBrowser: string;
+        readonly deviceOS: string;
         readonly expirationDate: Int;
         readonly id: string;
         readonly lastTimeAccessed: Int;
-        readonly type: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   } | null | undefined;
@@ -136,14 +136,14 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "type",
+                  "name": "deviceOS",
                   "storageKey": null
                 },
                 {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "deviceName",
+                  "name": "deviceBrowser",
                   "storageKey": null
                 },
                 {
@@ -222,6 +222,6 @@ return {
 };
 })();
 
-(node as any).hash = "ce2c2b2d1e08e8e20c4c02a65cd080b0";
+(node as any).hash = "009f566e1fd050c5ef6e48651d6d99b4";
 
 export default node;

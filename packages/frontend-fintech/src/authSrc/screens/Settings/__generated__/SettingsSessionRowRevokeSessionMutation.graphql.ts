@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<dd692bd1f117f6bd722ae2e3e45f498d>>
+ * @generated SignedSource<<ae13fbb19bdb32f9ad5508c3c253fd7a>>
  * @relayHash 360b8a63b14154e6762d64c916371a6e
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 360b8a63b14154e6762d64c916371a6e
 
-import { ConcreteRequest, Mutation } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type RevokeSessionInput = {
   clientMutationId?: string | null | undefined;
   sessionId: string;

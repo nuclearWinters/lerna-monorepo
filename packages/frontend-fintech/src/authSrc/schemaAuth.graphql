@@ -111,8 +111,8 @@ enum Languages {
 type Session implements Node {
   id: ID!
   applicationName: String!
-  type: String!
-  deviceName: String!
+  deviceOS: String!
+  deviceBrowser: String!
   address: String!
   lastTimeAccessed: Date!
   userId: String!

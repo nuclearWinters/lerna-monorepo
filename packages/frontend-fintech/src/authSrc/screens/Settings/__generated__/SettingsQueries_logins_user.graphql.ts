@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f437dc56791ca4b13c305ee6f027a32b>>
+ * @generated SignedSource<<a6411f810e82696462158c8e82b20620>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type SettingsQueries_logins_user$data = {
   readonly id: string;
