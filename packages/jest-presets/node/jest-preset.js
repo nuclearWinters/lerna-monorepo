@@ -12,6 +12,6 @@ module.exports = {
   modulePathIgnorePatterns: [
     "<rootDir>/test/__fixtures__",
     "<rootDir>/node_modules",
-    "<rootDir>/dist",
+    "<rootDir>/build",
   ],
 };

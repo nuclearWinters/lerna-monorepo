@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 import {
   GraphQLNonNull,
   GraphQLObjectType,
@@ -21,7 +20,7 @@ import {
   ConnectionArguments,
   forwardConnectionArgs,
 } from "graphql-relay";
-import { Filter } from "mongodb";
+import { Filter, ObjectId } from "mongodb";
 import type {
   Context,
   InvestmentMongo,

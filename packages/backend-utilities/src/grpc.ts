@@ -4,7 +4,10 @@ import type {
   AccountClient,
   IAccountServer,
 } from "./protoAccount/account_grpc_pb.js";
-import Account from "./protoAccount/account_pb.js";
+import {
+  CreateUserInput,
+  CreateUserPayload,
+} from "./protoAccount/account_pb.js";
 import type { AuthClient, IAuthServer } from "./protoAuth/auth_grpc_pb.js";
 import type {
   JWTMiddlewareInput as AuthJWTMiddlewareInput,
@@ -14,7 +17,10 @@ import type {
   CreateUserInput as AccountCreateUserInput,
   CreateUserPayload as AccountCreateUserPayload,
 } from "./protoAccount/account_pb.js";
-import Auth from "./protoAuth/auth_pb.js";
+import {
+  JWTMiddlewareInput,
+  JWTMiddlewarePayload,
+} from "./protoAuth/auth_pb.js";
 import {
   Metadata,
   ServerUnaryCall,
@@ -23,9 +29,6 @@ import {
 } from "@grpc/grpc-js";
 import { Db } from "mongodb";
 import { RedisClientType, UserSessions } from "./types";
-
-const { CreateUserInput, CreateUserPayload } = Account;
-const { JWTMiddlewareInput, JWTMiddlewarePayload } = Auth;
 
 export const jwtMiddleware = (
   refreshToken: string,

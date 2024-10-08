@@ -4,8 +4,8 @@
   "description": "Backend typescript express relay mongodb",
   "scripts": {
     "start": "tsx watch ./src/index.ts",
-    "build": "npx tsc || ../../node_modules/typescript/bin/tsc",
-    "lint": "npx tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ../../node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
+    "build": "tsc || ./node_modules/typescript/bin/tsc",
+    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
     "serve": "node ./build/index.js",
     "pcm": "lint-staged",
     "test": "jest --bail"

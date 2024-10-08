@@ -4,8 +4,8 @@
   "description": "Backend typescript express relay mongodb",
   "scripts": {
     "start": "tsx watch ./src/index.ts",
-    "build": "npx tsc || ../../node_modules/typescript/bin/tsc",
-    "lint": "npx tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ../../node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
+    "build": "tsc || ./node_modules/typescript/bin/tsc",
+    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
     "serve": "node ./build/index.js",
     "pcm": "lint-staged",
     "test": "jest --bail"
@@ -23,13 +23,14 @@
     "ioredis": "^5.2.4",
     "kafkajs": "^2.2.4",
     "mongodb": "^6.2.0",
-    "testcontainers": "^10.5.0",
     "@lerna-monorepo/backend-utilities": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.19.1",
     "@sinonjs/fake-timers": "^13.0.1",
+    "testcontainers": "^10.5.0",
     "@testcontainers/kafka": "^10.5.0",
+    "@testcontainers/redis": "^10.11.0",
     "@types/jest": "^29.0.0",
     "@types/supertest": "^6.0.1",
     "eslint": "^9.9.1",

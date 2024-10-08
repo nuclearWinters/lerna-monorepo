@@ -36,7 +36,7 @@ const subscribeRelayAuth = (
     })
       .then((response) => {
         const reader = response?.body?.getReader();
-        const accesstoken = response.headers.get("accessToken");
+        const accesstoken = response.headers.get("accesstoken");
         if (
           accesstoken &&
           sessionStorage.getItem("accessToken") !== accesstoken
@@ -101,7 +101,7 @@ const subscribeRelayFintech = (
     })
       .then((response) => {
         const reader = response?.body?.getReader();
-        const accesstoken = response.headers.get("accessToken");
+        const accesstoken = response.headers.get("accesstoken");
         if (
           accesstoken &&
           sessionStorage.getItem("accessToken") !== accesstoken

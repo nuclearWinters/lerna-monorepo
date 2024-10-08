@@ -13,7 +13,7 @@
     "relayFintech": "relay-compiler ./relayFintech.config.json",
     "persist-server-auth": "node ./relayLocalPersistingAuth.js",
     "persist-server-fintech": "node ./relayLocalPersistingFintech.js",
-    "lint": "npx eslint ."
+    "lint": "eslint ."
   },
   "dependencies": {
     "@stylexjs/stylex": "^0.7.5",

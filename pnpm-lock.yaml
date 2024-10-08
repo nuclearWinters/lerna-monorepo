@@ -120,6 +120,9 @@ importers:
       '@lerna-monorepo/backend-utilities':
         specifier: workspace:*
         version: link:../backend-utilities
+      cookie:
+        specifier: ^0.6.0
+        version: 0.6.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -166,12 +169,18 @@ importers:
       '@testcontainers/redis':
         specifier: ^10.10.4
         version: 10.13.2
+      '@types/cookie':
+        specifier: ^0.6.0
+        version: 0.6.0
       '@types/jest':
         specifier: ^29.0.0
         version: 29.5.13
       '@types/jsonwebtoken':
         specifier: ^9.0.0
         version: 9.0.7
+      '@types/node':
+        specifier: ^22.7.4
+        version: 22.7.4
       '@types/supertest':
         specifier: ^6.0.1
         version: 6.0.2
@@ -187,6 +196,9 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.3.3
+      redis:
+        specifier: ^4.6.15
+        version: 4.7.0
       supertest:
         specifier: ^7.0.0
         version: 7.0.0
@@ -233,6 +245,9 @@ importers:
       '@types/jest':
         specifier: ^29.0.0
         version: 29.5.13
+      '@types/node':
+        specifier: ^22.7.4
+        version: 22.7.4
       '@types/node-cron':
         specifier: ^3.0.11
         version: 3.0.11
@@ -300,6 +315,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.0
         version: 9.0.7
+      '@types/node':
+        specifier: ^22.7.4
+        version: 22.7.4
       '@types/supertest':
         specifier: ^6.0.1
         version: 6.0.2
@@ -584,6 +602,9 @@ importers:
       '@grpc/grpc-js':
         specifier: ^1.11.1
         version: 1.12.0
+      '@lerna-monorepo/backend-utilities':
+        specifier: workspace:*
+        version: link:../backend-utilities
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -621,6 +642,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.0
         version: 9.0.7
+      '@types/node':
+        specifier: ^22.7.4
+        version: 22.7.4
       '@types/supertest':
         specifier: ^6.0.1
         version: 6.0.2
@@ -681,9 +705,6 @@ importers:
       mongodb:
         specifier: ^6.2.0
         version: 6.9.0(socks@2.8.3)
-      testcontainers:
-        specifier: ^10.5.0
-        version: 10.13.2
     devDependencies:
       '@repo/eslint-8-config':
         specifier: workspace:*
@@ -699,6 +720,9 @@ importers:
         version: 13.0.2
       '@testcontainers/kafka':
         specifier: ^10.5.0
+        version: 10.13.2
+      '@testcontainers/redis':
+        specifier: ^10.11.0
         version: 10.13.2
       '@types/jest':
         specifier: ^29.0.0
@@ -721,6 +745,9 @@ importers:
       supertest:
         specifier: ^7.0.0
         version: 7.0.0
+      testcontainers:
+        specifier: ^10.5.0
+        version: 10.13.2
       tsx:
         specifier: ^4.19.1
         version: 4.19.1

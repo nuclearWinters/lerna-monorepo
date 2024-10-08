@@ -15,8 +15,8 @@ export const CheckExpiration: FC = () => {
   `);
   useEffect(() => {
     const userData = getUserDataCache();
-    let timerLogoutID: NodeJS.Timeout;
-    let timerRefreshID: NodeJS.Timeout;
+    let timerLogoutID: number;
+    let timerRefreshID: number;
     const resetTimer = () => {
       clearTimeout(timerLogoutID);
       timerLogoutID = setTimeout(logout, 1000 * 60 * 5);

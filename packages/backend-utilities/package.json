@@ -37,13 +37,12 @@
     }
   },
   "scripts": {
-    "build1": "tsc",
-    "build": "npx tsc || ../../node_modules/typescript/bin/tsc",
+    "build": "(tsc || ./node_modules/typescript/bin/tsc) && node ./copyCode.mjs",
     "pcm": "lint-staged",
     "test": "jest --bail",
-    "lint": "(tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0) || (../../node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0)",
-    "protoAuth": "grpc_tools_node_protoc --plugin=protoc-gen-ts=../../node_modules/.bin/protoc-gen-ts --ts_out=grpc_js:src/protoAuth --proto_path=src/protoAuth --js_out=import_style=commonjs,binary:src/protoAuth --grpc_out=grpc_js:src/protoAuth ./src/protoAuth/*.proto",
-    "protoAccount": "grpc_tools_node_protoc --plugin=protoc-gen-ts=../../node_modules/.bin/protoc-gen-ts --ts_out=grpc_js:src/protoAccount --proto_path=src/protoAccount --js_out=import_style=commonjs,binary:src/protoAccount --grpc_out=grpc_js:src/protoAccount ./src/protoAccount/*.proto",
+    "lint": "(tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0) || (./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0)",
+    "protoAuth": "grpc_tools_node_protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --ts_out=grpc_js:src/protoAuth --proto_path=src/protoAuth --js_out=import_style=commonjs,binary:src/protoAuth --grpc_out=grpc_js:src/protoAuth ./src/protoAuth/*.proto",
+    "protoAccount": "grpc_tools_node_protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --ts_out=grpc_js:src/protoAccount --proto_path=src/protoAccount --js_out=import_style=commonjs,binary:src/protoAccount --grpc_out=grpc_js:src/protoAccount ./src/protoAccount/*.proto",
     "proto": "npm run protoAuth && npm run protoAccount"
   },
   "author": "Armando Rueda",
@@ -69,6 +68,7 @@
     "prettier": "^3.0.3",
     "supertest": "^7.0.0",
     "typescript": "^5.5.4",
+    "@types/node": "^22.7.4",
     "@repo/typescript-config": "workspace:*",
     "@repo/eslint-8-config": "workspace:*",
     "@repo/jest-presets": "workspace:*"

@@ -4,8 +4,8 @@
   "description": "Backend typescript express relay mongodb",
   "scripts": {
     "start": "tsx watch ./src/index.ts",
-    "build": "npx tsc || ../../node_modules/typescript/bin/tsc",
-    "lint": "npx tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ../../node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
+    "build": "tsc || ./node_modules/typescript/bin/tsc",
+    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
     "serve": "node ./build/index.js",
     "pcm": "lint-staged",
     "test": "jest --bail"
@@ -20,7 +20,8 @@
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.0",
     "redis": "^4.6.15",
-    "mongodb": "^6.8.0"
+    "mongodb": "^6.8.0",
+    "@lerna-monorepo/backend-utilities": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.19.1",
@@ -36,6 +37,7 @@
     "prettier": "^3.0.3",
     "supertest": "^7.0.0",
     "typescript": "^5.5.4",
+    "@types/node": "^22.7.4",
     "@repo/typescript-config": "workspace:*",
     "@repo/eslint-8-config": "workspace:*",
     "@repo/jest-presets": "workspace:*"

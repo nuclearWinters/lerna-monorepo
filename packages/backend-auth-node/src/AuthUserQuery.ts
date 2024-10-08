@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 import {
   GraphQLString,
   GraphQLNonNull,
@@ -16,7 +15,7 @@ import {
   globalIdField,
   nodeDefinitions,
 } from "graphql-relay";
-import { Filter } from "mongodb";
+import { Filter, ObjectId } from "mongodb";
 import { Languages } from "./mutations/SignUpMutation";
 import { Context, UserLogins, UserMongo, UserSessions } from "./types";
 import { UUID } from "@lerna-monorepo/backend-utilities/types";

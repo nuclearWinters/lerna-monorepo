@@ -2,6 +2,14 @@ x-base: &base
   image: node:20
   volumes:
     - lerna-node-modules:/usr/src/service/node_modules
+    - backend-auth-node:/usr/src/service/packages/backend-auth-node/node_modules
+    - backend-fintech-mongo:/usr/src/service/packages/backend-fintech-mongo/node_modules
+    - backend-fintech-mongo-cron:/usr/src/service/packages/backend-fintech-mongo-cron/node_modules
+    - grpc-auth-node:/usr/src/service/packages/grpc-auth-node/node_modules
+    - grpc-fintech-node:/usr/src/service/packages/grpc-fintech-node/node_modules
+    - kafka-mongo:/usr/src/service/packages/kafka-mongo/node_modules
+    - backend-utilities:/usr/src/service/packages/backend-utilities/node_modules
+    - frontend-fintech:/usr/src/service/packages/frontend-fintech/node_modules
     - .:/usr/src/service/
   working_dir: /usr/src/service/
 
@@ -24,4 +32,20 @@ services:
 
 volumes:
   lerna-node-modules:
+    external: true
+  backend-auth-node:
+    external: true
+  backend-fintech-mongo:
+    external: true
+  grpc-auth-node:
+    external: true
+  grpc-fintech-node:
+    external: true
+  kafka-mongo:
+    external: true
+  backend-fintech-mongo-cron:
+    external: true
+  backend-utilities:
+    external: true
+  frontend-fintech:
     external: true

@@ -7,3 +7,10 @@ declare module "*.svg" {
   const value: React.FC<React.SVGProps<SVGSVGElement>>;
   export default value;
 }
+
+declare var process: {
+  env: {
+    AUTH_API: string | null;
+    FINTECH_API: string | null;
+  };
+};
