@@ -1,0 +1,12 @@
+packages:
+  - "packages/backend-auth-node"
+  - "packages/backend-fintech-mongo"
+  - "packages/backend-fintech-mongo-cron"
+  - "packages/backend-utilities"
+  - "packages/grpc-auth-node"
+  - "packages/grpc-fintech-node"
+  - "packages/kafka-mongo"
+  - "packages/frontend-fintech"
+  - "packages/jest-presets"
+  - "packages/typescript-config"
+  - "packages/eslint-8-config"

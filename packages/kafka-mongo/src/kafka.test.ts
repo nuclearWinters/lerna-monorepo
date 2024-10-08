@@ -1,6 +1,6 @@
-import { Kafka } from "kafkajs";
-import { KafkaContainer } from "@testcontainers/kafka";
-import { runKafkaConsumer } from "./kafka.js";
+import { Admin, Consumer, Kafka, Producer } from "kafkajs";
+import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
+import { runKafkaConsumer } from "./kafka";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import {
   InvestmentMongo,
@@ -8,24 +8,12 @@ import {
   ScheduledPaymentsMongo,
   TransactionMongo,
   UserMongo,
-} from "./types.js";
+} from "./types";
 import { addMonths, startOfMonth } from "date-fns";
-
-jest.mock("ioredis", () =>
-  jest.fn().mockImplementation(() => {
-    return {};
-  })
-);
-
-jest.mock("graphql-redis-subscriptions", () => {
-  return {
-    RedisPubSub: function () {
-      return {
-        publish: jest.fn(),
-      };
-    },
-  };
-});
+import { Redis, RedisOptions } from "ioredis";
+import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
+import { RedisPubSub } from "graphql-redis-subscriptions";
+import { KAFKA_ID } from "@lerna-monorepo/backend-utilities/config";
 
 const delay = async () =>
   new Promise<void>((resolve) => {
@@ -37,6 +25,14 @@ const delay = async () =>
 describe("Kafka", () => {
   let client: MongoClient;
   let dbInstance: Db;
+  let pubsub: RedisPubSub;
+  let ioredisPublisherClient: Redis;
+  let ioredisSubscriberClient: Redis;
+  let startedRedisContainer: StartedRedisContainer;
+  let startedKafkaContainer: StartedKafkaContainer;
+  let admin: Admin;
+  let producer: Producer;
+  let consumer: Consumer;
 
   beforeAll(async () => {
     client = await MongoClient.connect(
@@ -46,23 +42,28 @@ describe("Kafka", () => {
     dbInstance = client.db(
       (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
     );
-  });
-
-  afterAll(async () => {
-    await client.close();
-  });
-
-  it("add/decrease funds", async () => {
-    const kafkaContainer = await new KafkaContainer()
+    startedRedisContainer = await new RedisContainer().start();
+    const options: RedisOptions = {
+      host: startedRedisContainer.getConnectionUrl(),
+      port: 6379,
+      retryStrategy: () => 10000,
+    };
+    ioredisPublisherClient = new Redis(options);
+    ioredisSubscriberClient = new Redis(options);
+    pubsub = new RedisPubSub({
+      publisher: ioredisPublisherClient,
+      subscriber: ioredisSubscriberClient,
+    });
+    startedKafkaContainer = await new KafkaContainer()
       .withExposedPorts(9093)
       .start();
-    const name = kafkaContainer.getHost();
-    const port = kafkaContainer.getMappedPort(9093);
+    const name = startedKafkaContainer.getHost();
+    const port = startedKafkaContainer.getMappedPort(9093);
     const kafka = new Kafka({
-      clientId: "my-app",
+      clientId: KAFKA_ID,
       brokers: [`${name}:${port}`],
     });
-    const admin = kafka.admin();
+    admin = kafka.admin();
     await admin.connect();
     await admin.createTopics({
       validateOnly: false,
@@ -79,9 +80,24 @@ describe("Kafka", () => {
       ],
     });
     await admin.disconnect();
-    const producer = kafka.producer();
+    producer = kafka.producer();
     await producer.connect();
-    const consumer = kafka.consumer({ groupId: "test-group" });
+    consumer = kafka.consumer({ groupId: "test-group" });
+  }, 20000);
+
+  afterAll(async () => {
+    await admin.disconnect();
+    await producer.disconnect();
+    await consumer.disconnect();
+    await startedKafkaContainer.stop();
+    ioredisPublisherClient.disconnect();
+    ioredisSubscriberClient.disconnect();
+    await startedRedisContainer.stop();
+    await client.close();
+    await delay();
+  }, 20000);
+
+  it("add/decrease funds", async () => {
     const loans = dbInstance.collection<LoanMongo>("loans");
     const investments = dbInstance.collection<InvestmentMongo>("investments");
     const transactions =
@@ -96,7 +112,8 @@ describe("Kafka", () => {
       users,
       transactions,
       scheduledPayments,
-      investments
+      investments,
+      pubsub
     );
     const user1_oid = new ObjectId();
     const user1_id = "user1_id";
@@ -537,8 +554,5 @@ describe("Kafka", () => {
         status: "to be paid",
       },
     ]);
-    await producer.disconnect();
-    await consumer.disconnect();
-    await kafkaContainer.stop();
   }, 200000);
 });

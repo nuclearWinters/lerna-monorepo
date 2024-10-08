@@ -1,12 +1,12 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { LoanMongo, UserMongo } from "../types.js";
+import { LoanMongo, UserMongo } from "../types";
 import { Producer } from "kafkajs";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent.js";
+import TestAgent from "supertest/lib/agent";
 import {
   REFRESH_TOKEN_EXP_NUMBER,
   ACCESS_TOKEN_EXP_NUMBER,
@@ -177,7 +177,7 @@ describe("ApproveLoan tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.approveLoan.error).toBeFalsy();
     expect(data.data.approveLoan.loan).toBeTruthy();
     const user = await users.findOne({

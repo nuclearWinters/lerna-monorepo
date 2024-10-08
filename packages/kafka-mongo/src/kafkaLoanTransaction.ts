@@ -1,6 +1,6 @@
 import { Producer } from "kafkajs";
 import { Collection, ObjectId } from "mongodb";
-import { LoanMongo, ScheduledPaymentsMongo } from "./types.js";
+import { LoanMongo, ScheduledPaymentsMongo } from "./types";
 import { addMonths, startOfMonth } from "date-fns";
 
 export const LoanTransaction = async (

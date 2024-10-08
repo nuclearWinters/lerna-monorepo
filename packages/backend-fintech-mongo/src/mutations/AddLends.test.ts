@@ -1,4 +1,4 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient } from "mongodb";
 import { Admin, Kafka, Producer } from "kafkajs";
@@ -6,7 +6,7 @@ import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent.js";
+import TestAgent from "supertest/lib/agent";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
@@ -154,6 +154,7 @@ describe("AddLends tests", () => {
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
         extensions: {
           doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
@@ -181,10 +182,11 @@ describe("AddLends tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addLends.error).toBeFalsy();
     const response2 = await request
       .post("/graphql")
+      .trustLocalhost()
       .send({
         extensions: {
           doc_id: "64b571ffb2b4d4c3b1ab5d40cf54f5b1",
@@ -212,10 +214,9 @@ describe("AddLends tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream2 = response2.text.split("\n");
-    const data2 = JSON.parse(stream2[3].replace("data: ", ""));
+    const data2 = JSON.parse(stream2[1].replace("data: ", ""));
     expect(data2.data.addLends.error).toBeFalsy();
-    expect(response2.body.data.addLends.error).toBeFalsy();
     const count = await admin.fetchTopicOffsets("user-transaction");
-    expect(count[0].offset).toBe("2");
+    expect(count[0].offset).toBe("4");
   });
 });

@@ -1,5 +1,5 @@
 import { Producer } from "kafkajs";
-import { InvestmentMongo, LoanMongo } from "./types.js";
+import { InvestmentMongo, LoanMongo } from "./types";
 import { Collection, ObjectId } from "mongodb";
 
 export const AddLends = async (

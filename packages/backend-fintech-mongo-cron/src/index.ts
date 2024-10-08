@@ -7,9 +7,9 @@ import {
   MONGO_DB,
   IS_PRODUCTION,
 } from "@lerna-monorepo/backend-utilities/config";
-import { checkEveryDay, checkEveryMonth } from "./cronJobs.js";
-import { dayFunction } from "./cronJobDay.js";
-import { monthFunction } from "./cronJobMonth.js";
+import { checkEveryDay, checkEveryMonth } from "./cronJobs";
+import { dayFunction } from "./cronJobDay";
+import { monthFunction } from "./cronJobMonth";
 import { Kafka, logLevel } from "kafkajs";
 
 const kafka = new Kafka({
@@ -28,7 +28,7 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-Promise.all([MongoClient.connect(MONGO_DB, {}), producer.connect()]).then(
+Promise.all([MongoClient.connect(MONGO_DB), producer.connect()]).then(
   async ([client]) => {
     const db = client.db("fintech");
     checkEveryDay(() => dayFunction(db, producer));

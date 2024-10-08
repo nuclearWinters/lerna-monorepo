@@ -1,10 +1,10 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
-import { UserMongo } from "../types.js";
+import { UserMongo } from "../types";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent.js";
+import TestAgent from "supertest/lib/agent";
 import {
   AccountClient,
   AccountService,
@@ -89,7 +89,7 @@ describe("SignUpMutation tests", () => {
       })
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.signUp.error).toBeFalsy();
     const new_user_data = await users.findOne({ email });
     if (!new_user_data) {
@@ -143,7 +143,7 @@ describe("SignUpMutation tests", () => {
       })
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.signUp.error).toBe("Email already in use");
     expect(data.data.signUp.refreshToken).toBeFalsy();
     const new_user_data = await users.findOne({ email: "anrp1@gmail.com" });
@@ -198,7 +198,7 @@ describe("SignUpMutation tests", () => {
       })
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.signUp.error).toBeFalsy();
     const new_user_data = await users.findOne({ email: "anrp2@gmail.com" });
     if (!new_user_data) {

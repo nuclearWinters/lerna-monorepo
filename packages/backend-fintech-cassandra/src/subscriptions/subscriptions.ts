@@ -10,7 +10,7 @@ import {
   InvestmentStatus,
   GraphQLInvestment,
   GraphQLLoan,
-} from "../Nodes.js";
+} from "../Nodes";
 import {
   Context,
   IInvestmentEdge,
@@ -19,7 +19,7 @@ import {
   ITransactionEdge,
   LoanCassandra,
   UserCassandra,
-} from "../types.js";
+} from "../types";
 import { REDIS } from "@lerna-monorepo/backend-utilities/config";
 import { unbase64 } from "@lerna-monorepo/backend-utilities/index";
 

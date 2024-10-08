@@ -1,10 +1,10 @@
 import { GraphQLSchema, GraphQLObjectType } from "graphql";
-import { QueryUser } from "./QueryUser.js";
-import { dataDrivenDependencies, nodeField } from "./Nodes.js";
-import { AddLendsMutation } from "./mutations/AddLends.js";
-import { AddFundsMutation } from "./mutations/AddFunds.js";
-import { AddLoanMutation } from "./mutations/AddLoan.js";
-import { getContextSSE } from "./utils.js";
+import { QueryUser } from "./QueryUser";
+import { dataDrivenDependencies, nodeField } from "./Nodes";
+import { AddLendsMutation } from "./mutations/AddLends";
+import { AddFundsMutation } from "./mutations/AddFunds";
+import { AddLoanMutation } from "./mutations/AddLoan";
+import { getContextSSE } from "./utils";
 import {
   investments_subscribe_insert,
   loans_subscribe_insert,
@@ -13,14 +13,14 @@ import {
   investments_subscribe_update,
   loans_subscribe_update,
   my_loans_subscribe_insert,
-} from "./subscriptions/subscriptions.js";
-import { ApproveLoanMutation } from "./mutations/ApproveLoan.js";
-import { QueryScheduledPayments } from "./QueryScheduledPayments.js";
-import { createSecureServer } from "http2";
+} from "./subscriptions/subscriptions";
+import { ApproveLoanMutation } from "./mutations/ApproveLoan";
+import { QueryScheduledPayments } from "./QueryScheduledPayments";
+import { createSecureServer } from "node:http2";
 import { Db } from "mongodb";
 import { Producer } from "kafkajs";
-import fs from "fs";
-import * as queryMap from "./queryMap.json" with { type: "json" };
+import fs from "node:fs";
+import queryMap from "./queryMap.json";
 import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { IS_PRODUCTION } from "@lerna-monorepo/backend-utilities/config";
@@ -88,7 +88,7 @@ const main = async (
       dataDrivenDependencies.reset();
       return context;
     },
-    queryMap: queryMap.default,
+    queryMap,
     dataDrivenDependencies: dataDrivenDependencies,
   });
   const server = createSecureServer(

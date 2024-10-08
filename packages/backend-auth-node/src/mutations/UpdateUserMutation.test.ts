@@ -1,9 +1,9 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { UserMongo } from "../types.js";
+import { UserMongo } from "../types";
 import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent.js";
+import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { jwt } from "@lerna-monorepo/backend-utilities/index";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
@@ -113,7 +113,7 @@ describe("UpdateUser tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.updateUser.error).toBeFalsy();
     expect(data.data.updateUser.authUser).toBeTruthy();
     const user = await users.findOne({

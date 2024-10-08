@@ -1,5 +1,5 @@
 import { Db } from "mongodb";
-import { LoanMongo, ScheduledPaymentsMongo } from "./types.js";
+import { LoanMongo, ScheduledPaymentsMongo } from "./types";
 import { Producer } from "kafkajs";
 import { endOfDay, startOfDay } from "date-fns";
 

@@ -6,8 +6,8 @@ import {
   GraphQLList,
   GraphQLInputObjectType,
 } from "graphql";
-import { Context } from "../types.js";
-import { MXNScalarType } from "../Nodes.js";
+import { Context } from "../types";
+import { MXNScalarType } from "../Nodes";
 
 interface Input {
   lends: {

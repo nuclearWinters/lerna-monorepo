@@ -1,10 +1,10 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo } from "../types.js";
+import { UserMongo } from "../types";
 import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent.js";
+import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { jwt } from "@lerna-monorepo/backend-utilities/index";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
@@ -104,7 +104,7 @@ describe("LogOutMutation tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.logOut.error).toBeFalsy();
     const responseCookies = response.headers["set-cookie"][0];
     expect(responseCookies).toBeTruthy();

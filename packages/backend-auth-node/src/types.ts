@@ -1,5 +1,5 @@
 import { ObjectId, Collection } from "mongodb";
-import { Http2ServerRequest, Http2ServerResponse } from "http2";
+import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import { RedisClientType, UUID } from "@lerna-monorepo/backend-utilities/types";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
 

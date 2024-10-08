@@ -2,7 +2,7 @@
 
 "use strict";
 var grpc = require("@grpc/grpc-js");
-var account_pb = require("./account_pb.cjs");
+var account_pb = require("./account_pb.js");
 
 function serialize_authPackage_CreateUserInput(arg) {
   if (!(arg instanceof account_pb.CreateUserInput)) {

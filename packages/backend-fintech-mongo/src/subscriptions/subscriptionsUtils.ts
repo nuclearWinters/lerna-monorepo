@@ -4,7 +4,7 @@ import {
   LoanMongo,
   TransactionMongo,
   UserMongo,
-} from "../types.js";
+} from "../types";
 import { base64 } from "@lerna-monorepo/backend-utilities/index";
 import {
   USER,
@@ -14,7 +14,7 @@ import {
   INVESTMENT_UPDATE,
   LOAN_UPDATE,
   MY_LOAN_INSERT,
-} from "./subscriptions.js";
+} from "./subscriptions";
 
 export const publishUser = (user: UserMongo, pubsub: RedisPubSub) => {
   pubsub.publish(USER, {

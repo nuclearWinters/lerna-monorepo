@@ -8,9 +8,9 @@ import {
   ExecutionResult,
   GraphQLSchema,
 } from "graphql";
-import { DecodeJWT } from "./types.js";
-import { Http2ServerRequest, Http2ServerResponse } from "http2";
-import { ObjMap } from "graphql/jsutils/ObjMap.js";
+import { DecodeJWT } from "./types";
+import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
+import { ObjMap } from "graphql/jsutils/ObjMap";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {

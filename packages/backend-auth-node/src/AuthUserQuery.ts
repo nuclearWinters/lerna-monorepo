@@ -17,8 +17,8 @@ import {
   nodeDefinitions,
 } from "graphql-relay";
 import { Filter } from "mongodb";
-import { Languages } from "./mutations/SignUpMutation.js";
-import { Context, UserLogins, UserMongo, UserSessions } from "./types.js";
+import { Languages } from "./mutations/SignUpMutation";
+import { Context, UserLogins, UserMongo, UserSessions } from "./types";
 import { UUID } from "@lerna-monorepo/backend-utilities/types";
 import {
   base64,

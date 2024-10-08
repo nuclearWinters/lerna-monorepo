@@ -1,24 +1,20 @@
-import {
-  ACCESS_TOKEN_EXP_NUMBER,
-  ACCESSSECRET,
-  REFRESHSECRET,
-} from "./config.js";
-import { jwt } from "./index.js";
+import { ACCESS_TOKEN_EXP_NUMBER, ACCESSSECRET, REFRESHSECRET } from "./config";
+import { jwt } from "./index";
 import type {
   AccountClient,
   IAccountServer,
-} from "./protoAccount/account_grpc_pb.cjs";
-import Account from "./protoAccount/account_pb.cjs";
-import type { AuthClient, IAuthServer } from "./protoAuth/auth_grpc_pb.cjs";
+} from "./protoAccount/account_grpc_pb.js";
+import Account from "./protoAccount/account_pb.js";
+import type { AuthClient, IAuthServer } from "./protoAuth/auth_grpc_pb.js";
 import type {
   JWTMiddlewareInput as AuthJWTMiddlewareInput,
   JWTMiddlewarePayload as AuthJWTMiddlewarePayload,
-} from "./protoAuth/auth_pb.cjs";
+} from "./protoAuth/auth_pb.js";
 import type {
   CreateUserInput as AccountCreateUserInput,
   CreateUserPayload as AccountCreateUserPayload,
-} from "./protoAccount/account_pb.cjs";
-import Auth from "./protoAuth/auth_pb.cjs";
+} from "./protoAccount/account_pb.js";
+import Auth from "./protoAuth/auth_pb.js";
 import {
   Metadata,
   ServerUnaryCall,
@@ -26,7 +22,7 @@ import {
   ServiceError,
 } from "@grpc/grpc-js";
 import { Db } from "mongodb";
-import { RedisClientType, UserSessions } from "./types.js";
+import { RedisClientType, UserSessions } from "./types";
 
 const { CreateUserInput, CreateUserPayload } = Account;
 const { JWTMiddlewareInput, JWTMiddlewarePayload } = Auth;

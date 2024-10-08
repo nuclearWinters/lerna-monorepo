@@ -8,19 +8,19 @@ x-base: &base
 services:
   install:
     <<: *base
-    command: npm install
+    command: bash -c "corepack enable pnpm && pnpm install"
   outdated:
     <<: *base
-    command: npm outdated
+    command: bash -c "corepack enable pnpm && pnpm outdated"
   update:
     <<: *base
-    command: npm update
+    command: bash -c "corepack enable pnpm && pnpm update"
   proto:
     <<: *base
-    command: npm run proto
+    command: bash -c "corepack enable pnpm && pnpm proto"
   build:
     <<: *base
-    command: npm run build
+    command: bash -c "corepack enable pnpm && pnpm build"
 
 volumes:
   lerna-node-modules:

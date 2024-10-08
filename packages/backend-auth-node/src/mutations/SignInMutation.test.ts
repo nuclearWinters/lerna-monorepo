@@ -1,10 +1,10 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo } from "../types.js";
+import { UserMongo } from "../types";
 import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent.js";
+import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
 
@@ -78,7 +78,7 @@ describe("SignInMutation tests", () => {
       })
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.signIn.error).toBeFalsy();
     expect(response.headers["set-cookie"]).toBeTruthy();
   });
@@ -102,7 +102,7 @@ describe("SignInMutation tests", () => {
       })
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.signIn.error).toBe("User do not exists");
     expect(response.headers["set-cookie"]).toBeFalsy();
   });
@@ -126,7 +126,7 @@ describe("SignInMutation tests", () => {
       })
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.signIn.error).toBe("Incorrect password");
     expect(response.headers["set-cookie"]).toBeFalsy();
   });

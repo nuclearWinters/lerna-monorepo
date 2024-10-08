@@ -5,10 +5,10 @@ import {
   TransactionMongo,
   InvestmentMongo,
   ScheduledPaymentsMongo,
-} from "./types.js";
+} from "./types";
 import { Producer } from "kafkajs";
 import { parse } from "cookie";
-import { Http2ServerRequest, Http2ServerResponse } from "http2";
+import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import { jwtMiddleware } from "@lerna-monorepo/backend-utilities/grpc";
 import type { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";

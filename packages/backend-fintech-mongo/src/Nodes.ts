@@ -36,7 +36,7 @@ import type {
   TransactionInvestMongoType,
   ScheduledPaymentsMongo,
   ScheduledPaymentsStatus,
-} from "./types.js";
+} from "./types";
 import {
   DateScalarType,
   base64,

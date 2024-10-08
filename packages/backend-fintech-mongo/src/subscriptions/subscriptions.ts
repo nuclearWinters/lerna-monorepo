@@ -8,7 +8,7 @@ import {
   InvestmentStatus,
   GraphQLInvestment,
   GraphQLLoan,
-} from "../Nodes.js";
+} from "../Nodes";
 import {
   Context,
   IInvestmentEdge,
@@ -17,7 +17,7 @@ import {
   ITransactionEdge,
   LoanMongoRedis,
   UserMongo,
-} from "../types.js";
+} from "../types";
 import { unbase64 } from "@lerna-monorepo/backend-utilities/index";
 
 export const LOAN_INSERT = "LOAN_INSERT";

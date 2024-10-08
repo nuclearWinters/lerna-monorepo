@@ -1,6 +1,6 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
-import { Context } from "../types.js";
+import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import {
   ACCESS_TOKEN_EXP_NUMBER,

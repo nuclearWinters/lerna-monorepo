@@ -5,7 +5,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
 } from "graphql";
-import { Context } from "../types.js";
+import { Context } from "../types";
 import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
 import {

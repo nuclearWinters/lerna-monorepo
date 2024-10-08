@@ -1,12 +1,12 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { LoanMongo, UserMongo } from "../types.js";
+import { LoanMongo, UserMongo } from "../types";
 import { Producer } from "kafkajs";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent.js";
+import TestAgent from "supertest/lib/agent";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
@@ -149,7 +149,7 @@ describe("AddLoan tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addLoan.error).toBeFalsy();
     const user = await users.findOne({
       id,

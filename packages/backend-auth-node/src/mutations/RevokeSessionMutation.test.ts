@@ -1,10 +1,10 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo, UserSessions } from "../types.js";
+import { UserMongo, UserSessions } from "../types";
 import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent.js";
+import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import {
   ACCESS_TOKEN_EXP_NUMBER,
@@ -142,7 +142,7 @@ describe("RevokeSessionMutation tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.revokeSession.error).toBeFalsy();
     expect(data.data.revokeSession.session.id).toBe(other_session_gid);
     expect(
@@ -234,7 +234,7 @@ describe("RevokeSessionMutation tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.revokeSession.error).toBeFalsy();
     expect(data.data.revokeSession.session.id).toBe(other_session_gid);
     expect(

@@ -5,9 +5,9 @@ import {
   LoanMongo,
   UserMongo,
   ScheduledPaymentsMongo,
-} from "./types.js";
+} from "./types";
 import { Admin, Kafka, Producer } from "kafkajs";
-import { monthFunction } from "./cronJobMonth.js";
+import { monthFunction } from "./cronJobMonth";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
 import { KAFKA_ID } from "@lerna-monorepo/backend-utilities/config";
 

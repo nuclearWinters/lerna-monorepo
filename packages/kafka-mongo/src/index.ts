@@ -5,8 +5,8 @@ import {
   ScheduledPaymentsMongo,
   TransactionMongo,
   UserMongo,
-} from "./types.js";
-import { runKafkaConsumer } from "./kafka.js";
+} from "./types";
+import { runKafkaConsumer } from "./kafka";
 import { Kafka, logLevel } from "kafkajs";
 import {
   MONGO_DB,
@@ -15,7 +15,19 @@ import {
   IS_PRODUCTION,
   KAFKA_USERNAME,
   KAFKA_PASSWORD,
+  REDIS,
 } from "@lerna-monorepo/backend-utilities/config";
+import { RedisPubSub } from "graphql-redis-subscriptions";
+import { Redis } from "ioredis";
+
+const retryStrategy = (times: number) => {
+  return Math.min(times * 50, 2000);
+};
+
+export const pubsub = new RedisPubSub({
+  publisher: new Redis(REDIS, { retryStrategy }),
+  subscriber: new Redis(REDIS, { retryStrategy }),
+});
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,
@@ -33,7 +45,7 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-MongoClient.connect(MONGO_DB, {}).then(async (client) => {
+MongoClient.connect(MONGO_DB).then(async (client) => {
   const db = client.db("fintech");
   const consumer = kafka.consumer({ groupId: "test-group" });
   const loans = db.collection<LoanMongo>("loans");
@@ -50,6 +62,7 @@ MongoClient.connect(MONGO_DB, {}).then(async (client) => {
     users,
     transactions,
     scheduledPayments,
-    investments
+    investments,
+    pubsub
   );
 });

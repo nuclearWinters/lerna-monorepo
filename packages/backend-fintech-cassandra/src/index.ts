@@ -3,12 +3,12 @@ import { jwt } from "./utils";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { WebSocketServer } from "ws";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
-import { AuthServer } from "./grpc.js";
+import { AuthServer } from "./grpc";
 import { AuthService } from "./proto/auth_grpc_pb";
 import cassandra from "cassandra-driver";
-import { UserCassandra } from "./types.js";
+import { UserCassandra } from "./types";
 import { Kafka } from "kafkajs";
-import { runKafkaConsumer } from "./kafka.js";
+import { runKafkaConsumer } from "./kafka";
 import { KAFKA, KAFKA_ID } from "@lerna-monorepo/backend-utilities/config";
 
 const client = new cassandra.Client({

@@ -1,6 +1,6 @@
 import { Db } from "mongodb";
-import { UserMongo, UserLogins, UserSessions } from "./types.js";
-import { Http2ServerRequest, Http2ServerResponse } from "http2";
+import { UserMongo, UserLogins, UserSessions } from "./types";
+import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import { parse } from "cookie";
 import {
   ACCESSSECRET,

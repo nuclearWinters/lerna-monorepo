@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 import { createClient } from "redis";
-import { main } from "./app.js";
+import { main } from "./app";
 import {
   REDIS,
   MONGO_DB,
@@ -9,7 +9,7 @@ import {
 } from "@lerna-monorepo/backend-utilities/config";
 import { credentials } from "@grpc/grpc-js";
 import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
-import fs from "fs";
+import fs from "node:fs";
 
 const getGRPCClient = () =>
   new Promise<AccountClient>((resolve, reject) => {
@@ -36,7 +36,7 @@ const getGRPCClient = () =>
   });
 
 Promise.all([
-  MongoClient.connect(MONGO_DB, {}),
+  MongoClient.connect(MONGO_DB),
   createClient({
     url: REDIS,
   }).connect(),

@@ -4,6 +4,7 @@ dist/
 .env
 data/**
 cassandra/**
+.pnpm-store/**
 .DS_Store
 .eslintcache
 globalConfig.json

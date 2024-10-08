@@ -1,8 +1,8 @@
-import { main } from "./app.js";
+import { main } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { TransactionMongo, UserMongo } from "./types.js";
-import TestAgent from "supertest/lib/agent.js";
+import { TransactionMongo, UserMongo } from "./types";
+import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
@@ -211,7 +211,7 @@ describe("QueryTransactions tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.node.transactions.edges.length).toBe(9);
     expect(data.data.node.transactions.edges[0].cursor).toBeTruthy();
     expect(data.data.node.transactions.edges[0].node.id).toBeTruthy();

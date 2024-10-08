@@ -9,10 +9,10 @@ import {
 } from "@lerna-monorepo/backend-utilities/config";
 import { AuthService } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
 import { AuthServer } from "@lerna-monorepo/backend-utilities/grpc";
-import fs from "fs";
+import fs from "node:fs";
 
 Promise.all([
-  MongoClient.connect(MONGO_DB, {}),
+  MongoClient.connect(MONGO_DB),
   createClient({
     url: REDIS,
   }).connect(),

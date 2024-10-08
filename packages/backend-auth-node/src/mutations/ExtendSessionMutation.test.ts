@@ -1,9 +1,9 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo } from "../types.js";
-import TestAgent from "supertest/lib/agent.js";
+import { UserMongo } from "../types";
+import TestAgent from "supertest/lib/agent";
 import { RedisClientType } from "redis";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { createClient } from "redis";
@@ -105,7 +105,7 @@ describe("ExtendSessionMutation tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.extendSession.error).toBeFalsy();
     const responseCookies = response.headers["set-cookie"][0];
     expect(responseCookies).toBeTruthy();
@@ -133,7 +133,7 @@ describe("ExtendSessionMutation tests", () => {
       })
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.extendSession.error).toBeTruthy();
     expect(response.headers["set-cookie"]).toBeFalsy();
   });

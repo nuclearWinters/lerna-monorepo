@@ -1,13 +1,13 @@
-import { main } from "../app.js";
+import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { UserMongo } from "../types.js";
+import { UserMongo } from "../types";
 import { Admin, Kafka, Producer } from "kafkajs";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent.js";
+import TestAgent from "supertest/lib/agent";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
@@ -183,7 +183,7 @@ describe("AddFunds tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addFunds.error).toBeFalsy();
     const count = await admin.fetchTopicOffsets("user-transaction");
     expect(count[0].offset).toBe("1");
@@ -249,7 +249,7 @@ describe("AddFunds tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addFunds.error).toBeFalsy();
     const count = await admin.fetchTopicOffsets("user-transaction");
     expect(count[0].offset).toBe("2");
@@ -314,7 +314,7 @@ describe("AddFunds tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addFunds.error).toBeFalsy();
     expect(response.headers["accesstoken"]).toBeTruthy();
     expect(response.headers["accesstoken"]).not.toBe(accessToken);
@@ -382,7 +382,7 @@ describe("AddFunds tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addFunds.error).toBe("");
     const count = await admin.fetchTopicOffsets("user-transaction");
     expect(count[0].offset).toBe("4");
@@ -448,7 +448,7 @@ describe("AddFunds tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addFunds.error).toBe("La cantidad no puede ser cero.");
     const count = await admin.fetchTopicOffsets("user-transaction");
     expect(count[0].offset).toBe("4");

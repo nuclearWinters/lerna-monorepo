@@ -1,10 +1,10 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLInt } from "graphql";
-import { Context } from "../types.js";
+import { Context } from "../types";
 import { ObjectId } from "mongodb";
 import { add } from "date-fns";
-import { MXNScalarType } from "../Nodes.js";
-import { publishMyLoanInsert } from "../subscriptions/subscriptionsUtils.js";
+import { MXNScalarType } from "../Nodes";
+import { publishMyLoanInsert } from "../subscriptions/subscriptionsUtils";
 
 interface Input {
   goal: number;

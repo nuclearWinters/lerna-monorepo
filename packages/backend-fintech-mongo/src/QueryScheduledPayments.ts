@@ -1,6 +1,6 @@
 import { GraphQLID, GraphQLList, GraphQLNonNull } from "graphql";
-import { GraphQLScheduledPayments } from "./Nodes.js";
-import { Context, ScheduledPaymentsMongo } from "./types.js";
+import { GraphQLScheduledPayments } from "./Nodes";
+import { Context, ScheduledPaymentsMongo } from "./types";
 import { unbase64 } from "@lerna-monorepo/backend-utilities/index";
 import { ObjectId } from "mongodb";
 

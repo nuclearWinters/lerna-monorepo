@@ -1,4 +1,4 @@
-import { checkEveryDay, checkEveryMonth } from "./cronJobs.js";
+import { checkEveryDay, checkEveryMonth } from "./cronJobs";
 import { addDays, addMonths } from "date-fns";
 
 describe("cron tests", () => {

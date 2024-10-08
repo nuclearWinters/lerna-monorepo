@@ -1,8 +1,8 @@
-import { main } from "./app.js";
+import { main } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { InvestmentMongo, UserMongo } from "./types.js";
-import TestAgent from "supertest/lib/agent.js";
+import { InvestmentMongo, UserMongo } from "./types";
+import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
@@ -203,7 +203,7 @@ describe("QueryInvestments tests", () => {
       .set("Authorization", accessToken)
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
-    const data = JSON.parse(stream[3].replace("data: ", ""));
+    const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.node.investments.edges.length).toBe(2);
     expect(data.data.node.investments.edges[0].cursor).toBeTruthy();
     expect(data.data.node.investments.edges[0].node.id).toBeTruthy();

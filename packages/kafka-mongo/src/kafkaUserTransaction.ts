@@ -5,13 +5,14 @@ import {
   ScheduledPaymentsMongo,
   TransactionMongo,
   UserMongo,
-} from "./types.js";
+} from "./types";
 import { Collection, ObjectId } from "mongodb";
 import {
   publishInvestmentUpdate,
   publishLoanUpdate,
   publishUser,
-} from "./subscriptions/subscriptionsUtils.js";
+} from "./subscriptions/subscriptionsUtils";
+import { RedisPubSub } from "graphql-redis-subscriptions";
 
 export const UserTransaction = async (
   messageValue: string,
@@ -20,7 +21,8 @@ export const UserTransaction = async (
   loans: Collection<LoanMongo>,
   transactions: Collection<TransactionMongo>,
   scheduledPayments: Collection<ScheduledPaymentsMongo>,
-  investments: Collection<InvestmentMongo>
+  investments: Collection<InvestmentMongo>,
+  pubsub: RedisPubSub
 ) => {
   const values = JSON.parse(messageValue);
   const {
@@ -74,13 +76,16 @@ export const UserTransaction = async (
           },
         }
       );
-      publishUser({
-        id: user_id,
-        account_available: newAccountAvailable,
-        account_to_be_paid: accountToBePaid,
-        account_total: accountTotal,
-        account_withheld: newAccountWithheld,
-      });
+      publishUser(
+        {
+          id: user_id,
+          account_available: newAccountAvailable,
+          account_to_be_paid: accountToBePaid,
+          account_total: accountTotal,
+          account_withheld: newAccountWithheld,
+        },
+        pubsub
+      );
       if (nextTopic && nextValue && nextKey) {
         await producer.send({
           topic: nextTopic,
@@ -111,13 +116,16 @@ export const UserTransaction = async (
           },
         }
       );
-      publishUser({
-        id: user_id,
-        account_available: accountAvailable,
-        account_to_be_paid: accountToBePaid,
-        account_total: accountTotal,
-        account_withheld: newAccountWithheld,
-      });
+      publishUser(
+        {
+          id: user_id,
+          account_available: accountAvailable,
+          account_to_be_paid: accountToBePaid,
+          account_total: accountTotal,
+          account_withheld: newAccountWithheld,
+        },
+        pubsub
+      );
     }
     /*----- Quitar/Añadir fondos retenidos al usuario de fondos totales END -----*/
   } else if (quantity) {
@@ -149,13 +157,16 @@ export const UserTransaction = async (
         quantity,
         created_at: new Date(),
       });
-      publishUser({
-        id: user_id,
-        account_available: newAccountAvailable,
-        account_to_be_paid: accountToBePaid,
-        account_total: newAccountTotal,
-        account_withheld: accountWithheld,
-      });
+      publishUser(
+        {
+          id: user_id,
+          account_available: newAccountAvailable,
+          account_to_be_paid: accountToBePaid,
+          account_total: newAccountTotal,
+          account_withheld: accountWithheld,
+        },
+        pubsub
+      );
       //Se realizo un pago programado
       if (loan_id && quantity < 0) {
         const loan = await loans.findOne({
@@ -195,11 +206,14 @@ export const UserTransaction = async (
             },
           }
         );
-        publishLoanUpdate({
-          ...loan,
-          status: allPaid ? "paid" : loan.status,
-          payments_delayed: newPaymentsDelayed,
-        });
+        publishLoanUpdate(
+          {
+            ...loan,
+            status: allPaid ? "paid" : loan.status,
+            payments_delayed: newPaymentsDelayed,
+          },
+          pubsub
+        );
         const resultInvestments = await investments
           .find({ loan_oid: new ObjectId(loan_id) })
           .toArray();
@@ -233,19 +247,22 @@ export const UserTransaction = async (
               },
             }
           );
-          publishInvestmentUpdate({
-            ...investment,
-            status: allPaid
-              ? "paid"
-              : noDelayed
-                ? "up to date"
-                : investment.status,
-            status_type: allPaid ? "over" : status_type,
-            payments: newPayments,
-            amortize,
-            paid_already,
-            to_be_paid,
-          });
+          publishInvestmentUpdate(
+            {
+              ...investment,
+              status: allPaid
+                ? "paid"
+                : noDelayed
+                  ? "up to date"
+                  : investment.status,
+              status_type: allPaid ? "over" : status_type,
+              payments: newPayments,
+              amortize,
+              paid_already,
+              to_be_paid,
+            },
+            pubsub
+          );
           await producer.send({
             topic: "user-transaction",
             messages: [
@@ -301,11 +318,14 @@ export const UserTransaction = async (
             },
           }
         );
-        publishInvestmentUpdate({
-          ...investment,
-          moratory: newMoratory,
-          status: "delay payment",
-        });
+        publishInvestmentUpdate(
+          {
+            ...investment,
+            moratory: newMoratory,
+            status: "delay payment",
+          },
+          pubsub
+        );
         await producer.send({
           topic: "user-transaction",
           messages: [
@@ -340,13 +360,16 @@ export const UserTransaction = async (
           },
         }
       );
-      publishUser({
-        id: user_id,
-        account_available: accountAvailable,
-        account_to_be_paid: newAccountToBePaid,
-        account_total: accountTotal,
-        account_withheld: accountWithheld,
-      });
+      publishUser(
+        {
+          id: user_id,
+          account_available: accountAvailable,
+          account_to_be_paid: newAccountToBePaid,
+          account_total: accountTotal,
+          account_withheld: accountWithheld,
+        },
+        pubsub
+      );
     }
     /*----- Quitar/Añadir ganancias futuras al usuario END -----*/
   }
