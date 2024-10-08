@@ -14,6 +14,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^19.1.0
         version: 19.5.0
+      commitizen:
+        specifier: ^4.3.1
+        version: 4.3.1(@types/node@22.7.4)(typescript@5.6.2)
       cz-conventional-changelog:
         specifier: ^3.3.0
         version: 3.3.0(@types/node@22.7.4)(typescript@5.6.2)
@@ -14313,7 +14316,7 @@ snapshots:
       bl: 4.1.0
       chalk: 4.1.2
       cli-cursor: 3.1.0
-      cli-spinners: 2.6.1
+      cli-spinners: 2.9.2
       is-interactive: 1.0.0
       log-symbols: 4.1.0
       strip-ansi: 6.0.1
