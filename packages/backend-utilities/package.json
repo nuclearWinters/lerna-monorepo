@@ -21,19 +21,19 @@
     },
     "./protoAuth/auth_grpc_pb": {
       "types": "./src/protoAuth/auth_grpc_pb.d.ts",
-      "default": "./src/protoAuth/auth_grpc_pb.js"
+      "default": "./build/protoAuth/auth_grpc_pb.js"
     },
     "./protoAuth/auth_pb": {
       "types": "./src/protoAuth/auth_pb.d.ts",
-      "default": "./src/protoAuth/auth_pb.js"
+      "default": "./build/protoAuth/auth_pb.js"
     },
     "./protoAccount/account_grpc_pb": {
       "types": "./src/protoAccount/account_grpc_pb.d.ts",
-      "default": "./src/protoAccount/account_grpc_pb.js"
+      "default": "./build/protoAccount/account_grpc_pb.js"
     },
     "./protoAccount/account_pb": {
       "types": "./src/protoAccount/account_pb.d.ts",
-      "default": "./src/protoAccount/account_pb.js"
+      "default": "./build/protoAccount/account_pb.js"
     }
   },
   "scripts": {
