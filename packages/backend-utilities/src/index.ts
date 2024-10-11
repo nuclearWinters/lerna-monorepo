@@ -107,15 +107,19 @@ export const createHandler = ({
   return async (req: Http2ServerRequest, res: Http2ServerResponse) => {
     const getBody = () =>
       new Promise<{
-        extensions: { doc_id: string };
-        variables: Record<string, unknown>;
+        extensions?: { doc_id: string };
+        variables?: Record<string, unknown>;
       }>((resolve, reject) => {
         let body = "";
         req.on("data", (chunk) => (body += chunk));
         req.once("error", reject);
         req.once("end", () => {
           req.off("error", reject);
-          resolve(JSON.parse(body));
+          try {
+            resolve(JSON.parse(body));
+          } catch {
+            resolve({});
+          }
         });
       });
     const body = await getBody();
@@ -163,7 +167,7 @@ export const createHandler = ({
               }
             : value,
         });
-        res.write(`data: ${data}`);
+        res.write(data);
       }
     } else {
       const data = print({
@@ -175,13 +179,13 @@ export const createHandler = ({
             }
           : result,
       });
-      res.write(`data: ${data}`);
+      res.write(data);
     }
     const data = print({
       event: "complete",
       data: null,
     });
-    res.write(`data: ${data}`);
+    res.write(data);
     res.end();
   };
 };

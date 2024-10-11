@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package authPackage;
+package accountPackage;
 
 service Account {
     rpc createUser(CreateUserInput) returns (CreateUserPayload) {};

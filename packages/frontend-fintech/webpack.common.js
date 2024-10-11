@@ -16,12 +16,6 @@ module.exports = {
     strictExportPresence: true,
     rules: [
       {
-        enforce: "pre",
-        exclude: /@babel(?:\/|\\{1,2})runtime/,
-        test: /\.(js|mjs|jsx|ts|tsx|css)$/,
-        loader: "source-map-loader",
-      },
-      {
         test: /\.png$/,
         type: "asset/resource",
       },

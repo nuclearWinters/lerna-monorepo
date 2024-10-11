@@ -180,11 +180,10 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
           if (!id) {
             throw new Error("Unauthenticated");
           }
-          const sessions_id = unbase64(after || "");
-          const limit = first ? first + 1 : 0;
-          if (limit <= 0) {
+          if (!first || first <= 0) {
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
+          const sessions_id = unbase64(after || "");
           const query: Filter<UserSessions> = {
             userId: id,
             expirationDate: { $gt: new Date() },
@@ -192,25 +191,23 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
           if (sessions_id) {
             query._id = { $lt: new ObjectId(sessions_id) };
           }
-          const result = await sessions
+          const cursor = sessions
             .find(query)
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray();
-          const edgesMapped = result.map((session) => {
-            return {
-              cursor: base64(session._id.toHexString()),
-              node: session,
-            };
-          });
-          const edges = edgesMapped.slice(0, first || 5);
+            .limit(first)
+            .sort({ $natural: -1 });
+          const results = await cursor.toArray();
+          const edges = results.map((session) => ({
+            cursor: base64(session._id.toHexString()),
+            node: session,
+          }));
+          const hasNextPage = await cursor.hasNext();
           return {
             edges,
             pageInfo: {
-              startCursor: edges[0]?.cursor || null,
-              endCursor: edges[edges.length - 1]?.cursor || null,
+              startCursor: edges.at(0)?.cursor || null,
+              endCursor: edges.at(-1)?.cursor || null,
               hasPreviousPage: false,
-              hasNextPage: edgesMapped.length > (first || 0),
+              hasNextPage,
             },
           };
         } catch {
@@ -237,8 +234,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
             throw new Error("Unauthenticated");
           }
           const logins_id = unbase64(after || "");
-          const limit = first ? first + 1 : 0;
-          if (limit <= 0) {
+          if (!first || first <= 0) {
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
           const query: Filter<UserLogins> = {
@@ -247,25 +243,20 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
           if (logins_id) {
             query._id = { $lt: new ObjectId(logins_id) };
           }
-          const result = await logins
-            .find(query)
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray();
-          const edgesMapped = result.map((login) => {
-            return {
-              cursor: base64(login._id.toHexString()),
-              node: login,
-            };
-          });
-          const edges = edgesMapped.slice(0, first || 5);
+          const cursor = logins.find(query).limit(first).sort({ $natural: -1 });
+          const results = await cursor.toArray();
+          const edges = results.map((login) => ({
+            cursor: base64(login._id.toHexString()),
+            node: login,
+          }));
+          const hasNextPage = await cursor.hasNext();
           return {
             edges,
             pageInfo: {
-              startCursor: edges[0]?.cursor || null,
-              endCursor: edges[edges.length - 1]?.cursor || null,
+              startCursor: edges.at(0)?.cursor || null,
+              endCursor: edges.at(-1)?.cursor || null,
               hasPreviousPage: false,
-              hasNextPage: edgesMapped.length > (first || 0),
+              hasNextPage,
             },
           };
         } catch {

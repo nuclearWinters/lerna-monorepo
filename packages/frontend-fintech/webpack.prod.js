@@ -28,6 +28,12 @@ module.exports = {
   module: {
     rules: [
       {
+        enforce: "pre",
+        exclude: /@babel(?:\/|\\{1,2})runtime/,
+        test: /\.(js|mjs|jsx|ts|tsx|css)$/,
+        loader: "source-map-loader",
+      },
+      {
         test: /\.(js|ts)x?$/,
         exclude: /node_modules/,
         use: {

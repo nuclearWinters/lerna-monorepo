@@ -88,8 +88,10 @@ const main = async (
         const isOptions = req.method === "OPTIONS";
         if (isOptions) {
           return res.writeHead(200).end();
-        } else if (req?.url?.startsWith("/graphql")) {
+        } else if (req?.url?.startsWith("/graphql") && req.method === "POST") {
           await handler(req, res);
+        } else {
+          res.writeHead(200).end();
         }
       } catch {
         res.writeHead(500).end();
