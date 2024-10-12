@@ -12,4 +12,4 @@ KAFKA_PASSWORD=`jq ".KAFKA_PASSWORD" prod.json | sed -e 's/^"//' -e 's/"$//'`
 REDIS=`jq ".REDIS" prod.json | sed -e 's/^"//' -e 's/"$//'`
 GRPC_AUTH=`jq ".GRPC_AUTH" prod.json | sed -e 's/^"//' -e 's/"$//'`
 rm prod.json
-(GRPC_AUTH=$GRPC_AUTH REDIS=$REDIS MONGO_DB=$MONGO_DB KAFKA_ID=$KAFKA_ID NODE_ENV=$NODE_ENV KAFKA=$KAFKA KAFKA_USERNAME=$KAFKA_USERNAME KAFKA_PASSWORD=$KAFKA_PASSWORD npm run serve > /dev/null 2> /dev/null < /dev/null &)
+(GRPC_AUTH=$GRPC_AUTH REDIS=$REDIS MONGO_DB=$MONGO_DB KAFKA_ID=$KAFKA_ID NODE_ENV=$NODE_ENV KAFKA=$KAFKA KAFKA_USERNAME=$KAFKA_USERNAME KAFKA_PASSWORD=$KAFKA_PASSWORD pnpm serve > /dev/null 2> /dev/null < /dev/null &)

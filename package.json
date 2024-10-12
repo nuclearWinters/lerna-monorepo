@@ -19,16 +19,6 @@
     "pcm": "lerna run --concurrency 1 --stream pcm --since HEAD --exclude-dependents",
     "proto": "npm run proto --workspaces --if-present"
   },
-  "workspaces": [
-    "packages/backend-auth-node",
-    "packages/backend-fintech-mongo",
-    "packages/backend-fintech-mongo-cron",
-    "packages/backend-utilities",
-    "packages/grpc-auth-node",
-    "packages/grpc-fintech-node",
-    "packages/kafka-mongo",
-    "packages/frontend-fintech"
-  ],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"

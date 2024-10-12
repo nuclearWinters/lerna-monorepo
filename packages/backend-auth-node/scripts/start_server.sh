@@ -10,4 +10,4 @@ GRPC_FINTECH=`jq ".GRPC_FINTECH" prod.json | sed -e 's/^"//' -e 's/"$//'`
 REFRESHSECRET=`jq ".REFRESHSECRET" prod.json | sed -e 's/^"//' -e 's/"$//'`
 ACCESSSECRET=`jq ".ACCESSSECRET" prod.json | sed -e 's/^"//' -e 's/"$//'`
 rm prod.json
-(REFRESHSECRET=$REFRESHSECRET ACCESSSECRET=$ACCESSSECRET GRPC_FINTECH=$GRPC_FINTECH REDIS=$REDIS MONGO_DB=$MONGO_DB NODE_ENV=$NODE_ENV npm run serve > /dev/null 2> /dev/null < /dev/null &)
+(REFRESHSECRET=$REFRESHSECRET ACCESSSECRET=$ACCESSSECRET GRPC_FINTECH=$GRPC_FINTECH REDIS=$REDIS MONGO_DB=$MONGO_DB NODE_ENV=$NODE_ENV pnpm serve > /dev/null 2> /dev/null < /dev/null &)
