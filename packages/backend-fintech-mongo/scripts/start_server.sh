@@ -1,7 +1,7 @@
 #!/bin/bash
 cd /home/ec2-user/lerna-monorepo
 aws s3 cp --recursive s3://lerna-monorepo-secrets/prod/certs ./certs
-cd /home/ec2-user/lerna-monorepo/packages/backend-fintech-mongo
+cd /home/ec2-user/lerna-monorepo/packages/backend-fintech-mongo-deploy
 aws s3 cp s3://lerna-monorepo-secrets/prod/prod.json prod.json
 KAFKA_ID=backend-fintech-mongo
 NODE_ENV=production
