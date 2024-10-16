@@ -7,8 +7,8 @@ files:
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
-    - location: packages/backend-fintech-mongo-cron/scripts/start_server.sh
+    - location: packages/backend-fintech-mongo-cron-deploy/scripts/start_server.sh
       timeout: 60
   ApplicationStop:
-    - location: packages/backend-fintech-mongo-cron/scripts/stop_server.sh
+    - location: packages/backend-fintech-mongo-cron-deploy/scripts/stop_server.sh
       timeout: 300

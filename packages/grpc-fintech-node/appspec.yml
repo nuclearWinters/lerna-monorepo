@@ -7,8 +7,8 @@ files:
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
-    - location: packages/grpc-fintech-node/scripts/start_server.sh
+    - location: packages/grpc-fintech-node-deploy/scripts/start_server.sh
       timeout: 60
   ApplicationStop:
-    - location: packages/grpc-fintech-node/scripts/stop_server.sh
+    - location: packages/grpc-fintech-node-deploy/scripts/stop_server.sh
       timeout: 300

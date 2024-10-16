@@ -7,8 +7,8 @@ files:
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
-    - location: packages/kafka-mongo/scripts/start_server.sh
+    - location: packages/kafka-mongo-deploy/scripts/start_server.sh
       timeout: 60
   ApplicationStop:
-    - location: packages/kafka-mongo/scripts/stop_server.sh
+    - location: packages/kafka-mongo-deploy/scripts/stop_server.sh
       timeout: 300
