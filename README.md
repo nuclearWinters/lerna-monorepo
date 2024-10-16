@@ -27,19 +27,18 @@ Demo: [https://relay-graphql-monorepo.com](https://relay-graphql-monorepo.com)
 
 **Developer Tools:**
 
-- Husky
 - Prettier
 - Webpack
 - Eslint
 - Jest
 - Babel
 - Docker
+- PNPM
 
 **NPM Dependency Highlights:**
 
 - lerna
 - graphql
-- graphql-sse
 - jsonwebtokens
 - @grpc/grpc-js
 - kafkajs
@@ -50,7 +49,6 @@ Demo: [https://relay-graphql-monorepo.com](https://relay-graphql-monorepo.com)
 - stylexjs/stylex
 - supertest
 - testcontainers
-- lint-staged
 
 **Databases:**
 
