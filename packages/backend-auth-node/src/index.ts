@@ -46,3 +46,16 @@ Promise.all([
   const serverHTTP2 = await main(authdb, redisClient, grpcClient);
   serverHTTP2.listen(443);
 });
+
+process
+  .on("unhandledRejection", (reason) => {
+    fs.writeFileSync("unhandledRejectionLogs.txt", `${String(reason)}`);
+    process.exit(1);
+  })
+  .on("uncaughtException", (err) => {
+    fs.writeFileSync(
+      "uncaughtExceptionLogs.txt",
+      `${err.name} ${err.message} ${err.stack}`
+    );
+    process.exit(1);
+  });
