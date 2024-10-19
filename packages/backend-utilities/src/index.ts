@@ -103,7 +103,7 @@ export const createHandler = ({
     reset(): void;
     getModules(): unknown[];
   };
-}): ((req: Http2ServerRequest, res: Http2ServerResponse) => void) => {
+}): ((req: Http2ServerRequest, res: Http2ServerResponse) => Promise<void>) => {
   return async (req: Http2ServerRequest, res: Http2ServerResponse) => {
     const getBody = () =>
       new Promise<{
