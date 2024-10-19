@@ -17,6 +17,9 @@ Promise.all([
     url: REDIS,
   }).connect(),
 ]).then(async ([mongoClient, redisClient]) => {
+  redisClient.on("error", (error) => {
+    fs.writeFileSync("redisClientError.txt", `${String(error)}`);
+  });
   const authdb = mongoClient.db("auth");
   const server = new Server();
   server.addService(AuthService, AuthServer(authdb, redisClient));

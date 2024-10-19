@@ -42,6 +42,9 @@ Promise.all([
   }).connect(),
   getGRPCClient(),
 ]).then(async ([mongoClient, redisClient, grpcClient]) => {
+  redisClient.on("error", (error) => {
+    fs.writeFileSync("redisClientError.txt", `${String(error)}`);
+  });
   const authdb = mongoClient.db("auth");
   const serverHTTP2 = await main(authdb, redisClient, grpcClient);
   serverHTTP2.listen(443);
