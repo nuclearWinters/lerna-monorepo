@@ -59,10 +59,10 @@ process
     process.exit(1);
   })
   .on("uncaughtException", (err) => {
-    if (err.name === "Error read ECONNRESET") return;
+    if (err.message === "ECONNRESET") return;
     fs.writeFileSync(
       "uncaughtExceptionLogs.txt",
-      `${err.name} ${err.message} ${err.stack}`
+      `Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
     );
     process.exit(1);
   });
