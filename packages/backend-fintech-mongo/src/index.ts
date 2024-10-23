@@ -85,7 +85,7 @@ process
     process.exit(1);
   })
   .on("uncaughtException", (err) => {
-    if (err.message === "ECONNRESET") return;
+    if (err.message === "read ECONNRESET") return;
     fs.writeFileSync(
       "uncaughtExceptionLogs.txt",
       `Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
