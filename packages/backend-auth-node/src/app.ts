@@ -93,7 +93,14 @@ const main = async (
         } else {
           res.writeHead(200).end();
         }
-      } catch {
+      } catch (err) {
+        const now = new Date().toISOString();
+        if (err instanceof Error) {
+          fs.writeFileSync(
+            `serverError${now}.txt`,
+            `Time: ${now}, Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
+          );
+        }
         res.writeHead(500).end();
       }
     }

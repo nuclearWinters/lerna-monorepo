@@ -81,14 +81,36 @@ Promise.all([
 
 process
   .on("unhandledRejection", (reason) => {
-    fs.writeFileSync("unhandledRejectionLogs.txt", `${String(reason)}`);
+    const now = new Date().toISOString();
+    fs.writeFileSync(
+      `unhandledRejectionLogs${now}.txt`,
+      `Time: ${now}, Reason: ${String(reason)}`
+    );
     process.exit(1);
   })
   .on("uncaughtException", (err) => {
-    if (err.message === "read ECONNRESET") return;
+    const now = new Date().toISOString();
+    if (err.message === "read ECONNRESET") {
+      fs.writeFileSync(
+        `ECONNRESET${now}.txt`,
+        `Time: ${now}, Reason: ${err.message}`
+      );
+      return;
+    }
+    if (
+      err.message.includes(
+        "routines:ssl3_read_bytes:sslv3 alert bad certificate"
+      )
+    ) {
+      fs.writeFileSync(
+        `BADCERT${now}.txt`,
+        `Time: ${now}, Reason: ${err.message}`
+      );
+      return;
+    }
     fs.writeFileSync(
-      "uncaughtExceptionLogs.txt",
-      `Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
+      `uncaughtExceptionLogs${now}.txt`,
+      `Time: ${now}, Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
     );
     process.exit(1);
   });
