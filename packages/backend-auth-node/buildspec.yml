@@ -19,11 +19,18 @@ phases:
       - cd packages
       - cd backend-auth-node-deploy
       - pnpm build
-      - pnpm prune --prod
+  post_build:
+    commands:
+      - echo Build completed on `date`
       - mv ./appspec.yml ../../
+      - cd ..
+      - sudo rm -r backend-auth-node
+      - mv backend-auth-node-deploy backend-auth-node
+      - cd backend-auth-node
+      - pnpm prune --prod
 artifacts:
   files:
     - "certs/*"
-    - "packages/backend-auth-node-deploy/**/*"
+    - "packages/backend-auth-node/**/*"
     - "package.json"
     - "appspec.yml"

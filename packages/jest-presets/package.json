@@ -7,7 +7,6 @@
     "node/jest-preset.js"
   ],
   "dependencies": {
-    "ts-jest": "^29.1.1",
-    "@shelf/jest-mongodb": "^4.3.2"
+    "ts-jest": "^29.1.1"
   }
 }
