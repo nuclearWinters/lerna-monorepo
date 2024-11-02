@@ -15,7 +15,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Compiling the Node.js code
-      - pnpm --filter "backend-auth-node" deploy ./packages/backend-auth-node-deploy
+      - pnpm --filter "backend-auth-node" --prod deploy ./packages/backend-auth-node-deploy
       - cd packages
       - cd backend-auth-node-deploy
       - pnpm build
@@ -23,15 +23,9 @@ phases:
     commands:
       - echo Build completed on `date`
       - mv ./appspec.yml ../../
-      - cd ..
-      - sudo rm -r backend-auth-node
-      - mv backend-auth-node-deploy backend-auth-node
-      - cd backend-auth-node
-      - pnpm prune --prod
 artifacts:
   files:
     - "certs/*"
-    - "packages/backend-auth-node/**/*"
+    - "packages/backend-auth-node-deploy/**/*"
     - "package.json"
     - "appspec.yml"
-    - "node_modules/**/*"

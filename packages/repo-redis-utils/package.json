@@ -18,7 +18,9 @@
   "author": "Armando Rueda",
   "license": "ISC",
   "dependencies": {
-    "redis": "^4.6.15"
+    "redis": "^4.6.15",
+    "typescript": "^5.5.4",
+    "@repo/typescript-config": "workspace:*"
   },
   "devDependencies": {
     "@types/jest": "^29.2.4",
@@ -27,9 +29,7 @@
     "jest": "^29.0.0",
     "lint-staged": "^15.0.2",
     "prettier": "^3.0.3",
-    "typescript": "^5.5.4",
     "@types/node": "^22.7.4",
-    "@repo/typescript-config": "workspace:*",
     "@repo/eslint-8-config": "workspace:*",
     "@repo/jest-presets": "workspace:*"
   },
