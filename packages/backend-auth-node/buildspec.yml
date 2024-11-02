@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo Installing
+  pre_build:
+    commands:
+      - echo Installing source NPM dependencies.
+      - corepack enable pnpm
+      - pnpm install --filter "backend-auth-node"
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Compiling the Node.js code
+      - cd packages
+      - cd backend-auth-node
+      - pnpm build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - mv ./appspec.yml ../../
+      - cd ..
+      - cd ..
+      - pnpm --filter "backend-auth-node" --prod deploy ./packages/backend-auth-node-deploy
+artifacts:
+  files:
+    - "certs/*"
+    - "packages/backend-auth-node-deploy/**/*"
+    - "package.json"
+    - "appspec.yml"
