@@ -36,12 +36,9 @@ import type {
   ScheduledPaymentsMongo,
   ScheduledPaymentsStatus,
 } from "./types";
-import {
-  DateScalarType,
-  base64,
-  unbase64,
-} from "@lerna-monorepo/backend-utilities/index";
-import type { UUID } from "@lerna-monorepo/backend-utilities/types";
+import { base64, unbase64 } from "@repo/utils/index";
+import { DateScalarType } from "@repo/graphql-utils/index";
+import type { UUID } from "@repo/utils/types";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatus[];

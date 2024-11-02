@@ -6,9 +6,9 @@ import {
   MONGO_DB,
   GRPC_FINTECH,
   IS_PRODUCTION,
-} from "@lerna-monorepo/backend-utilities/config";
+} from "@repo/utils/config";
 import { credentials } from "@grpc/grpc-js";
-import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import fs from "node:fs";
 
 const getGRPCClient = () =>

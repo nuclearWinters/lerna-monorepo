@@ -9,7 +9,7 @@ import {
 import { Admin, Kafka, Producer } from "kafkajs";
 import { dayFunction } from "./cronJobDay";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
-import { KAFKA_ID } from "@lerna-monorepo/backend-utilities/config";
+import { KAFKA_ID } from "@repo/utils/config";
 
 describe("cronJobs tests", () => {
   let mongoClient: MongoClient;

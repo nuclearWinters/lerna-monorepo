@@ -21,10 +21,10 @@ import { Db } from "mongodb";
 import { Producer } from "kafkajs";
 import fs from "node:fs";
 import queryMap from "./queryMap.json";
-import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
+import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { IS_PRODUCTION } from "@lerna-monorepo/backend-utilities/config";
-import { createHandler } from "@lerna-monorepo/backend-utilities/index";
+import { IS_PRODUCTION } from "@repo/utils/config";
+import { createHandler } from "@repo/graphql-utils/index";
 
 const Query = new GraphQLObjectType({
   name: "Query",

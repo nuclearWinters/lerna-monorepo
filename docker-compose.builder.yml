@@ -8,7 +8,6 @@ x-base: &base
     - grpc-auth-node:/usr/src/service/packages/grpc-auth-node/node_modules
     - grpc-fintech-node:/usr/src/service/packages/grpc-fintech-node/node_modules
     - kafka-mongo:/usr/src/service/packages/kafka-mongo/node_modules
-    - backend-utilities:/usr/src/service/packages/backend-utilities/node_modules
     - frontend-fintech:/usr/src/service/packages/frontend-fintech/node_modules
     - .:/usr/src/service/
   working_dir: /usr/src/service/
@@ -44,8 +43,6 @@ volumes:
   kafka-mongo:
     external: true
   backend-fintech-mongo-cron:
-    external: true
-  backend-utilities:
     external: true
   frontend-fintech:
     external: true

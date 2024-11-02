@@ -1,9 +1,5 @@
 import { ObjectId } from "mongodb";
-import { createClient } from "redis";
-
-export type RedisClientType = ReturnType<typeof createClient>;
-
-export type UUID = `${string}-${string}-${string}-${string}-${string}`;
+import { UUID } from "@repo/utils/types";
 
 export interface UserLogins {
   _id?: ObjectId;
@@ -40,14 +36,4 @@ export interface UserMongo {
   clabe: string;
   mobile: string;
   id: UUID;
-}
-
-export interface DecodeJWT {
-  id: UUID;
-  isLender: boolean;
-  isBorrower: boolean;
-  isSupport: boolean;
-  iat: number;
-  exp: number;
-  refreshTokenExpireTime: number;
 }

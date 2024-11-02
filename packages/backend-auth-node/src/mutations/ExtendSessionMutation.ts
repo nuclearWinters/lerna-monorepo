@@ -7,8 +7,8 @@ import {
   ACCESSSECRET,
   REFRESHSECRET,
   IS_PRODUCTION,
-} from "@lerna-monorepo/backend-utilities/config";
-import { jwt } from "@lerna-monorepo/backend-utilities/index";
+} from "@repo/utils/config";
+import { jwt } from "@repo/jwt-utils/index";
 import { serialize } from "cookie";
 
 type Payload = {

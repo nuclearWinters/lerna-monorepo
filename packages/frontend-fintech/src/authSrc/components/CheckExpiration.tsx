@@ -4,6 +4,8 @@ import { Decode, getUserDataCache } from "../../utils";
 import { useLogout } from "../utilsAuth";
 import { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
 
+const { setTimeout } = window;
+
 export const CheckExpiration: FC = () => {
   const logout = useLogout();
   const [refreshSession] = useMutation<CheckExpirationMutation>(graphql`

@@ -13,8 +13,8 @@ import {
   IS_PRODUCTION,
   KAFKA_PASSWORD,
   KAFKA_USERNAME,
-} from "@lerna-monorepo/backend-utilities/config";
-import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
+} from "@repo/utils/config";
+import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import fs from "node:fs";
 
 const kafka = new Kafka({

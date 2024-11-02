@@ -9,9 +9,10 @@ import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import {
   ACCESS_TOKEN_EXP_NUMBER,
   REFRESH_TOKEN_EXP_NUMBER,
-} from "@lerna-monorepo/backend-utilities/config";
-import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
-import { jwt, base64Name } from "@lerna-monorepo/backend-utilities/index";
+} from "@repo/utils/config";
+import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import { jwt } from "@repo/jwt-utils/index";
+import { base64Name } from "@repo/utils/index";
 import { parse, serialize } from "cookie";
 import { isBefore } from "date-fns";
 

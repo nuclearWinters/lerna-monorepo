@@ -1,4 +1,4 @@
-import { UUID } from "@lerna-monorepo/backend-utilities/types";
+import { UUID } from "@repo/utils/types";
 import { ObjectId } from "mongodb";
 
 export interface UserMongo {

@@ -9,8 +9,8 @@ import {
 import { Producer } from "kafkajs";
 import { parse } from "cookie";
 import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
-import { jwtMiddleware } from "@lerna-monorepo/backend-utilities/grpc";
-import type { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
+import { jwtMiddleware } from "@repo/grpc-utils/index";
+import type { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 
 export const getContextSSE = async (

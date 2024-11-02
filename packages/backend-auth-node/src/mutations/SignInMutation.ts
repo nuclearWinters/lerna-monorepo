@@ -8,8 +8,8 @@ import {
   REFRESHSECRET,
   ACCESSSECRET,
   IS_PRODUCTION,
-} from "@lerna-monorepo/backend-utilities/config";
-import { jwt } from "@lerna-monorepo/backend-utilities/index";
+} from "@repo/utils/config";
+import { jwt } from "@repo/jwt-utils/index";
 import { serialize } from "cookie";
 import { parse as woothee } from "woothee";
 

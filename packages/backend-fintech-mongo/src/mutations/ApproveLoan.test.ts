@@ -12,12 +12,13 @@ import {
   ACCESS_TOKEN_EXP_NUMBER,
   ACCESSSECRET,
   REFRESHSECRET,
-} from "@lerna-monorepo/backend-utilities/config";
-import { AuthService } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
-import { jwt, base64Name } from "@lerna-monorepo/backend-utilities/index";
-import { RedisClientType } from "@lerna-monorepo/backend-utilities/types";
-import { AuthServer } from "@lerna-monorepo/backend-utilities/grpc";
-import { AuthClient } from "@lerna-monorepo/backend-utilities/protoAuth/auth_grpc_pb";
+} from "@repo/utils/config";
+import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
+import { base64Name } from "@repo/utils/index";
+import { jwt } from "@repo/jwt-utils/index";
+import { RedisClientType } from "@repo/redis-utils/types";
+import { AuthServer } from "@repo/grpc-utils/index";
+import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";

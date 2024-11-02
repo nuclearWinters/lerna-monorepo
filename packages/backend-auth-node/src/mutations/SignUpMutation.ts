@@ -14,9 +14,9 @@ import {
   REFRESHSECRET,
   ACCESS_TOKEN_EXP_NUMBER,
   REFRESH_TOKEN_EXP_NUMBER,
-} from "@lerna-monorepo/backend-utilities/config";
-import { jwt } from "@lerna-monorepo/backend-utilities/index";
-import { createUser } from "@lerna-monorepo/backend-utilities/grpc";
+} from "@repo/utils/config";
+import { jwt } from "@repo/jwt-utils/index";
+import { createUser } from "@repo/grpc-utils/index";
 import { parse as woothee } from "woothee";
 
 interface Input {

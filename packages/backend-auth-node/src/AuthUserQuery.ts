@@ -18,12 +18,9 @@ import {
 import { Filter, ObjectId } from "mongodb";
 import { Languages } from "./mutations/SignUpMutation";
 import { Context, UserLogins, UserMongo, UserSessions } from "./types";
-import { UUID } from "@lerna-monorepo/backend-utilities/types";
-import {
-  base64,
-  unbase64,
-  DateScalarType,
-} from "@lerna-monorepo/backend-utilities/index";
+import { UUID } from "@repo/utils/types";
+import { base64, unbase64 } from "@repo/utils/index";
+import { DateScalarType } from "@repo/graphql-utils/index";
 
 const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   async (globalId, { authusers }) => {

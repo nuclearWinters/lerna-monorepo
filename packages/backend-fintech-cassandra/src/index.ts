@@ -9,7 +9,7 @@ import cassandra from "cassandra-driver";
 import { UserCassandra } from "./types";
 import { Kafka } from "kafkajs";
 import { runKafkaConsumer } from "./kafka";
-import { KAFKA, KAFKA_ID } from "@lerna-monorepo/backend-utilities/config";
+import { KAFKA, KAFKA_ID } from "@repo/utils/config";
 
 const client = new cassandra.Client({
   contactPoints: ["cassandra-fintech"],

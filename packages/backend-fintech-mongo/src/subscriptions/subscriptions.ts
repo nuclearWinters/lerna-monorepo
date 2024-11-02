@@ -18,7 +18,7 @@ import {
   LoanMongoRedis,
   UserMongo,
 } from "../types";
-import { unbase64 } from "@lerna-monorepo/backend-utilities/index";
+import { unbase64 } from "@repo/utils/index";
 
 export const LOAN_INSERT = "LOAN_INSERT";
 export const MY_LOAN_INSERT = "MY_LOAN_INSERT";

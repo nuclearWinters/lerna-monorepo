@@ -7,7 +7,7 @@ import {
   ScheduledPaymentsMongo,
 } from "./types";
 import { addMonths, startOfMonth } from "date-fns";
-import { UUID } from "@lerna-monorepo/backend-utilities/types";
+import { UUID } from "@repo/utils/types";
 
 MongoClient.connect("mongodb://localhost:27017?directConnection=true").then(
   async (client) => {

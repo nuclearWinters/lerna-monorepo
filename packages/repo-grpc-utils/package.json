@@ -1,12 +1,8 @@
 {
-  "name": "@lerna-monorepo/backend-utilities",
+  "name": "@repo/grpc-utils",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
   "exports": {
-    "./config": {
-      "types": "./src/config.ts",
-      "default": "./build/config.js"
-    },
     "./index": {
       "types": "./src/index.ts",
       "default": "./build/index.js"
@@ -14,10 +10,6 @@
     "./types": {
       "types": "./src/types.ts",
       "default": "./build/types.js"
-    },
-    "./grpc": {
-      "types": "./src/grpc.ts",
-      "default": "./build/grpc.js"
     },
     "./protoAuth/auth_grpc_pb": {
       "types": "./src/protoAuth/auth_grpc_pb.d.ts",
@@ -37,6 +29,7 @@
     }
   },
   "scripts": {
+    "prepare": "pnpm build",
     "build": "(tsc || ./node_modules/typescript/bin/tsc) && node ./copyCode.mjs",
     "pcm": "lint-staged",
     "test": "jest --bail",
@@ -49,25 +42,21 @@
   "license": "ISC",
   "dependencies": {
     "@grpc/grpc-js": "^1.11.1",
-    "graphql": "^16.5.0",
-    "jsonwebtoken": "^9.0.0",
     "grpc_tools_node_protoc_ts": "^5.3.2",
-    "google-protobuf": "^3.15.6",
-    "redis": "^4.6.15",
-    "mongodb": "^6.8.0"
+    "@repo/utils": "workspace:*",
+    "@repo/mongo-utils": "workspace:*",
+    "@repo/jwt-utils": "workspace:*",
+    "@repo/redis-utils": "workspace:*"
   },
   "devDependencies": {
-    "@testcontainers/redis": "^10.11.0",
     "@types/google-protobuf": "^3.15.6",
     "@types/jest": "^29.2.4",
     "@types/jsonwebtoken": "^9.0.0",
-    "@types/supertest": "^6.0.1",
     "eslint": "^9.9.1",
     "grpc-tools": "^1.12.3",
     "jest": "^29.0.0",
     "lint-staged": "^15.0.2",
     "prettier": "^3.0.3",
-    "supertest": "^7.0.0",
     "typescript": "^5.5.4",
     "@types/node": "^22.7.4",
     "@repo/typescript-config": "workspace:*",

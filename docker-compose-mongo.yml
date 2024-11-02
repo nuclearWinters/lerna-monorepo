@@ -42,7 +42,6 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - kafka-mongo:/usr/src/service/packages/kafka-mongo/node_modules
-      - backend-utilities:/usr/src/service/packages/backend-utilities/node_modules
     working_dir: /usr/src/service/packages/kafka-mongo
     command: ["npm", "run", "start"]
     depends_on:
@@ -61,7 +60,6 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - backend-fintech-mongo:/usr/src/service/packages/backend-fintech-mongo/node_modules
-      - backend-utilities:/usr/src/service/packages/backend-utilities/node_modules
     working_dir: /usr/src/service/packages/backend-fintech-mongo
     command: ["npm", "run", "start"]
     ports:
@@ -79,7 +77,6 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - backend-fintech-mongo-cron:/usr/src/service/packages/backend-fintech-mongo-cron/node_modules
-      - backend-utilities:/usr/src/service/packages/backend-utilities/node_modules
     working_dir: /usr/src/service/packages/backend-fintech-mongo-cron
     command: ["npm", "run", "start"]
     depends_on:
@@ -95,7 +92,6 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - backend-auth-node:/usr/src/service/packages/backend-auth-node/node_modules
-      - backend-utilities:/usr/src/service/packages/backend-utilities/node_modules
     working_dir: /usr/src/service/packages/backend-auth-node
     command: ["npm", "run", "start"]
     ports:
@@ -131,7 +127,6 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - grpc-auth-node:/usr/src/service/packages/grpc-auth-node/node_modules
-      - backend-utilities:/usr/src/service/packages/backend-utilities/node_modules
     working_dir: /usr/src/service/packages/grpc-auth-node
     command: ["npm", "run", "start"]
     depends_on:
@@ -147,7 +142,6 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - grpc-fintech-node:/usr/src/service/packages/grpc-fintech-node/node_modules
-      - backend-utilities:/usr/src/service/packages/backend-utilities/node_modules
     working_dir: /usr/src/service/packages/grpc-fintech-node
     command: ["npm", "run", "start"]
     depends_on:
@@ -212,8 +206,6 @@ volumes:
   kafka-mongo:
     external: true
   backend-fintech-mongo-cron:
-    external: true
-  backend-utilities:
     external: true
   frontend-fintech:
     external: true

@@ -13,7 +13,7 @@ import { addMonths, startOfMonth } from "date-fns";
 import { Redis, RedisOptions } from "ioredis";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { KAFKA_ID } from "@lerna-monorepo/backend-utilities/config";
+import { KAFKA_ID } from "@repo/utils/config";
 
 const delay = async () =>
   new Promise<void>((resolve) => {

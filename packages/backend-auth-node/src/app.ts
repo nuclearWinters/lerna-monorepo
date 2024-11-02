@@ -11,10 +11,10 @@ import { createSecureServer } from "node:http2";
 import { Db } from "mongodb";
 import fs from "node:fs";
 import queryMap from "./queryMapAuth.json";
-import { RedisClientType } from "@lerna-monorepo/backend-utilities/types";
-import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
-import { IS_PRODUCTION } from "@lerna-monorepo/backend-utilities/config";
-import { createHandler } from "@lerna-monorepo/backend-utilities/index";
+import { RedisClientType } from "@repo/redis-utils/types";
+import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import { IS_PRODUCTION } from "@repo/utils/config";
+import { createHandler } from "@repo/graphql-utils/index";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",

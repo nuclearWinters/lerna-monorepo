@@ -6,7 +6,7 @@ import { UserMongo } from "../types";
 import { createClient, RedisClientType } from "redis";
 import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 
 describe("SignInMutation tests", () => {
   let client: MongoClient;

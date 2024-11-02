@@ -8,8 +8,8 @@ import TestAgent from "supertest/lib/agent";
 import {
   AccountClient,
   AccountService,
-} from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
-import { AccountServer } from "@lerna-monorepo/backend-utilities/grpc";
+} from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import { AccountServer } from "@repo/grpc-utils/index";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 
 describe("SignUpMutation tests", () => {

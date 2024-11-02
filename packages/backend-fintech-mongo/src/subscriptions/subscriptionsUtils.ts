@@ -5,7 +5,7 @@ import {
   TransactionMongo,
   UserMongo,
 } from "../types";
-import { base64 } from "@lerna-monorepo/backend-utilities/index";
+import { base64 } from "@repo/utils/index";
 import {
   USER,
   TRANSACTION_INSERT,

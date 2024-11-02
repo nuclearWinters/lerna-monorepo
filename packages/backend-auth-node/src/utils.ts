@@ -6,10 +6,10 @@ import {
   ACCESSSECRET,
   REFRESHSECRET,
   ACCESS_TOKEN_EXP_NUMBER,
-} from "@lerna-monorepo/backend-utilities/config";
-import { jwt } from "@lerna-monorepo/backend-utilities/index";
-import { RedisClientType } from "@lerna-monorepo/backend-utilities/types";
-import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+} from "@repo/utils/config";
+import { jwt } from "@repo/jwt-utils/index";
+import { RedisClientType } from "@repo/redis-utils/types";
+import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 
 export const getUser = async (
   accessToken: string,

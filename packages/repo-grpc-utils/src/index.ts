@@ -1,5 +1,9 @@
-import { ACCESS_TOKEN_EXP_NUMBER, ACCESSSECRET, REFRESHSECRET } from "./config";
-import { jwt } from "./index";
+import {
+  ACCESS_TOKEN_EXP_NUMBER,
+  ACCESSSECRET,
+  REFRESHSECRET,
+} from "@repo/utils/config";
+import { jwt } from "@repo/jwt-utils/index";
 import type {
   AccountClient,
   IAccountServer,
@@ -28,7 +32,8 @@ import {
   ServiceError,
 } from "@grpc/grpc-js";
 import { Db } from "mongodb";
-import { RedisClientType, UserSessions } from "./types";
+import { RedisClientType } from "@repo/redis-utils/types";
+import { UserSessions } from "@repo/mongo-utils/types";
 
 export const jwtMiddleware = (
   refreshToken: string,

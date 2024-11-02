@@ -1,12 +1,8 @@
 import { MongoClient } from "mongodb";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
-import {
-  MONGO_DB,
-  IS_PRODUCTION,
-  GRPC_FINTECH,
-} from "@lerna-monorepo/backend-utilities/config";
-import { AccountService } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
-import { AccountServer } from "@lerna-monorepo/backend-utilities/grpc";
+import { MONGO_DB, IS_PRODUCTION, GRPC_FINTECH } from "@repo/utils/config";
+import { AccountService } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import { AccountServer } from "@repo/grpc-utils/index";
 import fs from "node:fs";
 
 MongoClient.connect(MONGO_DB).then(async (mongoClient) => {

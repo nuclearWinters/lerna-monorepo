@@ -7,6 +7,13 @@
     "packages/kafka-mongo",
     "packages/grpc-auth-node",
     "packages/grpc-fintech-node",
+    "packages/repo-logs-utils",
+    "packages/repo-jwt-utils",
+    "packages/repo-graphql-utils",
+    "packages/repo-grpc-utils",
+    "packages/repo-redis-utils",
+    "packages/repo-mongo-utils",
+    "packages/repo-utils"
   ],
   "editor.formatOnSave": true,
   "editor.indentSize": 2,

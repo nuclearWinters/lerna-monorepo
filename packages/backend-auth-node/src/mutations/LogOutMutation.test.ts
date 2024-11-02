@@ -6,8 +6,8 @@ import { UserMongo } from "../types";
 import { createClient, RedisClientType } from "redis";
 import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { jwt } from "@lerna-monorepo/backend-utilities/index";
-import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+import { jwt } from "@repo/jwt-utils/index";
+import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import { parse, serialize } from "cookie";
 
 describe("LogOutMutation tests", () => {

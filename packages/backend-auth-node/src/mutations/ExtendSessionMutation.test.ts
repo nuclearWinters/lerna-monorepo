@@ -7,8 +7,8 @@ import TestAgent from "supertest/lib/agent";
 import { RedisClientType } from "redis";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { createClient } from "redis";
-import { jwt } from "@lerna-monorepo/backend-utilities/index";
-import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+import { jwt } from "@repo/jwt-utils/index";
+import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import { parse, serialize } from "cookie";
 
 describe("ExtendSessionMutation tests", () => {

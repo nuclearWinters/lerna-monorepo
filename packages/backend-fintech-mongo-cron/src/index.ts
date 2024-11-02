@@ -6,7 +6,7 @@ import {
   KAFKA_USERNAME,
   MONGO_DB,
   IS_PRODUCTION,
-} from "@lerna-monorepo/backend-utilities/config";
+} from "@repo/utils/config";
 import { checkEveryDay, checkEveryMonth } from "./cronJobs";
 import { dayFunction } from "./cronJobDay";
 import { monthFunction } from "./cronJobMonth";

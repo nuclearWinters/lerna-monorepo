@@ -1,7 +1,8 @@
 import { ObjectId, Collection } from "mongodb";
 import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
-import { RedisClientType, UUID } from "@lerna-monorepo/backend-utilities/types";
-import { AccountClient } from "@lerna-monorepo/backend-utilities/protoAccount/account_grpc_pb";
+import { RedisClientType } from "@repo/redis-utils/types";
+import { UUID } from "@repo/utils/types";
+import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 
 export interface Context {
   authusers: Collection<UserMongo>;

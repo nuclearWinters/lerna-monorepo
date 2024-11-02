@@ -16,7 +16,7 @@ import {
   KAFKA_USERNAME,
   KAFKA_PASSWORD,
   REDIS,
-} from "@lerna-monorepo/backend-utilities/config";
+} from "@repo/utils/config";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis } from "ioredis";
 

@@ -16,3 +16,4 @@ kafka/**
 *.pem
 target/
 tsconfig.tsbuildinfo
+v8-compile-cache-0/
