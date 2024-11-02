@@ -9,7 +9,7 @@
     }
   },
   "scripts": {
-    "prepare": "pnpm build",
+    "postinstall": "pnpm build",
     "build": "tsc || ./node_modules/typescript/bin/tsc",
     "pcm": "lint-staged",
     "test": "jest --bail",

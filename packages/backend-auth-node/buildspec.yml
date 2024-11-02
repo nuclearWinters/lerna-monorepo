@@ -10,24 +10,16 @@ phases:
     commands:
       - echo Installing source NPM dependencies.
       - corepack enable
-      - pnpm install --filter "utils"
-      - pnpm install --filter "graphql-utils" --filter "jwt-utils" --filter "logs-utils" --filter "redis-utils" --filter "mongo-utils"
-      - pnpm install --filter "grpc-utils"
       - pnpm install --filter "backend-auth-node"
   build:
     commands:
       - echo Build started on `date`
-      - echo Compiling the Node.js code
-      - cd packages
-      - cd backend-auth-node
-      - pnpm build
-  post_build:
-    commands:
-      - echo Build completed on `date`
       - mv ./appspec.yml ../../
       - cd ..
       - cd ..
-      - pnpm --filter "backend-auth-node" --prod deploy ./packages/backend-auth-node-deploy
+      - pnpm --filter "backend-auth-node" deploy ./packages/backend-auth-node-deploy
+      - cd packages/backend-auth-node-deploy
+      - pnpm prune --prod
 artifacts:
   files:
     - "certs/*"

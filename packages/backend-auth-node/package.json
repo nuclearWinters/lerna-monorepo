@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
   "scripts": {
+    "postinstall": "pnpm build",
     "start": "tsx watch ./src/index.ts",
     "populate": "tsx ./src/populate.ts",
     "build": "tsc || ./node_modules/typescript/bin/tsc",
