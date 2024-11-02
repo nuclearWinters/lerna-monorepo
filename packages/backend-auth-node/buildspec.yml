@@ -10,7 +10,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies.
       - corepack enable pnpm
-      - pnpm install --filter "backend-auth-node"
+      - pnpm install --filter "backend-auth-node" --filter "graphql-utils" --filter "grpc-utils" --filter "jwt-utils" --filter "logs-utils" --filter "redis-utils" --filter "utils"
   build:
     commands:
       - echo Build started on `date`
