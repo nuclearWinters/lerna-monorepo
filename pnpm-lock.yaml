@@ -714,9 +714,15 @@ importers:
 
   packages/repo-graphql-utils:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       graphql:
         specifier: ^16.5.0
         version: 16.9.0
+      typescript:
+        specifier: ^5.5.4
+        version: 5.6.3
     devDependencies:
       '@repo/eslint-8-config':
         specifier: workspace:*
@@ -724,9 +730,6 @@ importers:
       '@repo/jest-presets':
         specifier: workspace:*
         version: link:../jest-presets
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/jest':
         specifier: ^29.2.4
         version: 29.5.13
@@ -745,9 +748,6 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.3.3
-      typescript:
-        specifier: ^5.5.4
-        version: 5.6.3
 
   packages/repo-grpc-utils:
     dependencies:
@@ -763,12 +763,18 @@ importers:
       '@repo/redis-utils':
         specifier: workspace:*
         version: link:../repo-redis-utils
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       '@repo/utils':
         specifier: workspace:*
         version: link:../repo-utils
       grpc_tools_node_protoc_ts:
         specifier: ^5.3.2
         version: 5.3.3
+      typescript:
+        specifier: ^5.5.4
+        version: 5.6.3
     devDependencies:
       '@repo/eslint-8-config':
         specifier: workspace:*
@@ -776,9 +782,6 @@ importers:
       '@repo/jest-presets':
         specifier: workspace:*
         version: link:../jest-presets
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/google-protobuf':
         specifier: ^3.15.6
         version: 3.15.12
@@ -806,18 +809,21 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.3.3
-      typescript:
-        specifier: ^5.5.4
-        version: 5.6.3
 
   packages/repo-jwt-utils:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       '@repo/utils':
         specifier: workspace:*
         version: link:../repo-utils
       jsonwebtoken:
         specifier: ^9.0.0
         version: 9.0.2
+      typescript:
+        specifier: ^5.5.4
+        version: 5.6.3
     devDependencies:
       '@repo/eslint-8-config':
         specifier: workspace:*
@@ -825,9 +831,6 @@ importers:
       '@repo/jest-presets':
         specifier: workspace:*
         version: link:../jest-presets
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/jest':
         specifier: ^29.2.4
         version: 29.5.13
@@ -849,15 +852,18 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.3.3
-      typescript:
-        specifier: ^5.5.4
-        version: 5.6.3
 
   packages/repo-logs-utils:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       aws-sdk:
         specifier: ^2.1691.0
         version: 2.1691.0
+      typescript:
+        specifier: ^5.5.4
+        version: 5.6.3
     devDependencies:
       '@repo/eslint-8-config':
         specifier: workspace:*
@@ -865,9 +871,6 @@ importers:
       '@repo/jest-presets':
         specifier: workspace:*
         version: link:../jest-presets
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/jest':
         specifier: ^29.2.4
         version: 29.5.13
@@ -892,18 +895,21 @@ importers:
       supertest:
         specifier: ^7.0.0
         version: 7.0.0
-      typescript:
-        specifier: ^5.5.4
-        version: 5.6.3
 
   packages/repo-mongo-utils:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       '@repo/utils':
         specifier: workspace:*
         version: link:../repo-utils
       mongodb:
         specifier: ^6.8.0
         version: 6.9.0(socks@2.8.3)
+      typescript:
+        specifier: ^5.5.4
+        version: 5.6.3
     devDependencies:
       '@repo/eslint-8-config':
         specifier: workspace:*
@@ -911,9 +917,6 @@ importers:
       '@repo/jest-presets':
         specifier: workspace:*
         version: link:../jest-presets
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/jest':
         specifier: ^29.2.4
         version: 29.5.13
@@ -932,15 +935,18 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.3.3
-      typescript:
-        specifier: ^5.5.4
-        version: 5.6.3
 
   packages/repo-redis-utils:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       redis:
         specifier: ^4.6.15
         version: 4.7.0
+      typescript:
+        specifier: ^5.5.4
+        version: 5.6.3
     devDependencies:
       '@repo/eslint-8-config':
         specifier: workspace:*
@@ -948,9 +954,6 @@ importers:
       '@repo/jest-presets':
         specifier: workspace:*
         version: link:../jest-presets
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/jest':
         specifier: ^29.2.4
         version: 29.5.13
@@ -972,11 +975,15 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.3.3
+
+  packages/repo-utils:
+    dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       typescript:
         specifier: ^5.5.4
         version: 5.6.3
-
-  packages/repo-utils:
     devDependencies:
       '@repo/eslint-8-config':
         specifier: workspace:*
@@ -984,9 +991,6 @@ importers:
       '@repo/jest-presets':
         specifier: workspace:*
         version: link:../jest-presets
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/jest':
         specifier: ^29.2.4
         version: 29.5.13
@@ -1005,9 +1009,6 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.3.3
-      typescript:
-        specifier: ^5.5.4
-        version: 5.6.3
 
   packages/typescript-config: {}
 
