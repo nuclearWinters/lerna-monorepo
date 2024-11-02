@@ -9,8 +9,11 @@ phases:
   pre_build:
     commands:
       - echo Installing source NPM dependencies.
-      - corepack enable pnpm
-      - pnpm install --filter "backend-auth-node" --filter "graphql-utils" --filter "grpc-utils" --filter "jwt-utils" --filter "logs-utils" --filter "redis-utils" --filter "utils"
+      - corepack enable
+      - pnpm install --filter "utils"
+      - pnpm install --filter "graphql-utils" --filter "jwt-utils" --filter "logs-utils" --filter "redis-utils"
+      - pnpm install --filter "grpc-utils"
+      - pnpm install --filter "backend-auth-node"
   build:
     commands:
       - echo Build started on `date`
