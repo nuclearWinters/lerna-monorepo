@@ -34,3 +34,4 @@ artifacts:
     - "packages/backend-auth-node/**/*"
     - "package.json"
     - "appspec.yml"
+    - "node_modules/**/*"
