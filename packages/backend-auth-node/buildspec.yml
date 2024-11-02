@@ -11,7 +11,7 @@ phases:
       - echo Installing source NPM dependencies.
       - corepack enable
       - pnpm install --filter "utils"
-      - pnpm install --filter "graphql-utils" --filter "jwt-utils" --filter "logs-utils" --filter "redis-utils"
+      - pnpm install --filter "graphql-utils" --filter "jwt-utils" --filter "logs-utils" --filter "redis-utils" --filter "mongo-utils"
       - pnpm install --filter "grpc-utils"
       - pnpm install --filter "backend-auth-node"
   build:
