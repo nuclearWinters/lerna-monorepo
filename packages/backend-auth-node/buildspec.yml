@@ -14,6 +14,13 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - echo Compiling the Node.js code
+      - cd packages
+      - cd backend-auth-node
+      - pnpm build
+  post_build:
+    commands:
+      - echo Build completed on `date`
       - mv ./appspec.yml ../../
       - cd ..
       - cd ..
