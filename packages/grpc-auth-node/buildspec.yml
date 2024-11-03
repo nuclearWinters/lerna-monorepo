@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo Installing
+  pre_build:
+    commands:
+      - echo Installing source NPM dependencies.
+      - corepack enable
+      - pnpm install --filter "grpc-auth-node"
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Compiling the Node.js code
+      - pnpm --filter "grpc-auth-node" --prod deploy ./packages/grpc-auth-node-deploy
+      - cd packages
+      - cd grpc-auth-node-deploy
+      - pnpm build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - mv ./appspec.yml ../../
+artifacts:
+  files:
+    - "certs/*"
+    - "packages/grpc-auth-node-deploy/**/*"
+    - "package.json"
+    - "appspec.yml"
