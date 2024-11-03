@@ -12,3 +12,5 @@ hooks:
   ApplicationStop:
     - location: packages/backend-auth-node-deploy/scripts/stop_server.sh
       timeout: 300
+  ValidateService:
+    - location: packages/backend-auth-node-deploy/scripts/validate_service.sh
