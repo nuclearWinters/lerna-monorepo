@@ -69,7 +69,7 @@ process
     if (err.message === "read ECONNRESET") {
       fs.writeFileSync(
         `ECONNRESET${now}.txt`,
-        `Time: ${now}, Reason: ${err.message}`
+        `Time: ${now}, Reason: ${err.message}, error: ${err.stack}`
       );
       return;
     }
