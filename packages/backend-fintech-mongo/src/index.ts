@@ -74,7 +74,8 @@ Promise.all([
   const db = mongoClient.db("fintech");
   const serverHTTP2 = await main(db, producer, grpcClient, pubsub);
   serverHTTP2.on("unknownProtocol", () => {
-    fs.writeFileSync("unknownProtocol.txt", `unknownProtocol`);
+    const now = new Date().toISOString();
+    fs.writeFileSync(`unknownProtocol${now}.txt`, `Time: ${now}`);
   });
   serverHTTP2.listen(443);
 });

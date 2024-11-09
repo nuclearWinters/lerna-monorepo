@@ -49,7 +49,8 @@ Promise.all([
   const authdb = mongoClient.db("auth");
   const serverHTTP2 = await main(authdb, redisClient, grpcClient);
   serverHTTP2.on("unknownProtocol", () => {
-    fs.writeFileSync("unknownProtocol.txt", `unknownProtocol`);
+    const now = new Date().toISOString();
+    fs.writeFileSync(`unknownProtocol${now}.txt`, `Time: ${now}`);
   });
   serverHTTP2.listen(443);
 });

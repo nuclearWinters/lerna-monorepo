@@ -67,6 +67,20 @@ const main = async (
       ),
     },
     async (req, res) => {
+      req.on("error", (err) => {
+        const now = new Date().toISOString();
+        fs.writeFileSync(
+          `requestError${now}.txt`,
+          `Time: ${now}, Message: ${err.message}, Stack: ${err.stack}`
+        );
+      });
+      res.on("error", (err) => {
+        const now = new Date().toISOString();
+        fs.writeFileSync(
+          `responseError${now}.txt`,
+          `Time: ${now}, Message: ${err.message}, Stack: ${err.stack}`
+        );
+      });
       try {
         const origins = IS_PRODUCTION
           ? ["https://relay-graphql-monorepo.com"]
@@ -100,11 +114,20 @@ const main = async (
             `serverError${now}.txt`,
             `Time: ${now}, Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
           );
+        } else {
+          fs.writeFileSync(`errorUnknown${now}.txt`, `Time: ${now}`);
         }
         res.writeHead(500).end();
       }
     }
   );
+  server.on("error", (err) => {
+    const now = new Date().toISOString();
+    fs.writeFileSync(
+      `serverError${now}.txt`,
+      `Time: ${now}, Message: ${err.message}, Stack: ${err.stack}`
+    );
+  });
   return server;
 };
 
