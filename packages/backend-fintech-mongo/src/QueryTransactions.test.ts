@@ -1,7 +1,7 @@
 import { main } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { TransactionMongo, UserMongo } from "./types";
+import { TransactionMongo, FintechUserMongo } from "@repo/mongo-utils/types";
 import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
@@ -78,7 +78,7 @@ describe("QueryTransactions tests", () => {
   it("test TransactionsConnection valid access token", async () => {
     const transactions =
       dbInstanceFintech.collection<TransactionMongo>("transactions");
-    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const users = dbInstanceFintech.collection<FintechUserMongo>("users");
     const user_id = crypto.randomUUID();
     await users.insertOne({
       id: user_id,

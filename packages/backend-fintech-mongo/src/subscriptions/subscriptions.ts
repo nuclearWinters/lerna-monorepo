@@ -9,15 +9,15 @@ import {
   GraphQLInvestment,
   GraphQLLoan,
 } from "../Nodes";
+import { Context } from "../types";
 import {
-  Context,
   IInvestmentEdge,
   ILoanEdge,
   InvestmentMongoRedis,
   ITransactionEdge,
   LoanMongoRedis,
-  UserMongo,
-} from "../types";
+} from "@repo/mongo-utils/types";
+import { FintechUserMongo } from "@repo/mongo-utils/types";
 import { unbase64 } from "@repo/utils/index";
 
 export const LOAN_INSERT = "LOAN_INSERT";
@@ -148,7 +148,7 @@ export const investments_subscribe_insert = {
 };
 
 interface PayloadUser {
-  user_subscribe: UserMongo;
+  user_subscribe: FintechUserMongo;
 }
 
 export const user_subscribe = {

@@ -16,3 +16,4 @@ packages:
   - "packages/repo-mongo-utils"
   - "packages/repo-jwt-utils"
   - "packages/repo-grpc-utils"
+  - "packages/repo-kafka-utils"

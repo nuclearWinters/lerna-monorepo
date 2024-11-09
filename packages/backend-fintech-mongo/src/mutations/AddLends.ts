@@ -8,6 +8,7 @@ import {
 } from "graphql";
 import { Context } from "../types";
 import { MXNScalarType } from "../Nodes";
+import { ObjectId } from "mongodb";
 
 interface Input {
   lends: {
@@ -55,14 +56,24 @@ export const AddLendsMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { lends: newLends }: Input,
-    { id, producer }: Context
+    { id, producer, records }: Context
   ): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");
       }
       for (const lend of newLends) {
-        const { id: loan_id } = fromGlobalId(lend.loan_gid);
+        const { id: loan_oid_str } = fromGlobalId(lend.loan_gid);
+        const {
+          insertedIds: { 0: record_user_oid, 1: record_loan_oid },
+        } = await records.insertMany([
+          {
+            status: "pending",
+          },
+          {
+            status: "pending",
+          },
+        ]);
         await producer.send({
           topic: "user-transaction",
           messages: [
@@ -71,19 +82,14 @@ export const AddLendsMutation = mutationWithClientMutationId({
               value: JSON.stringify({
                 user_id: id,
                 withheld: lend.quantity,
+                record_oid_str: record_user_oid.toHexString(),
                 nextTopic: "loan-transaction",
-                nextKey: loan_id,
+                nextKey: loan_oid_str,
                 nextValue: JSON.stringify({
                   quantity: lend.quantity,
                   lender_id: id,
-                  loan_id,
-                  nextTopic: "add-lends",
-                  nextKey: id,
-                  nextValue: JSON.stringify({
-                    quantity: lend.quantity,
-                    loan_id,
-                    lender_id: id,
-                  }),
+                  loan_id: loan_oid_str,
+                  record_oid_str: record_loan_oid.toHexString(),
                 }),
               }),
             },

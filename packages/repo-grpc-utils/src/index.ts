@@ -33,7 +33,8 @@ import {
 } from "@grpc/grpc-js";
 import { Db } from "mongodb";
 import { RedisClientType } from "@repo/redis-utils/types";
-import { UserSessions } from "@repo/mongo-utils/types";
+import { AuthUserSessions } from "@repo/mongo-utils/types";
+import { UUID } from "@repo/utils/types";
 
 export const jwtMiddleware = (
   refreshToken: string,
@@ -41,7 +42,7 @@ export const jwtMiddleware = (
   client: AuthClient
 ) =>
   new Promise<{
-    id: string;
+    id: UUID;
     isLender: boolean;
     isBorrower: boolean;
     isSupport: boolean;
@@ -56,7 +57,7 @@ export const jwtMiddleware = (
       if (err) {
         //Should I return error and unauthorized status code?
         resolve({
-          id: "",
+          id: "" as UUID,
           isLender: false,
           isBorrower: false,
           isSupport: false,
@@ -69,7 +70,7 @@ export const jwtMiddleware = (
         const isSupport = user.getIsSupport();
         const validAccessToken = user.getValidAccessToken();
         resolve({
-          id,
+          id: id as UUID,
           isLender,
           isBorrower,
           isSupport,
@@ -139,7 +140,7 @@ export const AuthServer = (authdb: Db, rdb: RedisClientType): IAuthServer => ({
       payload.setIsBorrower(isBorrower);
       payload.setIsLender(isLender);
       payload.setIsSupport(isSupport);
-      const sessions = authdb.collection<UserSessions>("sessions");
+      const sessions = authdb.collection<AuthUserSessions>("sessions");
       sessions?.updateOne(
         {
           refreshToken,

@@ -37,7 +37,7 @@ services:
       retries: 15
 
   kafka-mongo:
-    image: node:20
+    image: node:22
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
@@ -55,7 +55,7 @@ services:
 
   backend-fintech-mongo:
     container_name: backend-fintech-mongo
-    image: node:20
+    image: node:22
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
@@ -72,7 +72,7 @@ services:
 
   backend-fintech-mongo-cron:
     container_name: backend-fintech-mongo-cron
-    image: node:20
+    image: node:22
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
@@ -87,7 +87,7 @@ services:
 
   backend-auth-node:
     container_name: backend-auth-node
-    image: node:20
+    image: node:22
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
@@ -122,7 +122,7 @@ services:
 
   grpc-auth-node:
     container_name: grpc-auth-node
-    image: node:20
+    image: node:22
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
@@ -137,7 +137,7 @@ services:
 
   grpc-fintech-node:
     container_name: grpc-fintech-node
-    image: node:20
+    image: node:22
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
@@ -150,7 +150,7 @@ services:
 
   frontend-fintech:
     container_name: frontend-fintech
-    image: node:20
+    image: node:22
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules

@@ -1,5 +1,6 @@
 import { GraphQLUser } from "./Nodes";
-import { Context, UserMongo } from "./types";
+import { Context } from "./types";
+import { FintechUserMongo } from "@repo/mongo-utils/types";
 
 const QueryUser = {
   type: GraphQLUser,
@@ -7,7 +8,7 @@ const QueryUser = {
     _root: unknown,
     _args: unknown,
     { users, id }: Context
-  ): Promise<UserMongo> => {
+  ): Promise<FintechUserMongo> => {
     const user = await users.findOne({
       id,
     });

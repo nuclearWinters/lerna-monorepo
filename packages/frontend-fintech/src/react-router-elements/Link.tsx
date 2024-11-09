@@ -1,25 +1,22 @@
-import { Component, ReactNode } from "react";
+import { FC, ReactNode } from "react";
 import { historyPush, historyReplace } from "./utils";
 
-export class Link extends Component<{
+export const Link: FC<{
   to: string;
   replace?: boolean;
   children: ReactNode;
-}> {
-  handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    const { replace, to } = this.props;
+  className?: string;
+}> = ({ to, replace, children, className }) => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
     event.preventDefault();
-
     replace ? historyReplace(to) : historyPush(to);
   };
 
-  render() {
-    const { to, children } = this.props;
-
-    return (
-      <a href={to} onClick={this.handleClick}>
-        {children}
-      </a>
-    );
-  }
-}
+  return (
+    <a href={to} onClick={handleClick} className={className}>
+      {children}
+    </a>
+  );
+};

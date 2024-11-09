@@ -1,7 +1,7 @@
 import { main } from "./app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { UserMongo } from "./types";
+import { FintechUserMongo } from "@repo/mongo-utils/types";
 import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
@@ -76,7 +76,7 @@ describe("QueryUser tests", () => {
   }, 10000);
 
   it("test QueryUser valid access token", async () => {
-    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const users = dbInstanceFintech.collection<FintechUserMongo>("users");
     const user_oid = new ObjectId();
     const user_id = crypto.randomUUID();
     await users.insertMany([

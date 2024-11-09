@@ -1,8 +1,7 @@
 import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { UserMongo } from "../types";
-import { Admin, Kafka, Producer } from "kafkajs";
+import { Consumer, Kafka, Producer } from "kafkajs";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
@@ -23,6 +22,17 @@ import { jwt } from "@repo/jwt-utils/index";
 import { RedisClientType } from "@repo/redis-utils/types";
 import { AuthServer } from "@repo/grpc-utils/index";
 import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
+import { runKafkaConsumer } from "@repo/kafka-utils/kafka";
+import { getFintechCollections } from "@repo/mongo-utils/index";
+
+// Test indempotency?
+
+const delay = () =>
+  new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, 300);
+  });
 
 describe("AddFunds tests", () => {
   let mongoClient: MongoClient;
@@ -38,7 +48,7 @@ describe("AddFunds tests", () => {
   let redisClient: RedisClientType;
   let ioredisPublisherClient: Redis;
   let ioredisSubscriberClient: Redis;
-  let admin: Admin;
+  let consumer: Consumer;
 
   beforeAll(async () => {
     mongoClient = await MongoClient.connect(
@@ -61,7 +71,7 @@ describe("AddFunds tests", () => {
       clientId: KAFKA_ID,
       brokers: [`${name}:${port}`],
     });
-    admin = kafka.admin();
+    const admin = kafka.admin();
     await admin.connect();
     await admin.createTopics({
       validateOnly: false,
@@ -110,6 +120,8 @@ describe("AddFunds tests", () => {
     grpcClient = new AuthClient(`0.0.0.0:1983`, credentials.createInsecure());
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
+    consumer = kafka.consumer({ groupId: "test-group" });
+    await runKafkaConsumer(consumer, producer, dbInstanceFintech, pubsub);
   }, 20000);
 
   afterAll(async () => {
@@ -117,14 +129,15 @@ describe("AddFunds tests", () => {
     grpcServer.forceShutdown();
     await redisClient.disconnect();
     await startedRedisContainer.stop();
+    await consumer.disconnect();
     await producer.disconnect();
-    await admin.disconnect();
     await startedKafkaContainer.stop();
     await mongoClient.close();
+    await delay();
   }, 10000);
 
   it("test AddFunds increase valid access token", async () => {
-    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const { users } = getFintechCollections(dbInstanceFintech);
     const user_oid = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({
@@ -185,12 +198,23 @@ describe("AddFunds tests", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addFunds.error).toBeFalsy();
-    const count = await admin.fetchTopicOffsets("user-transaction");
-    expect(count[0].offset).toBe("1");
+    await delay();
+    const user = await users.findOne({ id });
+    if (!user) {
+      throw new Error("User not found.");
+    }
+    expect(user).toEqual({
+      _id: user_oid,
+      account_available: 150000,
+      account_to_be_paid: 0,
+      account_total: 150000,
+      account_withheld: 0,
+      id,
+    });
   }, 10000);
 
   it("test AddFunds decrease valid access token", async () => {
-    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const { users } = getFintechCollections(dbInstanceFintech);
     const user_oid = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({
@@ -251,12 +275,23 @@ describe("AddFunds tests", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addFunds.error).toBeFalsy();
-    const count = await admin.fetchTopicOffsets("user-transaction");
-    expect(count[0].offset).toBe("2");
+    await delay();
+    const user = await users.findOne({ id });
+    if (!user) {
+      throw new Error("User not found.");
+    }
+    expect(user).toEqual({
+      _id: user_oid,
+      account_available: 50000,
+      account_to_be_paid: 0,
+      account_total: 50000,
+      account_withheld: 0,
+      id,
+    });
   }, 10000);
 
   it("test AddFunds increase invalid access token and valid refresh token", async () => {
-    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const { users } = getFintechCollections(dbInstanceFintech);
     const user_oid = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({
@@ -318,12 +353,23 @@ describe("AddFunds tests", () => {
     expect(data.data.addFunds.error).toBeFalsy();
     expect(response.headers["accesstoken"]).toBeTruthy();
     expect(response.headers["accesstoken"]).not.toBe(accessToken);
-    const count = await admin.fetchTopicOffsets("user-transaction");
-    expect(count[0].offset).toBe("3");
+    await delay();
+    const user = await users.findOne({ id });
+    if (!user) {
+      throw new Error("User not found.");
+    }
+    expect(user).toEqual({
+      _id: user_oid,
+      account_available: 150000,
+      account_to_be_paid: 0,
+      account_total: 150000,
+      account_withheld: 0,
+      id,
+    });
   }, 10000);
 
   it("test AddFunds try decrease more than available valid refresh token", async () => {
-    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const { users } = getFintechCollections(dbInstanceFintech);
     const user_oid = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({
@@ -384,14 +430,25 @@ describe("AddFunds tests", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addFunds.error).toBe("");
-    const count = await admin.fetchTopicOffsets("user-transaction");
-    expect(count[0].offset).toBe("4");
+    await delay();
+    const user = await users.findOne({ id });
+    if (!user) {
+      throw new Error("User not found.");
+    }
+    expect(user).toEqual({
+      _id: user_oid,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
+      id,
+    });
   }, 10000);
 
   it("test AddFunds try increase cero valid refresh token", async () => {
     const user_oid = new ObjectId();
     const id = crypto.randomUUID();
-    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const { users } = getFintechCollections(dbInstanceFintech);
     await users.insertOne({
       _id: user_oid,
       id,
@@ -450,7 +507,18 @@ describe("AddFunds tests", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addFunds.error).toBe("La cantidad no puede ser cero.");
-    const count = await admin.fetchTopicOffsets("user-transaction");
-    expect(count[0].offset).toBe("4");
+    await delay();
+    const user = await users.findOne({ id });
+    if (!user) {
+      throw new Error("User not found.");
+    }
+    expect(user).toEqual({
+      _id: user_oid,
+      account_available: 100000,
+      account_to_be_paid: 0,
+      account_total: 100000,
+      account_withheld: 0,
+      id,
+    });
   }, 20000);
 });

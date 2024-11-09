@@ -25,23 +25,28 @@ export const AddFundsMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: async (
-    { quantity }: Input,
-    { id, producer }: Context
+    { quantity: quantity_cents }: Input,
+    { id, producer, records }: Context
   ): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");
       }
-      if (quantity === 0) {
+      if (quantity_cents === 0) {
         throw new Error("La cantidad no puede ser cero.");
       }
+      const result = await records.insertOne({
+        status: "pending",
+      });
+      const record_oid_str = result.insertedId.toHexString();
       await producer.send({
         topic: "user-transaction",
         messages: [
           {
             value: JSON.stringify({
-              quantity,
-              user_id: id,
+              quantity_cents,
+              user_uuid: id,
+              record_oid_str,
             }),
             key: id,
           },

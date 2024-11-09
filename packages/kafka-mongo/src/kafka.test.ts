@@ -1,14 +1,9 @@
 import { Admin, Consumer, Kafka, Producer } from "kafkajs";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
-import { runKafkaConsumer } from "./kafka";
+import { runKafkaConsumer } from "@repo/kafka-utils/kafka";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import {
-  InvestmentMongo,
-  LoanMongo,
-  ScheduledPaymentsMongo,
-  TransactionMongo,
-  UserMongo,
-} from "./types";
+import { InvestmentMongo, LoanMongo } from "@repo/mongo-utils/types";
+import { getFintechCollections } from "@repo/mongo-utils/index";
 import { addMonths, startOfMonth } from "date-fns";
 import { Redis, RedisOptions } from "ioredis";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
@@ -100,39 +95,26 @@ describe("Kafka", () => {
   it("add/decrease funds", async () => {
     const loans = dbInstance.collection<LoanMongo>("loans");
     const investments = dbInstance.collection<InvestmentMongo>("investments");
-    const transactions =
-      dbInstance.collection<TransactionMongo>("transactions");
-    const users = dbInstance.collection<UserMongo>("users");
-    const scheduledPayments =
-      dbInstance.collection<ScheduledPaymentsMongo>("scheduledPayments");
-    await runKafkaConsumer(
-      consumer,
-      producer,
-      loans,
-      users,
-      transactions,
-      scheduledPayments,
-      investments,
-      pubsub
-    );
+    const { users, scheduledPayments } = getFintechCollections(dbInstance);
+    await runKafkaConsumer(consumer, producer, dbInstance, pubsub);
     const user1_oid = new ObjectId();
-    const user1_id = "user1_id";
+    const user1_id = crypto.randomUUID();
     const user2_oid = new ObjectId();
-    const user2_id = "user2_id";
+    const user2_id = crypto.randomUUID();
     const user3_oid = new ObjectId();
-    const user3_id = "user3_id";
+    const user3_id = crypto.randomUUID();
     const user4_oid = new ObjectId();
-    const user4_id = "user4_id";
+    const user4_id = crypto.randomUUID();
     const user5_oid = new ObjectId();
-    const user5_id = "user5_id";
+    const user5_id = crypto.randomUUID();
     const user6_oid = new ObjectId();
-    const user6_id = "user6_id";
+    const user6_id = crypto.randomUUID();
     const user7_oid = new ObjectId();
-    const user7_id = "user7_id";
+    const user7_id = crypto.randomUUID();
     const user8_oid = new ObjectId();
-    const user8_id = "user8_id";
+    const user8_id = crypto.randomUUID();
     const user9_oid = new ObjectId();
-    const user9_id = "user9_id";
+    const user9_id = crypto.randomUUID();
     const laon1_oid = new ObjectId();
     const laon2_oid = new ObjectId();
     const laon3_oid = new ObjectId();
@@ -273,7 +255,7 @@ describe("Kafka", () => {
         //New completed loan
         {
           value: JSON.stringify({
-            withheldFromAvailable: 10000,
+            operationWithheldAndAvailable: 10000,
             user_id: user3_id,
             nextTopic: "loan-transaction",
             nextKey: laon1_oid.toHexString(),
@@ -295,7 +277,7 @@ describe("Kafka", () => {
         //Return money
         {
           value: JSON.stringify({
-            withheldFromAvailable: 10000,
+            operationWithheldAndAvailable: 10000,
             user_id: user5_id,
             nextTopic: "loan-transaction",
             nextKey: laon2_oid.toHexString(),
@@ -317,7 +299,7 @@ describe("Kafka", () => {
         //Two separated lends
         {
           value: JSON.stringify({
-            withheldFromAvailable: 5000,
+            operationWithheldAndAvailable: 5000,
             user_id: user7_id,
             nextTopic: "loan-transaction",
             nextKey: laon3_oid.toHexString(),
@@ -338,7 +320,7 @@ describe("Kafka", () => {
         },
         {
           value: JSON.stringify({
-            withheldFromAvailable: 5000,
+            operationWithheldAndAvailable: 5000,
             user_id: user9_id,
             nextTopic: "loan-transaction",
             nextKey: laon3_oid.toHexString(),
@@ -359,7 +341,7 @@ describe("Kafka", () => {
         },
         {
           value: JSON.stringify({
-            withheldFromAvailable: 5000,
+            operationWithheldAndAvailable: 5000,
             user_id: user7_id,
             nextTopic: "loan-transaction",
             nextKey: laon3_oid.toHexString(),

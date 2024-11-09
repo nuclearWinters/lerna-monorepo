@@ -21,21 +21,21 @@ import {
   forwardConnectionArgs,
 } from "graphql-relay";
 import { Filter, ObjectId } from "mongodb";
-import type {
-  Context,
-  InvestmentMongo,
+import type { Context } from "./types";
+import {
+  FintechUserMongo,
+  ScheduledPaymentsMongo,
   LoanMongo,
+  InvestmentTransactionMongo,
+  InvestmentMongo,
+  MoneyTransactionMongo,
   TransactionMongo,
   ILoanStatus,
   IInvestmentStatus,
   TransactionMongoType,
-  UserMongo,
-  InvestmentTransactionMongo,
-  MoneyTransactionMongo,
   TransactionInvestMongoType,
-  ScheduledPaymentsMongo,
   ScheduledPaymentsStatus,
-} from "./types";
+} from "@repo/mongo-utils/types";
 import { base64, unbase64 } from "@repo/utils/index";
 import { DateScalarType } from "@repo/graphql-utils/index";
 import type { UUID } from "@repo/utils/types";
@@ -445,7 +445,7 @@ const { connectionType: LoanConnection, edgeType: GraphQLLoanEdge } =
     nodeType: GraphQLLoan,
   });
 
-const GraphQLUser = new GraphQLObjectType<UserMongo, Context>({
+const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
   name: "User",
   fields: {
     id: globalIdField("User"),

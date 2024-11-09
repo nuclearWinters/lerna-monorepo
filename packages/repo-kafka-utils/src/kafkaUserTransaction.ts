@@ -1,73 +1,136 @@
-import { Producer } from "kafkajs";
+import { Producer, RecordMetadata } from "kafkajs";
 import {
   InvestmentMongo,
   LoanMongo,
+  RecordsMongo,
   ScheduledPaymentsMongo,
   TransactionMongo,
-  UserMongo,
-} from "./types";
-import { Collection, ObjectId } from "mongodb";
+  FintechUserMongo,
+} from "@repo/mongo-utils/types";
+import { Collection, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import {
   publishInvestmentUpdate,
   publishLoanUpdate,
   publishUser,
 } from "./subscriptions/subscriptionsUtils";
 import { RedisPubSub } from "graphql-redis-subscriptions";
+import { resolveParse } from "./kafkaLoanTransaction";
+import { UUID } from "@repo/utils/types";
+
+interface UserKafkaTransaction {
+  quantity_cents?: number;
+  operationTotalAndToBePaid?: number;
+  operationWithheldAndAvailable?: number;
+  operationWithheldAndToBePaid?: number;
+  user_uuid: UUID;
+  loan_oid_str?: string;
+  borrower_uuid?: string;
+  scheduled_oid_str?: string;
+  isDelayed?: boolean;
+  nextTopic?: string;
+  nextValue?: string;
+  nextKey?: string;
+  record_oid_str?: string;
+}
+
+const isValidUserTransaction = (
+  loanTransaction: unknown
+): loanTransaction is UserKafkaTransaction => {
+  if (typeof loanTransaction !== "object") {
+    return false;
+  }
+  if (loanTransaction === null) {
+    return false;
+  }
+  return (
+    "user_uuid" in loanTransaction &&
+    typeof loanTransaction.user_uuid === "string"
+  );
+};
 
 export const UserTransaction = async (
   messageValue: string,
-  users: Collection<UserMongo>,
+  users: Collection<FintechUserMongo>,
   producer: Producer,
   loans: Collection<LoanMongo>,
   transactions: Collection<TransactionMongo>,
   scheduledPayments: Collection<ScheduledPaymentsMongo>,
   investments: Collection<InvestmentMongo>,
-  pubsub: RedisPubSub
-) => {
-  const values = JSON.parse(messageValue);
+  pubsub: RedisPubSub,
+  records: Collection<RecordsMongo>
+): Promise<null> => {
+  const values = resolveParse(messageValue);
+  if (!isValidUserTransaction(values)) {
+    throw new Error("Invalid loan transaction");
+  }
   const {
-    quantity,
-    interestFromTotal,
-    withheldFromAvailable,
-    withheldFromToBePaid,
-    user_id,
-    loan_id,
-    scheduled_id,
+    quantity_cents,
+    operationTotalAndToBePaid,
+    operationWithheldAndAvailable,
+    operationWithheldAndToBePaid,
+    user_uuid,
+    loan_oid_str,
+    scheduled_oid_str,
     isDelayed,
     nextTopic,
     nextValue,
     nextKey,
-  }: {
-    quantity: number;
-    interestFromTotal: number;
-    withheldFromAvailable: number;
-    withheldFromToBePaid: number;
-    user_id: string;
-    loan_id: string;
-    borrower_id: string;
-    scheduled_id: string;
-    isDelayed: boolean;
-    nextTopic: string;
-    nextValue: string;
-    nextKey: string;
+    record_oid_str,
   } = values;
-  const user = await users.findOne({ id: user_id });
+  const record_oid = new ObjectId(record_oid_str);
+  const loan_oid = new ObjectId(loan_oid_str);
+  const scheduled_oid = new ObjectId(scheduled_oid_str);
+  const userPromise = users.findOne({ id: user_uuid });
+  const recordPromise = records.findOne({ _id: record_oid, status: "pending" });
+  const [user, record] = await Promise.all([userPromise, recordPromise]);
   if (!user) {
     throw new Error("User not found.");
   }
+  if (!record) {
+    throw new Error("Record not found or already applied/rejected");
+  }
+  const loanPromise = loan_oid_str
+    ? loans.findOne({ _id: loan_oid })
+    : Promise.resolve(null);
+  const investmentsPromise = loan_oid_str
+    ? investments.find({ loan_oid }).toArray()
+    : Promise.resolve([]);
+  const scheduledPaymentPromise = scheduled_oid_str
+    ? scheduledPayments.findOne({
+        _id: scheduled_oid,
+      })
+    : Promise.resolve(null);
+  const [loan, investmentsResult, scheduledPayment] = await Promise.all([
+    loanPromise,
+    investmentsPromise,
+    scheduledPaymentPromise,
+  ]);
   const accountAvailable = user.account_available;
   const accountTotal = user.account_total;
   const accountToBePaid = user.account_to_be_paid;
   const accountWithheld = user.account_withheld;
-  if (withheldFromAvailable) {
+  let userOperation: Promise<UpdateResult<FintechUserMongo> | null> =
+    Promise.resolve(null);
+  let transactionOperation: Promise<InsertOneResult<TransactionMongo> | null> =
+    Promise.resolve(null);
+  let investmentOperation: Promise<UpdateResult<InvestmentMongo> | null> =
+    Promise.resolve(null);
+  let scheduledPaymentOperation: Promise<UpdateResult<ScheduledPaymentsMongo> | null> =
+    Promise.resolve(null);
+  let loanOperation: Promise<UpdateResult<LoanMongo> | null> =
+    Promise.resolve(null);
+  let producerInterest: Promise<RecordMetadata[]> = Promise.resolve([]);
+  let producerMoratory: Promise<RecordMetadata[]> = Promise.resolve([]);
+  if (operationWithheldAndAvailable) {
     /*----- Quitar/Añadir fondos retenidos al usuario de fondos disponibles START -----*/
-    const newAccountAvailable = accountAvailable - withheldFromAvailable;
+    const newAccountAvailable =
+      accountAvailable - operationWithheldAndAvailable;
     const resultIsMoreThanZero = newAccountAvailable >= 0;
-    const newAccountWithheld = accountWithheld + withheldFromAvailable;
+    const newAccountWithheld = accountWithheld + operationWithheldAndAvailable;
     if (resultIsMoreThanZero) {
-      await users.updateOne(
+      userOperation = users.updateOne(
         {
-          id: user_id,
+          id: user_uuid,
         },
         {
           $set: {
@@ -78,7 +141,7 @@ export const UserTransaction = async (
       );
       publishUser(
         {
-          id: user_id,
+          id: user_uuid,
           account_available: newAccountAvailable,
           account_to_be_paid: accountToBePaid,
           account_total: accountTotal,
@@ -86,28 +149,17 @@ export const UserTransaction = async (
         },
         pubsub
       );
-      if (nextTopic && nextValue && nextKey) {
-        await producer.send({
-          topic: nextTopic,
-          messages: [
-            {
-              value: nextValue,
-              key: nextKey,
-            },
-          ],
-        });
-      }
     }
     /*----- Quitar/Añadir fondos retenidos al usuario de fondos disponibles END -----*/
-  } else if (withheldFromToBePaid) {
+  } else if (operationWithheldAndToBePaid) {
     /*----- Quitar/Añadir fondos retenidos al usuario de fondos totales START -----*/
-    const newAccountWithheld = accountWithheld - withheldFromToBePaid;
+    const newAccountWithheld = accountWithheld - operationWithheldAndToBePaid;
     const resultIsMoreThanZero = newAccountWithheld >= 0;
-    const newAccountToBePaid = accountToBePaid + withheldFromToBePaid;
+    const newAccountToBePaid = accountToBePaid + operationWithheldAndToBePaid;
     if (resultIsMoreThanZero) {
-      await users.updateOne(
+      userOperation = users.updateOne(
         {
-          id: user_id,
+          id: user_uuid,
         },
         {
           $set: {
@@ -118,7 +170,7 @@ export const UserTransaction = async (
       );
       publishUser(
         {
-          id: user_id,
+          id: user_uuid,
           account_available: accountAvailable,
           account_to_be_paid: accountToBePaid,
           account_total: accountTotal,
@@ -128,15 +180,15 @@ export const UserTransaction = async (
       );
     }
     /*----- Quitar/Añadir fondos retenidos al usuario de fondos totales END -----*/
-  } else if (quantity) {
+  } else if (quantity_cents) {
     /*----- Quitar/Añadir fondos disponibles al usuario START -----*/
-    const newAccountAvailable = accountAvailable + quantity;
+    const newAccountAvailable = accountAvailable + quantity_cents;
     const resultIsMoreThanZero = newAccountAvailable >= 0;
-    const newAccountTotal = accountTotal + quantity;
+    const newAccountTotal = accountTotal + quantity_cents;
     if (resultIsMoreThanZero) {
-      await users.findOneAndUpdate(
+      userOperation = users.updateOne(
         {
-          id: user_id,
+          id: user_uuid,
         },
         {
           $set: {
@@ -146,20 +198,20 @@ export const UserTransaction = async (
         }
       );
       const type =
-        scheduled_id && quantity < 0
+        scheduled_oid_str && quantity_cents < 0
           ? "payment"
-          : quantity > 0
+          : quantity_cents > 0
             ? "credit"
             : "withdrawal";
-      await transactions.insertOne({
-        user_id,
+      transactionOperation = transactions.insertOne({
+        user_id: user_uuid,
         type,
-        quantity,
+        quantity: quantity_cents,
         created_at: new Date(),
       });
       publishUser(
         {
-          id: user_id,
+          id: user_uuid,
           account_available: newAccountAvailable,
           account_to_be_paid: accountToBePaid,
           account_total: newAccountTotal,
@@ -168,10 +220,7 @@ export const UserTransaction = async (
         pubsub
       );
       //Se realizo un pago programado
-      if (loan_id && quantity < 0) {
-        const loan = await loans.findOne({
-          _id: new ObjectId(loan_id),
-        });
+      if (loan_oid_str && quantity_cents < 0) {
         if (!loan) {
           throw new Error("Loan not found.");
         }
@@ -184,9 +233,9 @@ export const UserTransaction = async (
           ? paymentsDelayed - 1
           : paymentsDelayed;
         const noDelayed = newPaymentsDelayed === 0;
-        await loans.updateOne(
+        loanOperation = loans.updateOne(
           {
-            _id: new ObjectId(loan_id),
+            _id: loan_oid,
           },
           {
             $set: {
@@ -196,9 +245,9 @@ export const UserTransaction = async (
             },
           }
         );
-        await scheduledPayments.updateOne(
+        scheduledPaymentOperation = scheduledPayments.updateOne(
           {
-            _id: new ObjectId(scheduled_id),
+            _id: scheduled_oid,
           },
           {
             $set: {
@@ -214,10 +263,7 @@ export const UserTransaction = async (
           },
           pubsub
         );
-        const resultInvestments = await investments
-          .find({ loan_oid: new ObjectId(loan_id) })
-          .toArray();
-        for (const investment of resultInvestments) {
+        for (const investment of investmentsResult) {
           const id = investment._id;
           const lender_id = investment.lender_id;
           const payments = investment.payments;
@@ -229,7 +275,7 @@ export const UserTransaction = async (
           const to_be_paid = totalAmortize - paid_already;
           const borrower_id = investment.borrower_id;
           const newPayments = payments + 1;
-          await investments.updateOne(
+          investmentOperation = investments.updateOne(
             {
               _id: id,
             },
@@ -263,14 +309,14 @@ export const UserTransaction = async (
             },
             pubsub
           );
-          await producer.send({
+          producerInterest = producer.send({
             topic: "user-transaction",
             messages: [
               {
                 value: JSON.stringify({
                   interest: amortize + moratory,
                   user_id: lender_id,
-                  loan_id,
+                  loan_id: loan_oid_str,
                   borrower_id,
                 }),
                 key: lender_id,
@@ -280,17 +326,11 @@ export const UserTransaction = async (
         }
       }
       //NO se realizo un pago programado
-    } else if (loan_id && quantity < 0) {
-      const resultInvestments = await investments
-        .find({ loan_oid: new ObjectId(loan_id) })
-        .toArray();
-      const scheduledPayment = await scheduledPayments.findOne({
-        _id: new ObjectId(scheduled_id),
-      });
+    } else if (loan_oid_str && scheduled_oid_str && quantity_cents < 0) {
       if (!scheduledPayment) {
         throw new Error("No scheduled payment found.");
       }
-      await scheduledPayments.updateOne(
+      scheduledPaymentOperation = scheduledPayments.updateOne(
         {
           _id: scheduledPayment._id,
         },
@@ -300,7 +340,7 @@ export const UserTransaction = async (
           },
         }
       );
-      for (const investment of resultInvestments) {
+      for (const investment of investmentsResult) {
         const id = investment._id;
         const moratory = investment.moratory;
         const amortize = investment.amortize;
@@ -309,7 +349,7 @@ export const UserTransaction = async (
         const borrower_id = investment.borrower_id;
         const dailyMoratory = Math.floor((amortize * (ROI / 100)) / 360);
         const newMoratory = dailyMoratory + moratory;
-        await investments.updateOne(
+        investmentOperation = investments.updateOne(
           { _id: id },
           {
             $set: {
@@ -326,7 +366,7 @@ export const UserTransaction = async (
           },
           pubsub
         );
-        await producer.send({
+        producerMoratory = producer.send({
           topic: "user-transaction",
           messages: [
             {
@@ -343,15 +383,15 @@ export const UserTransaction = async (
       }
     }
     /*----- Quitar/Añadir fondos disponibles al usuario END -----*/
-  } else if (interestFromTotal) {
+  } else if (operationTotalAndToBePaid) {
     /*----- Quitar/Añadir ganancias futuras al usuario START -----*/
-    const newAccountToBePaid = accountToBePaid + interestFromTotal;
+    const newAccountToBePaid = accountToBePaid + operationTotalAndToBePaid;
     const resultIsMoreThanZero = newAccountToBePaid >= 0;
-    const newAccountTotal = accountTotal + interestFromTotal;
+    const newAccountTotal = accountTotal + operationTotalAndToBePaid;
     if (resultIsMoreThanZero) {
-      await users.updateOne(
+      userOperation = users.updateOne(
         {
-          id: user_id,
+          id: user_uuid,
         },
         {
           $set: {
@@ -362,7 +402,7 @@ export const UserTransaction = async (
       );
       publishUser(
         {
-          id: user_id,
+          id: user_uuid,
           account_available: accountAvailable,
           account_to_be_paid: newAccountToBePaid,
           account_total: accountTotal,
@@ -373,4 +413,38 @@ export const UserTransaction = async (
     }
     /*----- Quitar/Añadir ganancias futuras al usuario END -----*/
   }
+  const updateRecord = records.updateOne(
+    {
+      _id: record_oid,
+    },
+    {
+      $set: {
+        status: "applied",
+      },
+    }
+  );
+  const nextEvent =
+    nextTopic && nextValue && nextKey
+      ? producer.send({
+          topic: nextTopic,
+          messages: [
+            {
+              value: nextValue,
+              key: nextKey,
+            },
+          ],
+        })
+      : Promise.resolve([]);
+  await Promise.all([
+    userOperation,
+    transactionOperation,
+    investmentOperation,
+    scheduledPaymentOperation,
+    loanOperation,
+    producerInterest,
+    producerMoratory,
+    updateRecord,
+    nextEvent,
+  ]);
+  return null;
 };

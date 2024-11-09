@@ -1,14 +1,19 @@
 {
-  "name": "@repo/kafka-mongo",
+  "name": "@repo/kafka-utils",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
+  "exports": {
+    "./kafka": {
+      "types": "./src/kafka.ts",
+      "default": "./build/kafka.js"
+    }
+  },
   "scripts": {
-    "start": "tsx watch ./src/index.ts",
+    "postinstall": "pnpm build",
     "build": "tsc || ./node_modules/typescript/bin/tsc",
-    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
-    "serve": "node ./build/index.js",
     "pcm": "lint-staged",
-    "test": "jest --bail"
+    "test": "jest --bail",
+    "lint": "(tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0) || (./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0)"
   },
   "jest": {
     "preset": "@repo/jest-presets/node"
@@ -16,33 +21,23 @@
   "author": "Armando Rueda",
   "license": "ISC",
   "dependencies": {
-    "@repo/mongo-utils": "workspace:*",
-    "@repo/kafka-utils": "workspace:*",
     "@repo/utils": "workspace:*",
-    "date-fns": "^4.1.0",
+    "@repo/mongo-utils": "workspace:*",
     "graphql-redis-subscriptions": "^2.6.1",
-    "graphql-relay": "^0.10.2",
     "graphql-subscriptions": "^2.0.0",
-    "ioredis": "^5.4.1",
     "kafkajs": "^2.2.4",
-    "mongodb": "^6.10.0"
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.6.3"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",
     "@repo/jest-presets": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@testcontainers/kafka": "^10.13.2",
-    "@testcontainers/redis": "^10.13.2",
     "@types/jest": "^29.5.14",
-    "@types/supertest": "^6.0.2",
+    "@types/node": "^22.9.0",
     "eslint": "^9.14.0",
     "jest": "^29.7.0",
     "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3",
-    "supertest": "^7.0.0",
-    "testcontainers": "^10.13.2",
-    "tsx": "^4.19.2",
-    "typescript": "^5.6.3"
+    "prettier": "^3.3.3"
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [

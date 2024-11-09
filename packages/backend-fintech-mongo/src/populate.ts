@@ -3,9 +3,9 @@ import {
   TransactionMongo,
   InvestmentMongo,
   LoanMongo,
-  UserMongo,
+  FintechUserMongo,
   ScheduledPaymentsMongo,
-} from "./types";
+} from "@repo/mongo-utils/types";
 import { addMonths, startOfMonth } from "date-fns";
 import { UUID } from "@repo/utils/types";
 
@@ -15,7 +15,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true").then(
     const db = client.db("fintech");
     const loans = db.collection<LoanMongo>("loans");
     await loans.deleteMany({});
-    const users = db.collection<UserMongo>("users");
+    const users = db.collection<FintechUserMongo>("users");
     await users.deleteMany({});
     const investments = db.collection<InvestmentMongo>("investments");
     await investments.deleteMany({});

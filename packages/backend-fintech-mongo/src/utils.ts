@@ -1,17 +1,19 @@
 import { Db } from "mongodb";
 import {
-  UserMongo,
+  FintechUserMongo,
   LoanMongo,
   TransactionMongo,
   InvestmentMongo,
   ScheduledPaymentsMongo,
-} from "./types";
+  RecordsMongo,
+} from "@repo/mongo-utils/types";
 import { Producer } from "kafkajs";
 import { parse } from "cookie";
 import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import { jwtMiddleware } from "@repo/grpc-utils/index";
 import type { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
+import { Context } from "./types";
 
 export const getContextSSE = async (
   req: Http2ServerRequest,
@@ -29,13 +31,14 @@ export const getContextSSE = async (
   if (validAccessToken) {
     res.setHeader("accessToken", validAccessToken);
   }
-  return {
-    users: db.collection<UserMongo>("users"),
+  const context: Context = {
+    users: db.collection<FintechUserMongo>("users"),
     loans: db.collection<LoanMongo>("loans"),
     investments: db.collection<InvestmentMongo>("investments"),
     transactions: db.collection<TransactionMongo>("transactions"),
     scheduledPayments:
       db.collection<ScheduledPaymentsMongo>("scheduledPayments"),
+    records: db.collection<RecordsMongo>("records"),
     accessToken,
     refreshToken,
     id,
@@ -43,7 +46,7 @@ export const getContextSSE = async (
     isLender,
     isSupport,
     producer,
-    grpcClient,
     pubsub,
   };
+  return context as unknown as Record<string, unknown>;
 };

@@ -1,5 +1,5 @@
 x-base: &base
-  image: node:20
+  image: node:22
   volumes:
     - lerna-node-modules:/usr/src/service/node_modules
     - backend-auth-node:/usr/src/service/packages/backend-auth-node/node_modules
