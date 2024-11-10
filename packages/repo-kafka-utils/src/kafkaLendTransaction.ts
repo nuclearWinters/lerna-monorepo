@@ -101,8 +101,6 @@ export const AddLends = async (
     let createCompletedInvestmentPromise: Promise<InsertOneResult<InvestmentMongo> | null> =
       Promise.resolve(null);
     let lenderHasPreviousInvestment = false;
-    const old_lender_record_oid = new ObjectId();
-    const new_lender_record_oid = new ObjectId();
     let old_lender_record: Promise<InsertOneResult<RecordsMongo> | null> =
       Promise.resolve(null);
     let new_lender_record: Promise<InsertOneResult<RecordsMongo> | null> =
@@ -112,6 +110,8 @@ export const AddLends = async (
       const isLenderInvestment = lender_uuid === investment.lender_id;
       if (isLenderInvestment) {
         lenderHasPreviousInvestment = true;
+        const old_lender_record_oid = new ObjectId();
+        const new_lender_record_oid = new ObjectId();
         const new_quantity = investment.quantity + quantity_cents;
         const amortize = Math.floor(
           new_quantity / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
@@ -122,15 +122,15 @@ export const AddLends = async (
           status: "pending",
           _id: old_lender_record_oid,
         });
-        const lender_record_oid_str = old_lender_record_oid.toHexString();
+        const old_lender_record_oid_str = old_lender_record_oid.toHexString();
         undoInterestsPromise = producer.send({
           topic: "user-transaction",
           messages: [
             {
               value: JSON.stringify({
                 operationTotalAndToBePaid: -investment.interest_to_earn,
-                user_id: lender_uuid,
-                record_oid_str: lender_record_oid_str,
+                user_uuid: lender_uuid,
+                record_oid_str: old_lender_record_oid_str,
               }),
               key: lender_uuid,
             },
@@ -147,8 +147,8 @@ export const AddLends = async (
             {
               value: JSON.stringify({
                 operationTotalAndToBePaid: interest_to_earn,
-                user_id: lender_uuid,
-                records_oid_str: new_lend_record_oid_str,
+                user_uuid: lender_uuid,
+                record_oid_str: new_lend_record_oid_str,
               }),
               key: lender_uuid,
             },
@@ -188,7 +188,7 @@ export const AddLends = async (
             {
               value: JSON.stringify({
                 operationTotalAndToBePaid: interest_to_earn,
-                user_id: investment.lender_id,
+                user_uuid: investment.lender_id,
                 record_oid_str: lender_record_oid_str,
               }),
               key: investment.lender_id,
@@ -209,49 +209,50 @@ export const AddLends = async (
           }
         );
       }
-      if (!lenderHasPreviousInvestment) {
-        const amortize = Math.floor(
-          quantity_cents / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
-        );
-        const amortizes = amortize * term;
-        const interest_to_earn = amortizes - quantity_cents;
-        new_lender_record = records.insertOne({
-          status: "pending",
-          _id: new_lender_record_oid,
-        });
-        const lender_record_oid_str = new_lender_record_oid.toHexString();
-        updateLenderNewInvestmentPromise = producer.send({
-          topic: "user-transaction",
-          messages: [
-            {
-              value: JSON.stringify({
-                operationTotalAndToBePaid: interest_to_earn,
-                user_id: lender_uuid,
-                record_oid_str: lender_record_oid_str,
-              }),
-              key: lender_uuid,
-            },
-          ],
-        });
-        createCompletedInvestmentPromise = investments.insertOne({
-          borrower_id,
-          lender_id: lender_uuid,
-          loan_oid,
-          quantity: quantity_cents,
-          created_at: new Date(),
-          updated_at: new Date(),
-          status: "up to date",
-          status_type: "on_going",
-          roi: ROI,
-          term,
-          payments: 0,
-          moratory: 0,
-          amortize,
-          interest_to_earn,
-          paid_already: 0,
-          to_be_paid: amortizes,
-        });
-      }
+    }
+    if (!lenderHasPreviousInvestment) {
+      const new_lender_record_oid = new ObjectId();
+      const amortize = Math.floor(
+        quantity_cents / ((1 - Math.pow(1 / (1 + TEM), term)) / TEM)
+      );
+      const amortizes = amortize * term;
+      const interest_to_earn = amortizes - quantity_cents;
+      new_lender_record = records.insertOne({
+        status: "pending",
+        _id: new_lender_record_oid,
+      });
+      const lender_record_oid_str = new_lender_record_oid.toHexString();
+      updateLenderNewInvestmentPromise = producer.send({
+        topic: "user-transaction",
+        messages: [
+          {
+            value: JSON.stringify({
+              operationTotalAndToBePaid: interest_to_earn,
+              user_uuid: lender_uuid,
+              record_oid_str: lender_record_oid_str,
+            }),
+            key: lender_uuid,
+          },
+        ],
+      });
+      createCompletedInvestmentPromise = investments.insertOne({
+        borrower_id,
+        lender_id: lender_uuid,
+        loan_oid,
+        quantity: quantity_cents,
+        created_at: new Date(),
+        updated_at: new Date(),
+        status: "up to date",
+        status_type: "on_going",
+        roi: ROI,
+        term,
+        payments: 0,
+        moratory: 0,
+        amortize,
+        interest_to_earn,
+        paid_already: 0,
+        to_be_paid: amortizes,
+      });
     }
     const updateRecord = records.updateOne(
       {

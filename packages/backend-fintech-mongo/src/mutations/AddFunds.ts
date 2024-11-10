@@ -44,7 +44,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
         messages: [
           {
             value: JSON.stringify({
-              quantity_cents,
+              operationTotalAndAvailable: quantity_cents,
               user_uuid: id,
               record_oid_str,
             }),

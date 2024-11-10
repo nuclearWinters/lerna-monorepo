@@ -1,7 +1,6 @@
 import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { LoanMongo, UserMongo } from "../types";
 import { Producer } from "kafkajs";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
@@ -10,17 +9,12 @@ import TestAgent from "supertest/lib/agent";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
-import {
-  REFRESH_TOKEN_EXP_NUMBER,
-  ACCESS_TOKEN_EXP_NUMBER,
-  ACCESSSECRET,
-  REFRESHSECRET,
-} from "@repo/utils/config";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { jwt } from "@repo/jwt-utils/index";
+import { getValidTokens } from "@repo/jwt-utils/index";
 import { RedisClientType } from "@repo/redis-utils/types";
 import { AuthServer } from "@repo/grpc-utils/index";
 import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
+import { getFintechCollections } from "@repo/mongo-utils/index";
 
 describe("AddLoan tests", () => {
   let mongoClient: MongoClient;
@@ -89,7 +83,7 @@ describe("AddLoan tests", () => {
   });
 
   it("test AddLoan valid access token", async () => {
-    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const { users, loans } = getFintechCollections(dbInstanceFintech);
     const _id = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({
@@ -100,34 +94,12 @@ describe("AddLoan tests", () => {
       account_total: 100000,
       account_withheld: 0,
     });
-    const now = new Date();
-    now.setMilliseconds(0);
-    const refreshTokenExpireTime =
-      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime =
-      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
-    const refreshToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: refreshTokenExpireTime,
-      },
-      REFRESHSECRET
-    );
-    const accessToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: accessTokenExpireTime,
-      },
-      ACCESSSECRET
-    );
+    const { refreshToken, accessToken } = getValidTokens({
+      isBorrower: false,
+      isLender: true,
+      isSupport: false,
+      id,
+    });
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
@@ -162,7 +134,6 @@ describe("AddLoan tests", () => {
       account_total: 100000,
       account_withheld: 0,
     });
-    const loans = dbInstanceFintech.collection<LoanMongo>("loans");
     const allLoans = await loans.find({ user_id: id }).toArray();
     expect(allLoans.length).toBe(1);
     expect(

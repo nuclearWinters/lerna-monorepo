@@ -11,7 +11,7 @@ import {
   REFRESH_TOKEN_EXP_NUMBER,
 } from "@repo/utils/config";
 import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
-import { jwt } from "@repo/jwt-utils/index";
+import { getValidTokens, jwt } from "@repo/jwt-utils/index";
 import { base64Name } from "@repo/utils/index";
 import { parse, serialize } from "cookie";
 import { isBefore } from "date-fns";
@@ -53,22 +53,16 @@ describe("RevokeSessionMutation tests", () => {
     const user_oid = new ObjectId();
     const user_id = crypto.randomUUID();
     const other_user_id = crypto.randomUUID();
-    const otherRefreshTokenExpireTime =
-      new Date().getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
     const other_session_oid = new ObjectId();
     const other_session_id = other_session_oid.toHexString();
     const other_session_gid = base64Name(other_session_id, "Session");
-    const otherRefreshToken = jwt.sign(
-      {
-        id: other_user_id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime: otherRefreshTokenExpireTime,
-        exp: otherRefreshTokenExpireTime,
-      },
-      "REFRESHSECRET"
-    );
+    const { refreshToken: otherRefreshToken } = getValidTokens({
+      isBorrower: false,
+      isLender: true,
+      isSupport: false,
+      id: other_user_id,
+      invalidAccessToken: true,
+    });
     await sessions.insertOne({
       _id: other_session_oid,
       applicationName: "Lerna Monorepo",
@@ -77,7 +71,7 @@ describe("RevokeSessionMutation tests", () => {
       address: "::1",
       lastTimeAccessed: new Date(),
       userId: other_user_id,
-      expirationDate: new Date(otherRefreshTokenExpireTime * 1000),
+      expirationDate: new Date(),
       refreshToken: otherRefreshToken,
     });
     await users.insertOne({
@@ -97,32 +91,12 @@ describe("RevokeSessionMutation tests", () => {
       clabe: "",
       id: user_id,
     });
-    const refreshTokenExpireTime =
-      new Date().getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime =
-      new Date().getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
-    const refreshToken = jwt.sign(
-      {
-        id: user_id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: refreshTokenExpireTime,
-      },
-      "REFRESHSECRET"
-    );
-    const accessToken = jwt.sign(
-      {
-        id: user_id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: accessTokenExpireTime,
-      },
-      "ACCESSSECRET"
-    );
+    const { refreshToken, accessToken } = getValidTokens({
+      isBorrower: false,
+      isLender: true,
+      isSupport: false,
+      id: user_id,
+    });
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")
@@ -156,8 +130,6 @@ describe("RevokeSessionMutation tests", () => {
     const sessions = dbInstance.collection<UserSessions>("sessions");
     const user_oid = new ObjectId();
     const user_id = crypto.randomUUID();
-    const otherRefreshTokenExpireTime =
-      new Date().getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
     const other_session_oid = new ObjectId();
     const other_session_id = other_session_oid.toHexString();
     const other_session_gid = base64Name(other_session_id, "Session");
@@ -178,32 +150,12 @@ describe("RevokeSessionMutation tests", () => {
       clabe: "",
       id: user_id,
     });
-    const refreshTokenExpireTime =
-      new Date().getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime =
-      new Date().getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
-    const refreshToken = jwt.sign(
-      {
-        id: user_id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: refreshTokenExpireTime,
-      },
-      "REFRESHSECRET"
-    );
-    const accessToken = jwt.sign(
-      {
-        id: user_id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: accessTokenExpireTime,
-      },
-      "ACCESSSECRET"
-    );
+    const { refreshToken, accessToken } = getValidTokens({
+      isBorrower: false,
+      isLender: true,
+      isSupport: false,
+      id: user_id,
+    });
     await sessions.insertOne({
       _id: other_session_oid,
       applicationName: "Lerna Monorepo",
@@ -212,7 +164,7 @@ describe("RevokeSessionMutation tests", () => {
       address: "::1",
       lastTimeAccessed: new Date(),
       userId: user_id,
-      expirationDate: new Date(otherRefreshTokenExpireTime * 1000),
+      expirationDate: new Date(),
       refreshToken,
     });
     const requestCookies = serialize("refreshToken", refreshToken);

@@ -935,9 +935,6 @@ importers:
       '@types/node':
         specifier: ^22.9.0
         version: 22.9.0
-      '@types/supertest':
-        specifier: ^6.0.1
-        version: 6.0.2
       eslint:
         specifier: ^9.14.0
         version: 9.14.0(jiti@1.21.6)
@@ -950,9 +947,6 @@ importers:
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
-      supertest:
-        specifier: ^7.0.0
-        version: 7.0.0
 
   packages/repo-mongo-utils:
     dependencies:

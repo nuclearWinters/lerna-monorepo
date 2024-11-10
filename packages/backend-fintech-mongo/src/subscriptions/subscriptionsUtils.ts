@@ -3,8 +3,8 @@ import {
   InvestmentMongo,
   LoanMongo,
   TransactionMongo,
-  UserMongo,
-} from "../types";
+  FintechUserMongo,
+} from "@repo/mongo-utils/types";
 import { base64 } from "@repo/utils/index";
 import {
   USER,
@@ -16,7 +16,7 @@ import {
   MY_LOAN_INSERT,
 } from "./subscriptions";
 
-export const publishUser = (user: UserMongo, pubsub: RedisPubSub) => {
+export const publishUser = (user: FintechUserMongo, pubsub: RedisPubSub) => {
   pubsub.publish(USER, {
     user_subscribe: user,
   });

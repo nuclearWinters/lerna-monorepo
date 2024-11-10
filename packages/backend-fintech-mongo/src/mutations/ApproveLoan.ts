@@ -1,12 +1,13 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
-import { Context, LoanMongo } from "../types";
+import { Context } from "../types";
 import { ObjectId } from "mongodb";
 import { GraphQLLoan } from "../Nodes";
 import {
   publishLoanInsert,
   publishLoanUpdate,
 } from "../subscriptions/subscriptionsUtils";
+import { LoanMongo } from "@repo/mongo-utils/types";
 
 interface Input {
   loan_gid: string;

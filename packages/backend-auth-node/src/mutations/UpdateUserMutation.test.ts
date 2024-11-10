@@ -5,7 +5,7 @@ import { UserMongo } from "../types";
 import { createClient, RedisClientType } from "redis";
 import TestAgent from "supertest/lib/agent";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { jwt } from "@repo/jwt-utils/index";
+import { getValidTokens, jwt } from "@repo/jwt-utils/index";
 import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import { serialize } from "cookie";
 
@@ -61,30 +61,12 @@ describe("UpdateUser tests", () => {
       language: "default",
       id,
     });
-    const refreshTokenExpireTime = new Date().getTime() / 1000 + 900;
-    const accessTokenExpireTime = new Date().getTime() / 1000 + 180;
-    const refreshToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: refreshTokenExpireTime,
-      },
-      "REFRESHSECRET"
-    );
-    const accessToken = jwt.sign(
-      {
-        id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: accessTokenExpireTime,
-      },
-      "ACCESSSECRET"
-    );
+    const { refreshToken, accessToken } = getValidTokens({
+      isBorrower: false,
+      isLender: true,
+      isSupport: false,
+      id,
+    });
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")

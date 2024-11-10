@@ -8,12 +8,10 @@ import {
 } from "graphql";
 import { Context } from "../types";
 import { MXNScalarType } from "../Nodes";
-import { ObjectId } from "mongodb";
 
 interface Input {
   lends: {
     quantity: number;
-    borrower_id: string;
     loan_gid: string;
   }[];
 }
@@ -30,9 +28,6 @@ export const GraphQLLendList = new GraphQLInputObjectType({
     },
     quantity: {
       type: new GraphQLNonNull(MXNScalarType),
-    },
-    borrower_id: {
-      type: new GraphQLNonNull(GraphQLString),
     },
   },
 });
@@ -80,15 +75,15 @@ export const AddLendsMutation = mutationWithClientMutationId({
             {
               key: id,
               value: JSON.stringify({
-                user_id: id,
-                withheld: lend.quantity,
+                user_uuid: id,
+                operationWithheldAndAvailable: lend.quantity,
                 record_oid_str: record_user_oid.toHexString(),
                 nextTopic: "loan-transaction",
                 nextKey: loan_oid_str,
                 nextValue: JSON.stringify({
-                  quantity: lend.quantity,
-                  lender_id: id,
-                  loan_id: loan_oid_str,
+                  quantity_cents: lend.quantity,
+                  lender_uuid: id,
+                  loan_oid_str: loan_oid_str,
                   record_oid_str: record_loan_oid.toHexString(),
                 }),
               }),

@@ -1,27 +1,22 @@
 import { main } from "../app";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { LoanMongo, UserMongo } from "../types";
+import { LoanMongo, FintechUserMongo } from "@repo/mongo-utils/types";
 import { Producer } from "kafkajs";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
 import TestAgent from "supertest/lib/agent";
-import {
-  REFRESH_TOKEN_EXP_NUMBER,
-  ACCESS_TOKEN_EXP_NUMBER,
-  ACCESSSECRET,
-  REFRESHSECRET,
-} from "@repo/utils/config";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { base64Name } from "@repo/utils/index";
-import { jwt } from "@repo/jwt-utils/index";
+import { getValidTokens, jwt } from "@repo/jwt-utils/index";
 import { RedisClientType } from "@repo/redis-utils/types";
 import { AuthServer } from "@repo/grpc-utils/index";
 import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
+import { getFintechCollections } from "@repo/mongo-utils/index";
 
 describe("ApproveLoan tests", () => {
   let mongoClient: MongoClient;
@@ -91,7 +86,7 @@ describe("ApproveLoan tests", () => {
   }, 10000);
 
   it("test ApproveLoan valid access token", async () => {
-    const users = dbInstanceFintech.collection<UserMongo>("users");
+    const { users, loans } = getFintechCollections(dbInstanceFintech);
     const support_oid = new ObjectId();
     const borrower_oid = new ObjectId();
     const support_id = crypto.randomUUID();
@@ -115,7 +110,6 @@ describe("ApproveLoan tests", () => {
         account_withheld: 0,
       },
     ]);
-    const loans = dbInstanceFintech.collection<LoanMongo>("loans");
     await loans.insertOne({
       _id: loan_oid,
       user_id: borrower_id,
@@ -130,34 +124,12 @@ describe("ApproveLoan tests", () => {
       payments_delayed: 0,
       payments_done: 0,
     });
-    const now = new Date();
-    now.setMilliseconds(0);
-    const refreshTokenExpireTime =
-      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime =
-      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
-    const refreshToken = jwt.sign(
-      {
-        id: support_id,
-        isBorrower: false,
-        isLender: false,
-        isSupport: true,
-        refreshTokenExpireTime,
-        exp: refreshTokenExpireTime,
-      },
-      REFRESHSECRET
-    );
-    const accessToken = jwt.sign(
-      {
-        id: support_id,
-        isBorrower: false,
-        isLender: false,
-        isSupport: true,
-        refreshTokenExpireTime,
-        exp: accessTokenExpireTime,
-      },
-      ACCESSSECRET
-    );
+    const { refreshToken, accessToken } = getValidTokens({
+      isBorrower: false,
+      isLender: false,
+      isSupport: true,
+      id: support_id,
+    });
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")

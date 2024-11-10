@@ -17,7 +17,7 @@ import {
 } from "@repo/utils/config";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { base64Name } from "@repo/utils/index";
-import { jwt } from "@repo/jwt-utils/index";
+import { getValidTokens, jwt } from "@repo/jwt-utils/index";
 import { RedisClientType } from "@repo/redis-utils/types";
 import { AuthServer } from "@repo/grpc-utils/index";
 import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
@@ -163,34 +163,12 @@ describe("QueryTransactions tests", () => {
         created_at: new Date(),
       },
     ]);
-    const now = new Date();
-    now.setMilliseconds(0);
-    const refreshTokenExpireTime =
-      now.getTime() / 1000 + REFRESH_TOKEN_EXP_NUMBER;
-    const accessTokenExpireTime =
-      now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
-    const refreshToken = jwt.sign(
-      {
-        id: user_id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: refreshTokenExpireTime,
-      },
-      REFRESHSECRET
-    );
-    const accessToken = jwt.sign(
-      {
-        id: user_id,
-        isBorrower: false,
-        isLender: true,
-        isSupport: false,
-        refreshTokenExpireTime,
-        exp: accessTokenExpireTime,
-      },
-      ACCESSSECRET
-    );
+    const { refreshToken, accessToken } = getValidTokens({
+      isBorrower: false,
+      isLender: true,
+      isSupport: false,
+      id: user_id,
+    });
     const requestCookies = serialize("refreshToken", refreshToken);
     const response = await request
       .post("/graphql")

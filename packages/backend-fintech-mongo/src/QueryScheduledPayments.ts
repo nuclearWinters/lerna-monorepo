@@ -1,8 +1,9 @@
 import { GraphQLID, GraphQLList, GraphQLNonNull } from "graphql";
 import { GraphQLScheduledPayments } from "./Nodes";
-import { Context, ScheduledPaymentsMongo } from "./types";
+import { Context } from "./types";
 import { unbase64 } from "@repo/utils/index";
 import { ObjectId } from "mongodb";
+import { ScheduledPaymentsMongo } from "@repo/mongo-utils/types";
 
 const QueryScheduledPayments = {
   type: new GraphQLList(GraphQLScheduledPayments),

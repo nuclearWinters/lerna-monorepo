@@ -116,7 +116,7 @@ export const LoanTransaction = async (
           value: JSON.stringify({
             operationWithheldAndToBePaid: quantity_cents,
             record_oid_str,
-            user_id: lender_uuid,
+            user_uuid: lender_uuid,
           }),
           key: lender_uuid,
         },
@@ -133,8 +133,8 @@ export const LoanTransaction = async (
         messages: [
           {
             value: JSON.stringify({
-              quantity: goal,
-              user_id: loan.user_id,
+              operationTotalAndAvailable: goal,
+              user_uuid: loan.user_id,
               record_oid_str,
             }),
             key: loan.user_id,
@@ -165,10 +165,11 @@ export const LoanTransaction = async (
         {
           key: lender_uuid,
           value: JSON.stringify({
-            quantity: quantity_cents,
+            quantity_cents,
             loan_oid_str,
             lender_uuid,
             record_oid_str: lend_record_oid_str,
+            is_loan_completed: completed,
           }),
         },
       ],
@@ -213,7 +214,7 @@ export const LoanTransaction = async (
       messages: [
         {
           value: JSON.stringify({
-            user_id: lender_uuid,
+            user_uuid: lender_uuid,
             operationWithheldAndAvailable: -quantity_cents,
             record_oid_str,
           }),

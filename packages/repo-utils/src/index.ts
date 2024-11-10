@@ -9,3 +9,10 @@ export const base64 = (i: string): string => {
 export const unbase64 = (i: string): string => {
   return Buffer.from(i, "base64").toString("utf8").split(":")[1];
 };
+
+export const delay = (time = 300) =>
+  new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, time);
+  });

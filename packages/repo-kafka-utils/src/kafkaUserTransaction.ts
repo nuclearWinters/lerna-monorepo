@@ -18,7 +18,7 @@ import { resolveParse } from "./kafkaLoanTransaction";
 import { UUID } from "@repo/utils/types";
 
 interface UserKafkaTransaction {
-  quantity_cents?: number;
+  operationTotalAndAvailable?: number;
   operationTotalAndToBePaid?: number;
   operationWithheldAndAvailable?: number;
   operationWithheldAndToBePaid?: number;
@@ -64,7 +64,7 @@ export const UserTransaction = async (
     throw new Error("Invalid loan transaction");
   }
   const {
-    quantity_cents,
+    operationTotalAndAvailable,
     operationTotalAndToBePaid,
     operationWithheldAndAvailable,
     operationWithheldAndToBePaid,
@@ -180,11 +180,11 @@ export const UserTransaction = async (
       );
     }
     /*----- Quitar/Añadir fondos retenidos al usuario de fondos totales END -----*/
-  } else if (quantity_cents) {
+  } else if (operationTotalAndAvailable) {
     /*----- Quitar/Añadir fondos disponibles al usuario START -----*/
-    const newAccountAvailable = accountAvailable + quantity_cents;
+    const newAccountAvailable = accountAvailable + operationTotalAndAvailable;
     const resultIsMoreThanZero = newAccountAvailable >= 0;
-    const newAccountTotal = accountTotal + quantity_cents;
+    const newAccountTotal = accountTotal + operationTotalAndAvailable;
     if (resultIsMoreThanZero) {
       userOperation = users.updateOne(
         {
@@ -198,15 +198,15 @@ export const UserTransaction = async (
         }
       );
       const type =
-        scheduled_oid_str && quantity_cents < 0
+        scheduled_oid_str && operationTotalAndAvailable < 0
           ? "payment"
-          : quantity_cents > 0
+          : operationTotalAndAvailable > 0
             ? "credit"
             : "withdrawal";
       transactionOperation = transactions.insertOne({
         user_id: user_uuid,
         type,
-        quantity: quantity_cents,
+        quantity: operationTotalAndAvailable,
         created_at: new Date(),
       });
       publishUser(
@@ -220,7 +220,7 @@ export const UserTransaction = async (
         pubsub
       );
       //Se realizo un pago programado
-      if (loan_oid_str && quantity_cents < 0) {
+      if (loan_oid_str && operationTotalAndAvailable < 0) {
         if (!loan) {
           throw new Error("Loan not found.");
         }
@@ -273,7 +273,7 @@ export const UserTransaction = async (
           const totalAmortize = amortize * term;
           const paid_already = amortize * (payments + 1);
           const to_be_paid = totalAmortize - paid_already;
-          const borrower_id = investment.borrower_id;
+          const borrower_uuid = investment.borrower_id;
           const newPayments = payments + 1;
           investmentOperation = investments.updateOne(
             {
@@ -315,9 +315,9 @@ export const UserTransaction = async (
               {
                 value: JSON.stringify({
                   interest: amortize + moratory,
-                  user_id: lender_id,
-                  loan_id: loan_oid_str,
-                  borrower_id,
+                  user_uuid: lender_id,
+                  loan_oid_str,
+                  borrower_uuid,
                 }),
                 key: lender_id,
               },
@@ -326,7 +326,11 @@ export const UserTransaction = async (
         }
       }
       //NO se realizo un pago programado
-    } else if (loan_oid_str && scheduled_oid_str && quantity_cents < 0) {
+    } else if (
+      loan_oid_str &&
+      scheduled_oid_str &&
+      operationTotalAndAvailable < 0
+    ) {
       if (!scheduledPayment) {
         throw new Error("No scheduled payment found.");
       }
@@ -372,9 +376,9 @@ export const UserTransaction = async (
             {
               value: JSON.stringify({
                 interest: -dailyMoratory,
-                user_id: id,
-                loan_id: loan_oid.toHexString(),
-                borrower_id,
+                user_uuid: id,
+                loan_oid_str: loan_oid.toHexString(),
+                borrower_uuid: borrower_id,
               }),
               key: id.toHexString(),
             },
