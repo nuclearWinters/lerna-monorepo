@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fb579da59e8d4306998045fe5fbda4e7>>
+ * @generated SignedSource<<4b8de42c3c819aa421d36768e9ad7365>>
  * @relayHash aa6ec069076aa222be921f4b6568a17c
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID aa6ec069076aa222be921f4b6568a17c
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type AccountQueriesQuery$variables = Record<PropertyKey, never>;
 export type AccountQueriesQuery$data = {
   readonly user: {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<652a5311b9df694fca699518407deab2>>
+ * @generated SignedSource<<31eefa4adca368eaf6009137db64b0d5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestmentsQueriesRowRefetch_loan$data = {
   readonly ROI: number;

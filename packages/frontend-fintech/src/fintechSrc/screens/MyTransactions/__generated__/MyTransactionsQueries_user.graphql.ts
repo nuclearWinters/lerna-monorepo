@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<82868b0033a5bf2dc4ee091025d4c036>>
+ * @generated SignedSource<<638f1750d2b8d982e42d5ca3d3a5fece>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 // @dataDrivenDependency MyTransactionsQueries_user.transactions.edges.node {"branches":{"InvestTransaction":{"component":"InvestmentTransaction","fragment":"InvestmentTransaction_transaction$normalization.graphql"},"MoneyTransaction":{"component":"MoneyTransaction","fragment":"MoneyTransaction_transaction$normalization.graphql"}},"plural":true}
 
-import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type MyTransactionsQueries_user$data = {
   readonly id: string;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f5e785eea3905ae59f5a7d146ce079d9>>
+ * @generated SignedSource<<0249b2c3f525a5d7f79a589acd01e759>>
  * @relayHash c4c8cc42f6f36174207c1b6dfc4adfae
  * @lightSyntaxTransform
  * @nogrep
@@ -12,7 +12,7 @@
 // @relayRequestID c4c8cc42f6f36174207c1b6dfc4adfae
 // @indirectDataDrivenDependency MyTransactionsQueries_user.transactions.edges.node {"branches":{"InvestTransaction":{"component":"InvestmentTransaction","fragment":"InvestmentTransaction_transaction$normalization.graphql"},"MoneyTransaction":{"component":"MoneyTransaction","fragment":"MoneyTransaction_transaction$normalization.graphql"}},"plural":true}
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type MyTransactionsQueriesPaginationUser$variables = {
   count?: number | null | undefined;

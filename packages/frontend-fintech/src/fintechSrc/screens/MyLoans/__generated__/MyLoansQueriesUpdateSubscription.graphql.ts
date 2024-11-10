@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5c24ef9bf4f21c09447c5a1079d59ad1>>
+ * @generated SignedSource<<00d0f1e313e297eea9174afa31c1f724>>
  * @relayHash 59674507b30834ca927cfdf553a4f403
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 59674507b30834ca927cfdf553a4f403
 
-import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 export type MyLoansQueriesUpdateSubscription$variables = {
   gid: string;

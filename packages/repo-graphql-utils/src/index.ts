@@ -84,7 +84,7 @@ export const createHandler = ({
       });
     const body = await getBody();
     const { extensions, variables } = body;
-    const doc_id = extensions?.doc_id;
+    const doc_id = extensions?.doc_id.replace("\r", "");
     const query = queryMap.find((query) => query[0] === doc_id)?.[1];
     if (!query) {
       res.writeHead(404);

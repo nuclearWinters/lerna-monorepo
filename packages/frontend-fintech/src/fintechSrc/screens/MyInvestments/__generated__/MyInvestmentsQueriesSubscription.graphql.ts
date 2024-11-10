@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<65eb9a8ac41e7662c154876976086eae>>
+ * @generated SignedSource<<664cf0de564122ebfc57fac80404438f>>
  * @relayHash 5779bdaed33088e4b35465d39b5fa485
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 5779bdaed33088e4b35465d39b5fa485
 
-import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 export type MyInvestmentsQueriesSubscription$variables = {
   connections: ReadonlyArray<string>;

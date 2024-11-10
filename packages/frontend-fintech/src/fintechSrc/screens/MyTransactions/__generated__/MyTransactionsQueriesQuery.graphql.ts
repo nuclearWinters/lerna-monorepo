@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bce3756309bcc7db6d5850136d81c1b7>>
+ * @generated SignedSource<<d5d0a6317903b68e5529e8d1a2bfc7a5>>
  * @relayHash e3508091b0033db0277f8d17a641b57a
  * @lightSyntaxTransform
  * @nogrep
@@ -12,7 +12,7 @@
 // @relayRequestID e3508091b0033db0277f8d17a641b57a
 // @indirectDataDrivenDependency MyTransactionsQueries_user.transactions.edges.node {"branches":{"InvestTransaction":{"component":"InvestmentTransaction","fragment":"InvestmentTransaction_transaction$normalization.graphql"},"MoneyTransaction":{"component":"MoneyTransaction","fragment":"MoneyTransaction_transaction$normalization.graphql"}},"plural":true}
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type MyTransactionsQueriesQuery$variables = Record<PropertyKey, never>;
 export type MyTransactionsQueriesQuery$data = {

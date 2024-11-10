@@ -492,7 +492,6 @@ export const AddInvestmentsPage: FC<Props> = (props) => {
                       input: {
                         lends: lends.map((lend) => ({
                           loan_gid: lend.loan_gid,
-                          borrower_id: lend.borrower_id,
                           quantity: lend.quantity,
                         })),
                       },

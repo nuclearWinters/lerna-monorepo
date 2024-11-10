@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f3a2255b6940905c0250c2bf65abd904>>
+ * @generated SignedSource<<a28410f0ed68811701dc9d890e37c971>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type MyLoansQueriesRowRefetch_loan$data = {

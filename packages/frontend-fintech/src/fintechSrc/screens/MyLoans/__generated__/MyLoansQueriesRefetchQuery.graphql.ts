@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<68d09f78700198410e81577ecf66ed41>>
+ * @generated SignedSource<<1ece5fb36dbf465e9cd826ba30aa9b61>>
  * @relayHash 75da5b0b0faf1afd32c0ebdfcd467741
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 75da5b0b0faf1afd32c0ebdfcd467741
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type MyLoansQueriesRefetchQuery$variables = {
   id: string;

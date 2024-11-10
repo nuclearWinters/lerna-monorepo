@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<07580f511223a6e0f480f611914ba7c1>>
+ * @generated SignedSource<<49a58a1ae258e25a7729ba016882da21>>
  * @relayHash a6e009cfced9ddb83b7b78ef4b72713f
  * @lightSyntaxTransform
  * @nogrep
@@ -12,7 +12,7 @@
 // @relayRequestID a6e009cfced9ddb83b7b78ef4b72713f
 // @dataDrivenDependency MyTransactionsQueriesSubscription.transactions_subscribe_insert.node {"branches":{"InvestTransaction":{"component":"InvestmentTransaction","fragment":"InvestmentTransaction_transaction$normalization.graphql"},"MoneyTransaction":{"component":"MoneyTransaction","fragment":"MoneyTransaction_transaction$normalization.graphql"}},"plural":false}
 
-import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type MyTransactionsQueriesSubscription$variables = {
   connections: ReadonlyArray<string>;

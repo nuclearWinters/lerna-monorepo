@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c69bf5d08831347d488245a9493315ff>>
+ * @generated SignedSource<<885c71d8206846aa894121c034fe6c7e>>
  * @relayHash 89ac5ac237258866d2fa806bad96d4da
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 89ac5ac237258866d2fa806bad96d4da
 
-import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type SiderFintechUserSubscription$variables = Record<PropertyKey, never>;
 export type SiderFintechUserSubscription$data = {
   readonly user_subscribe: {

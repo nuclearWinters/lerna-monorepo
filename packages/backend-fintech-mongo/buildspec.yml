@@ -19,6 +19,9 @@ phases:
       - cd packages
       - cd backend-fintech-mongo-deploy
       - pnpm build
+      - cd node_modules
+      - rm -r typescript
+      - cd ..
   post_build:
     commands:
       - echo Build completed on `date`

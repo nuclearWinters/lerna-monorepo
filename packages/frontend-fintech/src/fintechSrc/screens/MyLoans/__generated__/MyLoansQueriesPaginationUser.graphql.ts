@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f96a68fa0a93904916d4949d8575b07f>>
+ * @generated SignedSource<<ad58ff189a8fa3663b5548224f9c488a>>
  * @relayHash 214184aeecc3791eabe5b58e15f73a8d
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 214184aeecc3791eabe5b58e15f73a8d
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type MyLoansQueriesPaginationUser$variables = {
   count?: number | null | undefined;

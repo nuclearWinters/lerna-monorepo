@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<79734b469acdc33565ebbe1723c0a54b>>
+ * @generated SignedSource<<95cd4b33453af81864366b49948126f2>>
  * @relayHash cf31722bae61dfad16168680dadfcde6
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID cf31722bae61dfad16168680dadfcde6
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type LoanScheduledPaymentStatus = "DELAYED" | "PAID" | "TO_BE_PAID" | "%future added value";
 export type ScheduledPaymentRowQuery$variables = {
   loan_gid: string;

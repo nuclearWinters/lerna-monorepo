@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8d1ec18196655ccf8fa64a853d2808be>>
+ * @generated SignedSource<<3aae3874603ec8746e376924ff4ac570>>
  * @relayHash 74997cad3da3ce985529fbd30726bd41
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 74997cad3da3ce985529fbd30726bd41
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestmentsQueriesPaginationQuery$variables = {
   count?: number | null | undefined;

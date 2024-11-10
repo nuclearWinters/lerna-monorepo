@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f8ccafd8a87897c94ba9a0c05f938975>>
+ * @generated SignedSource<<8a81acc3880623a026fe9400e5dcd891>>
  * @relayHash 637da5cfc2c12753da0c87267d947dc5
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 637da5cfc2c12753da0c87267d947dc5
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type MyLoansQueriesQuery$variables = Record<PropertyKey, never>;
 export type MyLoansQueriesQuery$data = {

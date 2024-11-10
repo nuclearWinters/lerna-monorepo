@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<04a0ba20d12e8c9b41d17c67690f2975>>
+ * @generated SignedSource<<4b6248796737769963680cc0d77f4f38>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type ApproveLoanQueries_user$data = {
   readonly approveLoans: {

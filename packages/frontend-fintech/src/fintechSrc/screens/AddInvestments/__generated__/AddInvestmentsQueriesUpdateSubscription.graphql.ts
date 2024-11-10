@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<59f1cadb080ef533fd141ca4db72bd47>>
+ * @generated SignedSource<<be9ddb742204b23179ff4cd951d7449d>>
  * @relayHash a06f5cec712f9c7d149194a18314cb7c
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID a06f5cec712f9c7d149194a18314cb7c
 
-import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type AddInvestmentsQueriesUpdateSubscription$variables = {
   gid: string;
 };

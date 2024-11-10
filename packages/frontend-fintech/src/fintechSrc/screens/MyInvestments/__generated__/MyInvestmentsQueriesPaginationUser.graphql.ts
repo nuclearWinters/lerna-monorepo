@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f2edafbdc129bdeb1fa2ee9e5dbe2121>>
+ * @generated SignedSource<<ea05a97d8415ba31703087c780b6d544>>
  * @relayHash fa1e028210325a70201ab2012ab3ca9a
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID fa1e028210325a70201ab2012ab3ca9a
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 export type MyInvestmentsQueriesPaginationUser$variables = {

@@ -4,7 +4,6 @@ directive @stream on FIELD
 input LendList {
   loan_gid: ID!
   quantity: MXN!
-  borrower_id: String!
 }
 
 input AddLendsInput {

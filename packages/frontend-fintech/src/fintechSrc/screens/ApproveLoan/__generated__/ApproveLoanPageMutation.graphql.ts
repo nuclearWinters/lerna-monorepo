@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4944ee3f720712c4ee59de7722386dd6>>
+ * @generated SignedSource<<adcf1f8e4e706c56e04036b372b79ded>>
  * @relayHash 6fd0f5290ad731d160369f4bbae87b78
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 6fd0f5290ad731d160369f4bbae87b78
 
-import { ConcreteRequest, Mutation } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type LoanStatus = "FINANCING" | "PAID" | "PAST_DUE" | "TO_BE_PAID" | "WAITING_FOR_APPROVAL" | "%future added value";
 export type ApproveLoanInput = {
   clientMutationId?: string | null | undefined;

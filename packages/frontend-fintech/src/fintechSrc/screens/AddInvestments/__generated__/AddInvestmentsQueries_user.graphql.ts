@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<604bbcd2ed162e51849198dd83d3a527>>
+ * @generated SignedSource<<167f9abe2656bd4fcf03f0921bc0252b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type AddInvestmentsQueries_user$data = {
   readonly id: string;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7254c5e4f465af89c53f196837a0c92c>>
+ * @generated SignedSource<<706a6a35847c1635e823de771fd99c39>>
  * @relayHash 4c2f9c3a8c4d01b00ca3c5981806271f
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID 4c2f9c3a8c4d01b00ca3c5981806271f
 
-import { ConcreteRequest, Query } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type utilsFintechQuery$variables = Record<PropertyKey, never>;
 export type utilsFintechQuery$data = {
   readonly user: {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4987f0aa86a59d927cb98a56044e2f82>>
+ * @generated SignedSource<<22fec502f6bc3028e37e7e2fd06939c8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 export type TransactionType = "COLLECT" | "CREDIT" | "INVEST" | "WITHDRAWAL" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type MoneyTransaction_transaction$data = {

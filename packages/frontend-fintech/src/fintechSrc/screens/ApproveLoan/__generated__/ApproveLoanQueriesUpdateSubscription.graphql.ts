@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3e35e3fca84fc02211406831d5e5b14c>>
+ * @generated SignedSource<<6dfcd591c1027e5c4ee6f958f329c0b3>>
  * @relayHash a81fae9077e9217e6f447b7bf7f9b08f
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID a81fae9077e9217e6f447b7bf7f9b08f
 
-import { ConcreteRequest, GraphQLSubscription } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type ApproveLoanQueriesUpdateSubscription$variables = {
   gid: string;
 };

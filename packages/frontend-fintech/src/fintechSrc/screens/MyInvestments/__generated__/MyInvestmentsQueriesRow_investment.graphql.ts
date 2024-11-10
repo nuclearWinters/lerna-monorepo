@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d943c4755bb56647eff7f8f042ad568a>>
+ * @generated SignedSource<<e55d1a812d53aa83f84ee1cdf612dcd6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 export type InvestmentStatus = "DELAY_PAYMENT" | "FINANCING" | "PAID" | "PAST_DUE" | "UP_TO_DATE" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type MyInvestmentsQueriesRow_investment$data = {

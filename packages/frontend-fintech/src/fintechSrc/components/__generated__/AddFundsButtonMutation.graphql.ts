@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1ee9aa55b2c46b573e09b68f1b730470>>
+ * @generated SignedSource<<0d5a2be08ea3e9578c5f85fe0c1dcccb>>
  * @relayHash ccd989a67362a42de18960129992958e
  * @lightSyntaxTransform
  * @nogrep
@@ -11,7 +11,7 @@
 
 // @relayRequestID ccd989a67362a42de18960129992958e
 
-import { ConcreteRequest, Mutation } from 'relay-runtime';
+import { ConcreteRequest } from 'relay-runtime';
 export type AddFundsInput = {
   clientMutationId?: string | null | undefined;
   quantity: string;
