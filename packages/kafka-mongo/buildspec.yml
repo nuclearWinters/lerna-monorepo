@@ -26,5 +26,4 @@ artifacts:
   files:
     - "certs/*"
     - "packages/kafka-mongo-deploy/**/*"
-    - "package.json"
     - "appspec.yml"

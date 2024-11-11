@@ -4,9 +4,9 @@
   "description": "Cron jobs module for backend-fintech-mongo",
   "type": "module",
   "scripts": {
-    "start": "node --watch --experimental-strip-types ./src/index.ts",
+    "start": "tsx watch ./src/index.ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
-    "serve": "node --experimental-strip-types ./src/index.ts",
+    "serve": "./node_modules/tsx/dist/cli.mjs \"./src/index.ts\"",
     "pcm": "lint-staged",
     "test": "jest --bail"
   },

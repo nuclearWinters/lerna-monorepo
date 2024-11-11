@@ -26,5 +26,4 @@ artifacts:
   files:
     - "certs/*"
     - "packages/grpc-fintech-node-deploy/**/*"
-    - "package.json"
     - "appspec.yml"

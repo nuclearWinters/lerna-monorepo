@@ -4,10 +4,10 @@
   "description": "Backend typescript express relay mongodb",
   "type": "module",
   "scripts": {
-    "start": "node --watch --experimental-strip-types ./src/index.ts",
-    "populate": "node --watch --experimental-strip-types ./src/populate.ts",
+    "start": "tsx watch ./src/index.ts",
+    "populate": "tsx ./src/populate.ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
-    "serve": "node --experimental-strip-types ./src/index.ts",
+    "serve": "./node_modules/tsx/dist/cli.mjs \"./src/index.ts\"",
     "pcm": "lint-staged",
     "test": "jest --bail"
   },

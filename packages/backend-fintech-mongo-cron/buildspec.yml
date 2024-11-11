@@ -26,5 +26,4 @@ artifacts:
   files:
     - "certs/*"
     - "packages/backend-fintech-mongo-cron-deploy/**/*"
-    - "package.json"
     - "appspec.yml"

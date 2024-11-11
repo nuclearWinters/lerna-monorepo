@@ -26,5 +26,4 @@ artifacts:
   files:
     - "certs/*"
     - "packages/backend-auth-node-deploy/**/*"
-    - "package.json"
     - "appspec.yml"
