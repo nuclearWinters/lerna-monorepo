@@ -15,16 +15,17 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Compiling the Node.js code
-      - pnpm --filter "backend-fintech-mongo" --prod deploy ./packages/backend-fintech-mongo-deploy
   post_build:
     commands:
       - echo Build completed on `date`
       - cd packages
-      - cd backend-fintech-mongo-deploy
+      - cd backend-fintech-mongo
       - mv ./appspec.yml ../../
 artifacts:
   files:
     - "certs/*"
-    - "packages/backend-fintech-mongo-deploy/**/*"
+    - "packages/**/*"
     - "package.json"
     - "appspec.yml"
+    - "pnpm-lock.yaml"
+    - "pnpm-workspace.yaml"
