@@ -22,7 +22,8 @@
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
-    "redis": "^4.7.0"
+    "redis": "^4.7.0",
+    "tsx" :"^4.19.2"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",

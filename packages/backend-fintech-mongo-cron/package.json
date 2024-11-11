@@ -21,7 +21,8 @@
     "date-fns": "^4.1.0",
     "kafkajs": "^2.2.4",
     "mongodb": "^6.10.0",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "tsx" :"^4.19.2"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",

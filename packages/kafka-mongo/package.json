@@ -25,7 +25,8 @@
     "graphql-subscriptions": "^2.0.0",
     "ioredis": "^5.4.1",
     "kafkajs": "^2.2.4",
-    "mongodb": "^6.10.0"
+    "mongodb": "^6.10.0",
+    "tsx" :"^4.19.2"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",
