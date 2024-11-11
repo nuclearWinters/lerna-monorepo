@@ -1,11 +1,11 @@
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import {
+import type {
   InvestmentMongo,
   LoanMongo,
   TransactionMongo,
   FintechUserMongo,
-} from "@repo/mongo-utils/types";
-import { base64 } from "@repo/utils/index";
+} from "@repo/mongo-utils";
+import { base64 } from "@repo/utils";
 import {
   USER,
   TRANSACTION_INSERT,
@@ -14,7 +14,7 @@ import {
   INVESTMENT_UPDATE,
   LOAN_UPDATE,
   MY_LOAN_INSERT,
-} from "./subscriptions";
+} from "./subscriptions.ts";
 
 export const publishUser = (user: FintechUserMongo, pubsub: RedisPubSub) => {
   pubsub.publish(USER, {

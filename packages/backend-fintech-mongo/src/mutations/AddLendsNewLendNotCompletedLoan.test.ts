@@ -1,25 +1,23 @@
-import { main } from "../app";
+import { main } from "../app.ts";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { Consumer, Kafka, Producer } from "kafkajs";
+import { type Consumer, Kafka, type Producer } from "kafkajs";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { Redis, RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent";
+import { Redis, type RedisOptions } from "ioredis";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
-import { KAFKA_ID } from "@repo/utils/config";
+import { KAFKA_ID, base64Name, delay } from "@repo/utils";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { base64Name, delay } from "@repo/utils/index";
-import { getValidTokens, jwt } from "@repo/jwt-utils/index";
-import { RedisClientType } from "@repo/redis-utils/types";
-import { AuthServer } from "@repo/grpc-utils/index";
-import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { runKafkaConsumer } from "@repo/kafka-utils/kafka";
-import { getFintechCollections } from "@repo/mongo-utils/index";
+import { getValidTokens } from "@repo/jwt-utils";
+import type { RedisClientType } from "@repo/redis-utils";
+import { AuthServer, AuthClient } from "@repo/grpc-utils";
+import { runKafkaConsumer } from "@repo/kafka-utils";
+import { getFintechCollections } from "@repo/mongo-utils";
 import { addMonths } from "date-fns";
+import TestAgent from "supertest/lib/agent.js";
 
 describe("AddLends one lend and loan no completed goal", () => {
   let mongoClient: MongoClient;

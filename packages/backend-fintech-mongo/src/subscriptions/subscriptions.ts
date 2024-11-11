@@ -8,17 +8,17 @@ import {
   InvestmentStatus,
   GraphQLInvestment,
   GraphQLLoan,
-} from "../Nodes";
-import { Context } from "../types";
-import {
+} from "../Nodes.ts";
+import type { Context } from "../types.ts";
+import type {
   IInvestmentEdge,
   ILoanEdge,
   InvestmentMongoRedis,
   ITransactionEdge,
   LoanMongoRedis,
-} from "@repo/mongo-utils/types";
-import { FintechUserMongo } from "@repo/mongo-utils/types";
-import { unbase64 } from "@repo/utils/index";
+} from "@repo/mongo-utils";
+import type { FintechUserMongo } from "@repo/mongo-utils";
+import { unbase64 } from "@repo/utils";
 
 export const LOAN_INSERT = "LOAN_INSERT";
 export const MY_LOAN_INSERT = "MY_LOAN_INSERT";

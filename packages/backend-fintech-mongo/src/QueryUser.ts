@@ -1,6 +1,6 @@
-import { GraphQLUser } from "./Nodes";
-import { Context } from "./types";
-import { FintechUserMongo } from "@repo/mongo-utils/types";
+import { GraphQLUser } from "./Nodes.ts";
+import type { Context } from "./types.ts";
+import type { FintechUserMongo } from "@repo/mongo-utils";
 
 const QueryUser = {
   type: GraphQLUser,

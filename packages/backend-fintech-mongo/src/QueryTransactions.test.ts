@@ -1,26 +1,19 @@
-import { main } from "./app";
+import { main } from "./app.ts";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { TransactionMongo, FintechUserMongo } from "@repo/mongo-utils/types";
-import TestAgent from "supertest/lib/agent";
+import { TransactionMongo, FintechUserMongo } from "@repo/mongo-utils";
+import TestAgent from "supertest/lib/agent.js";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { Producer } from "kafkajs";
 import { createClient } from "redis";
 import { serialize } from "cookie";
-import {
-  REFRESH_TOKEN_EXP_NUMBER,
-  ACCESS_TOKEN_EXP_NUMBER,
-  ACCESSSECRET,
-  REFRESHSECRET,
-} from "@repo/utils/config";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { base64Name } from "@repo/utils/index";
-import { getValidTokens, jwt } from "@repo/jwt-utils/index";
-import { RedisClientType } from "@repo/redis-utils/types";
-import { AuthServer } from "@repo/grpc-utils/index";
-import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
+import { base64Name } from "@repo/utils";
+import { getValidTokens } from "@repo/jwt-utils";
+import type { RedisClientType } from "@repo/redis-utils";
+import { AuthServer, AuthClient } from "@repo/grpc-utils";
 
 describe("QueryTransactions tests", () => {
   let mongoClient: MongoClient;

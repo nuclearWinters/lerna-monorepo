@@ -1,13 +1,13 @@
 import { MongoClient, ObjectId } from "mongodb";
-import {
+import type {
   TransactionMongo,
   InvestmentMongo,
   LoanMongo,
   FintechUserMongo,
   ScheduledPaymentsMongo,
-} from "@repo/mongo-utils/types";
+} from "@repo/mongo-utils";
 import { addMonths, startOfMonth } from "date-fns";
-import { UUID } from "@repo/utils/types";
+import type { UUID } from "node:crypto";
 
 MongoClient.connect("mongodb://localhost:27017?directConnection=true").then(
   async (client) => {

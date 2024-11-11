@@ -1,20 +1,19 @@
-import { main } from "../app";
+import { main } from "../app.ts";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { Producer } from "kafkajs";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent";
+import TestAgent from "supertest/lib/agent.js";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { getValidTokens } from "@repo/jwt-utils/index";
-import { RedisClientType } from "@repo/redis-utils/types";
-import { AuthServer } from "@repo/grpc-utils/index";
-import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { getFintechCollections } from "@repo/mongo-utils/index";
+import { getValidTokens } from "@repo/jwt-utils";
+import type { RedisClientType } from "@repo/redis-utils";
+import { AuthServer, AuthClient } from "@repo/grpc-utils";
+import { getFintechCollections } from "@repo/mongo-utils";
 
 describe("AddLoan tests", () => {
   let mongoClient: MongoClient;

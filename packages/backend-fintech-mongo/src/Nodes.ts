@@ -15,14 +15,14 @@ import {
   globalIdField,
   nodeDefinitions,
   connectionDefinitions,
-  Connection,
   connectionFromArray,
-  ConnectionArguments,
   forwardConnectionArgs,
 } from "graphql-relay";
-import { Filter, ObjectId } from "mongodb";
-import type { Context } from "./types";
-import {
+import type { Connection, ConnectionArguments } from "graphql-relay";
+import { ObjectId } from "mongodb";
+import type { Filter } from "mongodb";
+import type { Context } from "./types.ts";
+import type {
   FintechUserMongo,
   ScheduledPaymentsMongo,
   LoanMongo,
@@ -35,10 +35,10 @@ import {
   TransactionMongoType,
   TransactionInvestMongoType,
   ScheduledPaymentsStatus,
-} from "@repo/mongo-utils/types";
-import { base64, unbase64 } from "@repo/utils/index";
-import { DateScalarType } from "@repo/graphql-utils/index";
-import type { UUID } from "@repo/utils/types";
+} from "@repo/mongo-utils";
+import { base64, unbase64 } from "@repo/utils";
+import { DateScalarType } from "@repo/graphql-utils";
+import type { UUID } from "node:crypto";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatus[];

@@ -1,4 +1,4 @@
-import { main } from "./app";
+import { main } from "./app.ts";
 import { MongoClient } from "mongodb";
 import { credentials } from "@grpc/grpc-js";
 import { Kafka, logLevel } from "kafkajs";
@@ -13,8 +13,8 @@ import {
   IS_PRODUCTION,
   KAFKA_PASSWORD,
   KAFKA_USERNAME,
-} from "@repo/utils/config";
-import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
+} from "@repo/utils";
+import { AuthClient } from "@repo/grpc-utils";
 import fs from "node:fs";
 
 const kafka = new Kafka({

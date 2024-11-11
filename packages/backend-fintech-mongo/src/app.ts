@@ -1,10 +1,10 @@
 import { GraphQLSchema, GraphQLObjectType } from "graphql";
-import { QueryUser } from "./QueryUser";
-import { dataDrivenDependencies, nodeField } from "./Nodes";
-import { AddLendsMutation } from "./mutations/AddLends";
-import { AddFundsMutation } from "./mutations/AddFunds";
-import { AddLoanMutation } from "./mutations/AddLoan";
-import { getContextSSE } from "./utils";
+import { QueryUser } from "./QueryUser.ts";
+import { dataDrivenDependencies, nodeField } from "./Nodes.ts";
+import { AddLendsMutation } from "./mutations/AddLends.ts";
+import { AddFundsMutation } from "./mutations/AddFunds.ts";
+import { AddLoanMutation } from "./mutations/AddLoan.ts";
+import { getContextSSE } from "./utils.ts";
 import {
   investments_subscribe_insert,
   loans_subscribe_insert,
@@ -13,18 +13,18 @@ import {
   investments_subscribe_update,
   loans_subscribe_update,
   my_loans_subscribe_insert,
-} from "./subscriptions/subscriptions";
-import { ApproveLoanMutation } from "./mutations/ApproveLoan";
-import { QueryScheduledPayments } from "./QueryScheduledPayments";
+} from "./subscriptions/subscriptions.ts";
+import { ApproveLoanMutation } from "./mutations/ApproveLoan.ts";
+import { QueryScheduledPayments } from "./QueryScheduledPayments.ts";
 import { createSecureServer } from "node:http2";
 import { Db } from "mongodb";
-import { Producer } from "kafkajs";
+import type { Producer } from "kafkajs";
 import fs from "node:fs";
-import queryMap from "./queryMap.json";
+import queryMap from "./queryMap.json" with { type: "json" };
 import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { IS_PRODUCTION } from "@repo/utils/config";
-import { createHandler } from "@repo/graphql-utils/index";
+import { IS_PRODUCTION } from "@repo/utils";
+import { createHandler } from "@repo/graphql-utils";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -146,6 +146,7 @@ const main = async (
           res.writeHead(200).end();
         }
       } catch (err) {
+        console.log("err:", err);
         const now = new Date().toISOString();
         if (err instanceof Error) {
           fs.writeFileSync(

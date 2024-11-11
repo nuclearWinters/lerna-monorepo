@@ -1,15 +1,15 @@
-import { UUID } from "@repo/utils/types";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { Producer } from "kafkajs";
-import { Collection } from "mongodb";
-import {
+import type { Producer } from "kafkajs";
+import type { Collection } from "mongodb";
+import type {
   FintechUserMongo,
   LoanMongo,
   InvestmentMongo,
   ScheduledPaymentsMongo,
   RecordsMongo,
   TransactionMongo,
-} from "@repo/mongo-utils/types";
+} from "@repo/mongo-utils";
+import type { UUID } from "node:crypto";
 
 export interface Context {
   users: Collection<FintechUserMongo>;
