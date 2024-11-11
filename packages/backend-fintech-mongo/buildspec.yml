@@ -11,6 +11,11 @@ phases:
       - echo Installing source NPM dependencies.
       - corepack enable pnpm
       - pnpm install --prod --filter "backend-fintech-mongo"
+      - cd node_modules
+      - cd .bin
+      - cat tsx
+      - cd ..
+      - cd ..
   build:
     commands:
       - echo Build started on `date`
@@ -22,6 +27,9 @@ phases:
       - cd packages
       - cd backend-fintech-mongo-deploy
       - mv ./appspec.yml ../../
+      - cd node_modules
+      - cd .bin
+      - cat tsx
 artifacts:
   files:
     - "certs/*"
