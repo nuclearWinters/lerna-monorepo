@@ -10,7 +10,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies.
       - corepack enable pnpm
-      - pnpm install --filter --prod "kafka-mongo"
+      - pnpm install --prod --filter "kafka-mongo"
   build:
     commands:
       - echo Build started on `date`

@@ -10,7 +10,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies.
       - corepack enable pnpm
-      - pnpm install --filter --prod "backend-auth-node"
+      - pnpm install --prod --filter "backend-auth-node"
   build:
     commands:
       - echo Build started on `date`

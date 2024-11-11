@@ -10,7 +10,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies.
       - corepack enable pnpm
-      - pnpm install --filter --prod "grpc-auth-node"
+      - pnpm install --prod --filter "grpc-auth-node"
   build:
     commands:
       - echo Build started on `date`

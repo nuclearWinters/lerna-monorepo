@@ -10,7 +10,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies.
       - corepack enable pnpm
-      - pnpm install --filter --prod "grpc-fintech-node"
+      - pnpm install --prod --filter "grpc-fintech-node"
   build:
     commands:
       - echo Build started on `date`
