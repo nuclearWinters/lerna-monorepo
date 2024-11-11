@@ -712,7 +712,7 @@ importers:
   packages/repo-graphql-utils:
     dependencies:
       graphql:
-        specifier: ^16.5.0
+        specifier: ^16.9.0
         version: 16.9.0
     devDependencies:
       '@repo/eslint-8-config':
