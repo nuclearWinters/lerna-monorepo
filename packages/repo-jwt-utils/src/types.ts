@@ -1,4 +1,4 @@
-import { UUID } from "@repo/utils/types";
+import type { UUID } from "@repo/utils";
 
 export interface DecodeJWT {
   id: UUID;

@@ -1,13 +1,18 @@
-import { ObjectId, Collection } from "mongodb";
+import { Collection } from "mongodb";
 import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
-import { RedisClientType } from "@repo/redis-utils/types";
-import { UUID } from "@repo/utils/types";
+import type { RedisClientType } from "@repo/redis-utils";
 import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import type { UUID } from "node:crypto";
+import type {
+  AuthUserLogins,
+  AuthUserMongo,
+  AuthUserSessions,
+} from "@repo/mongo-utils";
 
 export interface Context {
-  authusers: Collection<UserMongo>;
-  logins: Collection<UserLogins>;
-  sessions: Collection<UserSessions>;
+  authusers: Collection<AuthUserMongo>;
+  logins: Collection<AuthUserLogins>;
+  sessions: Collection<AuthUserSessions>;
   rdb: RedisClientType;
   accessToken?: string;
   refreshToken?: string;
@@ -18,41 +23,4 @@ export interface Context {
   req: Http2ServerRequest;
   res: Http2ServerResponse;
   grpcClient: AccountClient;
-}
-
-export interface UserLogins {
-  _id?: ObjectId;
-  applicationName: "Lerna Monorepo";
-  time: Date;
-  address: string;
-  userId: UUID;
-}
-
-export interface UserSessions {
-  _id?: ObjectId;
-  applicationName: "Lerna Monorepo";
-  deviceOS: string;
-  deviceBrowser: string;
-  address: string;
-  lastTimeAccessed: Date;
-  userId: UUID;
-  refreshToken: string;
-  expirationDate: Date;
-}
-
-export interface UserMongo {
-  email: string;
-  password: string;
-  isLender: boolean;
-  isBorrower: boolean;
-  isSupport: boolean;
-  language: "es" | "en" | "default";
-  name: string;
-  apellidoPaterno: string;
-  apellidoMaterno: string;
-  RFC: string;
-  CURP: string;
-  clabe: string;
-  mobile: string;
-  id: UUID;
 }

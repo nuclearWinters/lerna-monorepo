@@ -1,14 +1,18 @@
-const tsPreset = require("ts-jest/jest-preset")
-const shelfMongo = require("@shelf/jest-mongodb/jest-preset")
+const shelfMongo = require("@shelf/jest-mongodb/jest-preset");
 
 module.exports = {
-  ...tsPreset,
+  preset: "ts-jest/presets/default-esm",
   ...shelfMongo,
   roots: ["<rootDir>"],
   transform: {
-    "^.+\\.tsx?$": "ts-jest",
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        isolatedModules: true,
+      },
+    ],
   },
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
   modulePathIgnorePatterns: [
     "<rootDir>/test/__fixtures__",
     "<rootDir>/node_modules",

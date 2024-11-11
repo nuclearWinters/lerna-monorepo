@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev --transpile-only ./src/index.ts",
-    "populate": "tsx ./src/populate.ts",
-    "build": "tsc || ./node_modules/typescript/bin/tsc",
+    "start": "node --watch --experimental-strip-types ./src/index.ts",
+    "populate": "node --experimental-strip-types ./src/populate.ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
-    "serve": "node ./build/index.js",
+    "serve": "node --experimental-strip-types ./src/index.ts",
     "pcm": "lint-staged",
     "test": "jest --bail"
   },

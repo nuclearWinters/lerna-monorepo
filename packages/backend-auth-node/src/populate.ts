@@ -1,15 +1,13 @@
+import { getAuthCollections } from "@repo/mongo-utils";
+import type { UUID } from "node:crypto";
 import { MongoClient, ObjectId } from "mongodb";
-import { UserLogins, UserMongo, UserSessions } from "./types";
-import { UUID } from "@repo/utils/types";
 
 MongoClient.connect("mongodb://localhost:27017?directConnection=true").then(
   async (client) => {
     const db = client.db("auth");
-    const users = db.collection<UserMongo>("users");
-    const logins = db.collection<UserLogins>("logins");
-    const sessions = db.collection<UserSessions>("sessions");
+    const { authusers, logins, sessions } = getAuthCollections(db);
     await logins.deleteMany({});
-    await users.deleteMany({});
+    await authusers.deleteMany({});
     await sessions.deleteMany({});
     const user_id_one: UUID = "dab40bfd-b4a4-4874-8978-85f518a9aafb";
     const user_id_two: UUID = "9e60e466-70f2-4820-a8f3-604086b62ce2";
@@ -20,7 +18,7 @@ MongoClient.connect("mongodb://localhost:27017?directConnection=true").then(
       address: "::1",
       userId: user_id_one,
     });
-    await users.insertMany([
+    await authusers.insertMany([
       {
         _id: new ObjectId(),
         isBorrower: false,

@@ -1,7 +1,7 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
-import { Context } from "../types";
-import { IS_PRODUCTION } from "@repo/utils/config";
+import type { Context } from "../types.ts";
+import { IS_PRODUCTION } from "@repo/utils";
 import { serialize } from "cookie";
 
 type Payload = {

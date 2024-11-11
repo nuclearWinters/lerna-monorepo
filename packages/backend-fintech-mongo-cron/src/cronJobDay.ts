@@ -1,7 +1,7 @@
 import { Db } from "mongodb";
-import { LoanMongo, ScheduledPaymentsMongo } from "./types";
+import type { LoanMongo, ScheduledPaymentsMongo } from "@repo/mongo-utils";
 import { differenceInDays } from "date-fns";
-import { Producer } from "kafkajs";
+import type { Producer } from "kafkajs";
 
 export const dayFunction = async (
   db: Db,

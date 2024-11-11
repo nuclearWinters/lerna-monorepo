@@ -1,14 +1,9 @@
 import { MongoClient } from "mongodb";
 import { createClient } from "redis";
-import { main } from "./app";
-import {
-  REDIS,
-  MONGO_DB,
-  GRPC_FINTECH,
-  IS_PRODUCTION,
-} from "@repo/utils/config";
+import { main } from "./app.ts";
+import { REDIS, MONGO_DB, GRPC_FINTECH, IS_PRODUCTION } from "@repo/utils";
 import { credentials } from "@grpc/grpc-js";
-import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import { AccountClient } from "@repo/grpc-utils";
 import fs from "node:fs";
 
 const getGRPCClient = () =>
@@ -65,6 +60,7 @@ process
     process.exit(1);
   })
   .on("uncaughtException", (err) => {
+    console.log(err);
     const now = new Date().toISOString();
     if (err.message === "read ECONNRESET") {
       fs.writeFileSync(

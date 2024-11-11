@@ -1,14 +1,14 @@
-import { main } from "../app";
+import { main } from "../app.ts";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo } from "../types";
-import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent";
+import { createClient, type RedisClientType } from "redis";
+import TestAgent from "supertest/lib/agent.js";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { getValidTokens } from "@repo/jwt-utils/index";
+import { getValidTokens } from "@repo/jwt-utils";
 import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import { parse, serialize } from "cookie";
+import type { AuthUserMongo } from "@repo/mongo-utils";
 
 describe("LogOutMutation tests", () => {
   let client: MongoClient;
@@ -42,7 +42,7 @@ describe("LogOutMutation tests", () => {
   });
 
   it("LogOutMutation: user has refresh token and access token", async () => {
-    const users = dbInstance.collection<UserMongo>("users");
+    const users = dbInstance.collection<AuthUserMongo>("users");
     const _id = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({

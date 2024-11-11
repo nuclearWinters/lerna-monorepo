@@ -1,6 +1,6 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
-import { Context } from "../types";
+import type { Context } from "../types.ts";
 import bcrypt from "bcryptjs";
 import {
   ACCESS_TOKEN_EXP_NUMBER,
@@ -8,8 +8,8 @@ import {
   REFRESHSECRET,
   ACCESSSECRET,
   IS_PRODUCTION,
-} from "@repo/utils/config";
-import { jwt } from "@repo/jwt-utils/index";
+} from "@repo/utils";
+import { jwt } from "@repo/jwt-utils";
 import { serialize } from "cookie";
 import { parse as woothee } from "woothee";
 

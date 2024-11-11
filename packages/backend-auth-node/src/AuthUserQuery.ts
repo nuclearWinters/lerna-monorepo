@@ -6,8 +6,6 @@ import {
   GraphQLFloat,
 } from "graphql";
 import {
-  Connection,
-  ConnectionArguments,
   connectionDefinitions,
   connectionFromArray,
   forwardConnectionArgs,
@@ -15,12 +13,19 @@ import {
   globalIdField,
   nodeDefinitions,
 } from "graphql-relay";
-import { Filter, ObjectId } from "mongodb";
-import { Languages } from "./mutations/SignUpMutation";
-import { Context, UserLogins, UserMongo, UserSessions } from "./types";
-import { UUID } from "@repo/utils/types";
-import { base64, unbase64 } from "@repo/utils/index";
-import { DateScalarType } from "@repo/graphql-utils/index";
+import type { ConnectionArguments, Connection } from "graphql-relay";
+import type { Filter } from "mongodb";
+import { ObjectId } from "mongodb";
+import { Languages } from "./mutations/SignUpMutation.ts";
+import type { Context } from "./types.ts";
+import { base64, unbase64 } from "@repo/utils";
+import { DateScalarType } from "@repo/graphql-utils";
+import type {
+  AuthUserLogins,
+  AuthUserMongo,
+  AuthUserSessions,
+} from "@repo/mongo-utils";
+import type { UUID } from "node:crypto";
 
 const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   async (globalId, { authusers }) => {
@@ -35,7 +40,7 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   (obj: { type: string }) => obj.type
 );
 
-export const GraphQLSession = new GraphQLObjectType<UserSessions>({
+export const GraphQLSession = new GraphQLObjectType<AuthUserSessions>({
   name: "Session",
   fields: {
     id: globalIdField("Session", ({ _id }): string =>
@@ -78,7 +83,7 @@ const { connectionType: SessionsConnection, edgeType: GraphQLSessionEdge } =
     nodeType: GraphQLSession,
   });
 
-export const GraphQLLogin = new GraphQLObjectType<UserLogins>({
+export const GraphQLLogin = new GraphQLObjectType<AuthUserLogins>({
   name: "Login",
   fields: {
     id: globalIdField("Login", ({ _id }): string => _id.toHexString()),
@@ -107,7 +112,7 @@ const { connectionType: LoginConnection, edgeType: GraphQLLoginEdge } =
     nodeType: GraphQLLogin,
   });
 
-export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
+export const GraphQLAuthUser = new GraphQLObjectType<AuthUserMongo, Context>({
   name: "AuthUser",
   fields: {
     id: globalIdField("AuthUser"),
@@ -171,7 +176,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
         _root: unknown,
         args: unknown,
         { sessions, id }: Context
-      ): Promise<Connection<UserSessions>> => {
+      ): Promise<Connection<AuthUserSessions>> => {
         const { after, first } = args as ConnectionArguments;
         try {
           if (!id) {
@@ -181,7 +186,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
           const sessions_id = unbase64(after || "");
-          const query: Filter<UserSessions> = {
+          const query: Filter<AuthUserSessions> = {
             userId: id,
             expirationDate: { $gt: new Date() },
           };
@@ -224,7 +229,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
         _root: unknown,
         args: unknown,
         { logins, id }: Context
-      ): Promise<Connection<UserLogins>> => {
+      ): Promise<Connection<AuthUserLogins>> => {
         const { first, after } = args as ConnectionArguments;
         try {
           if (!id) {
@@ -234,7 +239,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<UserMongo, Context>({
           if (!first || first <= 0) {
             throw new Error("Se requiere que 'first' sea un entero positivo");
           }
-          const query: Filter<UserLogins> = {
+          const query: Filter<AuthUserLogins> = {
             userId: id,
           };
           if (logins_id) {
@@ -271,7 +276,7 @@ const QueryUser = {
     _root: unknown,
     _args: unknown,
     { authusers, id }: Context
-  ): Promise<UserMongo> => {
+  ): Promise<AuthUserMongo> => {
     if (!id) {
       throw new Error("Unauthenticated");
     }

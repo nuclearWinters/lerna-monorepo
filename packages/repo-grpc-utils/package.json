@@ -2,34 +2,34 @@
   "name": "@repo/grpc-utils",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
+  "type": "module",
   "exports": {
-    "./index": {
+    ".": {
       "types": "./src/index.ts",
-      "default": "./build/index.js"
+      "default": "./src/index.ts"
     },
     "./types": {
       "types": "./src/types.ts",
-      "default": "./build/types.js"
+      "default": "./src/types.ts"
     },
     "./protoAuth/auth_grpc_pb": {
-      "types": "./src/protoAuth/auth_grpc_pb.d.ts",
-      "default": "./build/protoAuth/auth_grpc_pb.js"
+      "types": "./src/protoAuth/auth_grpc_pb.d.cts",
+      "default": "./src/protoAuth/auth_grpc_pb.cjs"
     },
     "./protoAuth/auth_pb": {
-      "types": "./src/protoAuth/auth_pb.d.ts",
-      "default": "./build/protoAuth/auth_pb.js"
+      "types": "./src/protoAuth/auth_pb.d.cts",
+      "default": "./src/protoAuth/auth_pb.cjs"
     },
     "./protoAccount/account_grpc_pb": {
-      "types": "./src/protoAccount/account_grpc_pb.d.ts",
-      "default": "./build/protoAccount/account_grpc_pb.js"
+      "types": "./src/protoAccount/account_grpc_pb.d.cts",
+      "default": "./src/protoAccount/account_grpc_pb.cjs"
     },
     "./protoAccount/account_pb": {
-      "types": "./src/protoAccount/account_pb.d.ts",
-      "default": "./build/protoAccount/account_pb.js"
+      "types": "./src/protoAccount/account_pb.d.cts",
+      "default": "./src/protoAccount/account_pb.cjs"
     }
   },
   "scripts": {
-    "postinstall": "pnpm build",
     "build": "(tsc || ./node_modules/typescript/bin/tsc) && node ./copyCode.mjs",
     "pcm": "lint-staged",
     "test": "jest --bail",
@@ -46,9 +46,7 @@
     "@repo/utils": "workspace:*",
     "@repo/mongo-utils": "workspace:*",
     "@repo/jwt-utils": "workspace:*",
-    "@repo/redis-utils": "workspace:*",
-    "typescript": "^5.6.3",
-    "@repo/typescript-config": "workspace:*"
+    "@repo/redis-utils": "workspace:*"
   },
   "devDependencies": {
     "@types/google-protobuf": "^3.15.6",
@@ -61,7 +59,9 @@
     "prettier": "^3.3.3",
     "@types/node": "^22.9.0",
     "@repo/eslint-8-config": "workspace:*",
-    "@repo/jest-presets": "workspace:*"
+    "@repo/jest-presets": "workspace:*",
+    "typescript": "^5.6.3",
+    "@repo/typescript-config": "workspace:*"
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [

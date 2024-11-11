@@ -9,19 +9,22 @@ phases:
   pre_build:
     commands:
       - echo Installing source NPM dependencies.
-      - corepack enable
-      - pnpm install --prod --filter "backend-fintech-mongo"
+      - corepack enable pnpm
+      - pnpm install --filter --prod "backend-fintech-mongo"
   build:
     commands:
       - echo Build started on `date`
       - echo Compiling the Node.js code
+      - pnpm --filter "backend-fintech-mongo" --prod deploy ./packages/backend-fintech-mongo-deploy
   post_build:
     commands:
       - echo Build completed on `date`
+      - cd packages
+      - cd backend-fintech-mongo-deploy
       - mv ./appspec.yml ../../
 artifacts:
   files:
     - "certs/*"
-    - "packages/backend-fintech-mongo/**/*"
+    - "packages/backend-fintech-mongo-deploy/**/*"
     - "package.json"
     - "appspec.yml"

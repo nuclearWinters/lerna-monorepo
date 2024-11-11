@@ -1,12 +1,12 @@
-import { main } from "../app";
+import { main } from "../app.ts";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo } from "../types";
-import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent";
+import { createClient, type RedisClientType } from "redis";
+import TestAgent from "supertest/lib/agent.js";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import type { AuthUserMongo } from "@repo/mongo-utils";
 
 describe("SignInMutation tests", () => {
   let client: MongoClient;
@@ -40,7 +40,7 @@ describe("SignInMutation tests", () => {
   });
 
   it("SignInMutation: user exists and password is correct", async () => {
-    const users = dbInstance.collection<UserMongo>("users");
+    const users = dbInstance.collection<AuthUserMongo>("users");
     const _id = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({

@@ -1,16 +1,16 @@
-import { Consumer, Producer } from "kafkajs";
+import type { Consumer, Producer } from "kafkajs";
 import { Db } from "mongodb";
-import {
+import type {
   InvestmentMongo,
   LoanMongo,
   RecordsMongo,
   ScheduledPaymentsMongo,
   TransactionMongo,
   FintechUserMongo,
-} from "@repo/mongo-utils/types";
-import { LoanTransaction } from "./kafkaLoanTransaction";
-import { UserTransaction } from "./kafkaUserTransaction";
-import { AddLends } from "./kafkaLendTransaction";
+} from "@repo/mongo-utils";
+import { LoanTransaction } from "./kafkaLoanTransaction.ts";
+import { UserTransaction } from "./kafkaUserTransaction.ts";
+import { AddLends } from "./kafkaLendTransaction.ts";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 
 export const runKafkaConsumer = async (
@@ -40,7 +40,8 @@ export const runKafkaConsumer = async (
           loans,
           producer,
           scheduledPayments,
-          records
+          records,
+          pubsub
         );
       } else if (topic === "user-transaction") {
         await UserTransaction(

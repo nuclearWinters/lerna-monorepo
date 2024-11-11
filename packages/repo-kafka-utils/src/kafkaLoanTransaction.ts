@@ -1,16 +1,18 @@
-import { Producer, RecordMetadata } from "kafkajs";
+import type { Producer, RecordMetadata } from "kafkajs";
 import {
   Collection,
-  InsertManyResult,
-  InsertOneResult,
+  type InsertManyResult,
+  type InsertOneResult,
   ObjectId,
 } from "mongodb";
-import {
+import type {
   LoanMongo,
   ScheduledPaymentsMongo,
   RecordsMongo,
-} from "@repo/mongo-utils/types";
+} from "@repo/mongo-utils";
 import { addMonths, startOfMonth } from "date-fns";
+import { publishLoanUpdate } from "./subscriptions/subscriptionsUtils.ts";
+import { RedisPubSub } from "graphql-redis-subscriptions";
 
 interface LoanKafkaTransaction {
   quantity_cents: number;
@@ -54,7 +56,8 @@ export const LoanTransaction = async (
   loans: Collection<LoanMongo>,
   producer: Producer,
   scheduledPayments: Collection<ScheduledPaymentsMongo>,
-  records: Collection<RecordsMongo>
+  records: Collection<RecordsMongo>,
+  pubsub: RedisPubSub
 ): Promise<null> => {
   const values = resolveParse(messageValue);
   if (!isValidLoanTransaction(values)) {
@@ -92,18 +95,25 @@ export const LoanTransaction = async (
   if (isLessOrEqualGoal) {
     const loan_oid = new ObjectId(loan_oid_str);
     const now = new Date();
-    const loanPromise = loans.updateOne(
-      {
-        _id: loan_oid,
-      },
-      {
-        $set: {
-          raised: newRaised,
-          pending: newPending,
-          ...(completed ? { status: "to be paid" } : {}),
+    const loanPromise = loans
+      .findOneAndUpdate(
+        {
+          _id: loan_oid,
         },
-      }
-    );
+        {
+          $set: {
+            raised: newRaised,
+            pending: newPending,
+            ...(completed ? { status: "to be paid" } : {}),
+          },
+        }
+      )
+      .then((loan) => {
+        if (loan) {
+          publishLoanUpdate(loan, pubsub);
+        }
+        return loan;
+      });
     new_record_lender = records.insertOne({
       status: "pending",
       _id: new_lender_record_oid,

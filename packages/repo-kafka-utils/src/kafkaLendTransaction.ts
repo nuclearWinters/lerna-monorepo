@@ -1,12 +1,17 @@
-import { Producer, RecordMetadata } from "kafkajs";
-import {
+import type { Producer, RecordMetadata } from "kafkajs";
+import type {
   InvestmentMongo,
   LoanMongo,
   RecordsMongo,
-} from "@repo/mongo-utils/types";
-import { Collection, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
-import { resolveParse } from "./kafkaLoanTransaction";
-import { UUID } from "@repo/utils/types";
+} from "@repo/mongo-utils";
+import {
+  Collection,
+  type InsertOneResult,
+  ObjectId,
+  type UpdateResult,
+} from "mongodb";
+import { resolveParse } from "./kafkaLoanTransaction.ts";
+import type { UUID } from "node:crypto";
 
 interface LendKafkaTransaction {
   lender_uuid: UUID;

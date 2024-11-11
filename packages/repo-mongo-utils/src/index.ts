@@ -1,5 +1,5 @@
 import { Db } from "mongodb";
-import {
+import type {
   AuthUserLogins,
   AuthUserMongo,
   AuthUserSessions,
@@ -9,7 +9,7 @@ import {
   RecordsMongo,
   ScheduledPaymentsMongo,
   TransactionMongo,
-} from "./types";
+} from "./types.ts";
 
 export const getFintechCollections = (db: Db) => {
   return {
@@ -30,3 +30,5 @@ export const getAuthCollections = (db: Db) => {
     sessions: db.collection<AuthUserSessions>("sessions"),
   };
 };
+
+export * from "./types.ts";

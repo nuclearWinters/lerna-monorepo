@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { runKafkaConsumer } from "@repo/kafka-utils/kafka";
+import { runKafkaConsumer } from "@repo/kafka-utils";
 import { Kafka, logLevel } from "kafkajs";
 import {
   MONGO_DB,
@@ -9,7 +9,7 @@ import {
   KAFKA_USERNAME,
   KAFKA_PASSWORD,
   REDIS,
-} from "@repo/utils/config";
+} from "@repo/utils";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis } from "ioredis";
 

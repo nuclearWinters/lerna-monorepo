@@ -4,7 +4,7 @@ import {
   TransactionCassandra,
   UserCassandra,
 } from "../types";
-import { base64 } from "@repo/utils/index";
+import { base64 } from "@repo/utils";
 import {
   pubsub,
   USER,

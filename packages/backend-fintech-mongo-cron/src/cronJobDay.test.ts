@@ -1,15 +1,13 @@
 import { addDays, addMonths, startOfDay } from "date-fns";
-import { Db, MongoClient, ObjectId } from "mongodb";
-import {
-  InvestmentMongo,
-  LoanMongo,
-  UserMongo,
-  ScheduledPaymentsMongo,
-} from "./types";
-import { Admin, Kafka, Producer } from "kafkajs";
-import { dayFunction } from "./cronJobDay";
-import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
-import { KAFKA_ID } from "@repo/utils/config";
+import type { Db } from "mongodb";
+import { ObjectId, MongoClient } from "mongodb";
+import { getFintechCollections } from "@repo/mongo-utils";
+import type { Admin, Producer } from "kafkajs";
+import { Kafka } from "kafkajs";
+import { dayFunction } from "./cronJobDay.ts";
+import type { StartedKafkaContainer } from "@testcontainers/kafka";
+import { KafkaContainer } from "@testcontainers/kafka";
+import { KAFKA_ID } from "@repo/utils";
 
 describe("cronJobs tests", () => {
   let mongoClient: MongoClient;
@@ -63,12 +61,8 @@ describe("cronJobs tests", () => {
   }, 10000);
 
   it("dayFunction test", async () => {
-    const users = dbInstanceFintech.collection<UserMongo>("users");
-    const loans = dbInstanceFintech.collection<LoanMongo>("loans");
-    const investments =
-      dbInstanceFintech.collection<InvestmentMongo>("investments");
-    const scheduledPayments =
-      dbInstanceFintech.collection<ScheduledPaymentsMongo>("scheduledPayments");
+    const { users, loans, investments, scheduledPayments } =
+      getFintechCollections(dbInstanceFintech);
     const now = new Date();
     const user1_oid = new ObjectId();
     const user2_oid = new ObjectId();

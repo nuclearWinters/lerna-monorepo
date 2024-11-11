@@ -1,21 +1,26 @@
-import { Producer, RecordMetadata } from "kafkajs";
-import {
+import type { Producer, RecordMetadata } from "kafkajs";
+import type {
   InvestmentMongo,
   LoanMongo,
   RecordsMongo,
   ScheduledPaymentsMongo,
   TransactionMongo,
   FintechUserMongo,
-} from "@repo/mongo-utils/types";
-import { Collection, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
+} from "@repo/mongo-utils";
+import {
+  Collection,
+  type InsertOneResult,
+  ObjectId,
+  type UpdateResult,
+} from "mongodb";
 import {
   publishInvestmentUpdate,
   publishLoanUpdate,
   publishUser,
-} from "./subscriptions/subscriptionsUtils";
+} from "./subscriptions/subscriptionsUtils.ts";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { resolveParse } from "./kafkaLoanTransaction";
-import { UUID } from "@repo/utils/types";
+import { resolveParse } from "./kafkaLoanTransaction.ts";
+import type { UUID } from "crypto";
 
 interface UserKafkaTransaction {
   operationTotalAndAvailable?: number;

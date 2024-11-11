@@ -16,3 +16,5 @@ export const delay = (time = 300) =>
       resolve();
     }, time);
   });
+
+export * from "./config.ts";

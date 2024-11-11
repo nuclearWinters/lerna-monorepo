@@ -1,13 +1,13 @@
-import { main } from "../app";
+import { main } from "../app.ts";
 import supertest from "supertest";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { UserMongo } from "../types";
-import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent";
+import { createClient, type RedisClientType } from "redis";
+import TestAgent from "supertest/lib/agent.js";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { getValidTokens, jwt } from "@repo/jwt-utils/index";
+import { getValidTokens } from "@repo/jwt-utils";
 import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import { serialize } from "cookie";
+import type { AuthUserMongo } from "@repo/mongo-utils";
 
 describe("UpdateUser tests", () => {
   let client: MongoClient;
@@ -41,7 +41,7 @@ describe("UpdateUser tests", () => {
   });
 
   it("test UpdateUser valid access token", async () => {
-    const users = dbInstance.collection<UserMongo>("users");
+    const users = dbInstance.collection<AuthUserMongo>("users");
     const _id = new ObjectId();
     const id = crypto.randomUUID();
     await users.insertOne({

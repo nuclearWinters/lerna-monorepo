@@ -1,14 +1,14 @@
-import { Admin, Consumer, Kafka, Producer } from "kafkajs";
+import { type Admin, type Consumer, Kafka, type Producer } from "kafkajs";
 import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
-import { runKafkaConsumer } from "@repo/kafka-utils/kafka";
+import { runKafkaConsumer } from "@repo/kafka-utils";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { InvestmentMongo, LoanMongo } from "@repo/mongo-utils/types";
-import { getFintechCollections } from "@repo/mongo-utils/index";
+import type { InvestmentMongo, LoanMongo } from "@repo/mongo-utils";
+import { getFintechCollections } from "@repo/mongo-utils";
 import { addMonths, startOfMonth } from "date-fns";
-import { Redis, RedisOptions } from "ioredis";
+import { Redis, type RedisOptions } from "ioredis";
 import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { KAFKA_ID } from "@repo/utils/config";
+import { KAFKA_ID } from "@repo/utils";
 
 const delay = async () =>
   new Promise<void>((resolve) => {

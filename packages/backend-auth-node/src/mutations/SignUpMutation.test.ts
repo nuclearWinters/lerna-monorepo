@@ -1,16 +1,16 @@
-import { main } from "../app";
+import { main } from "../app.ts";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
-import { UserMongo } from "../types";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent";
+import { createClient, type RedisClientType } from "redis";
+import TestAgent from "supertest/lib/agent.js";
 import {
   AccountClient,
   AccountService,
 } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
-import { AccountServer } from "@repo/grpc-utils/index";
+import { AccountServer } from "@repo/grpc-utils";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
+import type { AuthUserMongo } from "@repo/mongo-utils";
 
 describe("SignUpMutation tests", () => {
   let client: MongoClient;
@@ -68,7 +68,7 @@ describe("SignUpMutation tests", () => {
 
   it("SignUpMutation: success", async () => {
     const email = "anrp1@gmail.com";
-    const users = dbInstance.collection<UserMongo>("users");
+    const users = dbInstance.collection<AuthUserMongo>("users");
     const response = await request
       .post("/graphql")
       .trustLocalhost()
@@ -122,7 +122,7 @@ describe("SignUpMutation tests", () => {
 
   it("SignUpMutation: user already exists", async () => {
     const email = "anrp1@gmail.com";
-    const users = dbInstance.collection<UserMongo>("users");
+    const users = dbInstance.collection<AuthUserMongo>("users");
     const response = await request
       .post("/graphql")
       .trustLocalhost()
@@ -177,7 +177,7 @@ describe("SignUpMutation tests", () => {
 
   it("SignUpMutation: success is borrower", async () => {
     const email = "anrp2@gmail.com";
-    const users = dbInstance.collection<UserMongo>("users");
+    const users = dbInstance.collection<AuthUserMongo>("users");
     const response = await request
       .post("/graphql")
       .trustLocalhost()

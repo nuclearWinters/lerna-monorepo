@@ -1,10 +1,11 @@
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
-import { Context, UserSessions } from "../types";
+import type { Context } from "../types.ts";
 import { ObjectId } from "mongodb";
-import { GraphQLSession } from "../AuthUserQuery";
+import { GraphQLSession } from "../AuthUserQuery.ts";
 import { serialize } from "cookie";
-import { IS_PRODUCTION } from "@repo/utils/config";
+import { IS_PRODUCTION } from "@repo/utils";
+import type { AuthUserSessions } from "@repo/mongo-utils";
 
 interface Input {
   sessionId: string;
@@ -12,7 +13,7 @@ interface Input {
 
 type Payload = {
   error: string;
-  session: UserSessions | null;
+  session: AuthUserSessions | null;
 };
 
 export const RevokeSessionMutation = mutationWithClientMutationId({
@@ -30,7 +31,7 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
     },
     session: {
       type: GraphQLSession,
-      resolve: ({ session }: Payload): UserSessions | null => session,
+      resolve: ({ session }: Payload): AuthUserSessions | null => session,
     },
   },
   mutateAndGetPayload: async (

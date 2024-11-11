@@ -6,10 +6,10 @@ import {
   KAFKA_USERNAME,
   MONGO_DB,
   IS_PRODUCTION,
-} from "@repo/utils/config";
-import { checkEveryDay, checkEveryMonth } from "./cronJobs";
-import { dayFunction } from "./cronJobDay";
-import { monthFunction } from "./cronJobMonth";
+} from "@repo/utils";
+import { checkEveryDay, checkEveryMonth } from "./cronJobs.ts";
+import { dayFunction } from "./cronJobDay.ts";
+import { monthFunction } from "./cronJobMonth.ts";
 import { Kafka, logLevel } from "kafkajs";
 
 const kafka = new Kafka({

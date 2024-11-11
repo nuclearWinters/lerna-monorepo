@@ -1,15 +1,15 @@
-import { main } from "../app";
+import { main } from "../app.ts";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo } from "../types";
-import TestAgent from "supertest/lib/agent";
-import { RedisClientType } from "redis";
+import TestAgent from "supertest/lib/agent.js";
+import type { RedisClientType } from "redis";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import { createClient } from "redis";
-import { getValidTokens } from "@repo/jwt-utils/index";
+import { getValidTokens } from "@repo/jwt-utils";
 import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import { parse, serialize } from "cookie";
+import { getAuthCollections } from "@repo/mongo-utils";
 
 describe("ExtendSessionMutation tests", () => {
   let client: MongoClient;
@@ -43,10 +43,10 @@ describe("ExtendSessionMutation tests", () => {
   });
 
   it("ExtendSessionMutation: success", async () => {
-    const users = dbInstance.collection<UserMongo>("users");
+    const { authusers } = getAuthCollections(dbInstance);
     const _user_id = new ObjectId();
     const id = crypto.randomUUID();
-    await users.insertOne({
+    await authusers.insertOne({
       _id: _user_id,
       email: "armandocorrect@hotmail.com",
       password: bcrypt.hashSync("correct", 12),

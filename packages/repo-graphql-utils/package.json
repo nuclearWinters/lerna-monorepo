@@ -2,15 +2,14 @@
   "name": "@repo/graphql-utils",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
+  "type": "module",
   "exports": {
-    "./index": {
+    ".": {
       "types": "./src/index.ts",
-      "default": "./build/index.js"
+      "default": "./src/index.ts"
     }
   },
   "scripts": {
-    "postinstall": "pnpm build",
-    "build": "tsc || ./node_modules/typescript/bin/tsc",
     "pcm": "lint-staged",
     "test": "jest --bail",
     "lint": "(tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0) || (./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0)"
@@ -18,9 +17,7 @@
   "author": "Armando Rueda",
   "license": "ISC",
   "dependencies": {
-    "graphql": "^16.5.0",
-    "typescript": "^5.6.3",
-    "@repo/typescript-config": "workspace:*"
+    "graphql": "^16.5.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
@@ -30,7 +27,9 @@
     "prettier": "^3.3.3",
     "@types/node": "^22.9.0",
     "@repo/eslint-8-config": "workspace:*",
-    "@repo/jest-presets": "workspace:*"
+    "@repo/jest-presets": "workspace:*",
+    "typescript": "^5.6.3",
+    "@repo/typescript-config": "workspace:*"
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [

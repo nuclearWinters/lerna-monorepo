@@ -5,7 +5,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
 } from "graphql";
-import { Context } from "../types";
+import type { Context } from "../types.ts";
 import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
 import {
@@ -14,9 +14,9 @@ import {
   REFRESHSECRET,
   ACCESS_TOKEN_EXP_NUMBER,
   REFRESH_TOKEN_EXP_NUMBER,
-} from "@repo/utils/config";
-import { jwt } from "@repo/jwt-utils/index";
-import { createUser } from "@repo/grpc-utils/index";
+} from "@repo/utils";
+import { jwt } from "@repo/jwt-utils";
+import { createUser } from "@repo/grpc-utils";
 import { parse as woothee } from "woothee";
 
 interface Input {

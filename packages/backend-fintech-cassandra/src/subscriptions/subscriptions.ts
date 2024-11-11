@@ -20,8 +20,7 @@ import {
   LoanCassandra,
   UserCassandra,
 } from "../types";
-import { REDIS } from "@repo/utils/config";
-import { unbase64 } from "@repo/utils/index";
+import { REDIS, unbase64 } from "@repo/utils";
 
 export const options: RedisOptions = {
   host: REDIS,

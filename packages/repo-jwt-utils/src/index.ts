@@ -1,12 +1,14 @@
-import jsonwebtoken, { SignOptions } from "jsonwebtoken";
-import { DecodeJWT } from "./types";
+import jsonwebtoken from "jsonwebtoken";
+import type { SignOptions } from "jsonwebtoken";
+
+import type { DecodeJWT } from "./types.ts";
 import {
   REFRESH_TOKEN_EXP_NUMBER,
   ACCESS_TOKEN_EXP_NUMBER,
   REFRESHSECRET,
   ACCESSSECRET,
-} from "@repo/utils/config";
-import { UUID } from "@repo/utils/types";
+} from "@repo/utils";
+import type { UUID } from "node:crypto";
 
 export const jwt = {
   decode: (token: string): string | DecodeJWT | null => {
@@ -83,3 +85,5 @@ export const getValidTokens = ({
     accessToken,
   };
 };
+
+//export * from "./types.js";

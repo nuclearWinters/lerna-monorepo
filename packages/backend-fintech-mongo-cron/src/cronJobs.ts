@@ -1,4 +1,4 @@
-import cron, { ScheduledTask } from "node-cron";
+import cron, { type ScheduledTask } from "node-cron";
 
 export const checkEveryDay = (dayFunction: () => void): ScheduledTask =>
   cron.schedule("0 0 * * *", () => {

@@ -9,19 +9,18 @@ phases:
   pre_build:
     commands:
       - echo Installing source NPM dependencies.
-      - corepack enable
-      - pnpm install --filter "backend-fintech-mongo-cron"
+      - corepack enable pnpm
+      - pnpm install --filter --prod "backend-fintech-mongo-cron"
   build:
     commands:
       - echo Build started on `date`
       - echo Compiling the Node.js code
       - pnpm --filter "backend-fintech-mongo-cron" --prod deploy ./packages/backend-fintech-mongo-cron-deploy
-      - cd packages
-      - cd backend-fintech-mongo-cron-deploy
-      - pnpm build
   post_build:
     commands:
       - echo Build completed on `date`
+      - cd packages
+      - cd backend-fintech-mongo-cron-deploy
       - mv ./appspec.yml ../../
 artifacts:
   files:

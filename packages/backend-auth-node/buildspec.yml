@@ -9,22 +9,18 @@ phases:
   pre_build:
     commands:
       - echo Installing source NPM dependencies.
-      - corepack enable
-      - pnpm install --filter "backend-auth-node"
+      - corepack enable pnpm
+      - pnpm install --filter --prod "backend-auth-node"
   build:
     commands:
       - echo Build started on `date`
       - echo Compiling the Node.js code
       - pnpm --filter "backend-auth-node" --prod deploy ./packages/backend-auth-node-deploy
-      - cd packages
-      - cd backend-auth-node-deploy
-      - pnpm build
-      - cd node_modules
-      - rm -r typescript
-      - cd ..
   post_build:
     commands:
       - echo Build completed on `date`
+      - cd packages
+      - cd backend-auth-node-deploy
       - mv ./appspec.yml ../../
 artifacts:
   files:

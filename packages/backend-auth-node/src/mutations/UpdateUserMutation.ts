@@ -1,8 +1,9 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLString, GraphQLNonNull } from "graphql";
-import { Context, UserMongo } from "../types";
-import { Languages } from "./SignUpMutation";
-import { GraphQLAuthUser } from "../AuthUserQuery";
+import type { Context } from "../types.ts";
+import { Languages } from "./SignUpMutation.ts";
+import { GraphQLAuthUser } from "../AuthUserQuery.ts";
+import type { AuthUserMongo } from "@repo/mongo-utils";
 
 interface Input {
   name: string;
@@ -18,7 +19,7 @@ interface Input {
 
 type Payload = {
   error: string;
-  authUser: UserMongo | null;
+  authUser: AuthUserMongo | null;
 };
 
 export const UpdateUserMutation = mutationWithClientMutationId({
@@ -43,7 +44,7 @@ export const UpdateUserMutation = mutationWithClientMutationId({
     },
     authUser: {
       type: GraphQLAuthUser,
-      resolve: ({ authUser }: Payload): UserMongo | null => authUser,
+      resolve: ({ authUser }: Payload): AuthUserMongo | null => authUser,
     },
   },
   mutateAndGetPayload: async (

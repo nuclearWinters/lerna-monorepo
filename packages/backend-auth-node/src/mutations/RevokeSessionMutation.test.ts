@@ -1,20 +1,16 @@
-import { main } from "../app";
+import { main } from "../app.ts";
 import supertest from "supertest";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { UserMongo, UserSessions } from "../types";
-import { createClient, RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent";
+import { createClient, type RedisClientType } from "redis";
+import TestAgent from "supertest/lib/agent.js";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import {
-  ACCESS_TOKEN_EXP_NUMBER,
-  REFRESH_TOKEN_EXP_NUMBER,
-} from "@repo/utils/config";
 import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
-import { getValidTokens, jwt } from "@repo/jwt-utils/index";
-import { base64Name } from "@repo/utils/index";
+import { getValidTokens } from "@repo/jwt-utils";
+import { base64Name } from "@repo/utils";
 import { parse, serialize } from "cookie";
 import { isBefore } from "date-fns";
+import type { AuthUserMongo, AuthUserSessions } from "@repo/mongo-utils";
 
 describe("RevokeSessionMutation tests", () => {
   let client: MongoClient;
@@ -48,8 +44,8 @@ describe("RevokeSessionMutation tests", () => {
   });
 
   it("RevokeSessionMutation: is another user", async () => {
-    const users = dbInstance.collection<UserMongo>("users");
-    const sessions = dbInstance.collection<UserSessions>("sessions");
+    const users = dbInstance.collection<AuthUserMongo>("users");
+    const sessions = dbInstance.collection<AuthUserSessions>("sessions");
     const user_oid = new ObjectId();
     const user_id = crypto.randomUUID();
     const other_user_id = crypto.randomUUID();
@@ -126,8 +122,8 @@ describe("RevokeSessionMutation tests", () => {
   });
 
   it("RevokeSessionMutation: is same user", async () => {
-    const users = dbInstance.collection<UserMongo>("users");
-    const sessions = dbInstance.collection<UserSessions>("sessions");
+    const users = dbInstance.collection<AuthUserMongo>("users");
+    const sessions = dbInstance.collection<AuthUserSessions>("sessions");
     const user_oid = new ObjectId();
     const user_id = crypto.randomUUID();
     const other_session_oid = new ObjectId();

@@ -1,15 +1,19 @@
 import { Db } from "mongodb";
-import { UserMongo, UserLogins, UserSessions } from "./types";
 import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import { parse } from "cookie";
 import {
   ACCESSSECRET,
   REFRESHSECRET,
   ACCESS_TOKEN_EXP_NUMBER,
-} from "@repo/utils/config";
-import { jwt } from "@repo/jwt-utils/index";
-import { RedisClientType } from "@repo/redis-utils/types";
+} from "@repo/utils";
+import { jwt } from "@repo/jwt-utils";
+import type { RedisClientType } from "@repo/redis-utils";
 import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import type {
+  AuthUserLogins,
+  AuthUserMongo,
+  AuthUserSessions,
+} from "@repo/mongo-utils";
 
 export const getUser = async (
   accessToken: string,
@@ -84,7 +88,7 @@ export const getUser = async (
     },
     ACCESSSECRET
   );
-  const sessions = authdb.collection<UserSessions>("sessions");
+  const sessions = authdb.collection<AuthUserSessions>("sessions");
   sessions.updateOne(
     {
       refreshToken,
@@ -126,9 +130,9 @@ export const getContextSSE = async (
   }
   const userAgent = req.headers["user-agent"];
   return {
-    authusers: authdb.collection<UserMongo>("users"),
-    logins: authdb.collection<UserLogins>("logins"),
-    sessions: authdb.collection<UserSessions>("sessions"),
+    authusers: authdb.collection<AuthUserMongo>("users"),
+    logins: authdb.collection<AuthUserLogins>("logins"),
+    sessions: authdb.collection<AuthUserSessions>("sessions"),
     rdb,
     accessToken,
     refreshToken,

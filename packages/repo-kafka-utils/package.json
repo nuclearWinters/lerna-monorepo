@@ -2,15 +2,14 @@
   "name": "@repo/kafka-utils",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
+  "type": "module",
   "exports": {
-    "./kafka": {
+    ".": {
       "types": "./src/kafka.ts",
-      "default": "./build/kafka.js"
+      "default": "./src/kafka.ts"
     }
   },
   "scripts": {
-    "postinstall": "pnpm build",
-    "build": "tsc || ./node_modules/typescript/bin/tsc",
     "pcm": "lint-staged",
     "test": "jest --bail",
     "lint": "(tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0) || (./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0)"
@@ -25,9 +24,7 @@
     "@repo/mongo-utils": "workspace:*",
     "graphql-redis-subscriptions": "^2.6.1",
     "graphql-subscriptions": "^2.0.0",
-    "kafkajs": "^2.2.4",
-    "@repo/typescript-config": "workspace:*",
-    "typescript": "^5.6.3"
+    "kafkajs": "^2.2.4"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",
@@ -37,7 +34,9 @@
     "eslint": "^9.14.0",
     "jest": "^29.7.0",
     "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.6.3"
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [

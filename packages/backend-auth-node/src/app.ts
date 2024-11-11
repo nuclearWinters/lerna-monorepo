@@ -1,20 +1,20 @@
 import { GraphQLSchema, GraphQLObjectType } from "graphql";
-import { SignUpMutation } from "./mutations/SignUpMutation";
-import { SignInMutation } from "./mutations/SignInMutation";
-import { getContextSSE } from "./utils";
-import { QueryUser, nodeField } from "./AuthUserQuery";
-import { UpdateUserMutation } from "./mutations/UpdateUserMutation";
-import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation";
-import { LogOutMutation } from "./mutations/LogOutMutation";
-import { RevokeSessionMutation } from "./mutations/RevokeSessionMutation";
+import { SignUpMutation } from "./mutations/SignUpMutation.ts";
+import { SignInMutation } from "./mutations/SignInMutation.ts";
+import { getContextSSE } from "./utils.ts";
+import { QueryUser, nodeField } from "./AuthUserQuery.ts";
+import { UpdateUserMutation } from "./mutations/UpdateUserMutation.ts";
+import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation.ts";
+import { LogOutMutation } from "./mutations/LogOutMutation.ts";
+import { RevokeSessionMutation } from "./mutations/RevokeSessionMutation.ts";
 import { createSecureServer } from "node:http2";
 import { Db } from "mongodb";
 import fs from "node:fs";
-import queryMap from "./queryMapAuth.json";
-import { RedisClientType } from "@repo/redis-utils/types";
-import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
-import { IS_PRODUCTION } from "@repo/utils/config";
-import { createHandler } from "@repo/graphql-utils/index";
+import queryMap from "./queryMapAuth.json" with { type: "json" };
+import type { RedisClientType } from "@repo/redis-utils";
+import { AccountClient } from "@repo/grpc-utils";
+import { IS_PRODUCTION } from "@repo/utils";
+import { createHandler } from "@repo/graphql-utils";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",

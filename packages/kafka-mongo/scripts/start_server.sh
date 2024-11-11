@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/ec2-user/lerna-monorepo/packages/kafka-mongo-deploy
+cd /home/ec2-user/lerna-monorepo/packages/kafka-mongo
 aws s3 cp s3://lerna-monorepo-secrets/prod/prod.json prod.json
 KAFKA_ID=kafka-mongo
 NODE_ENV=production

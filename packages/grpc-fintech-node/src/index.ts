@@ -1,8 +1,8 @@
 import { MongoClient } from "mongodb";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
-import { MONGO_DB, IS_PRODUCTION, GRPC_FINTECH } from "@repo/utils/config";
-import { AccountService } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
-import { AccountServer } from "@repo/grpc-utils/index";
+import { MONGO_DB, IS_PRODUCTION, GRPC_FINTECH } from "@repo/utils";
+import { AccountService } from "@repo/grpc-utils";
+import { AccountServer } from "@repo/grpc-utils";
 import fs from "node:fs";
 
 MongoClient.connect(MONGO_DB).then(async (mongoClient) => {

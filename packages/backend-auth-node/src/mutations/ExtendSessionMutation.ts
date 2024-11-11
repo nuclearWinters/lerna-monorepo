@@ -1,14 +1,14 @@
 import { mutationWithClientMutationId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLString } from "graphql";
-import { Context } from "../types";
+import type { Context } from "../types.ts";
 import {
   ACCESS_TOKEN_EXP_NUMBER,
   REFRESH_TOKEN_EXP_NUMBER,
   ACCESSSECRET,
   REFRESHSECRET,
   IS_PRODUCTION,
-} from "@repo/utils/config";
-import { jwt } from "@repo/jwt-utils/index";
+} from "@repo/utils";
+import { jwt } from "@repo/jwt-utils";
 import { serialize } from "cookie";
 
 type Payload = {

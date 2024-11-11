@@ -1,9 +1,8 @@
 import { MongoClient } from "mongodb";
 import { createClient } from "redis";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
-import { MONGO_DB, IS_PRODUCTION, REDIS, GRPC_AUTH } from "@repo/utils/config";
-import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { AuthServer } from "@repo/grpc-utils/index";
+import { MONGO_DB, IS_PRODUCTION, REDIS, GRPC_AUTH } from "@repo/utils";
+import { AuthService, AuthServer } from "@repo/grpc-utils";
 import fs from "node:fs";
 
 Promise.all([
