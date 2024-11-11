@@ -7,7 +7,7 @@
     "start": "tsx watch ./src/index.ts",
     "populate": "tsx ./src/populate.ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
-    "serve": "tsx ./src/index.ts",
+    "serve": "./node_modules/tsx/dist/cli.mjs \"./src/index.ts\"",
     "pcm": "lint-staged",
     "test": "jest --bail --detectOpenHandles"
   },
