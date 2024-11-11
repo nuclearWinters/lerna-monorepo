@@ -10,7 +10,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies.
       - corepack enable pnpm
-      - pnpm install --filter --prod "backend-fintech-mongo"
+      - pnpm install --prod --filter "backend-fintech-mongo"
   build:
     commands:
       - echo Build started on `date`
