@@ -21,7 +21,7 @@ const getGRPCClient = () =>
             }
       )
     );
-    client.waitForReady(Date.now() + 5000, (err) => {
+    client.waitForReady(Date.now() + 50_000, (err) => {
       if (err) {
         reject(err);
       } else {
@@ -43,9 +43,38 @@ Promise.all([
   });
   const authdb = mongoClient.db("auth");
   const serverHTTP2 = await main(authdb, redisClient, grpcClient);
+  serverHTTP2.setTimeout(120_000);
+  serverHTTP2.addListener("clientError", (err, socket) => {
+    const now = new Date().toISOString();
+    fs.writeFileSync(
+      `clientError${now}.txt`,
+      `Time: ${now}, Reason: ${err.message}, error: ${err.stack}`
+    );
+    socket.destroy(err);
+  });
+  serverHTTP2.addListener("stream", (stream) =>
+    stream.addListener("error", (err) => {
+      const now = new Date().toISOString();
+      fs.writeFileSync(
+        `streamError${now}.txt`,
+        `Time: ${now}, Reason: ${err.message}, error: ${err.stack}`
+      );
+      stream.destroy(err);
+    })
+  );
   serverHTTP2.on("unknownProtocol", () => {
     const now = new Date().toISOString();
     fs.writeFileSync(`unknownProtocol${now}.txt`, `Time: ${now}`);
+  });
+  serverHTTP2.addListener("sessionError", (err) => {
+    const now = new Date().toISOString();
+    fs.writeFileSync(
+      `sessionError${now}.txt`,
+      `Time: ${now}, Reason: ${err.message}, error: ${err.stack}`
+    );
+  });
+  serverHTTP2.addListener("session", (session) => {
+    session.setTimeout(60_000, () => session.destroy(new Error("TIMEOUT")));
   });
   serverHTTP2.listen(443);
 });
@@ -62,24 +91,6 @@ process
   .on("uncaughtException", (err) => {
     console.log(err);
     const now = new Date().toISOString();
-    if (err.message === "read ECONNRESET") {
-      fs.writeFileSync(
-        `ECONNRESET${now}.txt`,
-        `Time: ${now}, Reason: ${err.message}, error: ${err.stack}`
-      );
-      return;
-    }
-    if (
-      err.message.includes(
-        "routines:ssl3_read_bytes:sslv3 alert bad certificate"
-      )
-    ) {
-      fs.writeFileSync(
-        `BADCERT${now}.txt`,
-        `Time: ${now}, Reason: ${err.message}`
-      );
-      return;
-    }
     fs.writeFileSync(
       `uncaughtExceptionLogs${now}.txt`,
       `Time: ${now}, Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
