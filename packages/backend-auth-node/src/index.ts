@@ -66,13 +66,12 @@ Promise.all([
       stream.destroy(err);
     })
   );
-  serverHTTP2.on("unknownProtocol", (socket) => {
+  serverHTTP2.on("unknownProtocol", () => {
     logErr({
       logGroupName: "backend-auth-node",
       logStreamName: "unknownProtocol",
       message: "unknownProtocol",
     });
-    socket.destroy(new Error("unknownProtocol"));
   });
   serverHTTP2.addListener("sessionError", (err) => {
     logErr({

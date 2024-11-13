@@ -93,13 +93,12 @@ Promise.all([
       stream.destroy(err);
     })
   );
-  serverHTTP2.on("unknownProtocol", (socket) => {
+  serverHTTP2.on("unknownProtocol", () => {
     logErr({
       logGroupName: "backend-fintech-mongo",
       logStreamName: "unknownProtocol",
       message: "unknownProtocol",
     });
-    socket.destroy(new Error("unknownProtocol"));
   });
   serverHTTP2.addListener("sessionError", (err) => {
     logErr({
