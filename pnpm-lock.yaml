@@ -150,6 +150,9 @@ importers:
       '@repo/kafka-utils':
         specifier: workspace:*
         version: link:../repo-kafka-utils
+      '@repo/logs-utils':
+        specifier: workspace:*
+        version: link:../repo-logs-utils
       '@repo/mongo-utils':
         specifier: workspace:*
         version: link:../repo-mongo-utils
@@ -199,9 +202,6 @@ importers:
       '@repo/jest-presets':
         specifier: workspace:*
         version: link:../jest-presets
-      '@repo/logs-utils':
-        specifier: workspace:*
-        version: link:../repo-logs-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

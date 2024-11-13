@@ -35,12 +35,12 @@
     "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
     "mongodb": "^6.10.0",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "@repo/logs-utils": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",
     "@repo/jest-presets": "workspace:*",
-    "@repo/logs-utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@shelf/jest-mongodb": "^4.3.2",
     "@testcontainers/kafka": "^10.14.0",
