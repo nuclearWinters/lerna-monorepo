@@ -12,7 +12,7 @@ import { parse } from "cookie";
 import type { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import { jwtMiddleware } from "@repo/grpc-utils";
 import type { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 import type { Context } from "./types.ts";
 
 export const getContextSSE = async (

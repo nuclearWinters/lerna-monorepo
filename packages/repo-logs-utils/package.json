@@ -2,14 +2,14 @@
   "name": "@repo/logs-utils",
   "version": "1.0.1",
   "description": "Backend typescript express relay mongodb",
+  "type": "module",
   "exports": {
-    "./index": {
+    ".": {
       "types": "./src/index.ts",
-      "default": "./build/index.js"
+      "default": "./src/index.ts"
     }
   },
   "scripts": {
-    "build": "(tsc || ./node_modules/typescript/bin/tsc)",
     "pcm": "lint-staged",
     "test": "jest --bail",
     "lint": "(tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0) || (./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0)"
@@ -34,8 +34,8 @@
     ]
   },
   "dependencies": {
-    "aws-sdk": "^2.1691.0",
-    "typescript": "^5.6.3",
-    "@repo/typescript-config": "workspace:*"
+    "@aws-sdk/client-cloudwatch-logs": "^3.687.0",
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.6.3"
   }
 }

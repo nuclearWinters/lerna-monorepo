@@ -1,3 +1,3 @@
-import config from "@repo/eslint-8-config"
+import config from "@repo/eslint-8-config/server.mjs";
 
-export default config
+export default config;

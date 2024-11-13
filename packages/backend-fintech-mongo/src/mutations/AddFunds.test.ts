@@ -1,12 +1,18 @@
 import { main } from "../app.ts";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectId } from "mongodb";
+import { type Db, MongoClient, ObjectId } from "mongodb";
 import { type Consumer, Kafka, type Producer } from "kafkajs";
-import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
-import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
+import {
+  type StartedRedisContainer,
+  RedisContainer,
+} from "@testcontainers/redis";
+import {
+  KafkaContainer,
+  type StartedKafkaContainer,
+} from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, type RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent.js";
+import type TestAgent from "supertest/lib/agent.js";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
@@ -91,7 +97,7 @@ describe("AddFunds tests", () => {
     const options: RedisOptions = {
       host: startedRedisContainer.getConnectionUrl(),
       port: 6379,
-      retryStrategy: () => 10000,
+      retryStrategy: () => 10_000,
     };
     ioredisPublisherClient = new Redis(options);
     ioredisSubscriberClient = new Redis(options);
@@ -115,7 +121,7 @@ describe("AddFunds tests", () => {
     request = supertest(server, { http2: true });
     consumer = kafka.consumer({ groupId: "test-group" });
     await runKafkaConsumer(consumer, producer, dbInstanceFintech, pubsub);
-  }, 20000);
+  }, 20_000);
 
   afterAll(async () => {
     grpcClient.close();
@@ -127,7 +133,7 @@ describe("AddFunds tests", () => {
     await startedKafkaContainer.stop();
     await mongoClient.close();
     await delay();
-  }, 10000);
+  }, 10_000);
 
   it("test AddFunds increase valid access token", async () => {
     const { users } = getFintechCollections(dbInstanceFintech);
@@ -136,9 +142,9 @@ describe("AddFunds tests", () => {
     await users.insertOne({
       _id: user_oid,
       id,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
     });
     const { refreshToken, accessToken } = getValidTokens({
@@ -176,13 +182,13 @@ describe("AddFunds tests", () => {
     }
     expect(user).toEqual({
       _id: user_oid,
-      account_available: 150000,
+      account_available: 1_500_00,
       account_to_be_paid: 0,
-      account_total: 150000,
+      account_total: 1_500_00,
       account_withheld: 0,
       id,
     });
-  }, 10000);
+  }, 10_000);
 
   it("test AddFunds decrease valid access token", async () => {
     const { users } = getFintechCollections(dbInstanceFintech);
@@ -191,9 +197,9 @@ describe("AddFunds tests", () => {
     await users.insertOne({
       _id: user_oid,
       id,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
     });
     const { refreshToken, accessToken } = getValidTokens({
@@ -231,13 +237,13 @@ describe("AddFunds tests", () => {
     }
     expect(user).toEqual({
       _id: user_oid,
-      account_available: 50000,
+      account_available: 500_00,
       account_to_be_paid: 0,
-      account_total: 50000,
+      account_total: 500_00,
       account_withheld: 0,
       id,
     });
-  }, 10000);
+  }, 10_000);
 
   it("test AddFunds increase invalid access token and valid refresh token", async () => {
     const { users } = getFintechCollections(dbInstanceFintech);
@@ -246,9 +252,9 @@ describe("AddFunds tests", () => {
     await users.insertOne({
       _id: user_oid,
       id,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
     });
     const { refreshToken, accessToken } = getValidTokens({
@@ -289,13 +295,13 @@ describe("AddFunds tests", () => {
     }
     expect(user).toEqual({
       _id: user_oid,
-      account_available: 150000,
+      account_available: 1_500_00,
       account_to_be_paid: 0,
-      account_total: 150000,
+      account_total: 1_500_00,
       account_withheld: 0,
       id,
     });
-  }, 10000);
+  }, 10_000);
 
   it("test AddFunds try decrease more than available valid refresh token", async () => {
     const { users } = getFintechCollections(dbInstanceFintech);
@@ -304,9 +310,9 @@ describe("AddFunds tests", () => {
     await users.insertOne({
       _id: user_oid,
       id,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
     });
     const { refreshToken, accessToken } = getValidTokens({
@@ -344,13 +350,13 @@ describe("AddFunds tests", () => {
     }
     expect(user).toEqual({
       _id: user_oid,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
       id,
     });
-  }, 10000);
+  }, 10_000);
 
   it("test AddFunds try increase cero valid refresh token", async () => {
     const user_oid = new ObjectId();
@@ -359,9 +365,9 @@ describe("AddFunds tests", () => {
     await users.insertOne({
       _id: user_oid,
       id,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
     });
     const { refreshToken, accessToken } = getValidTokens({
@@ -399,11 +405,11 @@ describe("AddFunds tests", () => {
     }
     expect(user).toEqual({
       _id: user_oid,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
       id,
     });
-  }, 20000);
+  }, 20_000);
 });

@@ -1,9 +1,12 @@
 import { addMonths, startOfDay } from "date-fns";
-import { Db, MongoClient, ObjectId } from "mongodb";
+import { type Db, MongoClient, ObjectId } from "mongodb";
 import { getFintechCollections } from "@repo/mongo-utils";
 import { type Admin, Kafka, type Producer } from "kafkajs";
 import { monthFunction } from "./cronJobMonth.ts";
-import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
+import {
+  KafkaContainer,
+  type StartedKafkaContainer,
+} from "@testcontainers/kafka";
 import { KAFKA_ID } from "@repo/utils";
 
 describe("cronJobs tests", () => {
@@ -48,14 +51,14 @@ describe("cronJobs tests", () => {
     });
     producer = kafka.producer();
     await producer.connect();
-  }, 30000);
+  }, 30_000);
 
   afterAll(async () => {
     await producer.disconnect();
     await admin.disconnect();
     await startedKafkaContainer.stop();
     await mongoClient.close();
-  }, 10000);
+  }, 10_000);
 
   it("monthFunction test", async () => {
     const { users, loans, investments, scheduledPayments } =
@@ -72,15 +75,15 @@ describe("cronJobs tests", () => {
       {
         _id: user1_oid,
         id: user1_id,
-        account_available: 1000000,
+        account_available: 10_000_00,
         account_to_be_paid: 0,
-        account_total: 1000000,
+        account_total: 10_000_00,
         account_withheld: 0,
       },
       {
         _id: user2_oid,
         id: user2_id,
-        account_available: 100000,
+        account_available: 1_000_00,
         account_to_be_paid: 203956,
         account_total: 303956,
         account_withheld: 0,
@@ -154,10 +157,10 @@ describe("cronJobs tests", () => {
         user_id: user1_id,
         score: "AAA",
         roi: 17,
-        goal: 100000,
+        goal: 1_000_00,
         expiry: now,
         term: 2,
-        raised: 100000,
+        raised: 1_000_00,
         status: "to be paid",
         pending: 0,
         payments_delayed: 0,
@@ -168,10 +171,10 @@ describe("cronJobs tests", () => {
         user_id: user1_id,
         score: "AAA",
         roi: 17,
-        goal: 100000,
+        goal: 1_000_00,
         expiry: now,
         term: 2,
-        raised: 100000,
+        raised: 1_000_00,
         status: "to be paid",
         pending: 0,
         payments_delayed: 0,
@@ -182,7 +185,7 @@ describe("cronJobs tests", () => {
         user_id: user4_id,
         score: "AAA",
         roi: 17,
-        goal: 100000,
+        goal: 1_000_00,
         expiry: now,
         term: 2,
         raised: 0,
@@ -196,10 +199,10 @@ describe("cronJobs tests", () => {
         user_id: user3_id,
         score: "AAA",
         roi: 17,
-        goal: 100000,
+        goal: 1_000_00,
         expiry: now,
         term: 2,
-        raised: 100000,
+        raised: 1_000_00,
         status: "to be paid",
         pending: 0,
         payments_delayed: 0,
@@ -215,7 +218,7 @@ describe("cronJobs tests", () => {
         borrower_id: user1_id,
         lender_id: user2_id,
         loan_oid: loan1_oid,
-        quantity: 100000,
+        quantity: 1_000_00,
         status: "up to date",
         created_at: now,
         updated_at: now,
@@ -234,7 +237,7 @@ describe("cronJobs tests", () => {
         borrower_id: user1_id,
         lender_id: user2_id,
         loan_oid: loan2_oid,
-        quantity: 100000,
+        quantity: 1_000_00,
         status: "up to date",
         created_at: now,
         updated_at: now,
@@ -253,7 +256,7 @@ describe("cronJobs tests", () => {
         borrower_id: user3_id,
         lender_id: user2_id,
         loan_oid: loan4_oid,
-        quantity: 100000,
+        quantity: 1_000_00,
         status: "up to date",
         created_at: now,
         updated_at: now,
@@ -269,7 +272,7 @@ describe("cronJobs tests", () => {
       },
     ]);
     await monthFunction(dbInstanceFintech, producer);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
     const count = await admin.fetchTopicOffsets("user-transaction");
     expect(count[0].offset).toBe("3");
   });

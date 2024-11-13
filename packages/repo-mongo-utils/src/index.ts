@@ -1,4 +1,4 @@
-import { Db } from "mongodb";
+import type { Db } from "mongodb";
 import type {
   AuthUserLogins,
   AuthUserMongo,

@@ -1,11 +1,14 @@
 import { main } from "./app.ts";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectId } from "mongodb";
-import TestAgent from "supertest/lib/agent.js";
-import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import { type Db, MongoClient, ObjectId } from "mongodb";
+import type TestAgent from "supertest/lib/agent.js";
+import {
+  RedisContainer,
+  type StartedRedisContainer,
+} from "@testcontainers/redis";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import { Producer } from "kafkajs";
+import type { Producer } from "kafkajs";
 import { createClient } from "redis";
 import { serialize } from "cookie";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
@@ -89,7 +92,7 @@ describe("QueryLoans tests", () => {
         user_id,
         score: "AAA",
         roi: 17,
-        goal: 100000,
+        goal: 1_000_00,
         term: 3,
         raised: 0,
         status: "to be paid",
@@ -103,7 +106,7 @@ describe("QueryLoans tests", () => {
         user_id,
         score: "BBB",
         roi: 20,
-        goal: 50000,
+        goal: 500_00,
         term: 3,
         raised: 0,
         status: "waiting for approval",
@@ -117,7 +120,7 @@ describe("QueryLoans tests", () => {
         user_id,
         score: "CCC",
         roi: 24,
-        goal: 150000,
+        goal: 1_500_00,
         term: 3,
         raised: 0,
         status: "financing",
@@ -131,7 +134,7 @@ describe("QueryLoans tests", () => {
         user_id,
         score: "CCC",
         roi: 24,
-        goal: 150000,
+        goal: 1_500_00,
         term: 3,
         raised: 0,
         status: "financing",
@@ -145,7 +148,7 @@ describe("QueryLoans tests", () => {
         user_id,
         score: "CCC",
         roi: 24,
-        goal: 150000,
+        goal: 1_500_00,
         term: 3,
         raised: 0,
         status: "financing",

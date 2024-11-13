@@ -16,6 +16,7 @@ import {
 } from "@repo/utils";
 import { AuthClient } from "@repo/grpc-utils";
 import fs from "node:fs";
+import { logErr } from "@repo/logs-utils";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,
@@ -34,7 +35,7 @@ const kafka = new Kafka({
 const producer = kafka.producer();
 
 const retryStrategy = (times: number) => {
-  return Math.min(times * 50, 2000);
+  return Math.min(times * 50, 2_000);
 };
 
 const pubsub = new RedisPubSub({
@@ -75,33 +76,37 @@ Promise.all([
   const serverHTTP2 = await main(db, producer, grpcClient, pubsub);
   serverHTTP2.setTimeout(120_000);
   serverHTTP2.addListener("clientError", (err, socket) => {
-    const now = new Date().toISOString();
-    fs.writeFileSync(
-      `clientError${now}.txt`,
-      `Time: ${now}, Reason: ${err.message}, error: ${err.stack}`
-    );
+    logErr({
+      logGroupName: "backend-fintech-mongo",
+      logStreamName: "serverClientError",
+      message: `Reason: ${err.message}, error: ${err.stack}`,
+    });
     socket.destroy(err);
   });
   serverHTTP2.addListener("stream", (stream) =>
     stream.addListener("error", (err) => {
-      const now = new Date().toISOString();
-      fs.writeFileSync(
-        `streamError${now}.txt`,
-        `Time: ${now}, Reason: ${err.message}, error: ${err.stack}`
-      );
+      logErr({
+        logGroupName: "backend-fintech-mongo",
+        logStreamName: "serverStreamError",
+        message: `Reason: ${err.message}, error: ${err.stack}`,
+      });
       stream.destroy(err);
     })
   );
-  serverHTTP2.on("unknownProtocol", () => {
-    const now = new Date().toISOString();
-    fs.writeFileSync(`unknownProtocol${now}.txt`, `Time: ${now}`);
+  serverHTTP2.on("unknownProtocol", (socket) => {
+    logErr({
+      logGroupName: "backend-fintech-mongo",
+      logStreamName: "unknownProtocol",
+      message: "unknownProtocol",
+    });
+    socket.destroy(new Error("unknownProtocol"));
   });
   serverHTTP2.addListener("sessionError", (err) => {
-    const now = new Date().toISOString();
-    fs.writeFileSync(
-      `sessionError${now}.txt`,
-      `Time: ${now}, Reason: ${err.message}, error: ${err.stack}`
-    );
+    logErr({
+      logGroupName: "backend-fintech-mongo",
+      logStreamName: "serverSessionError",
+      message: `Reason: ${err.message}, error: ${err.stack}`,
+    });
   });
   serverHTTP2.addListener("session", (session) => {
     session.setTimeout(60_000, () => session.destroy(new Error("TIMEOUT")));
@@ -111,36 +116,18 @@ Promise.all([
 
 process
   .on("unhandledRejection", (reason) => {
-    const now = new Date().toISOString();
-    fs.writeFileSync(
-      `unhandledRejectionLogs${now}.txt`,
-      `Time: ${now}, Reason: ${String(reason)}`
-    );
+    logErr({
+      logGroupName: "backend-fintech-mongo",
+      logStreamName: "unhandledRejection",
+      message: String(reason),
+    });
     process.exit(1);
   })
   .on("uncaughtException", (err) => {
-    const now = new Date().toISOString();
-    if (err.message === "read ECONNRESET") {
-      fs.writeFileSync(
-        `ECONNRESET${now}.txt`,
-        `Time: ${now}, Reason: ${err.message}, error: ${err.stack}`
-      );
-      return;
-    }
-    if (
-      err.message.includes(
-        "routines:ssl3_read_bytes:sslv3 alert bad certificate"
-      )
-    ) {
-      fs.writeFileSync(
-        `BADCERT${now}.txt`,
-        `Time: ${now}, Reason: ${err.message}`
-      );
-      return;
-    }
-    fs.writeFileSync(
-      `uncaughtExceptionLogs${now}.txt`,
-      `Time: ${now}, Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
-    );
+    logErr({
+      logGroupName: "backend-fintech-mongo",
+      logStreamName: "uncaughtException",
+      message: `Message: ${err.message}, Stack: ${err.stack}`,
+    });
     process.exit(1);
   });

@@ -1,11 +1,14 @@
 import { main } from "../app.ts";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectId } from "mongodb";
-import { Producer } from "kafkajs";
-import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
+import { type Db, MongoClient, ObjectId } from "mongodb";
+import type { Producer } from "kafkajs";
+import {
+  type StartedRedisContainer,
+  RedisContainer,
+} from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { Redis, RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent.js";
+import { Redis, type RedisOptions } from "ioredis";
+import type TestAgent from "supertest/lib/agent.js";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { base64Name } from "@repo/utils";
 import { getValidTokens } from "@repo/jwt-utils";
@@ -50,7 +53,7 @@ describe("ApproveLoan tests", () => {
     const options: RedisOptions = {
       host: startedRedisContainer.getConnectionUrl(),
       port: 6379,
-      retryStrategy: () => 10000,
+      retryStrategy: () => 10_000,
     };
     ioredisPublisherClient = new Redis(options);
     ioredisSubscriberClient = new Redis(options);
@@ -58,7 +61,7 @@ describe("ApproveLoan tests", () => {
       publisher: ioredisPublisherClient,
       subscriber: ioredisSubscriberClient,
     });
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 5_000));
     grpcServer = new Server();
     grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
     grpcServer.bindAsync(
@@ -73,7 +76,7 @@ describe("ApproveLoan tests", () => {
     grpcClient = new AuthClient(`0.0.0.0:1987`, credentials.createInsecure());
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
-  }, 20000);
+  }, 20_000);
 
   afterAll(async () => {
     grpcClient.close();
@@ -81,7 +84,7 @@ describe("ApproveLoan tests", () => {
     await redisClient.disconnect();
     await startedRedisContainer.stop();
     await mongoClient.close();
-  }, 10000);
+  }, 10_000);
 
   it("test ApproveLoan valid access token", async () => {
     const { users, loans } = getFintechCollections(dbInstanceFintech);
@@ -94,17 +97,17 @@ describe("ApproveLoan tests", () => {
       {
         _id: support_oid,
         id: support_id,
-        account_available: 100000,
+        account_available: 1_000_00,
         account_to_be_paid: 0,
-        account_total: 100000,
+        account_total: 1_000_00,
         account_withheld: 0,
       },
       {
         _id: borrower_oid,
         id: borrower_id,
-        account_available: 100000,
+        account_available: 1_000_00,
         account_to_be_paid: 0,
-        account_total: 100000,
+        account_total: 1_000_00,
         account_withheld: 0,
       },
     ]);
@@ -113,7 +116,7 @@ describe("ApproveLoan tests", () => {
       user_id: borrower_id,
       score: "AAA",
       roi: 17,
-      goal: 100000,
+      goal: 1_000_00,
       term: 2,
       raised: 0,
       expiry: new Date(),
@@ -157,9 +160,9 @@ describe("ApproveLoan tests", () => {
     expect(user).toEqual({
       _id: support_oid,
       id: support_id,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
     });
     const allLoans = await loans.find({ _id: loan_oid }).toArray();
@@ -178,7 +181,7 @@ describe("ApproveLoan tests", () => {
       {
         ROI: 17,
         user_id: borrower_id,
-        goal: 100000,
+        goal: 1_000_00,
         raised: 0,
         score: "AAA",
         status: "financing",

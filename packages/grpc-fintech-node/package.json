@@ -23,13 +23,13 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "redis": "^4.7.0",
-    "tsx" :"^4.19.2"
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",
     "@repo/jest-presets": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@testcontainers/redis": "^10.13.2",
+    "@testcontainers/redis": "^10.14.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.7",

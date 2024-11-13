@@ -21,13 +21,13 @@ export const CheckExpiration: FC = () => {
     let timerRefreshID: number;
     const resetTimer = () => {
       clearTimeout(timerLogoutID);
-      timerLogoutID = setTimeout(logout, 1000 * 60 * 5);
+      timerLogoutID = setTimeout(logout, 1_000 * 60 * 5);
     };
     if (userData) {
       const { refreshTokenExpireTime } = userData;
       const now = Date.now();
-      const expireTime = refreshTokenExpireTime * 1000;
-      const refreshSessionTime = expireTime - 30 * 1000;
+      const expireTime = refreshTokenExpireTime * 1_000;
+      const refreshSessionTime = expireTime - 30 * 1_000;
       const timeoutDelay = refreshSessionTime - now;
       if (now < refreshSessionTime) {
         timerRefreshID = setTimeout(() => {
@@ -49,8 +49,8 @@ export const CheckExpiration: FC = () => {
           if (userData) {
             const { refreshTokenExpireTime } = userData;
             const now = Date.now();
-            const expireTime = refreshTokenExpireTime * 1000;
-            const refreshSessionTime = expireTime - 30 * 1000;
+            const expireTime = refreshTokenExpireTime * 1_000;
+            const refreshSessionTime = expireTime - 30 * 1_000;
             const timeoutDelay = refreshSessionTime - now;
             if (now < refreshSessionTime) {
               clearTimeout(timerRefreshID);

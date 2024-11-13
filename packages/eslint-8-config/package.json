@@ -6,8 +6,8 @@
     "server.mjs"
   ],
   "devDependencies": {
-    "typescript-eslint": "^8.13.0",
     "@eslint/js": "^9.14.0",
-    "@types/eslint__js": "^8.42.3"
+    "@types/eslint__js": "^8.42.3",
+    "typescript-eslint": "^8.14.0"
   }
 }

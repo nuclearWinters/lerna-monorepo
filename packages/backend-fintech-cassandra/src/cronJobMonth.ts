@@ -1,5 +1,5 @@
 import { Client } from "cassandra-driver";
-import { Producer } from "kafkajs";
+import type { Producer } from "kafkajs";
 
 export const monthFunction = async (
   client: Client,

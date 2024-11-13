@@ -1,4 +1,4 @@
-import { Db } from "mongodb";
+import type { Db } from "mongodb";
 import type { LoanMongo, ScheduledPaymentsMongo } from "@repo/mongo-utils";
 import type { Producer } from "kafkajs";
 import { endOfDay, startOfDay } from "date-fns";

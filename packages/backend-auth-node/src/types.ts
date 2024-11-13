@@ -1,7 +1,7 @@
-import { Collection } from "mongodb";
-import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
+import type { Collection } from "mongodb";
+import type { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import type { RedisClientType } from "@repo/redis-utils";
-import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import type { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import type { UUID } from "node:crypto";
 import type {
   AuthUserLogins,

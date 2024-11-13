@@ -1,5 +1,5 @@
 import type { Consumer, Producer } from "kafkajs";
-import { Db } from "mongodb";
+import type { Db } from "mongodb";
 import type {
   InvestmentMongo,
   LoanMongo,
@@ -11,7 +11,7 @@ import type {
 import { LoanTransaction } from "./kafkaLoanTransaction.ts";
 import { UserTransaction } from "./kafkaUserTransaction.ts";
 import { AddLends } from "./kafkaLendTransaction.ts";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 
 export const runKafkaConsumer = async (
   consumer: Consumer,

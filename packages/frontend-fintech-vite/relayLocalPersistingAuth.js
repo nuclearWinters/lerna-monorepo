@@ -1,5 +1,5 @@
 import http from "http";
-import crypto from "crypto";
+import crypto from "node:crypto";
 import fs from "fs";
 
 function md5(input) {

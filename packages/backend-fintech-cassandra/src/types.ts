@@ -1,5 +1,5 @@
 import { Client, mapping } from "cassandra-driver";
-import { Producer } from "kafkajs";
+import type { Producer } from "kafkajs";
 
 export interface Context {
   client: Client;

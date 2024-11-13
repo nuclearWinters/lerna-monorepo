@@ -14,7 +14,7 @@ import {
   LOAN_UPDATE,
   MY_LOAN_INSERT,
 } from "./subscriptions.ts";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 
 export const publishUser = (user: FintechUserMongo, pubsub: RedisPubSub) => {
   pubsub.publish(USER, {

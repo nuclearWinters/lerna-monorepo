@@ -1,4 +1,4 @@
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 import type { Producer } from "kafkajs";
 import type { Collection } from "mongodb";
 import type {

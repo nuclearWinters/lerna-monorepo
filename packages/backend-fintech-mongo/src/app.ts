@@ -17,14 +17,15 @@ import {
 import { ApproveLoanMutation } from "./mutations/ApproveLoan.ts";
 import { QueryScheduledPayments } from "./QueryScheduledPayments.ts";
 import { createSecureServer } from "node:http2";
-import { Db } from "mongodb";
+import type { Db } from "mongodb";
 import type { Producer } from "kafkajs";
 import fs from "node:fs";
 import queryMap from "./queryMap.json" with { type: "json" };
-import { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import type { AuthClient } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 import { IS_PRODUCTION } from "@repo/utils";
 import { createHandler } from "@repo/graphql-utils";
+import { logErr } from "@repo/logs-utils";
 
 const Query = new GraphQLObjectType({
   name: "Query",
@@ -132,14 +133,18 @@ const main = async (
           res.writeHead(200).end();
         }
       } catch (err) {
-        const now = new Date().toISOString();
         if (err instanceof Error) {
-          fs.writeFileSync(
-            `serverError${now}.txt`,
-            `Time: ${now}, Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
-          );
+          logErr({
+            logGroupName: "backend-fintech-mongo",
+            logStreamName: "requestError",
+            message: `Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`,
+          });
         } else {
-          fs.writeFileSync(`errorUnknown${now}.txt`, `Time: ${now}`);
+          logErr({
+            logGroupName: "backend-fintech-mongo",
+            logStreamName: "requestError",
+            message: "Message: Unknown error",
+          });
         }
         res.writeHead(500).end();
       }

@@ -1,9 +1,15 @@
 import { main } from "../app.ts";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectId } from "mongodb";
+import { type Db, MongoClient, ObjectId } from "mongodb";
 import { type Consumer, Kafka, type Producer } from "kafkajs";
-import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
-import { KafkaContainer, StartedKafkaContainer } from "@testcontainers/kafka";
+import {
+  type StartedRedisContainer,
+  RedisContainer,
+} from "@testcontainers/redis";
+import {
+  KafkaContainer,
+  type StartedKafkaContainer,
+} from "@testcontainers/kafka";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis, type RedisOptions } from "ioredis";
 import { serialize } from "cookie";
@@ -12,13 +18,13 @@ import { createClient } from "redis";
 import { KAFKA_ID } from "@repo/utils";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { base64Name, delay } from "@repo/utils";
-import { getValidTokens, jwt } from "@repo/jwt-utils";
+import { getValidTokens } from "@repo/jwt-utils";
 import type { RedisClientType } from "@repo/redis-utils";
 import { AuthServer, AuthClient } from "@repo/grpc-utils";
 import { runKafkaConsumer } from "@repo/kafka-utils";
 import { getFintechCollections } from "@repo/mongo-utils";
 import { addMonths } from "date-fns";
-import TestAgent from "supertest/lib/agent.js";
+import type TestAgent from "supertest/lib/agent.js";
 
 describe("AddLends one lend and loan no completed goal", () => {
   let mongoClient: MongoClient;
@@ -84,7 +90,7 @@ describe("AddLends one lend and loan no completed goal", () => {
     const options: RedisOptions = {
       host: startedRedisContainer.getConnectionUrl(),
       port: 6379,
-      retryStrategy: () => 10000,
+      retryStrategy: () => 10_000,
     };
     ioredisPublisherClient = new Redis(options);
     ioredisSubscriberClient = new Redis(options);
@@ -108,7 +114,7 @@ describe("AddLends one lend and loan no completed goal", () => {
     request = supertest(server, { http2: true });
     consumer = kafka.consumer({ groupId: "test-group" });
     await runKafkaConsumer(consumer, producer, dbInstanceFintech, pubsub);
-  }, 20000);
+  }, 20_000);
 
   afterAll(async () => {
     grpcClient.close();
@@ -119,7 +125,7 @@ describe("AddLends one lend and loan no completed goal", () => {
     await consumer.disconnect();
     await startedKafkaContainer.stop();
     await mongoClient.close();
-  }, 10000);
+  }, 10_000);
 
   it("test AddLends valid access token", async () => {
     const { users, loans, records, investments } =
@@ -132,24 +138,24 @@ describe("AddLends one lend and loan no completed goal", () => {
     await users.insertOne({
       _id: user1_oid,
       id: user1_id,
-      account_available: 10000,
+      account_available: 100_00,
       account_to_be_paid: 0,
-      account_total: 10000,
+      account_total: 100_00,
       account_withheld: 0,
     });
     await users.insertOne({
       _id: user2_oid,
       id: user2_id,
-      account_available: 10000,
+      account_available: 100_00,
       account_to_be_paid: 0,
-      account_total: 10000,
+      account_total: 100_00,
       account_withheld: 0,
     });
     await investments.insertOne({
       borrower_id: user2_id,
       lender_id: user1_id,
       loan_oid: loan1_oid,
-      quantity: 10000,
+      quantity: 100_00,
       created_at: new Date(),
       updated_at: new Date(),
       status: "financing",
@@ -168,13 +174,13 @@ describe("AddLends one lend and loan no completed goal", () => {
       _id: loan1_oid,
       user_id: user2_id,
       score: "AAA",
-      raised: 4990000,
+      raised: 49_900_00,
       expiry,
       roi: 17,
-      goal: 5000000,
+      goal: 50_000_00,
       term: 5,
       status: "financing",
-      pending: 10000,
+      pending: 100_00,
       payments_delayed: 0,
       payments_done: 0,
     });
@@ -211,7 +217,7 @@ describe("AddLends one lend and loan no completed goal", () => {
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
     expect(data.data.addLends.error).toBeFalsy();
-    await delay(1000);
+    await delay(1_000);
     const recordsResult = await records.find().toArray();
     expect(recordsResult.length).toBe(7);
     expect(
@@ -262,9 +268,9 @@ describe("AddLends one lend and loan no completed goal", () => {
     expect(user2).toEqual({
       _id: user2_oid,
       id: user2_id,
-      account_available: 5010000,
+      account_available: 50_100_00,
       account_to_be_paid: 0,
-      account_total: 5010000,
+      account_total: 50_100_00,
       account_withheld: 0,
     });
     const loan1 = await loans.findOne({ _id: loan1_oid });
@@ -272,10 +278,10 @@ describe("AddLends one lend and loan no completed goal", () => {
       _id: loan1_oid,
       user_id: user2_id,
       score: "AAA",
-      raised: 5000000,
+      raised: 50_000_00,
       expiry,
       roi: 17,
-      goal: 5000000,
+      goal: 50_000_00,
       term: 5,
       status: "to be paid",
       pending: 0,
@@ -301,7 +307,7 @@ describe("AddLends one lend and loan no completed goal", () => {
         borrower_id: user2_id,
         lender_id: user1_id,
         loan_oid: loan1_oid,
-        quantity: 10000,
+        quantity: 100_00,
         status: "up to date",
         status_type: "on_going",
         roi: 17,

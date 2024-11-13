@@ -7,7 +7,7 @@ import {
 } from "./types";
 import { Request } from "express";
 import { Client, mapping } from "cassandra-driver";
-import { Producer } from "kafkajs";
+import type { Producer } from "kafkajs";
 
 export const getContext = async (req: Request): Promise<Context> => {
   const client = req.app.locals.client as Client;

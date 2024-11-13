@@ -8,13 +8,14 @@ import { ExtendSessionMutation } from "./mutations/ExtendSessionMutation.ts";
 import { LogOutMutation } from "./mutations/LogOutMutation.ts";
 import { RevokeSessionMutation } from "./mutations/RevokeSessionMutation.ts";
 import { createSecureServer } from "node:http2";
-import { Db } from "mongodb";
+import type { Db } from "mongodb";
 import fs from "node:fs";
 import queryMap from "./queryMapAuth.json" with { type: "json" };
 import type { RedisClientType } from "@repo/redis-utils";
-import { AccountClient } from "@repo/grpc-utils";
+import type { AccountClient } from "@repo/grpc-utils";
 import { IS_PRODUCTION } from "@repo/utils";
 import { createHandler } from "@repo/graphql-utils";
+import { logErr } from "@repo/logs-utils";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -94,14 +95,18 @@ const main = async (
           res.writeHead(200).end();
         }
       } catch (err) {
-        const now = new Date().toISOString();
         if (err instanceof Error) {
-          fs.writeFileSync(
-            `serverError${now}.txt`,
-            `Time: ${now}, Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`
-          );
+          logErr({
+            logGroupName: "backend-auth-node",
+            logStreamName: "requestError",
+            message: `Name: ${err.name}, Message: ${err.message}, Stack: ${err.stack}`,
+          });
         } else {
-          fs.writeFileSync(`errorUnknown${now}.txt`, `Time: ${now}`);
+          logErr({
+            logGroupName: "backend-auth-node",
+            logStreamName: "requestError",
+            message: "Message: Unknown error",
+          });
         }
         res.writeHead(500).end();
       }

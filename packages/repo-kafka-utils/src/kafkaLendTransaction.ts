@@ -5,7 +5,7 @@ import type {
   RecordsMongo,
 } from "@repo/mongo-utils";
 import {
-  Collection,
+  type Collection,
   type InsertOneResult,
   ObjectId,
   type UpdateResult,

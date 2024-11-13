@@ -1,12 +1,15 @@
 import { main } from "./app.ts";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectId } from "mongodb";
-import { TransactionMongo, FintechUserMongo } from "@repo/mongo-utils";
-import TestAgent from "supertest/lib/agent.js";
-import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import { type Db, MongoClient, ObjectId } from "mongodb";
+import type { TransactionMongo, FintechUserMongo } from "@repo/mongo-utils";
+import type TestAgent from "supertest/lib/agent.js";
+import {
+  RedisContainer,
+  type StartedRedisContainer,
+} from "@testcontainers/redis";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import { Producer } from "kafkajs";
+import type { Producer } from "kafkajs";
 import { createClient } from "redis";
 import { serialize } from "cookie";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
@@ -58,7 +61,7 @@ describe("QueryTransactions tests", () => {
     grpcClient = new AuthClient("0.0.0.0:1985", credentials.createInsecure());
     const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
     request = supertest(server, { http2: true });
-  }, 20000);
+  }, 20_000);
 
   afterAll(async () => {
     grpcClient.close();
@@ -66,7 +69,7 @@ describe("QueryTransactions tests", () => {
     await redisClient.disconnect();
     await startedRedisContainer.stop();
     await mongoClient.close();
-  }, 10000);
+  }, 10_000);
 
   it("test TransactionsConnection valid access token", async () => {
     const transactions =

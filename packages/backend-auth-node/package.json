@@ -17,12 +17,12 @@
   "author": "Armando Rueda",
   "license": "ISC",
   "dependencies": {
-    "@repo/mongo-utils": "workspace:*",
     "@grpc/grpc-js": "^1.12.2",
     "@repo/graphql-utils": "workspace:*",
     "@repo/grpc-utils": "workspace:*",
     "@repo/jwt-utils": "workspace:*",
     "@repo/logs-utils": "workspace:*",
+    "@repo/mongo-utils": "workspace:*",
     "@repo/redis-utils": "workspace:*",
     "@repo/utils": "workspace:*",
     "bcryptjs": "^2.4.3",
@@ -33,14 +33,15 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "redis": "^4.7.0",
-    "woothee": "1.11.1",
-    "tsx" :"^4.19.2"
+    "tsx": "^4.19.2",
+    "woothee": "1.11.1"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",
     "@repo/jest-presets": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@testcontainers/redis": "^10.13.2",
+    "@shelf/jest-mongodb": "^4.3.2",
+    "@testcontainers/redis": "^10.14.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.7",
@@ -52,8 +53,7 @@
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "supertest": "^7.0.0",
-    "typescript": "^5.6.3",
-    "@shelf/jest-mongodb": "^4.3.2"
+    "typescript": "^5.6.3"
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [

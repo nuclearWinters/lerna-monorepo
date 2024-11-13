@@ -1,5 +1,5 @@
 const http = require("http");
-const crypto = require("crypto");
+const crypto = require("node:crypto");
 const fs = require("fs");
 
 function md5(input) {

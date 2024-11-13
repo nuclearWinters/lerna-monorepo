@@ -54,10 +54,10 @@ export const getValidTokens = ({
   const now = new Date();
   now.setMilliseconds(0);
   const refreshTokenExpireTime =
-    now.getTime() / 1000 +
+    now.getTime() / 1_000 +
     (invalidRefreshToken ? -1 : REFRESH_TOKEN_EXP_NUMBER);
   const accessTokenExpireTime =
-    now.getTime() / 1000 + (invalidAccessToken ? -1 : ACCESS_TOKEN_EXP_NUMBER);
+    now.getTime() / 1_000 + (invalidAccessToken ? -1 : ACCESS_TOKEN_EXP_NUMBER);
   const refreshToken = jwt.sign(
     {
       id,

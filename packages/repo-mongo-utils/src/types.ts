@@ -1,5 +1,5 @@
 import type { UUID } from "node:crypto";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 export interface AuthUserLogins {
   _id?: ObjectId;

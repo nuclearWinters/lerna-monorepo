@@ -1,11 +1,14 @@
 import { main } from "../app.ts";
 import supertest from "supertest";
-import { MongoClient, Db, ObjectId } from "mongodb";
+import { MongoClient, type Db, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { createClient, type RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent.js";
-import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import type TestAgent from "supertest/lib/agent.js";
+import {
+  RedisContainer,
+  type StartedRedisContainer,
+} from "@testcontainers/redis";
+import type { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import type { AuthUserMongo } from "@repo/mongo-utils";
 
 describe("SignInMutation tests", () => {

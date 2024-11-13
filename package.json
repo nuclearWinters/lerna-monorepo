@@ -10,7 +10,6 @@
     "lerna": "^8.1.9"
   },
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
     "populate": "npm run populate --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",

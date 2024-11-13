@@ -11,5 +11,8 @@ KAFKA_USERNAME=`jq ".KAFKA_USERNAME" prod.json | sed -e 's/^"//' -e 's/"$//'`
 KAFKA_PASSWORD=`jq ".KAFKA_PASSWORD" prod.json | sed -e 's/^"//' -e 's/"$//'`
 REDIS=`jq ".REDIS" prod.json | sed -e 's/^"//' -e 's/"$//'`
 GRPC_AUTH=`jq ".GRPC_AUTH" prod.json | sed -e 's/^"//' -e 's/"$//'`
+AWS_MAIN_KEY=`jq ".AWS_MAIN_KEY" prod.json | sed -e 's/^"//' -e 's/"$//'`
+AWS_REGION=`jq ".AWS_REGION" prod.json | sed -e 's/^"//' -e 's/"$//'`
+AWS_MAIN_SECRET=`jq ".AWS_MAIN_SECRET" prod.json | sed -e 's/^"//' -e 's/"$//'`
 rm prod.json
-(GRPC_AUTH=$GRPC_AUTH REDIS=$REDIS MONGO_DB=$MONGO_DB KAFKA_ID=$KAFKA_ID NODE_ENV=$NODE_ENV KAFKA=$KAFKA KAFKA_USERNAME=$KAFKA_USERNAME KAFKA_PASSWORD=$KAFKA_PASSWORD pnpm serve > /dev/null 2> /dev/null < /dev/null &)
+(AWS_MAIN_KEY=$AWS_MAIN_KEY AWS_REGION=$AWS_REGION AWS_MAIN_SECRET=$AWS_MAIN_SECRET GRPC_AUTH=$GRPC_AUTH REDIS=$REDIS MONGO_DB=$MONGO_DB KAFKA_ID=$KAFKA_ID NODE_ENV=$NODE_ENV KAFKA=$KAFKA KAFKA_USERNAME=$KAFKA_USERNAME KAFKA_PASSWORD=$KAFKA_PASSWORD pnpm serve > /dev/null 2> /dev/null < /dev/null &)

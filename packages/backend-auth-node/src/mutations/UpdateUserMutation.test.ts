@@ -1,11 +1,14 @@
 import { main } from "../app.ts";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectId } from "mongodb";
+import { type Db, MongoClient, ObjectId } from "mongodb";
 import { createClient, type RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent.js";
-import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
+import type TestAgent from "supertest/lib/agent.js";
+import {
+  RedisContainer,
+  type StartedRedisContainer,
+} from "@testcontainers/redis";
 import { getValidTokens } from "@repo/jwt-utils";
-import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import type { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import { serialize } from "cookie";
 import type { AuthUserMongo } from "@repo/mongo-utils";
 

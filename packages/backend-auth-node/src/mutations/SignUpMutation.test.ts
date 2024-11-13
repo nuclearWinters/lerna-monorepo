@@ -1,9 +1,12 @@
 import { main } from "../app.ts";
 import supertest from "supertest";
-import { MongoClient, Db, ObjectId } from "mongodb";
-import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
+import { MongoClient, type Db, ObjectId } from "mongodb";
+import {
+  RedisContainer,
+  type StartedRedisContainer,
+} from "@testcontainers/redis";
 import { createClient, type RedisClientType } from "redis";
-import TestAgent from "supertest/lib/agent.js";
+import type TestAgent from "supertest/lib/agent.js";
 import {
   AccountClient,
   AccountService,

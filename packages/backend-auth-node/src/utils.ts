@@ -1,5 +1,5 @@
-import { Db } from "mongodb";
-import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
+import type { Db } from "mongodb";
+import type { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import { parse } from "cookie";
 import {
   ACCESSSECRET,
@@ -8,7 +8,7 @@ import {
 } from "@repo/utils";
 import { jwt } from "@repo/jwt-utils";
 import type { RedisClientType } from "@repo/redis-utils";
-import { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import type { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import type {
   AuthUserLogins,
   AuthUserMongo,
@@ -76,7 +76,7 @@ export const getUser = async (
   const { isBorrower, isLender, isSupport, id } = user;
   const now = new Date();
   now.setMilliseconds(0);
-  const accessTokenExpireTime = now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+  const accessTokenExpireTime = now.getTime() / 1_000 + ACCESS_TOKEN_EXP_NUMBER;
   const validAccessToken = jwt.sign(
     {
       isBorrower,

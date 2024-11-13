@@ -1,6 +1,15 @@
 x-base: &base
   image: node:22
   volumes:
+    - .:/usr/src/service
+    - ./packages/repo-graphql-utils/node_modules:/usr/src/service/packages/repo-graphql-utils/node_modules:ro
+    - ./packages/repo-grpc-utils/node_modules:/usr/src/service/packages/repo-grpc-utils/node_modules:ro
+    - ./packages/repo-jwt-utils/node_modules:/usr/src/service/packages/repo-jwt-utils/node_modules:ro
+    - ./packages/repo-kafka-utils/node_modules:/usr/src/service/packages/repo-kafka-utils/node_modules:ro
+    - ./packages/repo-logs-utils/node_modules:/usr/src/service/packages/repo-logs-utils/node_modules:ro
+    - ./packages/repo-mongo-utils/node_modules:/usr/src/service/packages/repo-mongo-utils/node_modules:ro
+    - ./packages/repo-redis-utils/node_modules:/usr/src/service/packages/repo-redis-utils/node_modules:ro
+    - ./packages/repo-utils/node_modules:/usr/src/service/packages/repo-utils/node_modules:ro
     - lerna-node-modules:/usr/src/service/node_modules
     - backend-auth-node:/usr/src/service/packages/backend-auth-node/node_modules
     - backend-fintech-mongo:/usr/src/service/packages/backend-fintech-mongo/node_modules
@@ -9,7 +18,14 @@ x-base: &base
     - grpc-fintech-node:/usr/src/service/packages/grpc-fintech-node/node_modules
     - kafka-mongo:/usr/src/service/packages/kafka-mongo/node_modules
     - frontend-fintech:/usr/src/service/packages/frontend-fintech/node_modules
-    - .:/usr/src/service/
+    - repo-grpc-utils:/usr/src/service/packages/repo-grpc-utils/node_modules
+    - repo-graphql-utils:/usr/src/service/packages/repo-graphql-utils/node_modules
+    - repo-jwt-utils:/usr/src/service/packages/repo-jwt-utils/node_modules
+    - repo-kafka-utils:/usr/src/service/packages/repo-kafka-utils/node_modules
+    - repo-logs-utils:/usr/src/service/packages/repo-logs-utils/node_modules
+    - repo-mongo-utils:/usr/src/service/packages/repo-mongo-utils/node_modules
+    - repo-redis-utils:/usr/src/service/packages/repo-redis-utils/node_modules
+    - repo-utils:/usr/src/service/packages/repo-utils/node_modules
   working_dir: /usr/src/service/
 
 services:
@@ -25,9 +41,6 @@ services:
   proto:
     <<: *base
     command: bash -c "corepack enable pnpm && pnpm proto"
-  build:
-    <<: *base
-    command: bash -c "corepack enable pnpm && pnpm build"
 
 volumes:
   lerna-node-modules:
@@ -45,4 +58,20 @@ volumes:
   backend-fintech-mongo-cron:
     external: true
   frontend-fintech:
+    external: true
+  repo-grpc-utils:
+    external: true
+  repo-jwt-utils:
+    external: true
+  repo-utils:
+    external: true
+  repo-graphql-utils:
+    external: true
+  repo-mongo-utils:
+    external: true
+  repo-redis-utils:
+    external: true
+  repo-logs-utils:
+    external: true
+  repo-kafka-utils:
     external: true

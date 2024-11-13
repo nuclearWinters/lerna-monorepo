@@ -4,10 +4,10 @@ import {
   parse,
   subscribe,
   execute,
-  GraphQLSchema,
+  type GraphQLSchema,
 } from "graphql";
 import type { ExecutionResult } from "graphql";
-import { Http2ServerRequest, Http2ServerResponse } from "node:http2";
+import type { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import type { ObjMap } from "graphql/jsutils/ObjMap.js";
 
 export const DateScalarType = new GraphQLScalarType({

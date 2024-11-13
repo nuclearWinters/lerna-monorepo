@@ -1,6 +1,6 @@
 import { differenceInDays } from "date-fns";
 import { Client } from "cassandra-driver";
-import { Producer } from "kafkajs";
+import type { Producer } from "kafkajs";
 
 export const dayFunction = async (
   client: Client,

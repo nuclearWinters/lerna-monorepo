@@ -8,7 +8,7 @@ import type {
   FintechUserMongo,
 } from "@repo/mongo-utils";
 import {
-  Collection,
+  type Collection,
   type InsertOneResult,
   ObjectId,
   type UpdateResult,
@@ -18,9 +18,9 @@ import {
   publishLoanUpdate,
   publishUser,
 } from "./subscriptions/subscriptionsUtils.ts";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 import { resolveParse } from "./kafkaLoanTransaction.ts";
-import type { UUID } from "crypto";
+import type { UUID } from "node:crypto";
 
 interface UserKafkaTransaction {
   operationTotalAndAvailable?: number;

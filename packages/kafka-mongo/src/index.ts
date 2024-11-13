@@ -14,7 +14,7 @@ import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis } from "ioredis";
 
 const retryStrategy = (times: number) => {
-  return Math.min(times * 50, 2000);
+  return Math.min(times * 50, 2_000);
 };
 
 export const pubsub = new RedisPubSub({

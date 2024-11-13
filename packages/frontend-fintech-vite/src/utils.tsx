@@ -76,7 +76,7 @@ export const monthDiff = (d1: Date, d2: Date) => {
 };
 
 export const dayDiff = (d1: Date, d2: Date) => {
-  const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+  const _MS_PER_DAY = 1_000 * 60 * 60 * 24;
   const utc1 = Date.UTC(d1.getFullYear(), d1.getMonth(), d1.getDate());
   const utc2 = Date.UTC(d2.getFullYear(), d2.getMonth(), d2.getDate());
 

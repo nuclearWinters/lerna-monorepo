@@ -42,6 +42,14 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - kafka-mongo:/usr/src/service/packages/kafka-mongo/node_modules
+      - repo-graphql-utils:/usr/src/service/packages/repo-graphql-utils/node_modules
+      - repo-grpc-utils:/usr/src/service/packages/repo-grpc-utils/node_modules
+      - repo-jwt-utils:/usr/src/service/packages/repo-jwt-utils/node_modules
+      - repo-kafka-utils:/usr/src/service/packages/repo-kafka-utils/node_modules
+      - repo-logs-utils:/usr/src/service/packages/repo-logs-utils/node_modules
+      - repo-mongo-utils:/usr/src/service/packages/repo-mongo-utils/node_modules
+      - repo-redis-utils:/usr/src/service/packages/repo-redis-utils/node_modules
+      - repo-utils:/usr/src/service/packages/repo-utils/node_modules
     working_dir: /usr/src/service/packages/kafka-mongo
     command: ["npm", "run", "start"]
     depends_on:
@@ -60,6 +68,14 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - backend-fintech-mongo:/usr/src/service/packages/backend-fintech-mongo/node_modules
+      - repo-graphql-utils:/usr/src/service/packages/repo-graphql-utils/node_modules
+      - repo-grpc-utils:/usr/src/service/packages/repo-grpc-utils/node_modules
+      - repo-jwt-utils:/usr/src/service/packages/repo-jwt-utils/node_modules
+      - repo-kafka-utils:/usr/src/service/packages/repo-kafka-utils/node_modules
+      - repo-logs-utils:/usr/src/service/packages/repo-logs-utils/node_modules
+      - repo-mongo-utils:/usr/src/service/packages/repo-mongo-utils/node_modules
+      - repo-redis-utils:/usr/src/service/packages/repo-redis-utils/node_modules
+      - repo-utils:/usr/src/service/packages/repo-utils/node_modules
     working_dir: /usr/src/service/packages/backend-fintech-mongo
     command: ["npm", "run", "start"]
     ports:
@@ -77,6 +93,14 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - backend-fintech-mongo-cron:/usr/src/service/packages/backend-fintech-mongo-cron/node_modules
+      - repo-graphql-utils:/usr/src/service/packages/repo-graphql-utils/node_modules
+      - repo-grpc-utils:/usr/src/service/packages/repo-grpc-utils/node_modules
+      - repo-jwt-utils:/usr/src/service/packages/repo-jwt-utils/node_modules
+      - repo-kafka-utils:/usr/src/service/packages/repo-kafka-utils/node_modules
+      - repo-logs-utils:/usr/src/service/packages/repo-logs-utils/node_modules
+      - repo-mongo-utils:/usr/src/service/packages/repo-mongo-utils/node_modules
+      - repo-redis-utils:/usr/src/service/packages/repo-redis-utils/node_modules
+      - repo-utils:/usr/src/service/packages/repo-utils/node_modules
     working_dir: /usr/src/service/packages/backend-fintech-mongo-cron
     command: ["npm", "run", "start"]
     depends_on:
@@ -92,6 +116,14 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - backend-auth-node:/usr/src/service/packages/backend-auth-node/node_modules
+      - repo-graphql-utils:/usr/src/service/packages/repo-graphql-utils/node_modules
+      - repo-grpc-utils:/usr/src/service/packages/repo-grpc-utils/node_modules
+      - repo-jwt-utils:/usr/src/service/packages/repo-jwt-utils/node_modules
+      - repo-kafka-utils:/usr/src/service/packages/repo-kafka-utils/node_modules
+      - repo-logs-utils:/usr/src/service/packages/repo-logs-utils/node_modules
+      - repo-mongo-utils:/usr/src/service/packages/repo-mongo-utils/node_modules
+      - repo-redis-utils:/usr/src/service/packages/repo-redis-utils/node_modules
+      - repo-utils:/usr/src/service/packages/repo-utils/node_modules
     working_dir: /usr/src/service/packages/backend-auth-node
     command: ["npm", "run", "start"]
     ports:
@@ -127,6 +159,14 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - grpc-auth-node:/usr/src/service/packages/grpc-auth-node/node_modules
+      - repo-graphql-utils:/usr/src/service/packages/repo-graphql-utils/node_modules
+      - repo-grpc-utils:/usr/src/service/packages/repo-grpc-utils/node_modules
+      - repo-jwt-utils:/usr/src/service/packages/repo-jwt-utils/node_modules
+      - repo-kafka-utils:/usr/src/service/packages/repo-kafka-utils/node_modules
+      - repo-logs-utils:/usr/src/service/packages/repo-logs-utils/node_modules
+      - repo-mongo-utils:/usr/src/service/packages/repo-mongo-utils/node_modules
+      - repo-redis-utils:/usr/src/service/packages/repo-redis-utils/node_modules
+      - repo-utils:/usr/src/service/packages/repo-utils/node_modules
     working_dir: /usr/src/service/packages/grpc-auth-node
     command: ["npm", "run", "start"]
     depends_on:
@@ -142,6 +182,14 @@ services:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
       - grpc-fintech-node:/usr/src/service/packages/grpc-fintech-node/node_modules
+      - repo-graphql-utils:/usr/src/service/packages/repo-graphql-utils/node_modules
+      - repo-grpc-utils:/usr/src/service/packages/repo-grpc-utils/node_modules
+      - repo-jwt-utils:/usr/src/service/packages/repo-jwt-utils/node_modules
+      - repo-kafka-utils:/usr/src/service/packages/repo-kafka-utils/node_modules
+      - repo-logs-utils:/usr/src/service/packages/repo-logs-utils/node_modules
+      - repo-mongo-utils:/usr/src/service/packages/repo-mongo-utils/node_modules
+      - repo-redis-utils:/usr/src/service/packages/repo-redis-utils/node_modules
+      - repo-utils:/usr/src/service/packages/repo-utils/node_modules
     working_dir: /usr/src/service/packages/grpc-fintech-node
     command: ["npm", "run", "start"]
     depends_on:
@@ -208,4 +256,20 @@ volumes:
   backend-fintech-mongo-cron:
     external: true
   frontend-fintech:
+    external: true
+  repo-graphql-utils:
+    external: true
+  repo-grpc-utils:
+    external: true
+  repo-jwt-utils:
+    external: true
+  repo-kafka-utils:
+    external: true
+  repo-logs-utils:
+    external: true
+  repo-mongo-utils:
+    external: true
+  repo-redis-utils:
+    external: true
+  repo-utils:
     external: true

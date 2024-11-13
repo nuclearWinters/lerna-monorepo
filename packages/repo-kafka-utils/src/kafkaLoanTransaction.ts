@@ -1,6 +1,6 @@
 import type { Producer, RecordMetadata } from "kafkajs";
 import {
-  Collection,
+  type Collection,
   type InsertManyResult,
   type InsertOneResult,
   ObjectId,
@@ -12,7 +12,7 @@ import type {
 } from "@repo/mongo-utils";
 import { addMonths, startOfMonth } from "date-fns";
 import { publishLoanUpdate } from "./subscriptions/subscriptionsUtils.ts";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 
 interface LoanKafkaTransaction {
   quantity_cents: number;

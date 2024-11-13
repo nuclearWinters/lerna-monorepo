@@ -1,11 +1,14 @@
 import { main } from "./app.ts";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectId } from "mongodb";
-import TestAgent from "supertest/lib/agent.js";
-import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import { type Db, MongoClient, ObjectId } from "mongodb";
+import type TestAgent from "supertest/lib/agent.js";
+import {
+  RedisContainer,
+  type StartedRedisContainer,
+} from "@testcontainers/redis";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import { Producer } from "kafkajs";
+import type { Producer } from "kafkajs";
 import { createClient } from "redis";
 import { serialize } from "cookie";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
@@ -93,7 +96,7 @@ describe("QueryInvestments tests", () => {
         borrower_id: borrower_id_1,
         lender_id,
         loan_oid: loan1_oid,
-        quantity: 50000,
+        quantity: 500_00,
         status: "up to date",
         created_at: new Date(),
         updated_at: new Date(),
@@ -112,12 +115,12 @@ describe("QueryInvestments tests", () => {
         borrower_id: borrower_id_2,
         lender_id,
         loan_oid: loan2_oid,
-        quantity: 50000,
+        quantity: 500_00,
         status: "up to date",
         created_at: new Date(),
         updated_at: new Date(),
         payments: 0,
-        term: 50000,
+        term: 500_00,
         roi: 17,
         moratory: 0,
         interest_to_earn: 0,
@@ -131,12 +134,12 @@ describe("QueryInvestments tests", () => {
         borrower_id: borrower_id_3,
         lender_id,
         loan_oid: loan3_oid,
-        quantity: 50000,
+        quantity: 500_00,
         status: "up to date",
         created_at: new Date(),
         updated_at: new Date(),
         payments: 0,
-        term: 50000,
+        term: 500_00,
         roi: 17,
         moratory: 0,
         interest_to_earn: 0,

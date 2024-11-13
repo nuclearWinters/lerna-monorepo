@@ -31,7 +31,7 @@ import {
   type sendUnaryData,
   type ServiceError,
 } from "@grpc/grpc-js";
-import { Db } from "mongodb";
+import type { Db } from "mongodb";
 import type { RedisClientType } from "@repo/redis-utils";
 import type { AuthUserSessions } from "@repo/mongo-utils";
 import type { UUID } from "node:crypto";
@@ -122,7 +122,7 @@ export const AuthServer = (authdb: Db, rdb: RedisClientType): IAuthServer => ({
       const now = new Date();
       now.setMilliseconds(0);
       const accessTokenExpireTime =
-        now.getTime() / 1000 + ACCESS_TOKEN_EXP_NUMBER;
+        now.getTime() / 1_000 + ACCESS_TOKEN_EXP_NUMBER;
       const validAccessToken = jwt.sign(
         {
           isBorrower,

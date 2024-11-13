@@ -51,14 +51,14 @@ describe("cronJobs tests", () => {
     });
     producer = kafka.producer();
     await producer.connect();
-  }, 30000);
+  }, 30_000);
 
   afterAll(async () => {
     await producer.disconnect();
     await admin.disconnect();
     await startedKafkaContainer.stop();
     await mongoClient.close();
-  }, 10000);
+  }, 10_000);
 
   it("dayFunction test", async () => {
     const { users, loans, investments, scheduledPayments } =
@@ -75,15 +75,15 @@ describe("cronJobs tests", () => {
       {
         _id: user1_oid,
         id: user1_id,
-        account_available: 1000000,
+        account_available: 10_000_00,
         account_to_be_paid: 0,
-        account_total: 1000000,
+        account_total: 10_000_00,
         account_withheld: 0,
       },
       {
         _id: user2_oid,
         id: user2_id,
-        account_available: 100000,
+        account_available: 1_000_00,
         account_to_be_paid: 206125,
         account_total: 306125,
         account_withheld: 0,
@@ -157,10 +157,10 @@ describe("cronJobs tests", () => {
         user_id: user1_id,
         score: "AAA",
         roi: 17,
-        goal: 100000,
+        goal: 1_000_00,
         expiry: now,
         term: 2,
-        raised: 100000,
+        raised: 1_000_00,
         status: "to be paid",
         pending: 0,
         payments_done: 0,
@@ -171,10 +171,10 @@ describe("cronJobs tests", () => {
         user_id: user1_id,
         score: "AAA",
         roi: 17,
-        goal: 100000,
+        goal: 1_000_00,
         expiry: now,
         term: 2,
-        raised: 100000,
+        raised: 1_000_00,
         status: "to be paid",
         pending: 0,
         payments_done: 1,
@@ -185,10 +185,10 @@ describe("cronJobs tests", () => {
         user_id: user3_id,
         score: "AAA",
         roi: 17,
-        goal: 100000,
+        goal: 1_000_00,
         expiry: now,
         term: 2,
-        raised: 100000,
+        raised: 1_000_00,
         status: "to be paid",
         pending: 0,
         payments_done: 1,
@@ -199,12 +199,12 @@ describe("cronJobs tests", () => {
         user_id: user4_id,
         score: "AAA",
         roi: 17,
-        goal: 100000,
+        goal: 1_000_00,
         expiry: now,
         term: 2,
         raised: 0,
         status: "financing",
-        pending: 100000,
+        pending: 1_000_00,
         payments_done: 0,
         payments_delayed: 0,
       },
@@ -218,7 +218,7 @@ describe("cronJobs tests", () => {
         borrower_id: user1_id,
         lender_id: user2_id,
         loan_oid: loan1_oid,
-        quantity: 100000,
+        quantity: 1_000_00,
         status: "delay payment",
         created_at: now,
         updated_at: now,
@@ -237,7 +237,7 @@ describe("cronJobs tests", () => {
         borrower_id: user1_id,
         lender_id: user2_id,
         loan_oid: loan2_oid,
-        quantity: 100000,
+        quantity: 1_000_00,
         status: "delay payment",
         created_at: now,
         updated_at: now,
@@ -256,7 +256,7 @@ describe("cronJobs tests", () => {
         borrower_id: user3_id,
         lender_id: user2_id,
         loan_oid: loan3_oid,
-        quantity: 100000,
+        quantity: 1_000_00,
         status: "delay payment",
         created_at: now,
         updated_at: now,
@@ -272,7 +272,7 @@ describe("cronJobs tests", () => {
       },
     ]);
     await dayFunction(dbInstanceFintech, producer);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
     const count = await admin.fetchTopicOffsets("user-transaction");
     expect(count[0].offset).toBe("3");
   });

@@ -1,11 +1,14 @@
 import { main } from "../app.ts";
 import supertest from "supertest";
-import { Db, MongoClient, ObjectId } from "mongodb";
-import { Producer } from "kafkajs";
-import { StartedRedisContainer, RedisContainer } from "@testcontainers/redis";
+import { type Db, MongoClient, ObjectId } from "mongodb";
+import type { Producer } from "kafkajs";
+import {
+  type StartedRedisContainer,
+  RedisContainer,
+} from "@testcontainers/redis";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { Redis, RedisOptions } from "ioredis";
-import TestAgent from "supertest/lib/agent.js";
+import { Redis, type RedisOptions } from "ioredis";
+import type TestAgent from "supertest/lib/agent.js";
 import { serialize } from "cookie";
 import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
 import { createClient } from "redis";
@@ -49,7 +52,7 @@ describe("AddLoan tests", () => {
     const options: RedisOptions = {
       host: startedRedisContainer.getConnectionUrl(),
       port: 6379,
-      retryStrategy: () => 10000,
+      retryStrategy: () => 10_000,
     };
     ioredisPublisherClient = new Redis(options);
     ioredisSubscriberClient = new Redis(options);
@@ -88,9 +91,9 @@ describe("AddLoan tests", () => {
     await users.insertOne({
       _id,
       id,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
     });
     const { refreshToken, accessToken } = getValidTokens({
@@ -128,9 +131,9 @@ describe("AddLoan tests", () => {
     expect(user).toEqual({
       _id,
       id,
-      account_available: 100000,
+      account_available: 1_000_00,
       account_to_be_paid: 0,
-      account_total: 100000,
+      account_total: 1_000_00,
       account_withheld: 0,
     });
     const allLoans = await loans.find({ user_id: id }).toArray();
@@ -150,12 +153,12 @@ describe("AddLoan tests", () => {
       {
         ROI: 17,
         user_id: id,
-        goal: 100000,
+        goal: 1_000_00,
         raised: 0,
         score: "AAA",
         status: "waiting for approval",
         term: 2,
-        pending: 100000,
+        pending: 1_000_00,
       },
     ]);
   });

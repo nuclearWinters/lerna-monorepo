@@ -16,24 +16,24 @@
   "author": "Armando Rueda",
   "license": "ISC",
   "dependencies": {
-    "@repo/mongo-utils": "workspace:*",
     "@repo/kafka-utils": "workspace:*",
+    "@repo/mongo-utils": "workspace:*",
     "@repo/utils": "workspace:*",
     "date-fns": "^4.1.0",
     "graphql-redis-subscriptions": "^2.6.1",
     "graphql-relay": "^0.10.2",
-    "graphql-subscriptions": "^2.0.0",
+    "graphql-subscriptions": "^3.0.0",
     "ioredis": "^5.4.1",
     "kafkajs": "^2.2.4",
     "mongodb": "^6.10.0",
-    "tsx" :"^4.19.2"
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",
     "@repo/jest-presets": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@testcontainers/kafka": "^10.13.2",
-    "@testcontainers/redis": "^10.13.2",
+    "@testcontainers/kafka": "^10.14.0",
+    "@testcontainers/redis": "^10.14.0",
     "@types/jest": "^29.5.14",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.14.0",
@@ -41,7 +41,7 @@
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "supertest": "^7.0.0",
-    "testcontainers": "^10.13.2",
+    "testcontainers": "^10.14.0",
     "typescript": "^5.6.3"
   },
   "lint-staged": {

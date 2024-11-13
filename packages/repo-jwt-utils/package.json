@@ -10,7 +10,6 @@
     }
   },
   "scripts": {
-    "build": "tsc || ./node_modules/typescript/bin/tsc",
     "pcm": "lint-staged",
     "test": "jest --bail",
     "lint": "(tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0) || (./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0)"
@@ -18,21 +17,21 @@
   "author": "Armando Rueda",
   "license": "ISC",
   "dependencies": {
-    "jsonwebtoken": "^9.0.0",
-    "@repo/utils": "workspace:*"
+    "@repo/utils": "workspace:*",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
+    "@repo/eslint-8-config": "workspace:*",
+    "@repo/jest-presets": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@types/jest": "^29.5.14",
-    "@types/jsonwebtoken": "^9.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.9.0",
     "eslint": "^9.14.0",
     "jest": "^29.7.0",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
-    "@types/node": "^22.9.0",
-    "@repo/eslint-8-config": "workspace:*",
-    "@repo/jest-presets": "workspace:*",
-    "typescript": "^5.6.3",
-    "@repo/typescript-config": "workspace:*"
+    "typescript": "^5.6.3"
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [

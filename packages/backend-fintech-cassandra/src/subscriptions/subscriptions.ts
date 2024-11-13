@@ -26,7 +26,7 @@ export const options: RedisOptions = {
   host: REDIS,
   port: 6379,
   retryStrategy: (times) => {
-    return Math.min(times * 50, 2000);
+    return Math.min(times * 50, 2_000);
   },
 };
 

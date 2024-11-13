@@ -1,4 +1,4 @@
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
 import type {
   InvestmentMongo,
   LoanMongo,

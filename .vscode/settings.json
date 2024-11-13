@@ -17,5 +17,6 @@
   ],
   "editor.formatOnSave": true,
   "editor.indentSize": 2,
-  "files.autoSave": "off"
+  "files.autoSave": "off",
+  "eslint.useFlatConfig": true,
 }

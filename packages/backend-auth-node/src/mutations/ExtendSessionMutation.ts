@@ -46,7 +46,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
       const { isBorrower, isLender, isSupport } = user;
       const now = new Date();
       now.setMilliseconds(0);
-      const nowTime = now.getTime() / 1000;
+      const nowTime = now.getTime() / 1_000;
       const refreshTokenExpireTime = nowTime + REFRESH_TOKEN_EXP_NUMBER;
       const accessTokenExpireTime = nowTime + ACCESS_TOKEN_EXP_NUMBER;
       const newRefreshToken = jwt.sign(
@@ -60,7 +60,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
         },
         REFRESHSECRET
       );
-      const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1000);
+      const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1_000);
       res.appendHeader(
         "Set-Cookie",
         serialize("refreshToken", newRefreshToken, {
