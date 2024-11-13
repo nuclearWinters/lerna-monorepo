@@ -5,6 +5,7 @@ import {
   PutLogEventsCommand,
 } from "@aws-sdk/client-cloudwatch-logs";
 import { AWS_MAIN_KEY, AWS_MAIN_SECRET, AWS_REGION } from "./config.ts";
+import { IS_PRODUCTION } from "@repo/utils";
 
 const client = new CloudWatchLogsClient({
   region: AWS_REGION,
@@ -53,6 +54,9 @@ export const logErr = async ({
   message: string;
 }) => {
   try {
+    if (!IS_PRODUCTION) {
+      return;
+    }
     const command = new PutLogEventsCommand({
       logEvents: [
         {

@@ -944,6 +944,9 @@ importers:
       '@repo/jest-presets':
         specifier: workspace:*
         version: link:../jest-presets
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../repo-utils
       '@types/jest':
         specifier: ^29.5.14
         version: 29.5.14

@@ -17,6 +17,7 @@
   "author": "Armando Rueda",
   "license": "ISC",
   "devDependencies": {
+    "@repo/utils": "workspace:*",
     "@repo/eslint-8-config": "workspace:*",
     "@repo/jest-presets": "workspace:*",
     "@types/jest": "^29.5.14",

@@ -88,16 +88,16 @@ Promise.all([
 });
 
 process
-  .on("unhandledRejection", (reason) => {
-    logErr({
+  .on("unhandledRejection", async (reason) => {
+    await logErr({
       logGroupName: "backend-auth-node",
       logStreamName: "unhandledRejection",
       message: String(reason),
     });
     process.exit(1);
   })
-  .on("uncaughtException", (err) => {
-    logErr({
+  .on("uncaughtException", async (err) => {
+    await logErr({
       logGroupName: "backend-auth-node",
       logStreamName: "uncaughtException",
       message: `Message: ${err.message}, Stack: ${err.stack}`,
