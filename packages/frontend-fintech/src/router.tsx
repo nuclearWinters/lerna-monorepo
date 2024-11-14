@@ -18,15 +18,19 @@ import { SettingsEntryPoint } from "./authSrc/screens/Settings/Settings.entrypoi
 import { MyInvestmentsEntryPoint } from "./authSrc/screens/MyInvestments/MyInvestments.entrypoints";
 import { LogInEntryPoint } from "./authSrc/screens/LogIn/LogIn.entrypoint";
 import { SignUpEntryPoint } from "./authSrc/screens/SignUp/SignUp.entrypoint";
-import { Routes } from "./react-router-elements/Router";
-import { Route } from "./react-router-elements/Route";
-import { loadEntryPoint, PreloadedEntryPoint } from "react-relay";
+import { Routes } from "./react-router-elements/Routes";
+import { Route } from "./react-router-elements/Routes";
+import {
+  EnvironmentProviderOptions,
+  IEnvironmentProvider,
+  loadEntryPoint,
+  PreloadedEntryPoint,
+} from "react-relay";
 import {
   RelayEnvironmentAuth,
   RelayEnvironmentFintech,
 } from "./RelayEnvironment";
 import { GetEntryPointComponentFromEntryPoint } from "react-relay/relay-hooks/helpers";
-import { RouteLogin } from "./react-router-elements/RouteLogin";
 import { historyReplace } from "./react-router-elements/utils";
 
 const allowedPages = {
@@ -78,260 +82,58 @@ const getRedirectPath = (
   return { path: "/", params: `redirectTo=${path}` };
 };
 
-const headerEntryPointReference = loadEntryPoint(
-  {
-    getEnvironment: (options) => {
-      return options?.environment === "auth"
-        ? RelayEnvironmentAuth
-        : RelayEnvironmentFintech;
-    },
+const options: IEnvironmentProvider<EnvironmentProviderOptions> = {
+  getEnvironment: (options) => {
+    return options?.environment === "auth"
+      ? RelayEnvironmentAuth
+      : RelayEnvironmentFintech;
   },
+};
+
+const headerEntryPointReference = loadEntryPoint(
+  options,
   HeaderAuthEntryPoint,
   {}
 );
 
-export const references = {
-  "/": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof LogInEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        LogInEntryPoint,
-        {}
-      );
-      references["/"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/register": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof SignUpEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        SignUpEntryPoint,
-        {}
-      );
-      references["/register"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/settings": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof SettingsEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        SettingsEntryPoint,
-        {}
-      );
-      references["/settings"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/account": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof AccountEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        AccountEntryPoint,
-        {}
-      );
-      references["/account"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/myTransactions": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof MyTransactionsEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        MyTransactionsEntryPoint,
-        {}
-      );
-      references["/myTransactions"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/addFunds": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof AddFundsEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        AddFundsEntryPoint,
-        {}
-      );
-      references["/addFunds"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/retireFunds": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof RetireFundsEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        RetireFundsEntryPoint,
-        {}
-      );
-      references["/retireFunds"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/addInvestments": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof AddInvestmentsEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        AddInvestmentsEntryPoint,
-        {}
-      );
-      references["/addInvestments"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/addLoan": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof AddLoanEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        AddLoanEntryPoint,
-        {}
-      );
-      references["/addLoan"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/approveLoan": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof ApproveLoanEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        ApproveLoanEntryPoint,
-        {}
-      );
-      references["/approveLoan"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/myLoans": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof MyLoansEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        MyLoansEntryPoint,
-        {}
-      );
-      references["/myLoans"].entrypoint = reference;
-      return reference;
-    },
-  },
-  "/myInvestments": {
-    entrypoint: null as PreloadedEntryPoint<
-      GetEntryPointComponentFromEntryPoint<typeof MyInvestmentsEntryPoint>
-    > | null,
-    loader: () => {
-      const reference = loadEntryPoint(
-        {
-          getEnvironment: (options) => {
-            return options?.environment === "auth"
-              ? RelayEnvironmentAuth
-              : RelayEnvironmentFintech;
-          },
-        },
-        MyInvestmentsEntryPoint,
-        {}
-      );
-      references["/myInvestments"].entrypoint = reference;
-      return reference;
-    },
-  },
+const routesData = {
+  "/": LogInEntryPoint,
+  "/register": SignUpEntryPoint,
+  "/settings": SettingsEntryPoint,
+  "/account": AccountEntryPoint,
+  "/myTransactions": MyTransactionsEntryPoint,
+  "/addFunds": AddFundsEntryPoint,
+  "/retireFunds": RetireFundsEntryPoint,
+  "/addInvestments": AddInvestmentsEntryPoint,
+  "/addLoan": AddLoanEntryPoint,
+  "/approveLoan": ApproveLoanEntryPoint,
+  "/myLoans": MyLoansEntryPoint,
+  "/myInvestments": MyInvestmentsEntryPoint,
 };
+
+const referencesMap = new Map<
+  RouteKeys,
+  {
+    entrypoint: null;
+    loader: () => UnionReferences;
+  }
+>();
+
+for (const key in routesData) {
+  const typedKey = key as RouteKeys;
+  referencesMap.set(typedKey, {
+    entrypoint: null,
+    loader: () => {
+      const reference = loadEntryPoint(options, routesData[typedKey], {});
+      references[typedKey].entrypoint = reference;
+      return reference;
+    },
+  });
+}
+
+export const references = Object.fromEntries(
+  referencesMap.entries()
+) as ReferencesType;
 
 const pathname = window.location.pathname;
 const data = getUserDataCache();
@@ -401,51 +203,26 @@ if (isSessionPage(pathname)) {
 export const MyRouter = () => {
   return (
     <Routes entryPointReference={headerEntryPointReference}>
-      <RouteLogin entryPointReference={references["/"].entrypoint} />
-      <Route
-        path="/register"
-        entryPointReference={references["/register"].entrypoint}
-      />
-      <Route
-        path="/settings"
-        entryPointReference={references["/settings"].entrypoint}
-      />
-      <Route
-        path="/account"
-        entryPointReference={references["/account"].entrypoint}
-      />
-      <Route
-        path="/myTransactions"
-        entryPointReference={references["/myTransactions"].entrypoint}
-      />
-      <Route
-        path="/addFunds"
-        entryPointReference={references["/addFunds"].entrypoint}
-      />
-      <Route
-        path="/retireFunds"
-        entryPointReference={references["/retireFunds"].entrypoint}
-      />
-      <Route
-        path="/addInvestments"
-        entryPointReference={references["/addInvestments"].entrypoint}
-      />
-      <Route
-        path="/addLoan"
-        entryPointReference={references["/addLoan"].entrypoint}
-      />
-      <Route
-        path="/approveLoan"
-        entryPointReference={references["/approveLoan"].entrypoint}
-      />
-      <Route
-        path="/myLoans"
-        entryPointReference={references["/myLoans"].entrypoint}
-      />
-      <Route
-        path="/myInvestments"
-        entryPointReference={references["/myInvestments"].entrypoint}
-      />
+      {Object.keys(references).map((key) => (
+        <Route path={key as RouteKeys} key={key} />
+      ))}
     </Routes>
   );
 };
+
+export type RoutesDataType = typeof routesData;
+
+export type RouteKeys = keyof typeof routesData;
+
+export type ReferencesType = {
+  [Property in keyof RoutesDataType]: {
+    entrypoint: EntryPointReference<RoutesDataType[Property]>;
+    loader: () => EntryPointReference<RoutesDataType[Property]>;
+  };
+};
+
+export type EntryPointReference<T> = PreloadedEntryPoint<
+  GetEntryPointComponentFromEntryPoint<T>
+> | null;
+
+export type UnionReferences = EntryPointReference<RoutesDataType[RouteKeys]>;

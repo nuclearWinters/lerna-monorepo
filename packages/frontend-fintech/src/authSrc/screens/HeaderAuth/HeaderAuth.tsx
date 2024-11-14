@@ -6,11 +6,7 @@ import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 import { utilsFintechQuery } from "../../../fintechSrc/__generated__/utilsFintechQuery.graphql";
 import { Sider } from "../../../components/Sider";
 import { EntryPointComponent } from "react-relay";
-
-export type PreloadedQueries = {
-  authQuery: utilsAuthQuery;
-  fintechQuery: utilsFintechQuery;
-};
+import { OperationType } from "relay-runtime";
 
 export const baseApp = stylex.create({
   base: {
@@ -85,9 +81,15 @@ export const baseMain = stylex.create({
   },
 });
 
+export interface Queries {
+  [key: string]: OperationType;
+  fintechQuery: utilsFintechQuery;
+  authQuery: utilsAuthQuery;
+}
+
 export const HeaderAuth: EntryPointComponent<
-  PreloadedQueries,
-  {},
+  Queries,
+  Record<string, undefined>,
   { children: ReactNode }
 > = (props) => {
   return (

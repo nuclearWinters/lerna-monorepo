@@ -10,13 +10,18 @@ import { authUserQuery } from "../../utilsAuth";
 import { MyLoansQueriesQuery } from "../../../fintechSrc/screens/MyLoans/__generated__/MyLoansQueriesQuery.graphql";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 import { Languages } from "../../../utils";
+import { OperationType } from "relay-runtime";
 
-export type Queries = {
+export interface Queries {
+  [key: string]: OperationType;
   fintechQuery: MyLoansQueriesQuery;
   authQuery: utilsAuthQuery;
-};
+}
 
-export const MyLoans: EntryPointComponent<Queries, {}> = (props) => {
+export const MyLoans: EntryPointComponent<
+  Queries,
+  Record<string, undefined>
+> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
     props.queries.authQuery

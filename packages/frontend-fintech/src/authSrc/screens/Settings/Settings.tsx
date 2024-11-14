@@ -34,6 +34,7 @@ import { SettingsQueries_logins_user$key } from "./__generated__/SettingsQueries
 import { SettingsQueries_sessions_user$key } from "./__generated__/SettingsQueries_sessions_user.graphql";
 import FaTrashAlt from "../../../assets/trash-alt-solid.svg";
 import { SettingsSessionRowRevokeSessionMutation } from "./__generated__/SettingsSessionRowRevokeSessionMutation.graphql";
+import { OperationType } from "relay-runtime";
 
 const baseLoanRowIcon = stylex.create({
   base: {
@@ -220,11 +221,15 @@ export const baseSettingsForm = stylex.create({
   },
 });
 
-export type Queries = {
+export interface Queries {
+  [key: string]: OperationType;
   authQuery: SettingsQueriesAuthUserQuery;
-};
+}
 
-export const Settings: EntryPointComponent<Queries, {}> = (props) => {
+export const Settings: EntryPointComponent<
+  Queries,
+  Record<string, undefined>
+> = (props) => {
   const { t, changeLanguage } = useTranslation();
   const [commit, isInFlight] = useMutation<SettingsMutation>(graphql`
     mutation SettingsMutation($input: UpdateUserInput!) {

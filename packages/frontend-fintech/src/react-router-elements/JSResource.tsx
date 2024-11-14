@@ -1,6 +1,6 @@
 import { JSResourceReference } from "react-relay";
 
-const map = new Map<string, JSResourceReference<any>>();
+const map = new Map<string, JSResourceReference<unknown>>();
 
 export class Resource<T> {
   _moduleId: string;
@@ -47,5 +47,5 @@ export default function JSResource<T>(
     resource = new Resource<T>(moduleId, loader);
     map.set(moduleId, resource);
   }
-  return resource;
+  return resource as JSResourceReference<T>;
 }

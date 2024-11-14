@@ -72,7 +72,6 @@ const subscribeRelayAuth = (
       })
       .then(() => sink.complete())
       .catch((err) => sink.error(err));
-    return () => {};
   });
 };
 
@@ -140,7 +139,6 @@ const subscribeRelayFintech = (
       })
       .then(() => sink.complete())
       .catch((err) => sink.error(err));
-    return () => {};
   });
 };
 

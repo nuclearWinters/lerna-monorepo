@@ -17,6 +17,7 @@ import {
   useTranslation,
 } from "../../../utils";
 import { LogInMutation } from "./__generated__/LogInMutation.graphql";
+import { OperationType } from "relay-runtime";
 
 export interface Decode {
   id: string;
@@ -27,7 +28,10 @@ export interface Decode {
   exp: number;
 }
 
-export const LogIn: EntryPointComponent<{}, {}> = () => {
+export const LogIn: EntryPointComponent<
+  Record<string, OperationType>,
+  Record<string, undefined>
+> = () => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<LogInMutation>(graphql`
     mutation LogInMutation($input: SignInInput!) {

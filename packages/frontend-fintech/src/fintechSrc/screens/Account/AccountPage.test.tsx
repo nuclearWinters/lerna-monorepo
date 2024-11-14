@@ -25,7 +25,7 @@ test("AccountPage renders correctly", async () => {
 
   const { findByText } = render(
     <RelayEnvironmentProvider environment={environment}>
-      <LanguageContext.Provider value={["EN", () => {}]}>
+      <LanguageContext.Provider value={["EN", jest.fn()]}>
         <AccountPage data-testid="1234" fintechQuery={preload} />
       </LanguageContext.Provider>
     </RelayEnvironmentProvider>

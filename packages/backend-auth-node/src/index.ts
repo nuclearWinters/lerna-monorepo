@@ -6,6 +6,7 @@ import { credentials } from "@grpc/grpc-js";
 import { AccountClient } from "@repo/grpc-utils";
 import { logErr } from "@repo/logs-utils";
 import fs from "node:fs";
+import type { ServerHttp2Session } from "node:http2";
 
 const getGRPCClient = () =>
   new Promise<AccountClient>((resolve, reject) => {
@@ -73,13 +74,17 @@ Promise.all([
       message: "unknownProtocol",
     });
   });
-  serverHTTP2.addListener("sessionError", (err) => {
-    logErr({
-      logGroupName: "backend-auth-node",
-      logStreamName: "serverSessionError",
-      message: `Reason: ${err.message}, error: ${err.stack}`,
-    });
-  });
+  serverHTTP2.addListener(
+    "sessionError",
+    (err: Error, session: ServerHttp2Session) => {
+      logErr({
+        logGroupName: "backend-auth-node",
+        logStreamName: "serverSessionError",
+        message: `Reason: ${err.message}, error: ${err.stack}`,
+      });
+      session.destroy(err);
+    }
+  );
   serverHTTP2.addListener("session", (session) => {
     session.setTimeout(60_000, () => session.destroy(new Error("TIMEOUT")));
   });

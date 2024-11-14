@@ -1,14 +1,14 @@
 # Monorepo with GraphQL Microservices and React Relay specifications
 
-This project explores microservices in a monorepository. These microservices expose a GraphQL schema with React Relay specifications and support HTTP2 at application layer.
+**Monorepo**: All services are in this repository. We share code by creating [internal packages](https://turbo.build/repo/docs/core-concepts/internal-packages). We use Docker Compose to run the services and databases locally.
 
-Frontend is a Single Page Application built with React and React Relay. It uses code splitting techniques to reduce the main bundle size and starts requesting data from the server sooner thanks to a render-as-you-fetch pattern. It uses Suspense features to handle the loading states. Also, it uses an Atomic CSS Framework to generate a small CSS file.
+**GraphQL microservices**: We are exposing GraphQL schemas with React Relay specifications and HTTP2 support at application layer. Using SSE to support realtime features and gRPC to communicate between microservices.
 
-To handle GraphQL Subscriptions the application is using Server-Sent Events (to support realtime features). It uses Docker to run the microservices and databases (MongoDB and Redis) locally. Implementing an Event Driven Architecture with Kafka (workers are not indempotent yet).
+**React Relay**: SPA uses META's GraphQL client to make requests alonside with code splitting techniques, the render-as-you-fetch pattern and React Suspense features to improve the User and Developer Experience. Also, it uses an Atomic CSS Framework to generate a small CSS file.
 
-For Authentication and Authorization we are using JSON Web Tokens with a Refresh Token implementation. Microservices uses gRPC to communicate and verify tokens.
+**Event Driven Architecture**: We are using Kafka and indempotent workers.
 
-Finally we are testing the project with Jest: We test Kafka events by using the _testcontainers_ library, we test MongoDB by using the _@shelf/jest-mongodb_ library and GraphQL microservices by using the _supertest_ library.
+**Testing**: we are testing the project with Jest: We test Kafka events by using the _testcontainers_ library, we test MongoDB by using the _@shelf/jest-mongodb_ library and GraphQL microservices by using the _supertest_ library.
 
 (I'm experimenting with Rust and Cassandra in other folders.)
 
@@ -37,7 +37,6 @@ Demo: [https://relay-graphql-monorepo.com](https://relay-graphql-monorepo.com)
 
 **NPM Dependency Highlights:**
 
-- lerna
 - graphql
 - jsonwebtokens
 - @grpc/grpc-js
@@ -57,13 +56,13 @@ Demo: [https://relay-graphql-monorepo.com](https://relay-graphql-monorepo.com)
 
 To set up the project locally:
 
-1. Install Docker and NodeJS 20
+1. Install Docker and Node.js 22
 
-2. Run `pnpm install` at root folder (this will help your IDE to apply linting)
+2. Run `make setup` at root folder (this will create a volume in Docker in which the dependencies will be stored)
 
-3. Run `make setup` at root folder (this will create a volume in Docker in which the dependencies will be stored)
+3. Run `make install` at root folder (this will install dependencies by using an Alpine Linux OS)
 
-4. Run `make install` at root folder (this will install dependencies by using an Alpine Linux OS)
+4. Run `pnpm install` at root folder (this will help your IDE to apply linting)
 
 5. Install [minica](https://github.com/jsha/minica) and run `minica --domains localhost`. Then copy `minica.pem`, `cert.pem` and `key.pem` from `minica` to `certs` project folder (this will create a self-signed certificate so node microservices can use HTTP2).
 

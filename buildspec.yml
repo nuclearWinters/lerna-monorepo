@@ -1,0 +1,19 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo Installing
+  pre_build:
+    commands:
+      - echo Installing source NPM dependencies.
+      - corepack enable pnpm
+      - pnpm install --prod
+artifacts:
+  files:
+    - "certs/*"
+    - "packages/**/*"
+    - "appspec.yml"
+    - "node_modules/**/*"

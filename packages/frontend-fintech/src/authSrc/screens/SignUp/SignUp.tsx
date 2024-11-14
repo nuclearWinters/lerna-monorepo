@@ -9,12 +9,16 @@ import { Space, customSpace } from "../../../components/Space";
 import { Spinner } from "../../../components/Spinner";
 import { Title } from "../../../components/Title";
 import { WrapperSmall } from "../../../components/WrapperSmall";
-import { ChangeEvent, FC, useState } from "react";
-import { useMutation, graphql } from "react-relay/hooks";
+import { ChangeEvent, useState } from "react";
+import { useMutation, graphql, EntryPointComponent } from "react-relay/hooks";
 import { getUserDataCache, useTranslation } from "../../../utils";
 import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
+import { OperationType } from "relay-runtime";
 
-export const SignUp: FC = () => {
+export const SignUp: EntryPointComponent<
+  Record<string, OperationType>,
+  Record<string, undefined>
+> = () => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<SignUpMutation>(graphql`
     mutation SignUpMutation($input: SignUpInput!) {

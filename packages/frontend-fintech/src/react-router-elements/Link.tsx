@@ -11,7 +11,11 @@ export const Link: FC<{
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
     event.preventDefault();
-    replace ? historyReplace(to) : historyPush(to);
+    if (replace) {
+      historyReplace(to);
+    } else {
+      historyPush(to);
+    }
   };
 
   return (

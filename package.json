@@ -10,9 +10,10 @@
     "lerna": "^8.1.9"
   },
   "scripts": {
+    "serve": "npm run serve --workspaces --if-present",
     "populate": "npm run populate --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
+    "lint": "pnpm --recursive --if-present run lint",
     "cm": "cz",
     "new-version": "lerna version --conventional-commits --yes",
     "pcm": "lerna run --concurrency 1 --stream pcm --since HEAD --exclude-dependents",

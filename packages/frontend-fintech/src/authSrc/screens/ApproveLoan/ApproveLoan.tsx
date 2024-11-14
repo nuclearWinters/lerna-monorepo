@@ -9,13 +9,18 @@ import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { ApproveLoanQueriesQuery } from "../../../fintechSrc/screens/ApproveLoan/__generated__/ApproveLoanQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
+import { OperationType } from "relay-runtime";
 
-export type Queries = {
+export interface Queries {
+  [key: string]: OperationType;
   fintechQuery: ApproveLoanQueriesQuery;
   authQuery: utilsAuthQuery;
-};
+}
 
-export const ApproveLoans: EntryPointComponent<Queries, {}> = (props) => {
+export const ApproveLoans: EntryPointComponent<
+  Queries,
+  Record<string, undefined>
+> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
     props.queries.authQuery

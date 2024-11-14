@@ -9,13 +9,18 @@ import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
 import { AddInvestmentsPage } from "../../../fintechSrc/screens/AddInvestments/AddInvestmentsPage";
 import { AddInvestmentsQueriesQuery } from "../../../fintechSrc/screens/AddInvestments/__generated__/AddInvestmentsQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
+import { OperationType } from "relay-runtime";
 
-export type Queries = {
+export interface Queries {
+  [key: string]: OperationType;
   fintechQuery: AddInvestmentsQueriesQuery;
   authQuery: utilsAuthQuery;
-};
+}
 
-export const AddInvestments: EntryPointComponent<Queries, {}> = (props) => {
+export const AddInvestments: EntryPointComponent<
+  Queries,
+  Record<string, undefined>
+> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
     props.queries.authQuery

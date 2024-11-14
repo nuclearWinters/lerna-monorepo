@@ -17,6 +17,7 @@ import {
 import { AuthClient } from "@repo/grpc-utils";
 import fs from "node:fs";
 import { logErr } from "@repo/logs-utils";
+import type { ServerHttp2Session } from "node:http2";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,
@@ -100,13 +101,17 @@ Promise.all([
       message: "unknownProtocol",
     });
   });
-  serverHTTP2.addListener("sessionError", (err) => {
-    logErr({
-      logGroupName: "backend-fintech-mongo",
-      logStreamName: "serverSessionError",
-      message: `Reason: ${err.message}, error: ${err.stack}`,
-    });
-  });
+  serverHTTP2.addListener(
+    "sessionError",
+    (err: Error, session: ServerHttp2Session) => {
+      logErr({
+        logGroupName: "backend-fintech-mongo",
+        logStreamName: "serverSessionError",
+        message: `Reason: ${err.message}, error: ${err.stack}`,
+      });
+      session.destroy(err);
+    }
+  );
   serverHTTP2.addListener("session", (session) => {
     session.setTimeout(60_000, () => session.destroy(new Error("TIMEOUT")));
   });

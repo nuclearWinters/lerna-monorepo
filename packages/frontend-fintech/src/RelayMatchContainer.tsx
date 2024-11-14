@@ -1,4 +1,4 @@
-//@ts-expect-error this componenent is not typed
+//@ts-expect-error this component is not typed yet
 import MatchContainer from "react-relay/lib/relay-hooks/MatchContainer";
 import ErrorBoundary from "./ErrorBoundary";
 import moduleLoader from "./RelayEnvironment";

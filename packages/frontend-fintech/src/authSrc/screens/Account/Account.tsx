@@ -9,13 +9,18 @@ import { AccountPage } from "../../../fintechSrc/screens/Account/AccountPage";
 import { AccountQueriesQuery } from "../../../fintechSrc/screens/Account/__generated__/AccountQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
 import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
+import { OperationType } from "relay-runtime";
 
-export type Queries = {
+export interface Queries {
+  [key: string]: OperationType;
   fintechQuery: AccountQueriesQuery;
   authQuery: utilsAuthQuery;
-};
+}
 
-export const Account: EntryPointComponent<Queries, {}> = (props) => {
+export const Account: EntryPointComponent<
+  Queries,
+  Record<string, undefined>
+> = (props) => {
   const { authUser } = usePreloadedQuery(
     authUserQuery,
     props.queries.authQuery
