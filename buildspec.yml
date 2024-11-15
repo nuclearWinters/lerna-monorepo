@@ -17,3 +17,5 @@ artifacts:
     - "packages/**/*"
     - "appspec.yml"
     - "node_modules/**/*"
+    - "package.json"
+    - "pnpm-lock.yaml"
