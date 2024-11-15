@@ -21,3 +21,4 @@ artifacts:
     - "pnpm-lock.yaml"
     - "scripts/*"
     - "pnpm-workspace.yaml"
+    - ".npmrc"
