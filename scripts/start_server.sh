@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 cd /home/ec2-user/lerna-monorepo
 aws s3 cp --recursive s3://lerna-monorepo-secrets/prod/certs ./certs
 cd /home/ec2-user/lerna-monorepo
