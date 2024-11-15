@@ -11,6 +11,8 @@ phases:
       - echo Installing source NPM dependencies.
       - corepack enable pnpm
       - pnpm install --prod
+      - cd packages/backend-auth-node/node_modules
+      - ls
 artifacts:
   files:
     - "certs/*"
