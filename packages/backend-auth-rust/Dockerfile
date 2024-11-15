@@ -23,6 +23,6 @@ COPY . .
 # Now this only builds our changes to things like src
 RUN cargo build --release
 
-EXPOSE 443
+EXPOSE 4004
 
 CMD ["target/release/backend-auth-rust"]

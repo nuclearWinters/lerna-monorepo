@@ -143,7 +143,7 @@ services:
     working_dir: /usr/src/service/packages/backend-auth-rust
     command: ["cargo", "run", "--release"]
     ports:
-      - "4001:443"
+      - "4004:4004"
     depends_on:
       grpc-fintech-node:
         condition: service_started

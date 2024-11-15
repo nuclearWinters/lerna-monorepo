@@ -186,7 +186,7 @@ impl Auth for AuthService {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr: SocketAddr = "[::1]:443".parse()?;
+    let addr: SocketAddr = "[::1]:4003".parse()?;
     let auth_service: AuthService = AuthService::default();
     //Add TLS service
     Server::builder()

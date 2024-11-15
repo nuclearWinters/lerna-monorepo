@@ -1351,7 +1351,7 @@ async fn main() {
         .ca_certificate(server_root_ca_cert)
         .identity(client_identity);
 
-    let channel = Channel::from_static("https://grpc-fintech-node:443")
+    let channel = Channel::from_static("https://grpc-fintech-node:4001")
         .tls_config(tls)
         .unwrap()
         .connect()
@@ -1389,7 +1389,7 @@ async fn main() {
         .layer(Extension(schema))
         .layer(Extension(queries));
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 443));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 4004));
     axum_server::bind_rustls(addr, config)
         .serve(app.into_make_service_with_connect_info::<SocketAddr>())
         .await

@@ -4,7 +4,7 @@
   "description": "Backend typescript express relay mongodb",
   "type": "module",
   "scripts": {
-    "start": "node --watch experimental-strip-types ./src/index.ts",
+    "start": "node --watch --experimental-strip-types ./src/index.ts",
     "populate": "node --experimental-strip-types ./src/populate.ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
     "serve": "KAFKA_ID=backend-fintech-mongo node --experimental-strip-types ./src/index.ts",
