@@ -10,14 +10,13 @@
     "lerna": "^8.1.9"
   },
   "scripts": {
-    "serve": "npm run serve --workspaces --if-present",
-    "populate": "npm run populate --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
+    "populate": "pnpm --recursive --if-present run populate",
+    "test": "pnpm --recursive --if-present run test",
     "lint": "pnpm --recursive --if-present run lint",
     "cm": "cz",
     "new-version": "lerna version --conventional-commits --yes",
     "pcm": "lerna run --concurrency 1 --stream pcm --since HEAD --exclude-dependents",
-    "proto": "npm run proto --workspaces --if-present"
+    "proto": "pnpm --recursive --if-present run proto"
   },
   "config": {
     "commitizen": {

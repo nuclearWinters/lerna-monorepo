@@ -4,10 +4,10 @@
   "description": "Backend typescript express relay mongodb",
   "type": "module",
   "scripts": {
-    "start": "tsx watch ./src/index.ts",
-    "populate": "tsx ./src/populate.ts",
-    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
-    "serve": "./node_modules/tsx/dist/cli.mjs \"./src/index.ts\"",
+    "start": "node --watch experimental-strip-types ./src/index.ts",
+    "populate": "node --experimental-strip-types ./src/populate.ts",
+    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
+    "serve": "KAFKA_ID=backend-fintech-mongo node --experimental-strip-types ./src/index.ts",
     "pcm": "lint-staged",
     "test": "jest --bail --detectOpenHandles"
   },
@@ -35,7 +35,6 @@
     "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
     "mongodb": "^6.10.0",
-    "tsx": "^4.19.2",
     "@repo/logs-utils": "workspace:*"
   },
   "devDependencies": {

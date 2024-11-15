@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsx watch ./src/index.ts",
-    "populate": "tsx ./src/populate.ts",
-    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
-    "serve": "./node_modules/tsx/dist/cli.mjs \"./src/index.ts\"",
+    "start": "node --watch experimental-strip-types ./src/index.ts",
+    "populate": "node --experimental-strip-types ./src/populate.ts",
+    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
+    "serve": "KAFKA_ID=backend-fintech-cassandra node --experimental-strip-types ./src/index.ts",
     "pcm": "lint-staged",
     "test": "jest --bail"
   },

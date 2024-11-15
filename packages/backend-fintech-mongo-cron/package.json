@@ -4,9 +4,9 @@
   "description": "Cron jobs module for backend-fintech-mongo",
   "type": "module",
   "scripts": {
-    "start": "tsx watch ./src/index.ts",
-    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
-    "serve": "./node_modules/tsx/dist/cli.mjs \"./src/index.ts\"",
+    "start": "node --watch --experimental-strip-types ./src/index.ts",
+    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
+    "serve": "KAFKA_ID=backend-fintech-mongo-cron node --experimental-strip-types ./src/index.ts",
     "pcm": "lint-staged",
     "test": "jest --bail"
   },
@@ -21,8 +21,7 @@
     "date-fns": "^4.1.0",
     "kafkajs": "^2.2.4",
     "mongodb": "^6.10.0",
-    "node-cron": "^3.0.3",
-    "tsx": "^4.19.2"
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",

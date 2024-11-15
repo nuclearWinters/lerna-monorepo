@@ -4,9 +4,9 @@
   "description": "Backend typescript express relay mongodb",
   "type": "module",
   "scripts": {
-    "start": "tsx watch ./src/index.ts",
+    "start": "node --watch experimental-strip-types ./src/index.ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0 || ./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
-    "serve": "./node_modules/tsx/dist/cli.mjs \"./src/index.ts\"",
+    "serve": "KAFKA_ID=grpc-fintech-node node --experimental-strip-types ./src/index.ts",
     "pcm": "lint-staged",
     "test": "jest --bail"
   },
@@ -22,8 +22,7 @@
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
-    "redis": "^4.7.0",
-    "tsx": "^4.19.2"
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "@repo/eslint-8-config": "workspace:*",

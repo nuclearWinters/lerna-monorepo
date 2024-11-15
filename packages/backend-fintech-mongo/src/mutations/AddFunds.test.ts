@@ -24,8 +24,6 @@ import { AuthServer, AuthClient } from "@repo/grpc-utils";
 import { runKafkaConsumer } from "@repo/kafka-utils";
 import { getFintechCollections } from "@repo/mongo-utils";
 
-// Test indempotency?
-
 const delay = () =>
   new Promise<void>((resolve) => {
     setTimeout(() => {
