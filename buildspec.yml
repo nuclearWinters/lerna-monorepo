@@ -20,3 +20,4 @@ artifacts:
     - "package.json"
     - "pnpm-lock.yaml"
     - "scripts/*"
+    - "pnpm-workspace.yaml"
