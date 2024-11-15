@@ -13,6 +13,8 @@ phases:
       - pnpm install --prod
       - cd packages/backend-auth-node/node_modules
       - ls
+      - cd @repo
+      - ls
 artifacts:
   files:
     - "certs/*"
