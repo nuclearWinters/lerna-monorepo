@@ -1,18 +1,12 @@
-import type { Db } from "mongodb";
 import type { LoanMongo, ScheduledPaymentsMongo } from "@repo/mongo-utils";
 import { differenceInDays } from "date-fns";
 import type { Producer } from "kafkajs";
+import type { Db } from "mongodb";
 
-export const dayFunction = async (
-  db: Db,
-  producer: Producer
-): Promise<void> => {
+export const dayFunction = async (db: Db, producer: Producer): Promise<void> => {
   const loans = db.collection<LoanMongo>("loans");
-  const scheduledPayments =
-    db.collection<ScheduledPaymentsMongo>("scheduledPayments");
-  const resultsScheduledPayments = await scheduledPayments
-    .find({ status: "delayed" })
-    .toArray();
+  const scheduledPayments = db.collection<ScheduledPaymentsMongo>("scheduledPayments");
+  const resultsScheduledPayments = await scheduledPayments.find({ status: "delayed" }).toArray();
   for (const delayedPayment of resultsScheduledPayments) {
     const loan_oid = delayedPayment.loan_oid;
     const loan = await loans.findOne({ _id: loan_oid });
@@ -27,8 +21,7 @@ export const dayFunction = async (
     const now = new Date();
     //Sumar amortización con interes moratorio
     const dailyMoratory = Math.floor((amortize * (ROI / 100)) / 360);
-    const moratory =
-      dailyMoratory * Math.abs(differenceInDays(scheduledDate, now));
+    const moratory = dailyMoratory * Math.abs(differenceInDays(scheduledDate, now));
     const delayedTotal = amortize + moratory;
     //Se actualiza el usuario del deudor al mover dinero de cuenta
     producer.send({

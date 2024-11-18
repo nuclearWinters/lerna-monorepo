@@ -1,10 +1,7 @@
-import { DetailedHTMLProps, FC, InputHTMLAttributes } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { DetailedHTMLProps, FC, InputHTMLAttributes } from "react";
 
-type Props = DetailedHTMLProps<
-  InputHTMLAttributes<HTMLInputElement>,
-  HTMLInputElement
->;
+type Props = DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
 
 export const baseInput = stylex.create({
   base: {

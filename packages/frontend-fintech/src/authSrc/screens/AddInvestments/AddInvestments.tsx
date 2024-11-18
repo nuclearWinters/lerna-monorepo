@@ -1,15 +1,11 @@
-import {
-  EntryPointComponent,
-  RelayEnvironmentProvider,
-  usePreloadedQuery,
-} from "react-relay/hooks";
-import { utilsAuthQuery } from "../../../authSrc/__generated__/utilsAuthQuery.graphql";
-import { RedirectContainer } from "../../../components/RedirectContainer";
+import { type EntryPointComponent, RelayEnvironmentProvider, usePreloadedQuery } from "react-relay/hooks";
+import type { OperationType } from "relay-runtime";
 import { RelayEnvironmentFintech } from "../../../RelayEnvironment";
+import type { utilsAuthQuery } from "../../../authSrc/__generated__/utilsAuthQuery.graphql";
+import { RedirectContainer } from "../../../components/RedirectContainer";
 import { AddInvestmentsPage } from "../../../fintechSrc/screens/AddInvestments/AddInvestmentsPage";
-import { AddInvestmentsQueriesQuery } from "../../../fintechSrc/screens/AddInvestments/__generated__/AddInvestmentsQueriesQuery.graphql";
+import type { AddInvestmentsQueriesQuery } from "../../../fintechSrc/screens/AddInvestments/__generated__/AddInvestmentsQueriesQuery.graphql";
 import { authUserQuery } from "../../utilsAuth";
-import { OperationType } from "relay-runtime";
 
 export interface Queries {
   [key: string]: OperationType;
@@ -17,14 +13,8 @@ export interface Queries {
   authQuery: utilsAuthQuery;
 }
 
-export const AddInvestments: EntryPointComponent<
-  Queries,
-  Record<string, undefined>
-> = (props) => {
-  const { authUser } = usePreloadedQuery(
-    authUserQuery,
-    props.queries.authQuery
-  );
+export const AddInvestments: EntryPointComponent<Queries, Record<string, undefined>> = (props) => {
+  const { authUser } = usePreloadedQuery(authUserQuery, props.queries.authQuery);
 
   if (!authUser) {
     return null;
@@ -33,14 +23,7 @@ export const AddInvestments: EntryPointComponent<
   const { isLender, isSupport, isBorrower } = authUser;
 
   if (isBorrower || isSupport) {
-    return (
-      <RedirectContainer
-        allowed={["lender"]}
-        isBorrower={isBorrower}
-        isLender={isLender}
-        isSupport={isSupport}
-      />
-    );
+    return <RedirectContainer allowed={["lender"]} isBorrower={isBorrower} isLender={isLender} isSupport={isSupport} />;
   }
 
   return (

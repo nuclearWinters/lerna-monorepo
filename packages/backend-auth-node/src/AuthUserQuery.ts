@@ -1,31 +1,14 @@
-import {
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLBoolean,
-  GraphQLFloat,
-} from "graphql";
-import {
-  connectionDefinitions,
-  connectionFromArray,
-  forwardConnectionArgs,
-  fromGlobalId,
-  globalIdField,
-  nodeDefinitions,
-} from "graphql-relay";
-import type { ConnectionArguments, Connection } from "graphql-relay";
+import type { UUID } from "node:crypto";
+import { DateScalarType } from "@repo/graphql-utils";
+import type { AuthUserLogins, AuthUserMongo, AuthUserSessions } from "@repo/mongo-utils";
+import { base64, unbase64 } from "@repo/utils";
+import { GraphQLBoolean, GraphQLFloat, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
+import { connectionDefinitions, connectionFromArray, forwardConnectionArgs, fromGlobalId, globalIdField, nodeDefinitions } from "graphql-relay";
+import type { Connection, ConnectionArguments } from "graphql-relay";
 import type { Filter } from "mongodb";
 import { ObjectId } from "mongodb";
 import { Languages } from "./mutations/SignUpMutation.ts";
 import type { Context } from "./types.ts";
-import { base64, unbase64 } from "@repo/utils";
-import { DateScalarType } from "@repo/graphql-utils";
-import type {
-  AuthUserLogins,
-  AuthUserMongo,
-  AuthUserSessions,
-} from "@repo/mongo-utils";
-import type { UUID } from "node:crypto";
 
 const { nodeInterface, nodeField } = nodeDefinitions<Context>(
   async (globalId, { authusers }) => {
@@ -37,15 +20,13 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
         return { type: "" };
     }
   },
-  (obj: { type: string }) => obj.type
+  (obj: { type: string }) => obj.type,
 );
 
 export const GraphQLSession = new GraphQLObjectType<AuthUserSessions>({
   name: "Session",
   fields: {
-    id: globalIdField("Session", ({ _id }): string =>
-      typeof _id === "string" ? _id : _id.toHexString()
-    ),
+    id: globalIdField("Session", ({ _id }): string => (typeof _id === "string" ? _id : _id.toHexString())),
     applicationName: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ applicationName }): string => applicationName,
@@ -77,11 +58,10 @@ export const GraphQLSession = new GraphQLObjectType<AuthUserSessions>({
   },
 });
 
-const { connectionType: SessionsConnection, edgeType: GraphQLSessionEdge } =
-  connectionDefinitions({
-    name: "Sessions",
-    nodeType: GraphQLSession,
-  });
+const { connectionType: SessionsConnection, edgeType: GraphQLSessionEdge } = connectionDefinitions({
+  name: "Sessions",
+  nodeType: GraphQLSession,
+});
 
 export const GraphQLLogin = new GraphQLObjectType<AuthUserLogins>({
   name: "Login",
@@ -106,11 +86,10 @@ export const GraphQLLogin = new GraphQLObjectType<AuthUserLogins>({
   },
 });
 
-const { connectionType: LoginConnection, edgeType: GraphQLLoginEdge } =
-  connectionDefinitions({
-    name: "Logins",
-    nodeType: GraphQLLogin,
-  });
+const { connectionType: LoginConnection, edgeType: GraphQLLoginEdge } = connectionDefinitions({
+  name: "Logins",
+  nodeType: GraphQLLogin,
+});
 
 export const GraphQLAuthUser = new GraphQLObjectType<AuthUserMongo, Context>({
   name: "AuthUser",
@@ -172,11 +151,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<AuthUserMongo, Context>({
           type: GraphQLFloat,
         },
       },
-      resolve: async (
-        _root: unknown,
-        args: unknown,
-        { sessions, id }: Context
-      ): Promise<Connection<AuthUserSessions>> => {
+      resolve: async (_root: unknown, args: unknown, { sessions, id }: Context): Promise<Connection<AuthUserSessions>> => {
         const { after, first } = args as ConnectionArguments;
         try {
           if (!id) {
@@ -193,10 +168,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<AuthUserMongo, Context>({
           if (sessions_id) {
             query._id = { $lt: new ObjectId(sessions_id) };
           }
-          const cursor = sessions
-            .find(query)
-            .limit(first)
-            .sort({ $natural: -1 });
+          const cursor = sessions.find(query).limit(first).sort({ $natural: -1 });
           const results = await cursor.toArray();
           const edges = results.map((session) => ({
             cursor: base64(session._id.toHexString()),
@@ -225,11 +197,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<AuthUserMongo, Context>({
           type: GraphQLFloat,
         },
       },
-      resolve: async (
-        _root: unknown,
-        args: unknown,
-        { logins, id }: Context
-      ): Promise<Connection<AuthUserLogins>> => {
+      resolve: async (_root: unknown, args: unknown, { logins, id }: Context): Promise<Connection<AuthUserLogins>> => {
         const { first, after } = args as ConnectionArguments;
         try {
           if (!id) {
@@ -272,11 +240,7 @@ export const GraphQLAuthUser = new GraphQLObjectType<AuthUserMongo, Context>({
 
 const QueryUser = {
   type: GraphQLAuthUser,
-  resolve: async (
-    _root: unknown,
-    _args: unknown,
-    { authusers, id }: Context
-  ): Promise<AuthUserMongo> => {
+  resolve: async (_root: unknown, _args: unknown, { authusers, id }: Context): Promise<AuthUserMongo> => {
     if (!id) {
       throw new Error("Unauthenticated");
     }

@@ -1,67 +1,38 @@
-import { main } from "../app.ts";
-import supertest from "supertest";
-import { MongoClient, type Db, ObjectId } from "mongodb";
-import {
-  RedisContainer,
-  type StartedRedisContainer,
-} from "@testcontainers/redis";
-import { createClient, type RedisClientType } from "redis";
-import type TestAgent from "supertest/lib/agent.js";
-import {
-  AccountClient,
-  AccountService,
-} from "@repo/grpc-utils/protoAccount/account_grpc_pb";
+import { Server, ServerCredentials, credentials } from "@grpc/grpc-js";
 import { AccountServer } from "@repo/grpc-utils";
-import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
+import { AccountClient, AccountService } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import type { AuthUserMongo } from "@repo/mongo-utils";
+import { RedisContainer } from "@testcontainers/redis";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "../app.ts";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import { after, describe, it } from "node:test";
+import { ok, strictEqual, deepStrictEqual } from "node:assert";
 
-describe("SignUpMutation tests", () => {
-  let client: MongoClient;
-  let dbInstance: Db;
-  let dbInstanceFintech: Db;
-  let redisClient: RedisClientType;
-  let request: TestAgent<supertest.Test>;
-  let grpcClient: AccountClient;
-  let startedRedisContainer: StartedRedisContainer;
-  let grpcServer: Server;
-
-  beforeAll(async () => {
-    client = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstance = client.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    dbInstanceFintech = client.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
-        "-fintech"
-    );
-    startedRedisContainer = await new RedisContainer().start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    grpcServer = new Server();
-    grpcServer.addService(AccountService, AccountServer(dbInstanceFintech));
-    grpcServer.bindAsync(
-      "localhost:1973",
-      ServerCredentials.createInsecure(),
-      (err) => {
-        if (err) {
-          return;
-        }
-      }
-    );
-    grpcClient = new AccountClient(
-      `localhost:1973`,
-      credentials.createInsecure()
-    );
-    const server = await main(dbInstance, redisClient, grpcClient);
-    request = supertest(server, { http2: true });
+describe("SignUpMutation tests", async () => {
+  const startedRedisContainer = await new RedisContainer().start();
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const client = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const dbInstance = client.db("auth");
+  const dbInstanceFintech = client.db("fintech");
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
   });
+  await redisClient.connect();
+  const grpcClient = new AccountClient("localhost:1973", credentials.createInsecure());
+  const grpcServer = new Server();
+  grpcServer.addService(AccountService, AccountServer(dbInstanceFintech));
+  grpcServer.bindAsync("localhost:1973", ServerCredentials.createInsecure(), (err) => {
+    if (err) {
+      return;
+    }
+  });
+  const server = await main(dbInstance, redisClient, grpcClient);
+  const request = supertest(server, { http2: true });
 
-  afterAll(async () => {
+  after(async () => {
     grpcClient.close();
     grpcServer.forceShutdown();
     await redisClient.disconnect();
@@ -93,21 +64,16 @@ describe("SignUpMutation tests", () => {
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.signUp.error).toBeFalsy();
+    strictEqual(data.data.signUp.error, "");
     const new_user_data = await users.findOne({ email });
     if (!new_user_data) {
       throw new Error("User not found.");
     }
-    const {
-      _id: new_user_oid,
-      password: new_password,
-      id: new_user_id,
-      ...new_user_other_data
-    } = new_user_data;
-    expect(ObjectId.isValid(new_user_oid)).toBeTruthy();
-    expect(new_password).toBeTruthy();
-    expect(new_user_id).toBeTruthy();
-    expect(new_user_other_data).toEqual({
+    const { _id: new_user_oid, password: new_password, id: new_user_id, ...new_user_other_data } = new_user_data;
+    ok(ObjectId.isValid(new_user_oid));
+    ok(new_password);
+    ok(new_user_id);
+    deepStrictEqual(new_user_other_data, {
       email,
       isBorrower: false,
       isLender: true,
@@ -147,22 +113,17 @@ describe("SignUpMutation tests", () => {
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.signUp.error).toBe("Email already in use");
-    expect(data.data.signUp.refreshToken).toBeFalsy();
+    strictEqual(data.data.signUp.error, "Email already in use");
+    strictEqual(data.data.signUp.refreshToken, undefined);
     const new_user_data = await users.findOne({ email: "anrp1@gmail.com" });
     if (!new_user_data) {
       throw new Error("User not found.");
     }
-    const {
-      _id: new_user_oid,
-      password: new_password,
-      id: new_user_id,
-      ...new_user_other_data
-    } = new_user_data;
-    expect(ObjectId.isValid(new_user_oid)).toBeTruthy();
-    expect(new_password).toBeTruthy();
-    expect(new_user_id).toBeTruthy();
-    expect(new_user_other_data).toEqual({
+    const { _id: new_user_oid, password: new_password, id: new_user_id, ...new_user_other_data } = new_user_data;
+    ok(ObjectId.isValid(new_user_oid));
+    ok(new_password);
+    ok(new_user_id);
+    deepStrictEqual(new_user_other_data, {
       email,
       isBorrower: false,
       isLender: true,
@@ -202,21 +163,16 @@ describe("SignUpMutation tests", () => {
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.signUp.error).toBeFalsy();
+    strictEqual(data.data.signUp.error, "");
     const new_user_data = await users.findOne({ email: "anrp2@gmail.com" });
     if (!new_user_data) {
       throw new Error("User not found.");
     }
-    const {
-      _id: new_user_oid,
-      password: new_password,
-      id: new_user_id,
-      ...new_user_other_data
-    } = new_user_data;
-    expect(ObjectId.isValid(new_user_oid)).toBeTruthy();
-    expect(new_password).toBeTruthy();
-    expect(new_user_id).toBeTruthy();
-    expect(new_user_other_data).toEqual({
+    const { _id: new_user_oid, password: new_password, id: new_user_id, ...new_user_other_data } = new_user_data;
+    ok(ObjectId.isValid(new_user_oid));
+    ok(new_password);
+    ok(new_user_id);
+    deepStrictEqual(new_user_other_data, {
       email,
       isBorrower: true,
       isLender: false,

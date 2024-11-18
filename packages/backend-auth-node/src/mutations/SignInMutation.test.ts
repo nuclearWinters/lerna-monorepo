@@ -1,42 +1,28 @@
-import { main } from "../app.ts";
-import supertest from "supertest";
-import { MongoClient, type Db, ObjectId } from "mongodb";
-import bcrypt from "bcryptjs";
-import { createClient, type RedisClientType } from "redis";
-import type TestAgent from "supertest/lib/agent.js";
-import {
-  RedisContainer,
-  type StartedRedisContainer,
-} from "@testcontainers/redis";
 import type { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import type { AuthUserMongo } from "@repo/mongo-utils";
+import { RedisContainer } from "@testcontainers/redis";
+import bcrypt from "bcryptjs";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "../app.ts";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import { after, describe, it } from "node:test";
+import { ok, strictEqual } from "node:assert";
 
-describe("SignInMutation tests", () => {
-  let client: MongoClient;
-  let dbInstance: Db;
-  let request: TestAgent<supertest.Test>;
-  let grpcClient: AccountClient;
-  let redisClient: RedisClientType;
-  let startedRedisContainer: StartedRedisContainer;
-
-  beforeAll(async () => {
-    client = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstance = client.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    startedRedisContainer = await new RedisContainer().start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    const server = await main(dbInstance, redisClient, grpcClient);
-    request = supertest(server, { http2: true });
+describe("SignInMutation tests", async () => {
+  const startedRedisContainer = await new RedisContainer().start();
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const client = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const dbInstance = client.db("auth");
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
   });
+  await redisClient.connect();
+  const server = await main(dbInstance, redisClient, {} as AccountClient);
+  const request = supertest(server, { http2: true });
 
-  afterAll(async () => {
+  after(async () => {
     await redisClient.disconnect();
     await startedRedisContainer.stop();
     await client.close();
@@ -82,8 +68,8 @@ describe("SignInMutation tests", () => {
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.signIn.error).toBeFalsy();
-    expect(response.headers["set-cookie"]).toBeTruthy();
+    strictEqual(data.data.signIn.error, "");
+    ok(response.headers["set-cookie"]);
   });
 
   it("SignInMutation: user NOT exists", async () => {
@@ -106,8 +92,8 @@ describe("SignInMutation tests", () => {
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.signIn.error).toBe("User do not exists");
-    expect(response.headers["set-cookie"]).toBeFalsy();
+    strictEqual(data.data.signIn.error, "User do not exists");
+    strictEqual(response.headers["set-cookie"], undefined);
   });
 
   it("SignInMutation: password is NOT correct", async () => {
@@ -130,7 +116,7 @@ describe("SignInMutation tests", () => {
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.signIn.error).toBe("Incorrect password");
-    expect(response.headers["set-cookie"]).toBeFalsy();
+    strictEqual(data.data.signIn.error, "Incorrect password");
+    strictEqual(response.headers["set-cookie"], undefined);
   });
 });

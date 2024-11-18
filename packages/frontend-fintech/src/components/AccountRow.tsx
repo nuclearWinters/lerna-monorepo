@@ -1,6 +1,6 @@
-import { FC } from "react";
-import FaPlusCircle from "../assets/circle-plus-solid.svg";
 import * as stylex from "@stylexjs/stylex";
+import type { FC } from "react";
+import FaPlusCircle from "../assets/circle-plus-solid.svg";
 
 interface Props {
   text: string;
@@ -48,14 +48,7 @@ export const AccountRow: FC<Props> = ({ text, value, type }) => {
   return (
     <div {...stylex.props(accountRowBox.base)}>
       <div>{text}</div>
-      <div
-        {...stylex.props(
-          accountRowValue.base,
-          type ? accountRowValue.available : undefined
-        )}
-      >
-        {value}
-      </div>
+      <div {...stylex.props(accountRowValue.base, type ? accountRowValue.available : undefined)}>{value}</div>
       <FaPlusCircle {...stylex.props(accountRowIcon.base)} />
     </div>
   );

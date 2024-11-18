@@ -1,23 +1,18 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
+import { EntryPointContainer, type PreloadedEntryPoint } from "react-relay";
+import type { GetEntryPointComponentFromEntryPoint } from "react-relay/relay-hooks/helpers";
+import type { HeaderAuthEntryPoint } from "../authSrc/screens/HeaderAuth/HeaderAuth.entrypoint";
+import { type RouteKeys, references } from "../router";
 import ErrorBoundary from "./ErrorBoundary";
-import { EntryPointContainer, PreloadedEntryPoint } from "react-relay";
-import { GetEntryPointComponentFromEntryPoint } from "react-relay/relay-hooks/helpers";
-import { HeaderAuthEntryPoint } from "../authSrc/screens/HeaderAuth/HeaderAuth.entrypoint";
 import { useRoute } from "./RouteHooks";
-import { references, RouteKeys } from "../router";
 
 export const Routes: FC<{
   children: ReactNode;
-  entryPointReference: PreloadedEntryPoint<
-    GetEntryPointComponentFromEntryPoint<typeof HeaderAuthEntryPoint>
-  >;
+  entryPointReference: PreloadedEntryPoint<GetEntryPointComponentFromEntryPoint<typeof HeaderAuthEntryPoint>>;
 }> = ({ children, entryPointReference }) => {
   return (
     <ErrorBoundary>
-      <EntryPointContainer
-        entryPointReference={entryPointReference}
-        props={{ children }}
-      />
+      <EntryPointContainer entryPointReference={entryPointReference} props={{ children }} />
     </ErrorBoundary>
   );
 };

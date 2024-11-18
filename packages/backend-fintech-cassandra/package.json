@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node --watch --experimental-strip-types ./src/index.ts",
     "populate": "node --experimental-strip-types ./src/populate.ts",
-    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
+    "lint": "biome check",
     "serve": "KAFKA_ID=backend-fintech-cassandra node --experimental-strip-types ./src/index.ts",
     "pcm": "lint-staged",
-    "test": "jest --bail"
+    "test": "node --test --experimental-strip-types"
   },
   "author": "",
   "license": "ISC",
@@ -20,8 +20,8 @@
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [
-      "eslint --cache --fix",
-      "prettier --write"
+      "biome check",
+      "node --experimental-strip-types --test"
     ]
   }
 }

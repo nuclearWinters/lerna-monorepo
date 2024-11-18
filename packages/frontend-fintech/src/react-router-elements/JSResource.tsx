@@ -1,4 +1,4 @@
-import { JSResourceReference } from "react-relay";
+import type { JSResourceReference } from "react-relay";
 
 const map = new Map<string, JSResourceReference<unknown>>();
 
@@ -38,10 +38,7 @@ export class Resource<T> {
   }
 }
 
-export default function JSResource<T>(
-  moduleId: string,
-  loader: () => Promise<{ default: T }>
-): JSResourceReference<T> {
+export default function JSResource<T>(moduleId: string, loader: () => Promise<{ default: T }>): JSResourceReference<T> {
   let resource = map.get(moduleId);
   if (resource == null) {
     resource = new Resource<T>(moduleId, loader);

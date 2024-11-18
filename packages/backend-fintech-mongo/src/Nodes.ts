@@ -1,44 +1,37 @@
+import type { UUID } from "node:crypto";
+import { DateScalarType } from "@repo/graphql-utils";
+import type {
+  FintechUserMongo,
+  IInvestmentStatus,
+  ILoanStatus,
+  InvestmentMongo,
+  InvestmentTransactionMongo,
+  LoanMongo,
+  MoneyTransactionMongo,
+  ScheduledPaymentsMongo,
+  ScheduledPaymentsStatus,
+  TransactionInvestMongoType,
+  TransactionMongo,
+  TransactionMongoType,
+} from "@repo/mongo-utils";
+import { base64, unbase64 } from "@repo/utils";
 import {
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLScalarType,
-  Kind,
   GraphQLEnumType,
   GraphQLFloat,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLScalarType,
+  GraphQLString,
   GraphQLUnionType,
+  Kind,
 } from "graphql";
-import {
-  fromGlobalId,
-  globalIdField,
-  nodeDefinitions,
-  connectionDefinitions,
-  connectionFromArray,
-  forwardConnectionArgs,
-} from "graphql-relay";
+import { connectionDefinitions, connectionFromArray, forwardConnectionArgs, fromGlobalId, globalIdField, nodeDefinitions } from "graphql-relay";
 import type { Connection, ConnectionArguments } from "graphql-relay";
 import { ObjectId } from "mongodb";
 import type { Filter } from "mongodb";
 import type { Context } from "./types.ts";
-import type {
-  FintechUserMongo,
-  ScheduledPaymentsMongo,
-  LoanMongo,
-  InvestmentTransactionMongo,
-  InvestmentMongo,
-  MoneyTransactionMongo,
-  TransactionMongo,
-  ILoanStatus,
-  IInvestmentStatus,
-  TransactionMongoType,
-  TransactionInvestMongoType,
-  ScheduledPaymentsStatus,
-} from "@repo/mongo-utils";
-import { base64, unbase64 } from "@repo/utils";
-import { DateScalarType } from "@repo/graphql-utils";
-import type { UUID } from "node:crypto";
 
 interface ArgsInvestments extends ConnectionArguments {
   status?: IInvestmentStatus[];
@@ -78,12 +71,10 @@ export const dataDrivenDependencies = {
 
 const generateCurrency = (value: unknown) => {
   if (typeof value !== "number") {
-    throw new TypeError(
-      `Currency cannot represent non integer type ${JSON.stringify(value)}`
-    );
+    throw new TypeError(`Currency cannot represent non integer type ${JSON.stringify(value)}`);
   }
 
-  const currencyInCents = parseInt(value.toString(), 10);
+  const currencyInCents = Number.parseInt(value.toString(), 10);
 
   return (currencyInCents / 100).toLocaleString("en-US", {
     style: "currency",
@@ -93,7 +84,7 @@ const generateCurrency = (value: unknown) => {
 
 const generateCents = (value: string) => {
   const digits = value.replace("$", "").replace(",", "");
-  const number = parseFloat(digits);
+  const number = Number.parseFloat(digits);
   return number * 100;
 };
 
@@ -102,9 +93,7 @@ export const MXNScalarType = new GraphQLScalarType({
   serialize: generateCurrency,
   parseValue: (value) => {
     if (typeof value !== "string") {
-      throw new TypeError(
-        `Currency cannot represent non string type ${JSON.stringify(value)}`
-      );
+      throw new TypeError(`Currency cannot represent non string type ${JSON.stringify(value)}`);
     }
 
     return generateCents(value);
@@ -115,11 +104,7 @@ export const MXNScalarType = new GraphQLScalarType({
         return generateCents(ast.value);
       }
     }
-    throw new TypeError(
-      `Currency cannot represent an invalid currency-string ${JSON.stringify(
-        ast
-      )}.`
-    );
+    throw new TypeError(`Currency cannot represent an invalid currency-string ${JSON.stringify(ast)}.`);
   },
 });
 
@@ -192,15 +177,13 @@ const { nodeInterface, nodeField } = nodeDefinitions<Context>(
         return { type: "" };
     }
   },
-  (obj: { type: string }) => obj.type
+  (obj: { type: string }) => obj.type,
 );
 
 export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
   name: "Investment",
   fields: {
-    id: globalIdField("Investment", ({ _id }): string =>
-      typeof _id === "string" ? _id : _id.toHexString()
-    ),
+    id: globalIdField("Investment", ({ _id }): string => (typeof _id === "string" ? _id : _id.toHexString())),
     borrower_id: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ borrower_id }): string => borrower_id,
@@ -211,8 +194,7 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
     },
     loan_id: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ loan_oid }): string =>
-        typeof loan_oid === "string" ? loan_oid : loan_oid.toHexString(),
+      resolve: ({ loan_oid }): string => (typeof loan_oid === "string" ? loan_oid : loan_oid.toHexString()),
     },
     quantity: {
       type: new GraphQLNonNull(MXNScalarType),
@@ -236,13 +218,11 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
     },
     created_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created_at }): Date =>
-        typeof created_at === "string" ? new Date(created_at) : created_at,
+      resolve: ({ created_at }): Date => (typeof created_at === "string" ? new Date(created_at) : created_at),
     },
     updated_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ updated_at }): Date =>
-        typeof updated_at === "string" ? new Date(updated_at) : updated_at,
+      resolve: ({ updated_at }): Date => (typeof updated_at === "string" ? new Date(updated_at) : updated_at),
     },
     status: {
       type: new GraphQLNonNull(InvestmentStatus),
@@ -264,18 +244,12 @@ export const GraphQLInvestment = new GraphQLObjectType<InvestmentMongo>({
   interfaces: [nodeInterface],
 });
 
-const {
-  connectionType: InvestmentConnection,
-  edgeType: GraphQLInvestmentEdge,
-} = connectionDefinitions({
+const { connectionType: InvestmentConnection, edgeType: GraphQLInvestmentEdge } = connectionDefinitions({
   name: "Investment",
   nodeType: GraphQLInvestment,
 });
 
-export const GraphQLInvestTransaction = new GraphQLObjectType<
-  InvestmentTransactionMongo,
-  Context
->({
+export const GraphQLInvestTransaction = new GraphQLObjectType<InvestmentTransactionMongo, Context>({
   name: "InvestTransaction",
   fields: {
     id: globalIdField("Transaction", ({ _id }): string => {
@@ -299,8 +273,7 @@ export const GraphQLInvestTransaction = new GraphQLObjectType<
     },
     created_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created_at }): Date =>
-        typeof created_at === "string" ? new Date(created_at) : created_at,
+      resolve: ({ created_at }): Date => (typeof created_at === "string" ? new Date(created_at) : created_at),
     },
     type: {
       type: new GraphQLNonNull(TransactionType),
@@ -311,10 +284,7 @@ export const GraphQLInvestTransaction = new GraphQLObjectType<
   interfaces: [nodeInterface],
 });
 
-export const GraphQLMoneyTransaction = new GraphQLObjectType<
-  MoneyTransactionMongo,
-  Context
->({
+export const GraphQLMoneyTransaction = new GraphQLObjectType<MoneyTransactionMongo, Context>({
   name: "MoneyTransaction",
   fields: {
     id: globalIdField("Transaction", ({ _id }): string => {
@@ -330,8 +300,7 @@ export const GraphQLMoneyTransaction = new GraphQLObjectType<
     },
     created_at: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ created_at }): Date =>
-        typeof created_at === "string" ? new Date(created_at) : created_at,
+      resolve: ({ created_at }): Date => (typeof created_at === "string" ? new Date(created_at) : created_at),
     },
     type: {
       type: new GraphQLNonNull(TransactionType),
@@ -346,54 +315,39 @@ export const GraphQLTransaction = new GraphQLUnionType({
   name: "Transaction",
   types: [GraphQLInvestTransaction, GraphQLMoneyTransaction],
   resolveType: (value) => {
-    return (value as TransactionMongo).type === "invest"
-      ? "InvestTransaction"
-      : "MoneyTransaction";
+    return (value as TransactionMongo).type === "invest" ? "InvestTransaction" : "MoneyTransaction";
   },
 });
 
-const {
-  connectionType: TransactionConnection,
-  edgeType: GraphQLTransactionEdge,
-} = connectionDefinitions({
+const { connectionType: TransactionConnection, edgeType: GraphQLTransactionEdge } = connectionDefinitions({
   name: "Transaction",
   nodeType: GraphQLTransaction,
 });
 
-export const GraphQLScheduledPayments =
-  new GraphQLObjectType<ScheduledPaymentsMongo>({
-    name: "ScheduledPayments",
-    fields: {
-      id: globalIdField("ScheduledPayments", ({ _id }): string =>
-        typeof _id === "string" ? _id : _id.toHexString()
-      ),
-      loan_id: globalIdField("Loan", ({ loan_oid }): string =>
-        typeof loan_oid === "string" ? loan_oid : loan_oid.toHexString()
-      ),
-      amortize: {
-        type: new GraphQLNonNull(MXNScalarType),
-        resolve: ({ amortize }): number => amortize,
-      },
-      status: {
-        type: new GraphQLNonNull(LoanScheduledPaymentStatus),
-        resolve: ({ status }): ScheduledPaymentsStatus => status,
-      },
-      scheduledDate: {
-        type: new GraphQLNonNull(DateScalarType),
-        resolve: ({ scheduled_date }): Date =>
-          typeof scheduled_date === "string"
-            ? new Date(scheduled_date)
-            : scheduled_date,
-      },
+export const GraphQLScheduledPayments = new GraphQLObjectType<ScheduledPaymentsMongo>({
+  name: "ScheduledPayments",
+  fields: {
+    id: globalIdField("ScheduledPayments", ({ _id }): string => (typeof _id === "string" ? _id : _id.toHexString())),
+    loan_id: globalIdField("Loan", ({ loan_oid }): string => (typeof loan_oid === "string" ? loan_oid : loan_oid.toHexString())),
+    amortize: {
+      type: new GraphQLNonNull(MXNScalarType),
+      resolve: ({ amortize }): number => amortize,
     },
-  });
+    status: {
+      type: new GraphQLNonNull(LoanScheduledPaymentStatus),
+      resolve: ({ status }): ScheduledPaymentsStatus => status,
+    },
+    scheduledDate: {
+      type: new GraphQLNonNull(DateScalarType),
+      resolve: ({ scheduled_date }): Date => (typeof scheduled_date === "string" ? new Date(scheduled_date) : scheduled_date),
+    },
+  },
+});
 
 export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
   name: "Loan",
   fields: {
-    id: globalIdField("Loan", ({ _id }): string =>
-      typeof _id === "string" ? _id : _id.toHexString()
-    ),
+    id: globalIdField("Loan", ({ _id }): string => (typeof _id === "string" ? _id : _id.toHexString())),
     user_id: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ user_id }): string => user_id,
@@ -420,8 +374,7 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
     },
     expiry: {
       type: new GraphQLNonNull(DateScalarType),
-      resolve: ({ expiry }): Date =>
-        typeof expiry === "string" ? new Date(expiry) : expiry,
+      resolve: ({ expiry }): Date => (typeof expiry === "string" ? new Date(expiry) : expiry),
     },
     status: {
       type: new GraphQLNonNull(LoanStatus),
@@ -439,11 +392,10 @@ export const GraphQLLoan = new GraphQLObjectType<LoanMongo>({
   interfaces: [nodeInterface],
 });
 
-const { connectionType: LoanConnection, edgeType: GraphQLLoanEdge } =
-  connectionDefinitions({
-    name: "Loan",
-    nodeType: GraphQLLoan,
-  });
+const { connectionType: LoanConnection, edgeType: GraphQLLoanEdge } = connectionDefinitions({
+  name: "Loan",
+  nodeType: GraphQLLoan,
+});
 
 const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
   name: "User",
@@ -473,11 +425,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
           type: GraphQLFloat,
         },
       },
-      resolve: async (
-        _root: unknown,
-        args: unknown,
-        { loans, id, isSupport }: Context
-      ): Promise<Connection<LoanMongo>> => {
+      resolve: async (_root: unknown, args: unknown, { loans, id, isSupport }: Context): Promise<Connection<LoanMongo>> => {
         const { after, first } = args as ConnectionArguments;
         if (!id) {
           throw new Error("Unauthenticated");
@@ -496,11 +444,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
         if (loan_id) {
           query._id = { $lt: new ObjectId(loan_id) };
         }
-        const result = await loans
-          .find(query)
-          .limit(limit)
-          .sort({ $natural: -1 })
-          .toArray();
+        const result = await loans.find(query).limit(limit).sort({ $natural: -1 }).toArray();
         const edgesMapped = result.map((loan) => {
           return {
             cursor: base64(loan._id.toHexString()),
@@ -527,11 +471,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
           type: GraphQLFloat,
         },
       },
-      resolve: async (
-        _root: unknown,
-        args: unknown,
-        { loans, isBorrower, id }: Context
-      ): Promise<Connection<LoanMongo>> => {
+      resolve: async (_root: unknown, args: unknown, { loans, isBorrower, id }: Context): Promise<Connection<LoanMongo>> => {
         const { after, first } = args as ConnectionArguments;
         if (!id) {
           throw new Error("Unauthenticated");
@@ -550,11 +490,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
         if (loan_id) {
           query._id = { $lt: new ObjectId(loan_id) };
         }
-        const result = await loans
-          .find(query)
-          .limit(limit)
-          .sort({ $natural: -1 })
-          .toArray();
+        const result = await loans.find(query).limit(limit).sort({ $natural: -1 }).toArray();
         const edgesMapped = result.map((loan) => {
           return {
             cursor: base64(loan._id.toHexString()),
@@ -584,11 +520,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
           type: GraphQLFloat,
         },
       },
-      resolve: async (
-        _root: unknown,
-        args: unknown,
-        { investments, id }: Context
-      ): Promise<Connection<InvestmentMongo>> => {
+      resolve: async (_root: unknown, args: unknown, { investments, id }: Context): Promise<Connection<InvestmentMongo>> => {
         const { status, first, after } = args as ArgsInvestments;
         if (!id) {
           throw new Error("Unauthenticated");
@@ -607,11 +539,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
         if (status) {
           query.status = { $in: status };
         }
-        const result = await investments
-          .find(query)
-          .limit(limit)
-          .sort({ $natural: -1 })
-          .toArray();
+        const result = await investments.find(query).limit(limit).sort({ $natural: -1 }).toArray();
         const edgesMapped = result.map((investment) => {
           return {
             cursor: base64(investment._id.toHexString()),
@@ -638,11 +566,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
           type: GraphQLFloat,
         },
       },
-      resolve: async (
-        _root: unknown,
-        args: unknown,
-        { transactions, id }: Context
-      ): Promise<Connection<TransactionMongo>> => {
+      resolve: async (_root: unknown, args: unknown, { transactions, id }: Context): Promise<Connection<TransactionMongo>> => {
         const { first, after } = args as ConnectionArguments;
         if (!id) {
           throw new Error("Unauthenticated");
@@ -658,11 +582,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
         if (transaction_id) {
           query._id = { $lt: new ObjectId(transaction_id) };
         }
-        const result = await transactions
-          .find(query)
-          .limit(limit)
-          .sort({ $natural: -1 })
-          .toArray();
+        const result = await transactions.find(query).limit(limit).sort({ $natural: -1 }).toArray();
         const edgesMapped = result.map((transaction) => {
           return {
             cursor: base64(transaction._id.toHexString()),
@@ -689,11 +609,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
           type: GraphQLFloat,
         },
       },
-      resolve: async (
-        _root: unknown,
-        args: unknown,
-        { loans }: Context
-      ): Promise<Connection<LoanMongo>> => {
+      resolve: async (_root: unknown, args: unknown, { loans }: Context): Promise<Connection<LoanMongo>> => {
         const { after, first } = args as ArgsLoans;
         try {
           const loan_id = unbase64(after || "");
@@ -707,11 +623,7 @@ const GraphQLUser = new GraphQLObjectType<FintechUserMongo, Context>({
           if (loan_id) {
             query._id = { $lt: new ObjectId(loan_id) };
           }
-          const result = await loans
-            .find(query)
-            .limit(limit)
-            .sort({ $natural: -1 })
-            .toArray();
+          const result = await loans.find(query).limit(limit).sort({ $natural: -1 }).toArray();
           const edgesMapped = result.map((loan) => {
             return {
               cursor: base64(loan._id.toHexString()),

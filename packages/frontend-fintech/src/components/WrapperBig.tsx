@@ -1,5 +1,5 @@
-import { FC, ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { FC, ReactNode } from "react";
 
 interface Props {
   styleX?: stylex.StyleXStyles[];

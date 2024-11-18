@@ -1,15 +1,11 @@
-import type { Db } from "mongodb";
 import type { LoanMongo, ScheduledPaymentsMongo } from "@repo/mongo-utils";
-import type { Producer } from "kafkajs";
 import { endOfDay, startOfDay } from "date-fns";
+import type { Producer } from "kafkajs";
+import type { Db } from "mongodb";
 
-export const monthFunction = async (
-  db: Db,
-  producer: Producer
-): Promise<void> => {
+export const monthFunction = async (db: Db, producer: Producer): Promise<void> => {
   const loans = db.collection<LoanMongo>("loans");
-  const scheduledPayments =
-    db.collection<ScheduledPaymentsMongo>("scheduledPayments");
+  const scheduledPayments = db.collection<ScheduledPaymentsMongo>("scheduledPayments");
   const resultsScheduledPayments = await scheduledPayments
     .find({
       status: "to be paid",

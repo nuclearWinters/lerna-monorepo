@@ -1,6 +1,6 @@
-import { FC } from "react";
-import logo from "../assets/logo.png";
 import * as stylex from "@stylexjs/stylex";
+import type { FC } from "react";
+import logo from "../assets/logo.png";
 
 export const baseIconImg = stylex.create({
   base: {
@@ -23,7 +23,7 @@ export const baseIconBox = stylex.create({
 export const Icon: FC = () => {
   return (
     <div {...stylex.props(baseIconBox.base)}>
-      <img src={logo} alt="presta dinero" {...stylex.props(baseIconImg.base)} />
+      <img src={logo} {...stylex.props(baseIconImg.base)} alt="presta dinero" />
     </div>
   );
 };

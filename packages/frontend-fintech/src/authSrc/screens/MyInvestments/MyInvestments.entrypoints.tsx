@@ -1,8 +1,8 @@
-import type MyInvestments from "./MyInvestments";
+import type { EntryPoint } from "react-relay";
 import utilsAuthQueryParameters from "../../../authSrc/__generated__/utilsAuthQuery$parameters";
 import MyInvestmentsQueriesQueryParamenters from "../../../fintechSrc/screens/MyInvestments/__generated__/MyInvestmentsQueriesQuery$parameters";
-import { EntryPoint } from "react-relay";
 import JSResource from "../../../react-router-elements/JSResource";
+import type MyInvestments from "./MyInvestments";
 
 export const MyInvestmentsEntryPoint: EntryPoint<typeof MyInvestments> = {
   root: JSResource("MyInvestments", () => import("./MyInvestments")),

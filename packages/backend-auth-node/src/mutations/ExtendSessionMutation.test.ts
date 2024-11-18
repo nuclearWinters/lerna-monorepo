@@ -1,45 +1,30 @@
-import { main } from "../app.ts";
-import supertest from "supertest";
-import { MongoClient, type Db, ObjectId } from "mongodb";
-import bcrypt from "bcryptjs";
-import type TestAgent from "supertest/lib/agent.js";
-import type { RedisClientType } from "redis";
-import {
-  RedisContainer,
-  type StartedRedisContainer,
-} from "@testcontainers/redis";
-import { createClient } from "redis";
-import { getValidTokens } from "@repo/jwt-utils";
 import type { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
-import { parse, serialize } from "cookie";
+import { getValidTokens } from "@repo/jwt-utils";
 import { getAuthCollections } from "@repo/mongo-utils";
+import { RedisContainer } from "@testcontainers/redis";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import bcrypt from "bcryptjs";
+import { parse, serialize } from "cookie";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "../app.ts";
+import { describe, it, after } from "node:test";
+import { ok, strictEqual, notStrictEqual } from "node:assert";
 
-describe("ExtendSessionMutation tests", () => {
-  let client: MongoClient;
-  let dbInstance: Db;
-  let redisClient: RedisClientType;
-  let request: TestAgent<supertest.Test>;
-  let grpcClient: AccountClient;
-  let startedRedisContainer: StartedRedisContainer;
-
-  beforeAll(async () => {
-    client = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstance = client.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    startedRedisContainer = await new RedisContainer().start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    const server = await main(dbInstance, redisClient, grpcClient);
-    request = supertest(server, { http2: true });
+describe("ExtendSessionMutation tests", async () => {
+  const startedRedisContainer = await new RedisContainer().start();
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const client = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const dbInstance = client.db("auth");
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
   });
+  await redisClient.connect();
+  const server = await main(dbInstance, redisClient, {} as AccountClient);
+  const request = supertest(server, { http2: true });
 
-  afterAll(async () => {
+  after(async () => {
     await redisClient.disconnect();
     await startedRedisContainer.stop();
     await client.close();
@@ -91,11 +76,11 @@ describe("ExtendSessionMutation tests", () => {
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.extendSession.error).toBeFalsy();
+    strictEqual(data.data.extendSession.error, "");
     const responseCookies = response.headers["set-cookie"][0];
-    expect(responseCookies).toBeTruthy();
+    ok(responseCookies);
     const parsedCookies = parse(responseCookies);
-    expect(parsedCookies.refreshToken).not.toBe(refreshToken);
+    notStrictEqual(parsedCookies.refreshToken, refreshToken);
   });
 
   it("ExtendSessionMutation: error", async () => {
@@ -119,7 +104,7 @@ describe("ExtendSessionMutation tests", () => {
       .set("Accept", "text/event-stream");
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.extendSession.error).toBeTruthy();
-    expect(response.headers["set-cookie"]).toBeFalsy();
+    ok(data.data.extendSession.error);
+    strictEqual(response.headers["set-cookie"], undefined);
   });
 });

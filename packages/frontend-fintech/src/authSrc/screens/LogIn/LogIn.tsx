@@ -1,23 +1,17 @@
-import { Spinner } from "../../../components/Spinner";
-import { ChangeEvent, useState } from "react";
-import { useMutation, graphql, EntryPointComponent } from "react-relay/hooks";
-import { Label } from "../../../components/Label";
+import { type ChangeEvent, useState } from "react";
+import { type EntryPointComponent, graphql, useMutation } from "react-relay/hooks";
+import type { OperationType } from "relay-runtime";
 import { CustomButton } from "../../../components/CustomButton";
-import { Main } from "../../../components/Main";
-import { WrapperSmall } from "../../../components/WrapperSmall";
 import { FormSmall } from "../../../components/FormSmall";
-import { Title } from "../../../components/Title";
 import { Input } from "../../../components/Input";
+import { Label } from "../../../components/Label";
+import { Main } from "../../../components/Main";
 import { Space, customSpace } from "../../../components/Space";
-import {
-  borrowerPages,
-  getUserDataCache,
-  lenderPages,
-  supportPages,
-  useTranslation,
-} from "../../../utils";
-import { LogInMutation } from "./__generated__/LogInMutation.graphql";
-import { OperationType } from "relay-runtime";
+import { Spinner } from "../../../components/Spinner";
+import { Title } from "../../../components/Title";
+import { WrapperSmall } from "../../../components/WrapperSmall";
+import { borrowerPages, getUserDataCache, lenderPages, supportPages, useTranslation } from "../../../utils";
+import type { LogInMutation } from "./__generated__/LogInMutation.graphql";
 
 export interface Decode {
   id: string;
@@ -28,10 +22,7 @@ export interface Decode {
   exp: number;
 }
 
-export const LogIn: EntryPointComponent<
-  Record<string, OperationType>,
-  Record<string, undefined>
-> = () => {
+export const LogIn: EntryPointComponent<Record<string, OperationType>, Record<string, undefined>> = () => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<LogInMutation>(graphql`
     mutation LogInMutation($input: SignInInput!) {
@@ -56,21 +47,9 @@ export const LogIn: EntryPointComponent<
         <Title text={t("Iniciar sesión")} />
         <FormSmall>
           <Label label={t("Email")} />
-          <Input
-            type="email"
-            name="email"
-            placeholder={t("Email")}
-            value={email}
-            onChange={handleEmail}
-          />
+          <Input type="email" name="email" placeholder={t("Email")} value={email} onChange={handleEmail} />
           <Label label={t("Password")} />
-          <Input
-            type="password"
-            name="password"
-            placeholder={t("Password")}
-            value={password}
-            onChange={handlePassword}
-          />
+          <Input type="password" name="password" placeholder={t("Password")} value={password} onChange={handlePassword} />
           <Space styleX={customSpace.h30} />
           {isInFlight ? (
             <Spinner />

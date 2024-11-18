@@ -1,26 +1,13 @@
-import type { Db } from "mongodb";
 import type { Http2ServerRequest, Http2ServerResponse } from "node:http2";
-import { parse } from "cookie";
-import {
-  ACCESSSECRET,
-  REFRESHSECRET,
-  ACCESS_TOKEN_EXP_NUMBER,
-} from "@repo/utils";
-import { jwt } from "@repo/jwt-utils";
-import type { RedisClientType } from "@repo/redis-utils";
 import type { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
-import type {
-  AuthUserLogins,
-  AuthUserMongo,
-  AuthUserSessions,
-} from "@repo/mongo-utils";
+import { jwt } from "@repo/jwt-utils";
+import type { AuthUserLogins, AuthUserMongo, AuthUserSessions } from "@repo/mongo-utils";
+import type { RedisClientType } from "@repo/redis-utils";
+import { ACCESSSECRET, ACCESS_TOKEN_EXP_NUMBER, REFRESHSECRET } from "@repo/utils";
+import { parse } from "cookie";
+import type { Db } from "mongodb";
 
-export const getUser = async (
-  accessToken: string,
-  refreshToken: string,
-  rdb: RedisClientType,
-  authdb: Db
-) => {
+export const getUser = async (accessToken: string, refreshToken: string, rdb: RedisClientType, authdb: Db) => {
   if (!refreshToken) {
     return {
       id: "",
@@ -86,7 +73,7 @@ export const getUser = async (
       refreshTokenExpireTime: user.exp,
       exp: accessTokenExpireTime,
     },
-    ACCESSSECRET
+    ACCESSSECRET,
   );
   const sessions = authdb.collection<AuthUserSessions>("sessions");
   sessions.updateOne(
@@ -97,7 +84,7 @@ export const getUser = async (
       $set: {
         lastTimeAccessed: now,
       },
-    }
+    },
   );
   return {
     id,
@@ -113,18 +100,13 @@ export const getContextSSE = async (
   res: Http2ServerResponse,
   authdb: Db,
   rdb: RedisClientType,
-  grpcClient: AccountClient
+  grpcClient: AccountClient,
 ): Promise<Record<string, unknown>> => {
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
   const accessToken = req.headers.authorization || "";
   const cookies = parse(req.headers.cookie || "");
   const refreshToken = cookies.refreshToken || "";
-  const { id, validAccessToken } = await getUser(
-    accessToken,
-    refreshToken,
-    rdb,
-    authdb
-  );
+  const { id, validAccessToken } = await getUser(accessToken, refreshToken, rdb, authdb);
   if (validAccessToken) {
     res.setHeader("accessToken", validAccessToken);
   }

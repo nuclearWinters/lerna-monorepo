@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { type FC, useEffect } from "react";
 import { historyReplace } from "../react-router-elements/utils";
 
 export const RedirectContainer: FC<{
@@ -8,10 +8,7 @@ export const RedirectContainer: FC<{
   isBorrower: boolean;
 }> = ({ allowed, isBorrower, isLender, isSupport }) => {
   useEffect(() => {
-    const isAllowed =
-      (allowed.includes("borrower") && isBorrower) ||
-      (allowed.includes("lender") && isLender) ||
-      (allowed.includes("support") && isSupport);
+    const isAllowed = (allowed.includes("borrower") && isBorrower) || (allowed.includes("lender") && isLender) || (allowed.includes("support") && isSupport);
     if (!isAllowed) {
       if (isBorrower) {
         historyReplace("/myLoans");

@@ -1,5 +1,5 @@
 import { graphql, useMutation } from "react-relay";
-import { utilsAuthLogOutMutation } from "./__generated__/utilsAuthLogOutMutation.graphql";
+import type { utilsAuthLogOutMutation } from "./__generated__/utilsAuthLogOutMutation.graphql";
 
 export const useLogout = () => {
   const [commit] = useMutation<utilsAuthLogOutMutation>(graphql`

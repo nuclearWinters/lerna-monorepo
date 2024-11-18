@@ -1,9 +1,7 @@
+import { type Dispatch, type SetStateAction, createContext, useContext } from "react";
 import { resources } from "./i18n";
-import { createContext, Dispatch, SetStateAction, useContext } from "react";
 
-export const LanguageContext = createContext<
-  [Languages, Dispatch<SetStateAction<Languages>>]
->([navigator.language.includes("es") ? "ES" : "EN", () => ({})]);
+export const LanguageContext = createContext<[Languages, Dispatch<SetStateAction<Languages>>]>([navigator.language.includes("es") ? "ES" : "EN", () => ({})]);
 
 export interface Decode {
   id: string;
@@ -16,11 +14,9 @@ export interface Decode {
 
 export type Languages = "EN" | "ES";
 
-export const AUTH_API =
-  process.env.AUTH_API || "https://localhost:4002/graphql";
+export const AUTH_API = process.env.AUTH_API || "https://localhost:4002/graphql";
 
-export const FINTECH_API =
-  process.env.FINTECH_API || "https://localhost:4000/graphql";
+export const FINTECH_API = process.env.FINTECH_API || "https://localhost:4000/graphql";
 
 export const useTranslation = () => {
   const [language, changeLanguage] = useContext(LanguageContext);
@@ -28,7 +24,7 @@ export const useTranslation = () => {
     if (language === "ES") {
       return text;
     }
-    return resources["EN"].translation[text] || text;
+    return resources.EN.translation[text] || text;
   };
   return { t, changeLanguage };
 };
@@ -43,33 +39,16 @@ export const getUserDataCache = (): Decode | null => {
 
 export const supportPages = ["/approveLoan", "/settings"];
 
-export const borrowerPages = [
-  "/account",
-  "/addLoan",
-  "/myLoans",
-  "/addFunds",
-  "/retireFunds",
-  "/settings",
-  "/myTransactions",
-];
+export const borrowerPages = ["/account", "/addLoan", "/myLoans", "/addFunds", "/retireFunds", "/settings", "/myTransactions"];
 
 export const defaultSupport = "/approveLoan";
 export const defaultBorrower = "/myLoans";
 export const defaultLender = "/addInvestments";
 
-export const lenderPages = [
-  "/account",
-  "/addInvestments",
-  "/addFunds",
-  "/retireFunds",
-  "/myInvestments",
-  "/myTransactions",
-  "/settings",
-];
+export const lenderPages = ["/account", "/addInvestments", "/addFunds", "/retireFunds", "/myInvestments", "/myTransactions", "/settings"];
 
 export const monthDiff = (d1: Date, d2: Date) => {
-  let months;
-  months = (d2.getFullYear() - d1.getFullYear()) * 12;
+  let months = (d2.getFullYear() - d1.getFullYear()) * 12;
   months -= d1.getMonth();
   months += d2.getMonth();
   return months <= 0 ? 0 : months;
@@ -104,9 +83,8 @@ export const getLongDateName = (date: Date, languageEnum: Languages) => {
   const hours12NoZero = hours12WithZero ? hours12WithZero : 12;
   if (languageEnum === "ES") {
     return `${day} de ${monthName} de ${year} a las ${hours12NoZero}:${minutes} ${ampm}`;
-  } else {
-    return `${monthName} ${day}[,] ${year} at ${hours12NoZero}:${minutes} ${ampm}`;
   }
+  return `${monthName} ${day}[,] ${year} at ${hours12NoZero}:${minutes} ${ampm}`;
 };
 
 export interface JwtDecodeOptions {
@@ -138,10 +116,10 @@ function b64DecodeUnicode(str: string) {
     atob(str).replace(/(.)/g, (_m, p) => {
       let code = (p as string).charCodeAt(0).toString(16).toUpperCase();
       if (code.length < 2) {
-        code = "0" + code;
+        code = `0${code}`;
       }
-      return "%" + code;
-    })
+      return `%${code}`;
+    }),
   );
 }
 
@@ -167,47 +145,30 @@ function base64UrlDecode(str: string) {
   }
 }
 
-export function jwtDecode<T = JwtHeader>(
-  token: string,
-  options: JwtDecodeOptions & { header: true }
-): T;
-export function jwtDecode<T = JwtPayload>(
-  token: string,
-  options?: JwtDecodeOptions
-): T;
-export function jwtDecode<T = JwtHeader | JwtPayload>(
-  token: string,
-  options?: JwtDecodeOptions
-): T {
+export function jwtDecode<T = JwtHeader>(token: string, options: JwtDecodeOptions & { header: true }): T;
+export function jwtDecode<T = JwtPayload>(token: string, options?: JwtDecodeOptions): T;
+export function jwtDecode<T = JwtHeader | JwtPayload>(token: string, options: JwtDecodeOptions = {}): T {
   if (typeof token !== "string") {
     throw new InvalidTokenError("Invalid token specified: must be a string");
   }
-
-  options ||= {};
 
   const pos = options.header === true ? 0 : 1;
   const part = token.split(".")[pos];
 
   if (typeof part !== "string") {
-    throw new InvalidTokenError(
-      `Invalid token specified: missing part #${pos + 1}`
-    );
+    throw new InvalidTokenError(`Invalid token specified: missing part #${pos + 1}`);
   }
 
   let decoded: string;
   try {
     decoded = base64UrlDecode(part);
   } catch (e) {
-    throw new InvalidTokenError(
-      `Invalid token specified: invalid base64 for part #${pos + 1} (${(e as Error).message})`
-    );
+    throw new InvalidTokenError(`Invalid token specified: invalid base64 for part #${pos + 1} (${(e as Error).message})`);
   }
 
   try {
     return JSON.parse(decoded) as T;
   } catch (e) {
-    throw new InvalidTokenError(
-      `Invalid token specified: invalid json for part #${pos + 1} (${(e as Error).message})`
-    );
+    throw new InvalidTokenError(`Invalid token specified: invalid json for part #${pos + 1} (${(e as Error).message})`);
   }
 }

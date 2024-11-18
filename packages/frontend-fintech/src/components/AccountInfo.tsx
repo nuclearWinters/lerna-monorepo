@@ -1,5 +1,5 @@
-import { FC } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { FC } from "react";
 
 interface Props {
   title: string;
@@ -46,16 +46,7 @@ export const AccountInfo: FC<Props> = ({ title, value, type }) => {
   return (
     <div {...stylex.props(baseAccountInfoBox.base)}>
       <div {...stylex.props(baseAccountInfoTitle.base)}>{title}</div>
-      <div
-        {...stylex.props(
-          baseAccountInfoValue.base,
-          type === "available"
-            ? baseAccountInfoValue.total
-            : baseAccountInfoValue.available
-        )}
-      >
-        {value}
-      </div>
+      <div {...stylex.props(baseAccountInfoValue.base, type === "available" ? baseAccountInfoValue.total : baseAccountInfoValue.available)}>{value}</div>
     </div>
   );
 };

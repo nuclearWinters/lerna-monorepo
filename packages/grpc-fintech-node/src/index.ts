@@ -1,9 +1,8 @@
-import { MongoClient } from "mongodb";
-import { Server, ServerCredentials } from "@grpc/grpc-js";
-import { MONGO_DB, IS_PRODUCTION, GRPC_FINTECH } from "@repo/utils";
-import { AccountService } from "@repo/grpc-utils";
-import { AccountServer } from "@repo/grpc-utils";
 import fs from "node:fs";
+import { Server, ServerCredentials } from "@grpc/grpc-js";
+import { AccountService, AccountServer } from "@repo/grpc-utils";
+import { GRPC_FINTECH, IS_PRODUCTION, MONGO_DB } from "@repo/utils";
+import { MongoClient } from "mongodb";
 
 MongoClient.connect(MONGO_DB).then(async (mongoClient) => {
   const fintechdb = mongoClient.db("fintech");
@@ -19,13 +18,13 @@ MongoClient.connect(MONGO_DB).then(async (mongoClient) => {
           cert_chain: fs.readFileSync("../../certs/cert.pem"),
         },
       ],
-      IS_PRODUCTION
+      IS_PRODUCTION,
     ),
     (err) => {
       if (err) {
         throw err;
       }
       return;
-    }
+    },
   );
 });

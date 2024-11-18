@@ -1,10 +1,10 @@
+import fs from "node:fs";
+import { Server, ServerCredentials } from "@grpc/grpc-js";
+import { AuthServer, AuthService } from "@repo/grpc-utils";
+import { logErr } from "@repo/logs-utils";
+import { GRPC_AUTH, IS_PRODUCTION, MONGO_DB, REDIS } from "@repo/utils";
 import { MongoClient } from "mongodb";
 import { createClient } from "redis";
-import { Server, ServerCredentials } from "@grpc/grpc-js";
-import { MONGO_DB, IS_PRODUCTION, REDIS, GRPC_AUTH } from "@repo/utils";
-import { AuthService, AuthServer } from "@repo/grpc-utils";
-import fs from "node:fs";
-import { logErr } from "@repo/logs-utils";
 
 Promise.all([
   MongoClient.connect(MONGO_DB),
@@ -32,13 +32,13 @@ Promise.all([
           cert_chain: fs.readFileSync("../../certs/cert.pem"),
         },
       ],
-      IS_PRODUCTION
+      IS_PRODUCTION,
     ),
     (err) => {
       if (err) {
         throw err;
       }
       return;
-    }
+    },
   );
 });

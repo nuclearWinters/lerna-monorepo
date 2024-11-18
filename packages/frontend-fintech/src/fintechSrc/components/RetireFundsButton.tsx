@@ -1,9 +1,9 @@
+import type { FC } from "react";
 import { graphql, useMutation } from "react-relay";
 import { CustomButton } from "../../components/CustomButton";
 import { Spinner } from "../../components/Spinner";
 import { useTranslation } from "../../utils";
-import { FC } from "react";
-import { AddFundsButtonMutation } from "./__generated__/AddFundsButtonMutation.graphql";
+import type { AddFundsButtonMutation } from "./__generated__/AddFundsButtonMutation.graphql";
 
 export const RetireFundsButton: FC<{ quantity: string }> = ({ quantity }) => {
   const { t } = useTranslation();

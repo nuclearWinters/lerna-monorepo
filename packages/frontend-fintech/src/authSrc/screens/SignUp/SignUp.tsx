@@ -1,3 +1,6 @@
+import { type ChangeEvent, useState } from "react";
+import { type EntryPointComponent, graphql, useMutation } from "react-relay/hooks";
+import type { OperationType } from "relay-runtime";
 import { Checkbox } from "../../../components/Checkbox";
 import { Columns } from "../../../components/Colums";
 import { CustomButton } from "../../../components/CustomButton";
@@ -9,16 +12,10 @@ import { Space, customSpace } from "../../../components/Space";
 import { Spinner } from "../../../components/Spinner";
 import { Title } from "../../../components/Title";
 import { WrapperSmall } from "../../../components/WrapperSmall";
-import { ChangeEvent, useState } from "react";
-import { useMutation, graphql, EntryPointComponent } from "react-relay/hooks";
 import { getUserDataCache, useTranslation } from "../../../utils";
-import { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
-import { OperationType } from "relay-runtime";
+import type { SignUpMutation } from "./__generated__/SignUpMutation.graphql";
 
-export const SignUp: EntryPointComponent<
-  Record<string, OperationType>,
-  Record<string, undefined>
-> = () => {
+export const SignUp: EntryPointComponent<Record<string, OperationType>, Record<string, undefined>> = () => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<SignUpMutation>(graphql`
     mutation SignUpMutation($input: SignUpInput!) {
@@ -37,7 +34,7 @@ export const SignUp: EntryPointComponent<
     setPassword(e.target.value);
   };
   const handleIsLender = (e: ChangeEvent<HTMLInputElement>) => {
-    setIsLender(e.target.name === "lender" ? true : false);
+    setIsLender(e.target.name === "lender");
   };
   return (
     <Main notLogged>
@@ -45,36 +42,14 @@ export const SignUp: EntryPointComponent<
         <Title text={t("Crear cuenta")} />
         <FormSmall>
           <Label label={t("Email")} />
-          <Input
-            type="email"
-            name="email"
-            placeholder={t("Email")}
-            value={email}
-            onChange={handleEmail}
-          />
+          <Input type="email" name="email" placeholder={t("Email")} value={email} onChange={handleEmail} />
           <Label label={t("Password")} />
-          <Input
-            type="password"
-            name="password"
-            placeholder={t("Password")}
-            value={password}
-            onChange={handlePassword}
-          />
+          <Input type="password" name="password" placeholder={t("Password")} value={password} onChange={handlePassword} />
           <Space styleX={customSpace.h10} />
           <Columns>
-            <Checkbox
-              name="lender"
-              checked={isLender}
-              onChange={handleIsLender}
-              label={t("Prestar") + ":"}
-            />
+            <Checkbox name="lender" checked={isLender} onChange={handleIsLender} label={`${t("Prestar")}:`} />
             <Space styleX={customSpace.w30} />
-            <Checkbox
-              name="borrower"
-              checked={!isLender}
-              onChange={handleIsLender}
-              label={t("Pedir prestado") + ":"}
-            />
+            <Checkbox name="borrower" checked={!isLender} onChange={handleIsLender} label={`${t("Pedir prestado")}:`} />
           </Columns>
           <Space styleX={customSpace.h30} />
           {isInFlight ? (
@@ -91,9 +66,7 @@ export const SignUp: EntryPointComponent<
                         email,
                         password,
                         isLender,
-                        language: navigator.language.includes("es")
-                          ? "ES"
-                          : "EN",
+                        language: navigator.language.includes("es") ? "ES" : "EN",
                       },
                     },
                     onCompleted: () => {

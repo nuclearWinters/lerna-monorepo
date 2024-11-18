@@ -1,6 +1,6 @@
-import { FC } from "react";
-import FaSpinner from "../assets/spinner-solid.svg";
 import * as stylex from "@stylexjs/stylex";
+import type { FC } from "react";
+import FaSpinner from "../assets/spinner-solid.svg";
 
 export const baseSpinnerBox = stylex.create({
   base: {

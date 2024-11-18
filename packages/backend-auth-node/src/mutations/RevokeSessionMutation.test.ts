@@ -1,46 +1,32 @@
-import { main } from "../app.ts";
-import supertest from "supertest";
-import { MongoClient, type Db, ObjectId } from "mongodb";
-import bcrypt from "bcryptjs";
-import { createClient, type RedisClientType } from "redis";
-import type TestAgent from "supertest/lib/agent.js";
-import {
-  RedisContainer,
-  type StartedRedisContainer,
-} from "@testcontainers/redis";
 import type { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
 import { getValidTokens } from "@repo/jwt-utils";
+import type { AuthUserMongo, AuthUserSessions } from "@repo/mongo-utils";
 import { base64Name } from "@repo/utils";
+import { RedisContainer } from "@testcontainers/redis";
+import bcrypt from "bcryptjs";
 import { parse, serialize } from "cookie";
 import { isBefore } from "date-fns";
-import type { AuthUserMongo, AuthUserSessions } from "@repo/mongo-utils";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "../app.ts";
+import { after, describe, it } from "node:test";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import { ok, strictEqual } from "node:assert";
 
-describe("RevokeSessionMutation tests", () => {
-  let client: MongoClient;
-  let dbInstance: Db;
-  let request: TestAgent<supertest.Test>;
-  let grpcClient: AccountClient;
-  let redisClient: RedisClientType;
-  let startedRedisContainer: StartedRedisContainer;
-
-  beforeAll(async () => {
-    client = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstance = client.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    startedRedisContainer = await new RedisContainer().start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    const server = await main(dbInstance, redisClient, grpcClient);
-    request = supertest(server, { http2: true });
+describe("RevokeSessionMutation tests", async () => {
+  const startedRedisContainer = await new RedisContainer().start();
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const client = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const dbInstance = client.db("auth");
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
   });
+  await redisClient.connect();
+  const server = await main(dbInstance, redisClient, {} as AccountClient);
+  const request = supertest(server, { http2: true });
 
-  afterAll(async () => {
+  after(async () => {
     await redisClient.disconnect();
     await startedRedisContainer.stop();
     await client.close();
@@ -117,11 +103,9 @@ describe("RevokeSessionMutation tests", () => {
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.revokeSession.error).toBeFalsy();
-    expect(data.data.revokeSession.session.id).toBe(other_session_gid);
-    expect(
-      isBefore(data.data.revokeSession.session.expirationDate, new Date())
-    ).toBeTruthy();
+    strictEqual(data.data.revokeSession.error, "");
+    strictEqual(data.data.revokeSession.session.id, other_session_gid);
+    ok(isBefore(data.data.revokeSession.session.expirationDate, new Date()));
   });
 
   it("RevokeSessionMutation: is same user", async () => {
@@ -187,16 +171,14 @@ describe("RevokeSessionMutation tests", () => {
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.revokeSession.error).toBeFalsy();
-    expect(data.data.revokeSession.session.id).toBe(other_session_gid);
-    expect(
-      isBefore(data.data.revokeSession.session.expirationDate, new Date())
-    ).toBeTruthy();
+    strictEqual(data.data.revokeSession.error, "");
+    strictEqual(data.data.revokeSession.session.id, other_session_gid);
+    ok(isBefore(data.data.revokeSession.session.expirationDate, new Date()));
     const responseCookies = response.headers["set-cookie"][0];
-    expect(responseCookies).toBeTruthy();
+    ok(responseCookies);
     const parsedCookies = parse(responseCookies);
-    expect(parsedCookies.refreshToken).toBe("");
-    const authorization = response.headers["authorization"];
-    expect(authorization).toBeFalsy();
+    strictEqual(parsedCookies.refreshToken, "");
+    const authorization = response.headers.authorization;
+    strictEqual(authorization, undefined);
   });
 });

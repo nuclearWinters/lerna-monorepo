@@ -1,11 +1,7 @@
-import { ChangeEvent, DetailedHTMLProps, FC, InputHTMLAttributes } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { ChangeEvent, DetailedHTMLProps, FC, InputHTMLAttributes } from "react";
 
-interface Props
-  extends DetailedHTMLProps<
-    InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  > {
+interface Props extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   name: string;
   label: string;

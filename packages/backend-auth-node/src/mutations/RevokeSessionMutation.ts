@@ -1,11 +1,11 @@
-import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
+import type { AuthUserSessions } from "@repo/mongo-utils";
+import { IS_PRODUCTION } from "@repo/utils";
+import { serialize } from "cookie";
 import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
-import type { Context } from "../types.ts";
+import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
 import { ObjectId } from "mongodb";
 import { GraphQLSession } from "../AuthUserQuery.ts";
-import { serialize } from "cookie";
-import { IS_PRODUCTION } from "@repo/utils";
-import type { AuthUserSessions } from "@repo/mongo-utils";
+import type { Context } from "../types.ts";
 
 interface Input {
   sessionId: string;
@@ -34,10 +34,7 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
       resolve: ({ session }: Payload): AuthUserSessions | null => session,
     },
   },
-  mutateAndGetPayload: async (
-    { sessionId }: Input,
-    { rdb, id, sessions, refreshToken, res }: Context
-  ): Promise<Payload> => {
+  mutateAndGetPayload: async ({ sessionId }: Input, { rdb, id, sessions, refreshToken, res }: Context): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");
@@ -47,11 +44,7 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
       const now = new Date();
       now.setMilliseconds(0);
       const time = now.getTime();
-      const session = await sessions.findOneAndUpdate(
-        { _id: session_oid },
-        { $set: { expirationDate: now } },
-        { returnDocument: "after" }
-      );
+      const session = await sessions.findOneAndUpdate({ _id: session_oid }, { $set: { expirationDate: now } }, { returnDocument: "after" });
       if (session) {
         await rdb.set(session.refreshToken, time, { EX: 60 * 15 });
         if (refreshToken === session.refreshToken) {
@@ -64,7 +57,7 @@ export const RevokeSessionMutation = mutationWithClientMutationId({
               secure: true,
               sameSite: IS_PRODUCTION ? "strict" : "none",
               domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
-            })
+            }),
           );
         }
       }

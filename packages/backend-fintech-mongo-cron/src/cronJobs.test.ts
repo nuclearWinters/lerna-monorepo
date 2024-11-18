@@ -1,30 +1,30 @@
-import { checkEveryDay, checkEveryMonth } from "./cronJobs.ts";
 import { addDays, addMonths } from "date-fns";
+import { checkEveryDay, checkEveryMonth } from "./cronJobs.ts";
+import { describe, it, mock } from "node:test";
+import { strictEqual } from "node:assert";
 
 describe("cron tests", () => {
-  beforeEach(() => {
-    jest.useFakeTimers().setSystemTime(new Date("2020-01-01"));
-  });
-
-  beforeEach(() => {
-    jest.clearAllTimers();
-  });
-
-  it("test cron job one day", () => {
+  it("test cron job one day", (context) => {
+    context.mock.timers.enable({ apis: ["Date", "setTimeout"], now: new Date("2020-01-01") });
     const now = new Date();
     const newDate = addDays(new Date(), 1);
-    const counter = jest.fn();
-    checkEveryDay(() => counter());
-    jest.advanceTimersByTime(newDate.getTime() - now.getTime());
-    expect(counter).toHaveBeenCalled();
+    const counter = mock.fn();
+    checkEveryDay(() => {
+      counter();
+    });
+    context.mock.timers.tick(newDate.getTime() - now.getTime());
+    strictEqual(counter.mock.callCount(), 1);
   });
 
-  it("test cron job one month", () => {
+  it("test cron job one month", (context) => {
+    context.mock.timers.enable({ apis: ["Date", "setTimeout"], now: new Date("2020-01-01") });
     const now = new Date();
     const newDate = addMonths(new Date(), 1);
-    const counter = jest.fn();
-    checkEveryMonth(() => counter());
-    jest.advanceTimersByTime(newDate.getTime() - now.getTime());
-    expect(counter).toHaveBeenCalled();
+    const counter = mock.fn();
+    checkEveryMonth(() => {
+      counter();
+    });
+    context.mock.timers.tick(newDate.getTime() - now.getTime());
+    strictEqual(counter.mock.callCount(), 1);
   });
 });

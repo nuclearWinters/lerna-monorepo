@@ -1,16 +1,12 @@
-import {
-  PreloadedQuery,
-  RelayEnvironmentProvider,
-  usePreloadedQuery,
-} from "react-relay/hooks";
-import { Languages, useTranslation } from "../utils";
-import { FC, useEffect } from "react";
-import { authUserQuery } from "../authSrc/utilsAuth";
-import { utilsAuthQuery } from "../authSrc/__generated__/utilsAuthQuery.graphql";
-import { utilsFintechQuery } from "../fintechSrc/__generated__/utilsFintechQuery.graphql";
-import { SiderFintech } from "../fintechSrc/components/SiderFintech";
+import { type FC, useEffect } from "react";
+import { type PreloadedQuery, RelayEnvironmentProvider, usePreloadedQuery } from "react-relay/hooks";
 import { RelayEnvironmentFintech } from "../RelayEnvironment";
+import type { utilsAuthQuery } from "../authSrc/__generated__/utilsAuthQuery.graphql";
+import { authUserQuery } from "../authSrc/utilsAuth";
+import type { utilsFintechQuery } from "../fintechSrc/__generated__/utilsFintechQuery.graphql";
+import { SiderFintech } from "../fintechSrc/components/SiderFintech";
 import { historyReplace, useLocation } from "../react-router-elements/utils";
+import { type Languages, useTranslation } from "../utils";
 
 export const Sider: FC<{
   authQuery: PreloadedQuery<utilsAuthQuery>;
@@ -61,12 +57,7 @@ export const Sider: FC<{
 
   return (
     <RelayEnvironmentProvider environment={RelayEnvironmentFintech}>
-      <SiderFintech
-        fintechQuery={fintechQuery}
-        isBorrower={isBorrower}
-        isSupport={isSupport}
-        isLender={isLender}
-      />
+      <SiderFintech fintechQuery={fintechQuery} isBorrower={isBorrower} isSupport={isSupport} isLender={isLender} />
     </RelayEnvironmentProvider>
   );
 };

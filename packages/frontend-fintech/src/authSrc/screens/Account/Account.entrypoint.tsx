@@ -1,8 +1,8 @@
-import type Account from "./Account";
+import type { EntryPoint } from "react-relay";
 import utilsAuthQueryParameters from "../../../authSrc/__generated__/utilsAuthQuery$parameters";
 import AccountQueriesQueryParameters from "../../../fintechSrc/screens/Account/__generated__/AccountQueriesQuery$parameters";
-import { EntryPoint } from "react-relay";
 import JSResource from "../../../react-router-elements/JSResource";
+import type Account from "./Account";
 
 export const AccountEntryPoint: EntryPoint<typeof Account> = {
   root: JSResource("Account", () => import("./Account")),

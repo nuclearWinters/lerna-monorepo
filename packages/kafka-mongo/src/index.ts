@@ -1,17 +1,9 @@
-import { MongoClient } from "mongodb";
 import { runKafkaConsumer } from "@repo/kafka-utils";
-import { Kafka, logLevel } from "kafkajs";
-import {
-  MONGO_DB,
-  KAFKA,
-  KAFKA_ID,
-  IS_PRODUCTION,
-  KAFKA_USERNAME,
-  KAFKA_PASSWORD,
-  REDIS,
-} from "@repo/utils";
+import { IS_PRODUCTION, KAFKA, KAFKA_ID, KAFKA_PASSWORD, KAFKA_USERNAME, MONGO_DB, REDIS } from "@repo/utils";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis } from "ioredis";
+import { Kafka, logLevel } from "kafkajs";
+import { MongoClient } from "mongodb";
 
 const retryStrategy = (times: number) => {
   return Math.min(times * 50, 2_000);
@@ -25,7 +17,7 @@ export const pubsub = new RedisPubSub({
 const kafka = new Kafka({
   clientId: KAFKA_ID,
   brokers: [KAFKA],
-  ssl: IS_PRODUCTION ? true : false,
+  ssl: IS_PRODUCTION,
   sasl: IS_PRODUCTION
     ? {
         mechanism: "scram-sha-256",

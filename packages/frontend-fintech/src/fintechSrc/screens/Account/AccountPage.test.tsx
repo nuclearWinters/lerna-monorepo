@@ -1,10 +1,11 @@
-import { loadQuery, RelayEnvironmentProvider } from "react-relay";
-import { MockPayloadGenerator, createMockEnvironment } from "relay-test-utils";
 import { render } from "@testing-library/react";
-import { accountFragment } from "./AccountQueries";
-import { AccountPage } from "./AccountPage";
+import { RelayEnvironmentProvider, loadQuery } from "react-relay";
+import { MockPayloadGenerator, createMockEnvironment } from "relay-test-utils";
 import { LanguageContext } from "../../../utils";
-import { AccountQueriesQuery } from "./__generated__/AccountQueriesQuery.graphql";
+import { AccountPage } from "./AccountPage";
+import { accountFragment } from "./AccountQueries";
+import type { AccountQueriesQuery } from "./__generated__/AccountQueriesQuery.graphql";
+import { test, mock } from "node:test";
 
 test("AccountPage renders correctly", async () => {
   const environment = createMockEnvironment();
@@ -17,18 +18,14 @@ test("AccountPage renders correctly", async () => {
 
   environment.mock.queuePendingOperation(accountFragment, variables);
 
-  const preload = loadQuery<AccountQueriesQuery>(
-    environment,
-    accountFragment,
-    variables
-  );
+  const preload = loadQuery<AccountQueriesQuery>(environment, accountFragment, variables);
 
   const { findByText } = render(
     <RelayEnvironmentProvider environment={environment}>
-      <LanguageContext.Provider value={["EN", jest.fn()]}>
+      <LanguageContext.Provider value={["EN", mock.fn()]}>
         <AccountPage data-testid="1234" fintechQuery={preload} />
       </LanguageContext.Provider>
-    </RelayEnvironmentProvider>
+    </RelayEnvironmentProvider>,
   );
 
   await findByText("Account value");

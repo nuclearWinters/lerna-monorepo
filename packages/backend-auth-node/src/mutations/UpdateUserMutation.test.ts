@@ -1,43 +1,29 @@
-import { main } from "../app.ts";
-import supertest from "supertest";
-import { type Db, MongoClient, ObjectId } from "mongodb";
-import { createClient, type RedisClientType } from "redis";
-import type TestAgent from "supertest/lib/agent.js";
-import {
-  RedisContainer,
-  type StartedRedisContainer,
-} from "@testcontainers/redis";
-import { getValidTokens } from "@repo/jwt-utils";
 import type { AccountClient } from "@repo/grpc-utils/protoAccount/account_grpc_pb";
-import { serialize } from "cookie";
+import { getValidTokens } from "@repo/jwt-utils";
 import type { AuthUserMongo } from "@repo/mongo-utils";
+import { RedisContainer } from "@testcontainers/redis";
+import { serialize } from "cookie";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "../app.ts";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import { after, describe, it } from "node:test";
+import { deepStrictEqual, ok, strictEqual } from "node:assert";
 
-describe("UpdateUser tests", () => {
-  let client: MongoClient;
-  let dbInstance: Db;
-  let redisClient: RedisClientType;
-  let request: TestAgent<supertest.Test>;
-  let grpcClient: AccountClient;
-  let startedRedisContainer: StartedRedisContainer;
-
-  beforeAll(async () => {
-    client = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstance = client.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    startedRedisContainer = await new RedisContainer().start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    const server = await main(dbInstance, redisClient, grpcClient);
-    request = supertest(server, { http2: true });
+describe("UpdateUser tests", async () => {
+  const startedRedisContainer = await new RedisContainer().start();
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const client = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const dbInstance = client.db("auth");
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
   });
+  await redisClient.connect();
+  const server = await main(dbInstance, redisClient, {} as AccountClient);
+  const request = supertest(server, { http2: true });
 
-  afterAll(async () => {
+  after(async () => {
     await redisClient.disconnect();
     await startedRedisContainer.stop();
     await client.close();
@@ -99,12 +85,12 @@ describe("UpdateUser tests", () => {
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.updateUser.error).toBeFalsy();
-    expect(data.data.updateUser.authUser).toBeTruthy();
+    strictEqual(data.data.updateUser.error, "");
+    ok(data.data.updateUser.authUser);
     const user = await users.findOne({
       _id,
     });
-    expect(user).toEqual({
+    deepStrictEqual(user, {
       _id,
       email: "armando10@gmail.com",
       isBorrower: false,

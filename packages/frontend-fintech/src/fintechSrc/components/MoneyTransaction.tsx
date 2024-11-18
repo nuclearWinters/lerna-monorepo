@@ -1,6 +1,7 @@
-import { useFragment, graphql } from "react-relay";
+import * as stylex from "@stylexjs/stylex";
+import type { FC } from "react";
+import { graphql, useFragment } from "react-relay";
 import { getLongDateName, useTranslation } from "../../utils";
-import { FC } from "react";
 import {
   baseMyTransactionsBar,
   baseMyTransactionsBox,
@@ -8,9 +9,8 @@ import {
   baseMyTransactionsQuantity,
   baseMyTransactionsStatus,
 } from "./InvestmentTransaction";
-import * as stylex from "@stylexjs/stylex";
-import { MoneyTransaction_transaction$key } from "./__generated__/MoneyTransaction_transaction.graphql";
-import { TransactionType } from "./__generated__/InvestmentTransaction_transaction.graphql";
+import type { TransactionType } from "./__generated__/InvestmentTransaction_transaction.graphql";
+import type { MoneyTransaction_transaction$key } from "./__generated__/MoneyTransaction_transaction.graphql";
 
 interface Props {
   transaction: MoneyTransaction_transaction$key;
@@ -27,7 +27,7 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
         created_at
       }
     `,
-    transaction
+    transaction,
   );
 
   const { t } = useTranslation();
@@ -57,28 +57,12 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
   return (
     <div {...stylex.props(baseMyTransactionsBox.base)}>
       <div {...stylex.props(baseMyTransactionsBar.base)}>
-        <div
-          {...stylex.props(
-            baseMyTransactionsStatus.base,
-            substraction
-              ? baseMyTransactionsStatus.substraction
-              : baseMyTransactionsStatus.addition
-          )}
-        >
+        <div {...stylex.props(baseMyTransactionsStatus.base, substraction ? baseMyTransactionsStatus.substraction : baseMyTransactionsStatus.addition)}>
           {getStatus(data.type)}
         </div>
-        <div {...stylex.props(baseMyTransactionsDate.base)}>
-          {dateFormatted}
-        </div>
+        <div {...stylex.props(baseMyTransactionsDate.base)}>{dateFormatted}</div>
       </div>
-      <div
-        {...stylex.props(
-          baseMyTransactionsQuantity.base,
-          substraction
-            ? baseMyTransactionsQuantity.substraction
-            : baseMyTransactionsQuantity.addition
-        )}
-      >
+      <div {...stylex.props(baseMyTransactionsQuantity.base, substraction ? baseMyTransactionsQuantity.substraction : baseMyTransactionsQuantity.addition)}>
         {data.quantity}
       </div>
     </div>

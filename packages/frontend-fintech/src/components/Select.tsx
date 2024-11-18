@@ -1,5 +1,5 @@
-import { ChangeEvent, FC } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { ChangeEvent, FC } from "react";
 
 interface Props {
   name?: string;
@@ -24,12 +24,7 @@ export const baseSelect = stylex.create({
 
 export const Select: FC<Props> = ({ name, value, onChange, options }) => {
   return (
-    <select
-      name={name}
-      value={value}
-      onChange={onChange}
-      {...stylex.props(baseSelect.base)}
-    >
+    <select name={name} value={value} onChange={onChange} {...stylex.props(baseSelect.base)}>
       {options.map(({ value, label }) => (
         <option key={value} value={value}>
           {label}

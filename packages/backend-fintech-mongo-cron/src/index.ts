@@ -1,21 +1,14 @@
+import { IS_PRODUCTION, KAFKA, KAFKA_ID, KAFKA_PASSWORD, KAFKA_USERNAME, MONGO_DB } from "@repo/utils";
+import { Kafka, logLevel } from "kafkajs";
 import { MongoClient } from "mongodb";
-import {
-  KAFKA,
-  KAFKA_ID,
-  KAFKA_PASSWORD,
-  KAFKA_USERNAME,
-  MONGO_DB,
-  IS_PRODUCTION,
-} from "@repo/utils";
-import { checkEveryDay, checkEveryMonth } from "./cronJobs.ts";
 import { dayFunction } from "./cronJobDay.ts";
 import { monthFunction } from "./cronJobMonth.ts";
-import { Kafka, logLevel } from "kafkajs";
+import { checkEveryDay, checkEveryMonth } from "./cronJobs.ts";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,
   brokers: [KAFKA],
-  ssl: IS_PRODUCTION ? true : false,
+  ssl: IS_PRODUCTION,
   sasl: IS_PRODUCTION
     ? {
         mechanism: "scram-sha-256",
@@ -28,10 +21,8 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-Promise.all([MongoClient.connect(MONGO_DB), producer.connect()]).then(
-  async ([client]) => {
-    const db = client.db("fintech");
-    checkEveryDay(() => dayFunction(db, producer));
-    checkEveryMonth(() => monthFunction(db, producer));
-  }
-);
+Promise.all([MongoClient.connect(MONGO_DB), producer.connect()]).then(async ([client]) => {
+  const db = client.db("fintech");
+  checkEveryDay(() => dayFunction(db, producer));
+  checkEveryMonth(() => monthFunction(db, producer));
+});

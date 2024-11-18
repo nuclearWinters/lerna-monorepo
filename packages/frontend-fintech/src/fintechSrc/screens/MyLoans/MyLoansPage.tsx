@@ -1,21 +1,20 @@
-import { Dispatch, FC, Fragment, useMemo, useState } from "react";
-import {
-  PreloadedQuery,
-  usePaginationFragment,
-  usePreloadedQuery,
-  useRefetchableFragment,
-  useSubscription,
-} from "react-relay/hooks";
+import * as stylex from "@stylexjs/stylex";
+import { type Dispatch, type FC, Fragment, useMemo, useState } from "react";
+import { type PreloadedQuery, usePaginationFragment, usePreloadedQuery, useRefetchableFragment, useSubscription } from "react-relay/hooks";
+import { ConnectionHandler, type GraphQLSubscriptionConfig } from "relay-runtime";
+import FaClipboard from "../../../assets/clipboard-solid.svg";
+import FaSyncAlt from "../../../assets/rotate-solid.svg";
+import FaPlusSquare from "../../../assets/square-plus-solid.svg";
+import { Columns, baseColumn } from "../../../components/Colums";
 import { CustomButton } from "../../../components/CustomButton";
 import { Main } from "../../../components/Main";
+import { Space, customSpace } from "../../../components/Space";
+import { Table } from "../../../components/Table";
+import { TableColumnName } from "../../../components/TableColumnName";
 import { Title } from "../../../components/Title";
 import { WrapperBig } from "../../../components/WrapperBig";
-import { Space, customSpace } from "../../../components/Space";
-import { Columns, baseColumn } from "../../../components/Colums";
-import { TableColumnName } from "../../../components/TableColumnName";
-import { Table } from "../../../components/Table";
-import { dayDiff, Languages, monthDiff, useTranslation } from "../../../utils";
-import { ConnectionHandler, GraphQLSubscriptionConfig } from "relay-runtime";
+import { type Languages, dayDiff, monthDiff, useTranslation } from "../../../utils";
+import { ScheduledPaymentRow } from "../../components/ScheduledPaymentRow";
 import {
   myLoansFragment,
   myLoansPaginationFragment,
@@ -23,18 +22,13 @@ import {
   subscriptionMyLoans,
   subscriptionMyLoansUpdate,
 } from "./MyLoansQueries";
-import { MyLoansQueriesPaginationUser } from "./__generated__/MyLoansQueriesPaginationUser.graphql";
-import { MyLoansQueries_user$key } from "./__generated__/MyLoansQueries_user.graphql";
-import { MyLoansQueriesQuery } from "./__generated__/MyLoansQueriesQuery.graphql";
-import { MyLoansQueriesSubscription } from "./__generated__/MyLoansQueriesSubscription.graphql";
-import FaPlusSquare from "../../../assets/square-plus-solid.svg";
-import FaClipboard from "../../../assets/clipboard-solid.svg";
-import FaSyncAlt from "../../../assets/rotate-solid.svg";
-import * as stylex from "@stylexjs/stylex";
-import { ScheduledPaymentRow } from "../../components/ScheduledPaymentRow";
-import { MyLoansQueriesUpdateSubscription } from "./__generated__/MyLoansQueriesUpdateSubscription.graphql";
-import { MyLoansQueriesRowRefetch_loan$key } from "./__generated__/MyLoansQueriesRowRefetch_loan.graphql";
-import { MyLoansQueriesRefetchQuery } from "./__generated__/MyLoansQueriesRefetchQuery.graphql";
+import type { MyLoansQueriesPaginationUser } from "./__generated__/MyLoansQueriesPaginationUser.graphql";
+import type { MyLoansQueriesQuery } from "./__generated__/MyLoansQueriesQuery.graphql";
+import type { MyLoansQueriesRefetchQuery } from "./__generated__/MyLoansQueriesRefetchQuery.graphql";
+import type { MyLoansQueriesRowRefetch_loan$key } from "./__generated__/MyLoansQueriesRowRefetch_loan.graphql";
+import type { MyLoansQueriesSubscription } from "./__generated__/MyLoansQueriesSubscription.graphql";
+import type { MyLoansQueriesUpdateSubscription } from "./__generated__/MyLoansQueriesUpdateSubscription.graphql";
+import type { MyLoansQueries_user$key } from "./__generated__/MyLoansQueries_user.graphql";
 
 interface Props {
   fintechQuery: PreloadedQuery<MyLoansQueriesQuery>;
@@ -176,24 +170,17 @@ const getStatus = (status: StatusLoan, t: (name: string) => string) => {
   }
 };
 
-type StatusLoan =
-  | "PAID"
-  | "TO_BE_PAID"
-  | "FINANCING"
-  | "WAITING_FOR_APPROVAL"
-  | "PAST_DUE";
+type StatusLoan = "PAID" | "TO_BE_PAID" | "FINANCING" | "WAITING_FOR_APPROVAL" | "PAST_DUE";
 
 const Cell: FC<{ id: string }> = ({ id }) => {
-  const configLoansUpdate = useMemo<
-    GraphQLSubscriptionConfig<MyLoansQueriesUpdateSubscription>
-  >(
+  const configLoansUpdate = useMemo<GraphQLSubscriptionConfig<MyLoansQueriesUpdateSubscription>>(
     () => ({
       variables: {
         gid: id,
       },
       subscription: subscriptionMyLoansUpdate,
     }),
-    [id]
+    [id],
   );
 
   useSubscription<MyLoansQueriesUpdateSubscription>(configLoansUpdate);
@@ -210,13 +197,8 @@ const Cell: FC<{ id: string }> = ({ id }) => {
   );
 };
 
-const RefetchCell: FC<{ loan: MyLoansQueriesRowRefetch_loan$key }> = ({
-  loan,
-}) => {
-  const [, refetch] = useRefetchableFragment<
-    MyLoansQueriesRefetchQuery,
-    MyLoansQueriesRowRefetch_loan$key
-  >(myLoansQueriesRowRefetchableFragment, loan);
+const RefetchCell: FC<{ loan: MyLoansQueriesRowRefetch_loan$key }> = ({ loan }) => {
+  const [, refetch] = useRefetchableFragment<MyLoansQueriesRefetchQuery, MyLoansQueriesRowRefetch_loan$key>(myLoansQueriesRowRefetchableFragment, loan);
   return (
     <td
       {...stylex.props(baseLoanRowClipboard.base)}
@@ -298,16 +280,12 @@ const columnMyLoans: {
   {
     id: "ROI",
     header: (t) => <TableColumnName>{t("Retorno anual")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.ROI}%</td>
-    ),
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.ROI}%</td>,
   },
   {
     id: "goal",
     header: (t) => <TableColumnName>{t("Monto")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.goal}</td>
-    ),
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.goal}</td>,
   },
   {
     id: "term",
@@ -321,9 +299,7 @@ const columnMyLoans: {
   {
     id: "pending",
     header: (t) => <TableColumnName>{t("Faltan")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.pending}</td>
-    ),
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.pending}</td>,
   },
   {
     id: "expiry",
@@ -345,14 +321,7 @@ const columnMyLoans: {
     header: (t) => <TableColumnName>{t("Estatus")}</TableColumnName>,
     cell: ({ info, t }) => (
       <td {...stylex.props(baseLoanRowStatus.base)}>
-        <div
-          {...stylex.props(
-            baseLoanRowStatusBox.base,
-            info.status === "FINANCING"
-              ? baseLoanRowStatusBox.financing
-              : baseLoanRowStatusBox.default
-          )}
-        >
+        <div {...stylex.props(baseLoanRowStatusBox.base, info.status === "FINANCING" ? baseLoanRowStatusBox.financing : baseLoanRowStatusBox.default)}>
           {getStatus(info.status, t)}
         </div>
       </td>
@@ -370,22 +339,13 @@ export const MyLoansPage: FC<Props> = (props) => {
   const [reset, setReset] = useState(0);
   const [showSubTable, setShowSubTable] = useState("");
   const { user } = usePreloadedQuery(myLoansFragment, props.fintechQuery);
-  const { data, loadNext, refetch } = usePaginationFragment<
-    MyLoansQueriesPaginationUser,
-    MyLoansQueries_user$key
-  >(myLoansPaginationFragment, user);
+  const { data, loadNext, refetch } = usePaginationFragment<MyLoansQueriesPaginationUser, MyLoansQueries_user$key>(myLoansPaginationFragment, user);
 
-  const connectionMyLoansID = ConnectionHandler.getConnectionID(
-    user?.id || "",
-    "MyLoansQueries_user_myLoans",
-    {
-      reset,
-    }
-  );
+  const connectionMyLoansID = ConnectionHandler.getConnectionID(user?.id || "", "MyLoansQueries_user_myLoans", {
+    reset,
+  });
 
-  const configMyLoans = useMemo<
-    GraphQLSubscriptionConfig<MyLoansQueriesSubscription>
-  >(
+  const configMyLoans = useMemo<GraphQLSubscriptionConfig<MyLoansQueriesSubscription>>(
     () => ({
       variables: {
         reset,
@@ -393,7 +353,7 @@ export const MyLoansPage: FC<Props> = (props) => {
       },
       subscription: subscriptionMyLoans,
     }),
-    [connectionMyLoansID, reset]
+    [connectionMyLoansID, reset],
   );
 
   useSubscription<MyLoansQueriesSubscription>(configMyLoans);
@@ -420,17 +380,7 @@ export const MyLoansPage: FC<Props> = (props) => {
               if (!node) {
                 return null;
               }
-              const {
-                id,
-                user_id,
-                score,
-                ROI,
-                goal,
-                term,
-                expiry,
-                status,
-                pending,
-              } = node;
+              const { id, user_id, score, ROI, goal, term, expiry, status, pending } = node;
               return (
                 <Fragment key={node.id}>
                   <tr {...stylex.props(baseLoanRowContainer.base)}>
@@ -455,12 +405,7 @@ export const MyLoansPage: FC<Props> = (props) => {
                       </Fragment>
                     ))}
                   </tr>
-                  {showSubTable === node.id ? (
-                    <ScheduledPaymentRow
-                      loan_gid={node.id}
-                      language={props.language}
-                    />
-                  ) : null}
+                  {showSubTable === node.id ? <ScheduledPaymentRow loan_gid={node.id} language={props.language} /> : null}
                 </Fragment>
               );
             })}
@@ -468,11 +413,7 @@ export const MyLoansPage: FC<Props> = (props) => {
         </Table>
         <Space styleX={customSpace.h20} />
         <Columns styleX={[baseColumn.base, baseColumn.columnJustifyCenter]}>
-          <CustomButton
-            color="secondary"
-            text={t("Cargar más")}
-            onClick={() => loadNext(5)}
-          />
+          <CustomButton color="secondary" text={t("Cargar más")} onClick={() => loadNext(5)} />
           <Space styleX={customSpace.w20} />
           <CustomButton
             text={t("Reiniciar lista")}
@@ -486,7 +427,7 @@ export const MyLoansPage: FC<Props> = (props) => {
                   cursor: "",
                   reset: time,
                 },
-                { fetchPolicy: "network-only" }
+                { fetchPolicy: "network-only" },
               );
             }}
           />

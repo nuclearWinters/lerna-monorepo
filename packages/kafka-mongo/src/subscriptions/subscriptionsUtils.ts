@@ -1,20 +1,7 @@
-import type {
-  InvestmentMongo,
-  LoanMongo,
-  TransactionMongo,
-  FintechUserMongo,
-} from "@repo/mongo-utils";
+import type { FintechUserMongo, InvestmentMongo, LoanMongo, TransactionMongo } from "@repo/mongo-utils";
 import { base64 } from "@repo/utils";
-import {
-  USER,
-  TRANSACTION_INSERT,
-  INVESTMENT_INSERT,
-  LOAN_INSERT,
-  INVESTMENT_UPDATE,
-  LOAN_UPDATE,
-  MY_LOAN_INSERT,
-} from "./subscriptions.ts";
 import type { RedisPubSub } from "graphql-redis-subscriptions";
+import { INVESTMENT_INSERT, INVESTMENT_UPDATE, LOAN_INSERT, LOAN_UPDATE, MY_LOAN_INSERT, TRANSACTION_INSERT, USER } from "./subscriptions.ts";
 
 export const publishUser = (user: FintechUserMongo, pubsub: RedisPubSub) => {
   pubsub.publish(USER, {
@@ -22,10 +9,7 @@ export const publishUser = (user: FintechUserMongo, pubsub: RedisPubSub) => {
   });
 };
 
-export const publishTransactionInsert = (
-  transaction: TransactionMongo,
-  pubsub: RedisPubSub
-) => {
+export const publishTransactionInsert = (transaction: TransactionMongo, pubsub: RedisPubSub) => {
   pubsub.publish(TRANSACTION_INSERT, {
     transactions_subscribe_insert: {
       node: transaction,
@@ -52,10 +36,7 @@ export const publishMyLoanInsert = (loan: LoanMongo, pubsub: RedisPubSub) => {
   });
 };
 
-export const publishInvestmentInsert = (
-  investment: InvestmentMongo,
-  pubsub: RedisPubSub
-) => {
+export const publishInvestmentInsert = (investment: InvestmentMongo, pubsub: RedisPubSub) => {
   pubsub.publish(INVESTMENT_INSERT, {
     investments_subscribe_insert: {
       node: investment,
@@ -70,10 +51,7 @@ export const publishLoanUpdate = (loan: LoanMongo, pubsub: RedisPubSub) => {
   });
 };
 
-export const publishInvestmentUpdate = (
-  investment: InvestmentMongo,
-  pubsub: RedisPubSub
-) => {
+export const publishInvestmentUpdate = (investment: InvestmentMongo, pubsub: RedisPubSub) => {
   pubsub.publish(INVESTMENT_UPDATE, {
     investments_subscribe_update: investment,
   });

@@ -1,20 +1,8 @@
-import {
-  Environment,
-  Network,
-  RecordSource,
-  Store,
-  RequestParameters,
-  Variables,
-  Observable,
-  GraphQLResponse,
-} from "relay-runtime";
-import { AUTH_API, FINTECH_API, Decode } from "./utils";
+import { Environment, type GraphQLResponse, Network, Observable, RecordSource, type RequestParameters, Store, type Variables } from "relay-runtime";
+import { AUTH_API, type Decode, FINTECH_API } from "./utils";
 import { jwtDecode } from "./utils";
 
-const subscribeRelayAuth = (
-  operation: RequestParameters,
-  variables: Variables
-) => {
+const subscribeRelayAuth = (operation: RequestParameters, variables: Variables) => {
   return Observable.create<GraphQLResponse>((sink) => {
     const { text, id, name } = operation;
     if (!(text || id)) {
@@ -37,10 +25,7 @@ const subscribeRelayAuth = (
       .then((response) => {
         const reader = response?.body?.getReader();
         const accesstoken = response.headers.get("accesstoken");
-        if (
-          accesstoken &&
-          sessionStorage.getItem("accessToken") !== accesstoken
-        ) {
+        if (accesstoken && sessionStorage.getItem("accessToken") !== accesstoken) {
           const decoded = jwtDecode<Decode>(accesstoken);
           sessionStorage.setItem("accessToken", accesstoken);
           sessionStorage.setItem("userData", JSON.stringify(decoded));
@@ -53,10 +38,7 @@ const subscribeRelayAuth = (
         const decoder = new TextDecoder();
         if (!reader) throw new Error("No body");
         return new Promise<void>((resolve) => {
-          reader.read().then(function pump({
-            done,
-            value,
-          }): undefined | Promise<undefined> {
+          reader.read().then(function pump({ done, value }): undefined | Promise<undefined> {
             if (done) {
               resolve();
               return;
@@ -75,10 +57,7 @@ const subscribeRelayAuth = (
   });
 };
 
-const subscribeRelayFintech = (
-  operation: RequestParameters,
-  variables: Variables
-) => {
+const subscribeRelayFintech = (operation: RequestParameters, variables: Variables) => {
   return Observable.create<GraphQLResponse>((sink) => {
     const { text, id, name } = operation;
     if (!(text || id)) {
@@ -101,10 +80,7 @@ const subscribeRelayFintech = (
       .then((response) => {
         const reader = response?.body?.getReader();
         const accesstoken = response.headers.get("accesstoken");
-        if (
-          accesstoken &&
-          sessionStorage.getItem("accessToken") !== accesstoken
-        ) {
+        if (accesstoken && sessionStorage.getItem("accessToken") !== accesstoken) {
           const decoded = jwtDecode<Decode>(accesstoken);
           sessionStorage.setItem("accessToken", accesstoken);
           sessionStorage.setItem("userData", JSON.stringify(decoded));
@@ -117,10 +93,7 @@ const subscribeRelayFintech = (
         const decoder = new TextDecoder();
         if (!reader) throw new Error("No body");
         return new Promise<void>((resolve) => {
-          reader.read().then(function pump({
-            done,
-            value,
-          }): undefined | Promise<undefined> {
+          reader.read().then(function pump({ done, value }): undefined | Promise<undefined> {
             if (done) {
               resolve();
               return;
@@ -143,10 +116,7 @@ const subscribeRelayFintech = (
 };
 
 const networkAuth = Network.create(subscribeRelayAuth, subscribeRelayAuth);
-const networkFintech = Network.create(
-  subscribeRelayFintech,
-  subscribeRelayFintech
-);
+const networkFintech = Network.create(subscribeRelayFintech, subscribeRelayFintech);
 
 const operationLoader = {
   get: (name: string) => {
@@ -172,19 +142,13 @@ export const RelayEnvironmentFintech = new Environment({
 });
 
 function registerModuleLoaders(modules: string[]) {
-  modules.forEach((module) => {
+  for (const module of modules) {
     if (module.endsWith("$normalization.graphql")) {
-      registerLoader(
-        module,
-        () => import(`./fintechSrc/components/__generated__/${module}.ts`)
-      );
+      registerLoader(module, () => import(`./fintechSrc/components/__generated__/${module}.ts`));
     } else {
-      registerLoader(
-        module,
-        () => import(`./fintechSrc/components/${module}.tsx`)
-      );
+      registerLoader(module, () => import(`./fintechSrc/components/${module}.tsx`));
     }
-  });
+  }
 }
 
 const loaders = new Map();
@@ -216,7 +180,8 @@ export default function moduleLoader(name: string) {
         });
         pendingLoaders.set(name, promise);
         return promise;
-      } else if (loader.kind === "registered") {
+      }
+      if (loader.kind === "registered") {
         return loader.loaderFn().then(
           (module: { default: unknown }) => {
             loadedModules.set(name, module);
@@ -225,19 +190,17 @@ export default function moduleLoader(name: string) {
           (error: Error) => {
             failedModules.set(name, error);
             throw error;
-          }
+          },
         );
-      } else if (loader.kind === "pending") {
+      }
+      if (loader.kind === "pending") {
         return pendingLoaders.get(name);
       }
     },
   };
 }
 
-export function registerLoader(
-  name: string,
-  loaderFn: () => Promise<{ default: unknown }>
-) {
+export function registerLoader(name: string, loaderFn: () => Promise<{ default: unknown }>) {
   const loader = loaders.get(name);
   if (loader == null) {
     loaders.set(name, {
@@ -255,7 +218,7 @@ export function registerLoader(
         failedModules.set(name, error);
         pendingLoaders.delete(name);
         loader.reject(error);
-      }
+      },
     );
   }
 }

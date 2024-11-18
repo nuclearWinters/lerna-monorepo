@@ -1,4 +1,4 @@
-import { EntryPoint } from "react-relay";
+import type { EntryPoint } from "react-relay";
 import JSResource from "../../../react-router-elements/JSResource";
 import type Settings from "./Settings";
 import SettingsQueriesQueryParamenters from "./__generated__/SettingsQueriesAuthUserQuery$parameters";

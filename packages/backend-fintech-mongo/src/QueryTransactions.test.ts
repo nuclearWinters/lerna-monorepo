@@ -1,80 +1,57 @@
-import { main } from "./app.ts";
-import supertest from "supertest";
-import { type Db, MongoClient, ObjectId } from "mongodb";
-import type { TransactionMongo, FintechUserMongo } from "@repo/mongo-utils";
-import type TestAgent from "supertest/lib/agent.js";
-import {
-  RedisContainer,
-  type StartedRedisContainer,
-} from "@testcontainers/redis";
-import type { RedisPubSub } from "graphql-redis-subscriptions";
-import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import type { Producer } from "kafkajs";
-import { createClient } from "redis";
-import { serialize } from "cookie";
+import { Server, ServerCredentials, credentials } from "@grpc/grpc-js";
+import { AuthClient, AuthServer } from "@repo/grpc-utils";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { base64Name } from "@repo/utils";
 import { getValidTokens } from "@repo/jwt-utils";
-import type { RedisClientType } from "@repo/redis-utils";
-import { AuthServer, AuthClient } from "@repo/grpc-utils";
+import { getFintechCollections } from "@repo/mongo-utils";
+import { base64Name } from "@repo/utils";
+import { RedisContainer } from "@testcontainers/redis";
+import { serialize } from "cookie";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
+import type { Producer } from "kafkajs";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "./app.ts";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import { after, it, describe } from "node:test";
+import { ok, strictEqual } from "node:assert";
 
-describe("QueryTransactions tests", () => {
-  let mongoClient: MongoClient;
-  let dbInstanceFintech: Db;
-  let dbInstanceAuth: Db;
-  let producer: Producer;
-  let startedRedisContainer: StartedRedisContainer;
-  let grpcClient: AuthClient;
-  let pubsub: RedisPubSub;
-  let request: TestAgent<supertest.Test>;
-  let grpcServer: Server;
-  let redisClient: RedisClientType;
+describe("QueryTransactions tests", async () => {
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const mongoClient = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const pubsub = null as unknown as RedisPubSub;
+  const dbInstanceAuth = mongoClient.db("auth");
+  const dbInstanceFintech = mongoClient.db("fintech");
+  const producer = null as unknown as Producer;
+  const startedRedisContainer = await new RedisContainer().start();
+  const grpcClient = new AuthClient("0.0.0.0:1990", credentials.createInsecure());
+  const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
+  const request = supertest(server, { http2: true });
+  const grpcServer = new Server();
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
+  });
+  await redisClient.connect();
+  grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
+  grpcServer.bindAsync("0.0.0.0:1990", ServerCredentials.createInsecure(), (err) => {
+    if (err) {
+      return;
+    }
+  });
 
-  beforeAll(async () => {
-    mongoClient = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstanceFintech = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    dbInstanceAuth = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
-        "-auth"
-    );
-    startedRedisContainer = await new RedisContainer().start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    grpcServer = new Server();
-    grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
-    grpcServer.bindAsync(
-      "0.0.0.0:1985",
-      ServerCredentials.createInsecure(),
-      (err) => {
-        if (err) {
-          return;
-        }
-      }
-    );
-    grpcClient = new AuthClient("0.0.0.0:1985", credentials.createInsecure());
-    const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
-    request = supertest(server, { http2: true });
-  }, 20_000);
-
-  afterAll(async () => {
-    grpcClient.close();
-    grpcServer.forceShutdown();
-    await redisClient.disconnect();
-    await startedRedisContainer.stop();
-    await mongoClient.close();
-  }, 10_000);
+  after(
+    async () => {
+      grpcClient.close();
+      grpcServer.forceShutdown();
+      await redisClient.disconnect();
+      await startedRedisContainer.stop();
+      await mongoClient.close();
+    },
+    { timeout: 10_000 },
+  );
 
   it("test TransactionsConnection valid access token", async () => {
-    const transactions =
-      dbInstanceFintech.collection<TransactionMongo>("transactions");
-    const users = dbInstanceFintech.collection<FintechUserMongo>("users");
+    const { transactions, users } = getFintechCollections(dbInstanceFintech);
     const user_id = crypto.randomUUID();
     await users.insertOne({
       id: user_id,
@@ -187,13 +164,13 @@ describe("QueryTransactions tests", () => {
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.node.transactions.edges.length).toBe(9);
-    expect(data.data.node.transactions.edges[0].cursor).toBeTruthy();
-    expect(data.data.node.transactions.edges[0].node.id).toBeTruthy();
-    expect(data.data.node.transactions.edges[0].node.user_id).toBeTruthy();
-    expect(data.data.node.transactions.edges[0].node.id).toBeTruthy();
-    expect(data.data.node.transactions.edges[0].node.type).toBe("CREDIT");
-    expect(data.data.node.transactions.edges[0].node.quantity).toBe("$2.00");
-    expect(data.data.node.transactions.edges[0].node.created_at).toBeTruthy();
+    strictEqual(data.data.node.transactions.edges.length, 9);
+    ok(data.data.node.transactions.edges[0].cursor);
+    ok(data.data.node.transactions.edges[0].node.id);
+    ok(data.data.node.transactions.edges[0].node.user_id);
+    ok(data.data.node.transactions.edges[0].node.id);
+    strictEqual(data.data.node.transactions.edges[0].node.type, "CREDIT");
+    strictEqual(data.data.node.transactions.edges[0].node.quantity, "$2.00");
+    ok(data.data.node.transactions.edges[0].node.created_at);
   });
 });

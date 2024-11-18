@@ -1,68 +1,56 @@
-import { addDays, addMonths, startOfDay } from "date-fns";
-import type { Db } from "mongodb";
-import { ObjectId, MongoClient } from "mongodb";
 import { getFintechCollections } from "@repo/mongo-utils";
-import type { Admin, Producer } from "kafkajs";
-import { Kafka } from "kafkajs";
-import { dayFunction } from "./cronJobDay.ts";
-import type { StartedKafkaContainer } from "@testcontainers/kafka";
-import { KafkaContainer } from "@testcontainers/kafka";
 import { KAFKA_ID } from "@repo/utils";
+import { KafkaContainer } from "@testcontainers/kafka";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import { addDays, addMonths, startOfDay } from "date-fns";
+import { Kafka } from "kafkajs";
+import { MongoClient, ObjectId } from "mongodb";
+import { dayFunction } from "./cronJobDay.ts";
+import { after, describe, it } from "node:test";
+import { strictEqual } from "node:assert";
 
-describe("cronJobs tests", () => {
-  let mongoClient: MongoClient;
-  let dbInstanceFintech: Db;
-  let producer: Producer;
-  let startedKafkaContainer: StartedKafkaContainer;
-  let admin: Admin;
+describe("cronJobs tests", async () => {
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const startedKafkaContainer = await new KafkaContainer().withExposedPorts(9093).start();
+  const name = startedKafkaContainer.getHost();
+  const port = startedKafkaContainer.getMappedPort(9093);
+  const kafka = new Kafka({
+    clientId: KAFKA_ID,
+    brokers: [`${name}:${port}`],
+  });
+  const admin = kafka.admin();
+  await admin.connect();
+  await admin.createTopics({
+    validateOnly: false,
+    topics: [
+      {
+        topic: "add-lends",
+      },
+      {
+        topic: "user-transaction",
+      },
+      {
+        topic: "loan-transaction",
+      },
+    ],
+  });
+  const producer = kafka.producer();
+  await producer.connect();
+  const mongoClient = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const dbInstanceFintech = mongoClient.db("fintech");
 
-  beforeAll(async () => {
-    mongoClient = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstanceFintech = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    startedKafkaContainer = await new KafkaContainer()
-      .withExposedPorts(9093)
-      .start();
-    const name = startedKafkaContainer.getHost();
-    const port = startedKafkaContainer.getMappedPort(9093);
-    const kafka = new Kafka({
-      clientId: KAFKA_ID,
-      brokers: [`${name}:${port}`],
-    });
-    admin = kafka.admin();
-    await admin.connect();
-    await admin.createTopics({
-      validateOnly: false,
-      topics: [
-        {
-          topic: "add-lends",
-        },
-        {
-          topic: "user-transaction",
-        },
-        {
-          topic: "loan-transaction",
-        },
-      ],
-    });
-    producer = kafka.producer();
-    await producer.connect();
-  }, 30_000);
-
-  afterAll(async () => {
-    await producer.disconnect();
-    await admin.disconnect();
-    await startedKafkaContainer.stop();
-    await mongoClient.close();
-  }, 10_000);
+  after(
+    async () => {
+      await producer.disconnect();
+      await admin.disconnect();
+      await startedKafkaContainer.stop();
+      await mongoClient.close();
+    },
+    { timeout: 10_000 },
+  );
 
   it("dayFunction test", async () => {
-    const { users, loans, investments, scheduledPayments } =
-      getFintechCollections(dbInstanceFintech);
+    const { users, loans, investments, scheduledPayments } = getFintechCollections(dbInstanceFintech);
     const now = new Date();
     const user1_oid = new ObjectId();
     const user2_oid = new ObjectId();
@@ -84,8 +72,8 @@ describe("cronJobs tests", () => {
         _id: user2_oid,
         id: user2_id,
         account_available: 1_000_00,
-        account_to_be_paid: 206125,
-        account_total: 306125,
+        account_to_be_paid: 2_061_25,
+        account_total: 3_061_25,
         account_withheld: 0,
       },
       {
@@ -110,42 +98,42 @@ describe("cronJobs tests", () => {
     await scheduledPayments.insertMany([
       {
         _id: scheduled1_oid,
-        amortize: 50989,
+        amortize: 509_89,
         scheduled_date: addDays(startOfDay(now), -30),
         status: "delayed",
         loan_oid: loan1_oid,
       },
       {
         _id: scheduled2_oid,
-        amortize: 50989,
+        amortize: 509_89,
         scheduled_date: startOfDay(now),
         status: "to be paid",
         loan_oid: loan1_oid,
       },
       {
         _id: scheduled3_oid,
-        amortize: 50989,
+        amortize: 509_89,
         scheduled_date: startOfDay(addMonths(now, -2)),
         status: "paid",
         loan_oid: loan2_oid,
       },
       {
         _id: scheduled4_oid,
-        amortize: 50989,
+        amortize: 509_89,
         scheduled_date: addDays(startOfDay(now), -30),
         status: "delayed",
         loan_oid: loan2_oid,
       },
       {
         _id: scheduled5_oid,
-        amortize: 50989,
+        amortize: 509_89,
         scheduled_date: startOfDay(addMonths(now, -2)),
         status: "paid",
         loan_oid: loan3_oid,
       },
       {
         _id: scheduled6_oid,
-        amortize: 50989,
+        amortize: 509_89,
         scheduled_date: addDays(startOfDay(now), -30),
         status: "delayed",
         loan_oid: loan3_oid,
@@ -225,11 +213,11 @@ describe("cronJobs tests", () => {
         payments: 0,
         term: 2,
         roi: 17,
-        moratory: 720,
-        interest_to_earn: 1978,
+        moratory: 7_20,
+        interest_to_earn: 19_78,
         paid_already: 0,
         to_be_paid: 0,
-        amortize: 50989,
+        amortize: 509_89,
         status_type: "on_going",
       },
       {
@@ -244,11 +232,11 @@ describe("cronJobs tests", () => {
         payments: 1,
         term: 2,
         roi: 17,
-        moratory: 720,
-        interest_to_earn: 1978,
+        moratory: 7_20,
+        interest_to_earn: 19_78,
         paid_already: 0,
         to_be_paid: 0,
-        amortize: 50989,
+        amortize: 509_89,
         status_type: "on_going",
       },
       {
@@ -263,17 +251,17 @@ describe("cronJobs tests", () => {
         payments: 1,
         term: 2,
         roi: 17,
-        moratory: 720,
-        interest_to_earn: 1978,
-        paid_already: 50989,
-        to_be_paid: 50989,
-        amortize: 50989,
+        moratory: 7_20,
+        interest_to_earn: 19_78,
+        paid_already: 509_89,
+        to_be_paid: 509_89,
+        amortize: 509_89,
         status_type: "on_going",
       },
     ]);
     await dayFunction(dbInstanceFintech, producer);
     await new Promise((resolve) => setTimeout(resolve, 1_000));
     const count = await admin.fetchTopicOffsets("user-transaction");
-    expect(count[0].offset).toBe("3");
+    strictEqual(count[0].offset, "3");
   });
 });

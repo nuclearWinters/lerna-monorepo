@@ -1,135 +1,103 @@
-import { main } from "../app.ts";
-import supertest from "supertest";
-import { type Db, MongoClient, ObjectId } from "mongodb";
-import { type Consumer, Kafka, type Producer } from "kafkajs";
-import {
-  type StartedRedisContainer,
-  RedisContainer,
-} from "@testcontainers/redis";
-import {
-  KafkaContainer,
-  type StartedKafkaContainer,
-} from "@testcontainers/kafka";
-import { RedisPubSub } from "graphql-redis-subscriptions";
-import { Redis, type RedisOptions } from "ioredis";
-import type TestAgent from "supertest/lib/agent.js";
-import { serialize } from "cookie";
-import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import { createClient } from "redis";
-import { KAFKA_ID } from "@repo/utils";
+import { Server, ServerCredentials, credentials } from "@grpc/grpc-js";
+import { AuthClient, AuthServer } from "@repo/grpc-utils";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { base64Name, delay } from "@repo/utils";
 import { getValidTokens } from "@repo/jwt-utils";
-import type { RedisClientType } from "@repo/redis-utils";
-import { AuthServer, AuthClient } from "@repo/grpc-utils";
 import { runKafkaConsumer } from "@repo/kafka-utils";
 import { getFintechCollections } from "@repo/mongo-utils";
+import { KAFKA_ID } from "@repo/utils";
+import { base64Name, delay } from "@repo/utils";
+import { KafkaContainer } from "@testcontainers/kafka";
+import { RedisContainer } from "@testcontainers/redis";
+import { serialize } from "cookie";
 import { addMonths } from "date-fns";
+import { RedisPubSub } from "graphql-redis-subscriptions";
+import { Redis, type RedisOptions } from "ioredis";
+import { Kafka } from "kafkajs";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "../app.ts";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import { after, describe, it } from "node:test";
+import { deepStrictEqual, strictEqual } from "node:assert";
 
-describe("AddLends one lend and loan no completed goal", () => {
-  let mongoClient: MongoClient;
-  let dbInstanceFintech: Db;
-  let dbInstanceAuth: Db;
-  let producer: Producer;
-  let startedRedisContainer: StartedRedisContainer;
-  let grpcClient: AuthClient;
-  let pubsub: RedisPubSub;
-  let request: TestAgent<supertest.Test>;
-  let startedKafkaContainer: StartedKafkaContainer;
-  let grpcServer: Server;
-  let redisClient: RedisClientType;
-  let ioredisPublisherClient: Redis;
-  let ioredisSubscriberClient: Redis;
-  let consumer: Consumer;
+describe("AddLends one lend and loan no completed goal", async () => {
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const startedKafkaContainer = await new KafkaContainer().withExposedPorts(9093).start();
+  const mongoClient = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const dbInstanceFintech = mongoClient.db("fintech");
+  const dbInstanceAuth = mongoClient.db("auth");
+  const name = startedKafkaContainer.getHost();
+  const port = startedKafkaContainer.getMappedPort(9093);
+  const kafka = new Kafka({
+    clientId: KAFKA_ID,
+    brokers: [`${name}:${port}`],
+  });
+  const admin = kafka.admin();
+  await admin.connect();
+  await admin.createTopics({
+    validateOnly: false,
+    topics: [
+      {
+        topic: "add-lends",
+      },
+      {
+        topic: "user-transaction",
+      },
+      {
+        topic: "loan-transaction",
+      },
+    ],
+  });
+  await admin.disconnect();
+  const producer = kafka.producer();
+  await producer.connect();
+  const startedRedisContainer = await new RedisContainer().start();
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
+  });
+  await redisClient.connect();
+  const options: RedisOptions = {
+    host: startedRedisContainer.getHost(),
+    port: startedRedisContainer.getMappedPort(6379),
+    retryStrategy: () => 10_000,
+  };
+  const ioredisPublisherClient = new Redis(options);
+  const ioredisSubscriberClient = new Redis(options);
+  const pubsub = new RedisPubSub({
+    publisher: ioredisPublisherClient,
+    subscriber: ioredisSubscriberClient,
+  });
+  const grpcServer = new Server();
+  grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
+  grpcServer.bindAsync("0.0.0.0:1987", ServerCredentials.createInsecure(), (err) => {
+    if (err) {
+      return;
+    }
+  });
+  const grpcClient = new AuthClient("0.0.0.0:1987", credentials.createInsecure());
+  const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
+  const request = supertest(server, { http2: true });
+  const consumer = kafka.consumer({ groupId: "test-group" });
+  await runKafkaConsumer(consumer, producer, dbInstanceFintech, pubsub);
 
-  beforeAll(async () => {
-    mongoClient = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstanceFintech = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    dbInstanceAuth = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
-        "-auth"
-    );
-    startedKafkaContainer = await new KafkaContainer()
-      .withExposedPorts(9093)
-      .start();
-    const name = startedKafkaContainer.getHost();
-    const port = startedKafkaContainer.getMappedPort(9093);
-    const kafka = new Kafka({
-      clientId: KAFKA_ID,
-      brokers: [`${name}:${port}`],
-    });
-    const admin = kafka.admin();
-    await admin.connect();
-    await admin.createTopics({
-      validateOnly: false,
-      topics: [
-        {
-          topic: "add-lends",
-        },
-        {
-          topic: "user-transaction",
-        },
-        {
-          topic: "loan-transaction",
-        },
-      ],
-    });
-    await admin.disconnect();
-    producer = kafka.producer();
-    await producer.connect();
-    startedRedisContainer = await new RedisContainer().start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    const options: RedisOptions = {
-      host: startedRedisContainer.getConnectionUrl(),
-      port: 6379,
-      retryStrategy: () => 10_000,
-    };
-    ioredisPublisherClient = new Redis(options);
-    ioredisSubscriberClient = new Redis(options);
-    pubsub = new RedisPubSub({
-      publisher: ioredisPublisherClient,
-      subscriber: ioredisSubscriberClient,
-    });
-    grpcServer = new Server();
-    grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
-    grpcServer.bindAsync(
-      "0.0.0.0:1984",
-      ServerCredentials.createInsecure(),
-      (err) => {
-        if (err) {
-          return;
-        }
-      }
-    );
-    grpcClient = new AuthClient(`0.0.0.0:1984`, credentials.createInsecure());
-    const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
-    request = supertest(server, { http2: true });
-    consumer = kafka.consumer({ groupId: "test-group" });
-    await runKafkaConsumer(consumer, producer, dbInstanceFintech, pubsub);
-  }, 20_000);
-
-  afterAll(async () => {
-    grpcClient.close();
-    grpcServer.forceShutdown();
-    await redisClient.disconnect();
-    await startedRedisContainer.stop();
-    await producer.disconnect();
-    await consumer.disconnect();
-    await startedKafkaContainer.stop();
-    await mongoClient.close();
-  }, 10_000);
+  after(
+    async () => {
+      grpcClient.close();
+      grpcServer.forceShutdown();
+      await redisClient.disconnect();
+      await startedRedisContainer.stop();
+      await producer.disconnect();
+      await consumer.disconnect();
+      await startedKafkaContainer.stop();
+      await mongoClient.close();
+      await pubsub.close();
+    },
+    { timeout: 10_000 },
+  );
 
   it("test AddLends valid access token", async () => {
-    const { users, loans, records, investments } =
-      getFintechCollections(dbInstanceFintech);
+    const { users, loans, records, investments } = getFintechCollections(dbInstanceFintech);
     const user1_oid = new ObjectId();
     const user2_oid = new ObjectId();
     const user1_id = crypto.randomUUID();
@@ -216,35 +184,36 @@ describe("AddLends one lend and loan no completed goal", () => {
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.addLends.error).toBeFalsy();
+    strictEqual(data.data.addLends.error, "");
     await delay(500);
     const recordsResult = await records.find().toArray();
-    expect(recordsResult.length).toBe(4);
-    expect(
+    strictEqual(recordsResult.length, 4);
+    deepStrictEqual(
       recordsResult.map(({ _id, ...record }) => ({
         ...record,
         _id: ObjectId.isValid(_id),
-      }))
-    ).toEqual([
-      {
-        _id: true,
-        status: "applied",
-      },
-      {
-        _id: true,
-        status: "applied",
-      },
-      {
-        _id: true,
-        status: "applied",
-      },
-      {
-        _id: true,
-        status: "applied",
-      },
-    ]);
+      })),
+      [
+        {
+          _id: true,
+          status: "applied",
+        },
+        {
+          _id: true,
+          status: "applied",
+        },
+        {
+          _id: true,
+          status: "applied",
+        },
+        {
+          _id: true,
+          status: "applied",
+        },
+      ],
+    );
     const user1 = await users.findOne({ id: user1_id });
-    expect(user1).toEqual({
+    deepStrictEqual(user1, {
       _id: user1_oid,
       id: user1_id,
       account_available: 0,
@@ -253,7 +222,7 @@ describe("AddLends one lend and loan no completed goal", () => {
       account_withheld: 0,
     });
     const user2 = await users.findOne({ id: user2_id });
-    expect(user2).toEqual({
+    deepStrictEqual(user2, {
       _id: user2_oid,
       id: user2_id,
       account_available: 100_00,
@@ -262,7 +231,7 @@ describe("AddLends one lend and loan no completed goal", () => {
       account_withheld: 0,
     });
     const loan1 = await loans.findOne({ _id: loan1_oid });
-    expect(loan1).toEqual({
+    deepStrictEqual(loan1, {
       _id: loan1_oid,
       user_id: user2_id,
       score: "AAA",
@@ -277,36 +246,35 @@ describe("AddLends one lend and loan no completed goal", () => {
       payments_done: 0,
     });
     const investmentsResult = await investments.find().toArray();
-    expect(investmentsResult.length).toBe(1);
-    expect(
-      investmentsResult.map(
-        ({ _id, updated_at, created_at, ...investment }) => ({
-          ...investment,
-          _id: ObjectId.isValid(_id),
-          updated_at: updated_at instanceof Date,
-          created_at: created_at instanceof Date,
-        })
-      )
-    ).toEqual([
-      {
-        _id: true,
-        borrower_id: user2_id,
-        lender_id: user1_id,
-        loan_oid: loan1_oid,
-        quantity: 200_00,
-        created_at: true,
-        updated_at: true,
-        status: "financing",
-        status_type: "on_going",
-        roi: 17,
-        term: 5,
-        payments: 0,
-        moratory: 0,
-        amortize: 0,
-        interest_to_earn: 0,
-        to_be_paid: 0,
-        paid_already: 0,
-      },
-    ]);
+    strictEqual(investmentsResult.length, 1);
+    deepStrictEqual(
+      investmentsResult.map(({ _id, updated_at, created_at, ...investment }) => ({
+        ...investment,
+        _id: ObjectId.isValid(_id),
+        updated_at: updated_at instanceof Date,
+        created_at: created_at instanceof Date,
+      })),
+      [
+        {
+          _id: true,
+          borrower_id: user2_id,
+          lender_id: user1_id,
+          loan_oid: loan1_oid,
+          quantity: 200_00,
+          created_at: true,
+          updated_at: true,
+          status: "financing",
+          status_type: "on_going",
+          roi: 17,
+          term: 5,
+          payments: 0,
+          moratory: 0,
+          amortize: 0,
+          interest_to_earn: 0,
+          to_be_paid: 0,
+          paid_already: 0,
+        },
+      ],
+    );
   });
 });

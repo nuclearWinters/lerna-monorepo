@@ -1,13 +1,10 @@
-import { useFragment, graphql } from "react-relay";
-import FaFileContract from "../../assets/file-contract-solid.svg";
-import FaUserCircle from "../../assets/circle-user-solid.svg";
-import { FC } from "react";
-import {
-  InvestmentTransaction_transaction$key,
-  TransactionType,
-} from "./__generated__/InvestmentTransaction_transaction.graphql";
 import * as stylex from "@stylexjs/stylex";
+import type { FC } from "react";
+import { graphql, useFragment } from "react-relay";
+import FaUserCircle from "../../assets/circle-user-solid.svg";
+import FaFileContract from "../../assets/file-contract-solid.svg";
 import { getLongDateName, useTranslation } from "../../utils";
+import type { InvestmentTransaction_transaction$key, TransactionType } from "./__generated__/InvestmentTransaction_transaction.graphql";
 
 export const baseMyTransactionsIcon = stylex.create({
   base: {
@@ -97,7 +94,7 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
         loan_id
       }
     `,
-    transaction
+    transaction,
   );
 
   const { t } = useTranslation();
@@ -128,14 +125,7 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
   return (
     <div {...stylex.props(baseMyTransactionsBox.base)}>
       <div {...stylex.props(baseMyTransactionsBar.base)}>
-        <div
-          {...stylex.props(
-            baseMyTransactionsStatus.base,
-            substraction
-              ? baseMyTransactionsStatus.substraction
-              : baseMyTransactionsStatus.addition
-          )}
-        >
+        <div {...stylex.props(baseMyTransactionsStatus.base, substraction ? baseMyTransactionsStatus.substraction : baseMyTransactionsStatus.addition)}>
           {getStatus(data.type)}
         </div>
         <div {...stylex.props(baseMyTransactionsDescription.base)}>
@@ -154,18 +144,9 @@ export const InvestmentTransaction: FC<Props> = ({ transaction }) => {
             {...stylex.props(baseMyTransactionsIcon.base)}
           />
         </div>
-        <div {...stylex.props(baseMyTransactionsDate.base)}>
-          {dateFormatted}
-        </div>
+        <div {...stylex.props(baseMyTransactionsDate.base)}>{dateFormatted}</div>
       </div>
-      <div
-        {...stylex.props(
-          baseMyTransactionsQuantity.base,
-          substraction
-            ? baseMyTransactionsQuantity.substraction
-            : baseMyTransactionsQuantity.addition
-        )}
-      >
+      <div {...stylex.props(baseMyTransactionsQuantity.base, substraction ? baseMyTransactionsQuantity.substraction : baseMyTransactionsQuantity.addition)}>
         {data.quantity}
       </div>
     </div>

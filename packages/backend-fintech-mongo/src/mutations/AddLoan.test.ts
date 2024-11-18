@@ -1,87 +1,60 @@
-import { main } from "../app.ts";
-import supertest from "supertest";
-import { type Db, MongoClient, ObjectId } from "mongodb";
-import type { Producer } from "kafkajs";
-import {
-  type StartedRedisContainer,
-  RedisContainer,
-} from "@testcontainers/redis";
-import { RedisPubSub } from "graphql-redis-subscriptions";
-import { Redis, type RedisOptions } from "ioredis";
-import type TestAgent from "supertest/lib/agent.js";
-import { serialize } from "cookie";
-import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import { createClient } from "redis";
+import { Server, ServerCredentials, credentials } from "@grpc/grpc-js";
+import { AuthClient, AuthServer } from "@repo/grpc-utils";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { getValidTokens } from "@repo/jwt-utils";
-import type { RedisClientType } from "@repo/redis-utils";
-import { AuthServer, AuthClient } from "@repo/grpc-utils";
 import { getFintechCollections } from "@repo/mongo-utils";
+import { RedisContainer } from "@testcontainers/redis";
+import { serialize } from "cookie";
+import { RedisPubSub } from "graphql-redis-subscriptions";
+import { Redis, type RedisOptions } from "ioredis";
+import type { Producer } from "kafkajs";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "../app.ts";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import { after, describe, it } from "node:test";
+import { deepStrictEqual, strictEqual } from "node:assert";
 
-describe("AddLoan tests", () => {
-  let mongoClient: MongoClient;
-  let dbInstanceFintech: Db;
-  let dbInstanceAuth: Db;
-  let producer: Producer;
-  let startedRedisContainer: StartedRedisContainer;
-  let grpcClient: AuthClient;
-  let pubsub: RedisPubSub;
-  let request: TestAgent<supertest.Test>;
-  let grpcServer: Server;
-  let redisClient: RedisClientType;
-  let ioredisPublisherClient: Redis;
-  let ioredisSubscriberClient: Redis;
-
-  beforeAll(async () => {
-    mongoClient = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstanceFintech = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    dbInstanceAuth = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
-        "-auth"
-    );
-    startedRedisContainer = await new RedisContainer().start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    const options: RedisOptions = {
-      host: startedRedisContainer.getConnectionUrl(),
-      port: 6379,
-      retryStrategy: () => 10_000,
-    };
-    ioredisPublisherClient = new Redis(options);
-    ioredisSubscriberClient = new Redis(options);
-    pubsub = new RedisPubSub({
-      publisher: ioredisPublisherClient,
-      subscriber: ioredisSubscriberClient,
-    });
-    grpcServer = new Server();
-    grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
-    grpcServer.bindAsync(
-      "localhost:1986",
-      ServerCredentials.createInsecure(),
-      (err) => {
-        if (err) {
-          return;
-        }
-      }
-    );
-    grpcClient = new AuthClient(`0.0.0.0:1986`, credentials.createInsecure());
-    const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
-    request = supertest(server, { http2: true });
+describe("AddLoan tests", async () => {
+  const startedRedisContainer = await new RedisContainer().start();
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const mongoClient = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const dbInstanceAuth = mongoClient.db("auth");
+  const dbInstanceFintech = mongoClient.db("fintech");
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
   });
+  await redisClient.connect();
+  const options: RedisOptions = {
+    host: startedRedisContainer.getHost(),
+    port: startedRedisContainer.getMappedPort(6379),
+    retryStrategy: () => 10_000,
+  };
+  const ioredisPublisherClient = new Redis(options);
+  const ioredisSubscriberClient = new Redis(options);
+  const pubsub = new RedisPubSub({
+    publisher: ioredisPublisherClient,
+    subscriber: ioredisSubscriberClient,
+  });
+  const grpcServer = new Server();
+  grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
+  grpcServer.bindAsync("0.0.0.0:1983", ServerCredentials.createInsecure(), (err) => {
+    if (err) {
+      return;
+    }
+  });
+  const grpcClient = new AuthClient("0.0.0.0:1983", credentials.createInsecure());
+  const server = await main(dbInstanceFintech, null as unknown as Producer, grpcClient, pubsub);
+  const request = supertest(server, { http2: true });
 
-  afterAll(async () => {
+  after(async () => {
     grpcClient.close();
     grpcServer.forceShutdown();
     await redisClient.disconnect();
     await startedRedisContainer.stop();
     await mongoClient.close();
+    await pubsub.close();
   });
 
   it("test AddLoan valid access token", async () => {
@@ -124,11 +97,11 @@ describe("AddLoan tests", () => {
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.addLoan.error).toBeFalsy();
+    strictEqual(data.data.addLoan.error, "");
     const user = await users.findOne({
       id,
     });
-    expect(user).toEqual({
+    deepStrictEqual(user, {
       _id,
       id,
       account_available: 1_000_00,
@@ -137,29 +110,29 @@ describe("AddLoan tests", () => {
       account_withheld: 0,
     });
     const allLoans = await loans.find({ user_id: id }).toArray();
-    expect(allLoans.length).toBe(1);
-    expect(
+    strictEqual(allLoans.length, 1);
+    deepStrictEqual(
       allLoans.map((loan) => ({
-        ROI: loan.roi,
-        user_id: loan.user_id,
-        goal: loan.goal,
-        raised: loan.raised,
-        score: loan.score,
-        status: loan.status,
-        term: loan.term,
-        pending: loan.pending,
-      }))
-    ).toEqual([
-      {
-        ROI: 17,
-        user_id: id,
-        goal: 1_000_00,
-        raised: 0,
-        score: "AAA",
-        status: "waiting for approval",
-        term: 2,
-        pending: 1_000_00,
-      },
-    ]);
+        ...loan,
+        _id: ObjectId.isValid(_id),
+        expiry: loan.expiry instanceof Date,
+      })),
+      [
+        {
+          _id: true,
+          expiry: true,
+          roi: 17,
+          user_id: id,
+          goal: 1_000_00,
+          raised: 0,
+          score: "AAA",
+          status: "waiting for approval",
+          term: 2,
+          pending: 1_000_00,
+          payments_delayed: 0,
+          payments_done: 0,
+        },
+      ],
+    );
   });
 });

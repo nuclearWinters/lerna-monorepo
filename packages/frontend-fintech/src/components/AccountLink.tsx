@@ -1,7 +1,7 @@
-import { FC } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { FC } from "react";
 import { Link } from "../react-router-elements/Link";
-import { RouteKeys } from "../router";
+import type { RouteKeys } from "../router";
 
 interface Props {
   title: string;
@@ -61,23 +61,10 @@ export const accountLinkTitle = stylex.create({
 export const AccountLink: FC<Props> = ({ title, icon, path, location }) => {
   const selected = path === location;
   return (
-    <Link
-      to={path}
-      {...stylex.props(
-        accountLinkBox.base,
-        selected ? accountLinkBox.selected : accountLinkBox.notSelected
-      )}
-    >
+    <Link to={path} {...stylex.props(accountLinkBox.base, selected ? accountLinkBox.selected : accountLinkBox.notSelected)}>
       {selected && <div {...stylex.props(accountLinkIcon.base)} />}
       {icon}
-      <div
-        {...stylex.props(
-          accountLinkTitle.base,
-          selected ? accountLinkTitle.selected : accountLinkTitle.notSelected
-        )}
-      >
-        {title}
-      </div>
+      <div {...stylex.props(accountLinkTitle.base, selected ? accountLinkTitle.selected : accountLinkTitle.notSelected)}>{title}</div>
     </Link>
   );
 };

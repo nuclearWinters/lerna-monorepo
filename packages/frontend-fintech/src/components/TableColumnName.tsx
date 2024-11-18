@@ -1,5 +1,5 @@
-import { FC, ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { FC, ReactNode } from "react";
 
 export const baseTableColumnName = stylex.create({
   base: {
@@ -9,10 +9,7 @@ export const baseTableColumnName = stylex.create({
   },
 });
 
-export const TableColumnName: FC<{ children: ReactNode; colspan?: number }> = ({
-  children,
-  colspan,
-}) => {
+export const TableColumnName: FC<{ children: ReactNode; colspan?: number }> = ({ children, colspan }) => {
   return (
     <th colSpan={colspan} {...stylex.props(baseTableColumnName.base)}>
       {children}

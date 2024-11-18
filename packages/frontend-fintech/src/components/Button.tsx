@@ -1,11 +1,7 @@
-import { ButtonHTMLAttributes, DetailedHTMLProps, FC, ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { ButtonHTMLAttributes, DetailedHTMLProps, FC, ReactNode } from "react";
 
-interface IProps
-  extends DetailedHTMLProps<
-    ButtonHTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  > {
+interface IProps extends DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
   text: string;
   iconLeft?: ReactNode;
   iconRight?: ReactNode;
@@ -63,13 +59,7 @@ export const button = stylex.create({
   },
 });
 
-export const Button: FC<IProps> = ({
-  text,
-  iconLeft,
-  iconRight,
-  styleX,
-  ...props
-}) => {
+export const Button: FC<IProps> = ({ text, iconLeft, iconRight, styleX, ...props }) => {
   return (
     <button {...stylex.props(styleX || button.base)} {...props}>
       {iconLeft ? iconLeft : null}

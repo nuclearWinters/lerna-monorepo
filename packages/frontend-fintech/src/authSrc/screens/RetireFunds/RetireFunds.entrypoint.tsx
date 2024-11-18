@@ -1,7 +1,7 @@
-import type RetireFunds from "./RetireFunds";
-import utilsAuthQueryParameters from "../../__generated__/utilsAuthQuery$parameters";
+import type { EntryPoint } from "react-relay";
 import JSResource from "../../../react-router-elements/JSResource";
-import { EntryPoint } from "react-relay";
+import utilsAuthQueryParameters from "../../__generated__/utilsAuthQuery$parameters";
+import type RetireFunds from "./RetireFunds";
 
 export const RetireFundsEntryPoint: EntryPoint<typeof RetireFunds> = {
   root: JSResource("RetireFunds", () => import("./RetireFunds")),

@@ -1,13 +1,10 @@
-import { Component, ReactNode } from "react";
-import { ModuleLoaderError } from "./RelayMatchContainer";
+import { Component, type ReactNode } from "react";
+import type { ModuleLoaderError } from "./RelayMatchContainer";
 
 export default class ErrorBoundary extends Component<
   {
     shouldCatchError?: (error: ModuleLoaderError) => boolean;
-    renderError: (
-      error: ModuleLoaderError,
-      resetError: () => void
-    ) => ReactNode;
+    renderError: (error: ModuleLoaderError, resetError: () => void) => ReactNode;
     children: ReactNode;
   },
   { error: ModuleLoaderError | null }
@@ -23,7 +20,7 @@ export default class ErrorBoundary extends Component<
   }
 
   render() {
-    if (this.state && this.state.error) {
+    if (this.state?.error) {
       return this.props.renderError(this.state.error, this._resetError);
     }
     return this.props.children;

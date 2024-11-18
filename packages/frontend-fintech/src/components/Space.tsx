@@ -1,5 +1,5 @@
-import { FC } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { FC } from "react";
 
 interface Props {
   styleX?: stylex.StaticStyles;

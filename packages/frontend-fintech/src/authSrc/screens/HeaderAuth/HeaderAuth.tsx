@@ -1,12 +1,12 @@
-import { Header } from "../../../components/Header";
-import { ReactNode, Suspense } from "react";
-import { Spinner } from "../../../components/Spinner";
 import * as stylex from "@stylexjs/stylex";
-import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
-import { utilsFintechQuery } from "../../../fintechSrc/__generated__/utilsFintechQuery.graphql";
+import { type ReactNode, Suspense } from "react";
+import type { EntryPointComponent } from "react-relay";
+import type { OperationType } from "relay-runtime";
+import { Header } from "../../../components/Header";
 import { Sider } from "../../../components/Sider";
-import { EntryPointComponent } from "react-relay";
-import { OperationType } from "relay-runtime";
+import { Spinner } from "../../../components/Spinner";
+import type { utilsFintechQuery } from "../../../fintechSrc/__generated__/utilsFintechQuery.graphql";
+import type { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 
 export const baseApp = stylex.create({
   base: {
@@ -87,11 +87,7 @@ export interface Queries {
   authQuery: utilsAuthQuery;
 }
 
-export const HeaderAuth: EntryPointComponent<
-  Queries,
-  Record<string, undefined>,
-  { children: ReactNode }
-> = (props) => {
+export const HeaderAuth: EntryPointComponent<Queries, Record<string, undefined>, { children: ReactNode }> = (props) => {
   return (
     <>
       <div {...stylex.props(baseRoutes.base)}>
@@ -102,10 +98,7 @@ export const HeaderAuth: EntryPointComponent<
             </div>
           }
         >
-          <Sider
-            authQuery={props.queries.authQuery}
-            fintechQuery={props.queries.fintechQuery}
-          />
+          <Sider authQuery={props.queries.authQuery} fintechQuery={props.queries.fintechQuery} />
         </Suspense>
         <Suspense
           fallback={

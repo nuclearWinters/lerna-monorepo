@@ -1,13 +1,7 @@
+import { GraphQLID, GraphQLInputObjectType, GraphQLList, GraphQLNonNull, GraphQLString } from "graphql";
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
-import {
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLList,
-  GraphQLInputObjectType,
-} from "graphql";
-import type { Context } from "../types.ts";
 import { MXNScalarType } from "../Nodes.ts";
+import type { Context } from "../types.ts";
 
 interface Input {
   lends: {
@@ -34,13 +28,10 @@ export const GraphQLLendList = new GraphQLInputObjectType({
 
 export const AddLendsMutation = mutationWithClientMutationId({
   name: "AddLends",
-  description:
-    "Envía una lista de prestamos: recibe una lista con deudas actualizadas y un usuario actualizado.",
+  description: "Envía una lista de prestamos: recibe una lista con deudas actualizadas y un usuario actualizado.",
   inputFields: {
     lends: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLLendList))
-      ),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLLendList))),
     },
   },
   outputFields: {
@@ -49,10 +40,7 @@ export const AddLendsMutation = mutationWithClientMutationId({
       resolve: ({ error }: Payload): string => error,
     },
   },
-  mutateAndGetPayload: async (
-    { lends: newLends }: Input,
-    { id, producer, records }: Context
-  ): Promise<Payload> => {
+  mutateAndGetPayload: async ({ lends: newLends }: Input, { id, producer, records }: Context): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");

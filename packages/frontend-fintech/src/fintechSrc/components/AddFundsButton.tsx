@@ -1,10 +1,10 @@
+import type { FC } from "react";
 import { graphql, useMutation } from "react-relay";
 import { CustomButton } from "../../components/CustomButton";
-import { useTranslation } from "../../utils";
 import { Space, customSpace } from "../../components/Space";
 import { Spinner } from "../../components/Spinner";
-import { FC } from "react";
-import { AddFundsButtonMutation } from "./__generated__/AddFundsButtonMutation.graphql";
+import { useTranslation } from "../../utils";
+import type { AddFundsButtonMutation } from "./__generated__/AddFundsButtonMutation.graphql";
 
 export const AddFundsButton: FC<{ quantity: string }> = ({ quantity }) => {
   const { t } = useTranslation();

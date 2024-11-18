@@ -1,6 +1,6 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
+import { type RouteKeys, references } from "../router";
 import { historyPush, historyReplace } from "./utils";
-import { references, RouteKeys } from "../router";
 
 export const Link: FC<{
   to: RouteKeys;
@@ -16,9 +16,7 @@ export const Link: FC<{
     references[to].loader();
   };
 
-  const handleClick = (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-  ) => {
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault();
     if (replace) {
       historyReplace(to);
@@ -28,13 +26,7 @@ export const Link: FC<{
   };
 
   return (
-    <a
-      href={to}
-      onClick={handleClick}
-      className={className}
-      onMouseEnter={preloadRouteCode}
-      onMouseDown={preloadRoute}
-    >
+    <a href={to} onClick={handleClick} className={className} onMouseEnter={preloadRouteCode} onMouseDown={preloadRoute}>
       {children}
     </a>
   );

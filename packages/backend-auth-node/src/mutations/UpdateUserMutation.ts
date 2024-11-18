@@ -1,9 +1,9 @@
+import type { AuthUserMongo } from "@repo/mongo-utils";
+import { GraphQLNonNull, GraphQLString } from "graphql";
 import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull } from "graphql";
+import { GraphQLAuthUser } from "../AuthUserQuery.ts";
 import type { Context } from "../types.ts";
 import { Languages } from "./SignUpMutation.ts";
-import { GraphQLAuthUser } from "../AuthUserQuery.ts";
-import type { AuthUserMongo } from "@repo/mongo-utils";
 
 interface Input {
   name: string;
@@ -47,19 +47,12 @@ export const UpdateUserMutation = mutationWithClientMutationId({
       resolve: ({ authUser }: Payload): AuthUserMongo | null => authUser,
     },
   },
-  mutateAndGetPayload: async (
-    user: Input,
-    { authusers, id }: Context
-  ): Promise<Payload> => {
+  mutateAndGetPayload: async (user: Input, { authusers, id }: Context): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");
       }
-      const result = await authusers.findOneAndUpdate(
-        { id },
-        { $set: user },
-        { returnDocument: "after" }
-      );
+      const result = await authusers.findOneAndUpdate({ id }, { $set: user }, { returnDocument: "after" });
       if (!result) {
         throw new Error("User do not exists");
       }

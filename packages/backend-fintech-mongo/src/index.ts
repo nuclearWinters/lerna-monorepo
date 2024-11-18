@@ -1,28 +1,19 @@
-import { main } from "./app.ts";
-import { MongoClient } from "mongodb";
+import fs from "node:fs";
+import type { ServerHttp2Session } from "node:http2";
 import { credentials } from "@grpc/grpc-js";
-import { Kafka, logLevel } from "kafkajs";
+import { AuthClient } from "@repo/grpc-utils";
+import { logErr } from "@repo/logs-utils";
+import { GRPC_AUTH, IS_PRODUCTION, KAFKA, KAFKA_ID, KAFKA_PASSWORD, KAFKA_USERNAME, MONGO_DB, REDIS } from "@repo/utils";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis } from "ioredis";
-import {
-  MONGO_DB,
-  KAFKA,
-  KAFKA_ID,
-  REDIS,
-  GRPC_AUTH,
-  IS_PRODUCTION,
-  KAFKA_PASSWORD,
-  KAFKA_USERNAME,
-} from "@repo/utils";
-import { AuthClient } from "@repo/grpc-utils";
-import fs from "node:fs";
-import { logErr } from "@repo/logs-utils";
-import type { ServerHttp2Session } from "node:http2";
+import { Kafka, logLevel } from "kafkajs";
+import { MongoClient } from "mongodb";
+import { main } from "./app.ts";
 
 const kafka = new Kafka({
   clientId: KAFKA_ID,
   brokers: [KAFKA],
-  ssl: IS_PRODUCTION ? true : false,
+  ssl: IS_PRODUCTION,
   sasl: IS_PRODUCTION
     ? {
         mechanism: "scram-sha-256",
@@ -56,8 +47,8 @@ const getGRPCClient = () =>
           ? undefined
           : {
               checkServerIdentity: () => undefined,
-            }
-      )
+            },
+      ),
     );
     client.waitForReady(Date.now() + 50_000, (err) => {
       if (err) {
@@ -68,11 +59,7 @@ const getGRPCClient = () =>
     });
   });
 
-Promise.all([
-  MongoClient.connect(MONGO_DB),
-  getGRPCClient(),
-  producer.connect(),
-]).then(async ([mongoClient, grpcClient]) => {
+Promise.all([MongoClient.connect(MONGO_DB), getGRPCClient(), producer.connect()]).then(async ([mongoClient, grpcClient]) => {
   const db = mongoClient.db("fintech");
   const serverHTTP2 = await main(db, producer, grpcClient, pubsub);
   serverHTTP2.setTimeout(120_000);
@@ -92,7 +79,7 @@ Promise.all([
         message: `Reason: ${err.message}, error: ${err.stack}`,
       });
       stream.destroy(err);
-    })
+    }),
   );
   serverHTTP2.on("unknownProtocol", () => {
     logErr({
@@ -101,17 +88,14 @@ Promise.all([
       message: "unknownProtocol",
     });
   });
-  serverHTTP2.addListener(
-    "sessionError",
-    (err: Error, session: ServerHttp2Session) => {
-      logErr({
-        logGroupName: "backend-fintech-mongo",
-        logStreamName: "serverSessionError",
-        message: `Reason: ${err.message}, error: ${err.stack}`,
-      });
-      session.destroy(err);
-    }
-  );
+  serverHTTP2.addListener("sessionError", (err: Error, session: ServerHttp2Session) => {
+    logErr({
+      logGroupName: "backend-fintech-mongo",
+      logStreamName: "serverSessionError",
+      message: `Reason: ${err.message}, error: ${err.stack}`,
+    });
+    session.destroy(err);
+  });
   serverHTTP2.addListener("session", (session) => {
     session.setTimeout(60_000, () => session.destroy(new Error("TIMEOUT")));
   });

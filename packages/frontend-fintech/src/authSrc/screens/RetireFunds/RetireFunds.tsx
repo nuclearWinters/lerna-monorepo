@@ -1,37 +1,31 @@
-import { ChangeEvent, useState } from "react";
-import { EntryPointComponent, usePreloadedQuery } from "react-relay/hooks";
+import { type ChangeEvent, useState } from "react";
+import { type EntryPointComponent, usePreloadedQuery } from "react-relay/hooks";
+import type { OperationType } from "relay-runtime";
+import { FormSmall } from "../../../components/FormSmall";
+import { Input } from "../../../components/Input";
 import { Label } from "../../../components/Label";
 import { Main } from "../../../components/Main";
-import { WrapperSmall } from "../../../components/WrapperSmall";
-import { FormSmall } from "../../../components/FormSmall";
-import { Title } from "../../../components/Title";
-import { Input } from "../../../components/Input";
-import { Space, customSpace } from "../../../components/Space";
-import { authUserQuery } from "../../utilsAuth";
 import { RedirectContainer } from "../../../components/RedirectContainer";
+import { Space, customSpace } from "../../../components/Space";
+import { Title } from "../../../components/Title";
+import { WrapperSmall } from "../../../components/WrapperSmall";
 import { RetireFundsButton } from "../../../fintechSrc/components/RetireFundsButton";
-import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
 import { useTranslation } from "../../../utils";
-import { OperationType } from "relay-runtime";
+import type { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
+import { authUserQuery } from "../../utilsAuth";
 
 export interface Queries {
   [key: string]: OperationType;
   authQuery: utilsAuthQuery;
 }
 
-export const RetireFunds: EntryPointComponent<
-  Queries,
-  Record<string, undefined>
-> = (props) => {
+export const RetireFunds: EntryPointComponent<Queries, Record<string, undefined>> = (props) => {
   const { t } = useTranslation();
-  const { authUser } = usePreloadedQuery(
-    authUserQuery,
-    props.queries.authQuery
-  );
+  const { authUser } = usePreloadedQuery(authUserQuery, props.queries.authQuery);
   const [quantity, setQuantity] = useState("");
   const handleQuantityOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (isNaN(Number(value))) {
+    if (Number.isNaN(Number(value))) {
       return;
     }
     setQuantity(value);
@@ -52,14 +46,7 @@ export const RetireFunds: EntryPointComponent<
   const { isLender, isSupport, isBorrower } = authUser;
 
   if (isSupport) {
-    return (
-      <RedirectContainer
-        allowed={["lender", "borrower"]}
-        isBorrower={isBorrower}
-        isLender={isLender}
-        isSupport={isSupport}
-      />
-    );
+    return <RedirectContainer allowed={["lender", "borrower"]} isBorrower={isBorrower} isLender={isLender} isSupport={isSupport} />;
   }
 
   return (
@@ -68,13 +55,7 @@ export const RetireFunds: EntryPointComponent<
         <Title text={t("Retirar fondos")} />
         <FormSmall>
           <Label label={t("Cantidad")} />
-          <Input
-            placeholder={t("Cantidad")}
-            value={quantity}
-            name="quantity"
-            onChange={handleQuantityOnChange}
-            onBlur={handleQuantityOnBlur}
-          />
+          <Input placeholder={t("Cantidad")} value={quantity} name="quantity" onChange={handleQuantityOnChange} onBlur={handleQuantityOnBlur} />
           <Space styleX={customSpace.h30} />
           <RetireFundsButton quantity={quantity} />
           <Space styleX={customSpace.h30} />

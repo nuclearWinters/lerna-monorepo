@@ -1,10 +1,10 @@
-import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull, GraphQLInt } from "graphql";
-import type { Context } from "../types.ts";
-import { ObjectId } from "mongodb";
 import { add } from "date-fns";
+import { GraphQLInt, GraphQLNonNull, GraphQLString } from "graphql";
+import { mutationWithClientMutationId } from "graphql-relay";
+import { ObjectId } from "mongodb";
 import { MXNScalarType } from "../Nodes.ts";
 import { publishMyLoanInsert } from "../subscriptions/subscriptionsUtils.ts";
+import type { Context } from "../types.ts";
 
 interface Input {
   goal: number;
@@ -17,8 +17,7 @@ type Payload = {
 
 export const AddLoanMutation = mutationWithClientMutationId({
   name: "AddLoan",
-  description:
-    "Crea una deuda en la que se pueda invertir y obtén un AccessToken valido.",
+  description: "Crea una deuda en la que se pueda invertir y obtén un AccessToken valido.",
   inputFields: {
     goal: { type: new GraphQLNonNull(MXNScalarType) },
     term: { type: new GraphQLNonNull(GraphQLInt) },
@@ -29,10 +28,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
       resolve: ({ error }: Payload): string => error,
     },
   },
-  mutateAndGetPayload: async (
-    loan: Input,
-    { loans, id, pubsub }: Context
-  ): Promise<Payload> => {
+  mutateAndGetPayload: async (loan: Input, { loans, id, pubsub }: Context): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");
@@ -67,7 +63,7 @@ export const AddLoanMutation = mutationWithClientMutationId({
           payments_done: 0,
           ...loan,
         },
-        pubsub
+        pubsub,
       );
       return {
         error: "",

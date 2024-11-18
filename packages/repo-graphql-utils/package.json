@@ -11,8 +11,8 @@
   },
   "scripts": {
     "pcm": "lint-staged",
-    "test": "jest --bail",
-    "lint": "(tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0) || (./node_modules/typescript/bin/tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0)"
+    "test": "node --test --experimental-strip-types",
+    "lint": "biome check"
   },
   "author": "Armando Rueda",
   "license": "ISC",
@@ -20,22 +20,15 @@
     "graphql": "^16.9.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "eslint": "^9.14.0",
-    "jest": "^29.7.0",
     "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3",
     "@types/node": "^22.9.0",
-    "@repo/eslint-8-config": "workspace:*",
-    "@repo/jest-presets": "workspace:*",
     "typescript": "^5.6.3",
     "@repo/typescript-config": "workspace:*"
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [
-      "eslint --cache --fix",
-      "prettier --write",
-      "jest --findRelatedTests --bail --passWithNoTests"
+      "biome check",
+      "node --experimental-strip-types --test"
     ]
   }
 }

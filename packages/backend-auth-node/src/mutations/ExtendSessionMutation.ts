@@ -1,15 +1,9 @@
-import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLNonNull, GraphQLString } from "graphql";
-import type { Context } from "../types.ts";
-import {
-  ACCESS_TOKEN_EXP_NUMBER,
-  REFRESH_TOKEN_EXP_NUMBER,
-  ACCESSSECRET,
-  REFRESHSECRET,
-  IS_PRODUCTION,
-} from "@repo/utils";
 import { jwt } from "@repo/jwt-utils";
+import { ACCESSSECRET, ACCESS_TOKEN_EXP_NUMBER, IS_PRODUCTION, REFRESHSECRET, REFRESH_TOKEN_EXP_NUMBER } from "@repo/utils";
 import { serialize } from "cookie";
+import { GraphQLNonNull, GraphQLString } from "graphql";
+import { mutationWithClientMutationId } from "graphql-relay";
+import type { Context } from "../types.ts";
 
 type Payload = {
   error: string;
@@ -25,10 +19,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
       resolve: ({ error }: Payload): string => error,
     },
   },
-  mutateAndGetPayload: async (
-    _: unknown,
-    { rdb, refreshToken, id, res }: Context
-  ): Promise<Payload> => {
+  mutateAndGetPayload: async (_: unknown, { rdb, refreshToken, id, res }: Context): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");
@@ -58,7 +49,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
           refreshTokenExpireTime,
           exp: refreshTokenExpireTime,
         },
-        REFRESHSECRET
+        REFRESHSECRET,
       );
       const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1_000);
       res.appendHeader(
@@ -69,7 +60,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
           secure: true,
           sameSite: IS_PRODUCTION ? "strict" : "none",
           domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
-        })
+        }),
       );
       const accessToken = jwt.sign(
         {
@@ -80,7 +71,7 @@ export const ExtendSessionMutation = mutationWithClientMutationId({
           refreshTokenExpireTime,
           exp: accessTokenExpireTime,
         },
-        ACCESSSECRET
+        ACCESSSECRET,
       );
       res.setHeader("accessToken", accessToken);
       return {

@@ -1,7 +1,7 @@
+import { GraphQLNonNull, GraphQLString } from "graphql";
 import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull } from "graphql";
-import type { Context } from "../types.ts";
 import { MXNScalarType } from "../Nodes.ts";
+import type { Context } from "../types.ts";
 
 interface Input {
   quantity: number;
@@ -13,8 +13,7 @@ type Payload = {
 
 export const AddFundsMutation = mutationWithClientMutationId({
   name: "AddFunds",
-  description:
-    "Añade fondos a tu cuenta: recibe el usuario actualziao y obtén un AccessToken valido.",
+  description: "Añade fondos a tu cuenta: recibe el usuario actualziao y obtén un AccessToken valido.",
   inputFields: {
     quantity: { type: new GraphQLNonNull(MXNScalarType) },
   },
@@ -24,10 +23,7 @@ export const AddFundsMutation = mutationWithClientMutationId({
       resolve: ({ error }: Payload): string => error,
     },
   },
-  mutateAndGetPayload: async (
-    { quantity: quantity_cents }: Input,
-    { id, producer, records }: Context
-  ): Promise<Payload> => {
+  mutateAndGetPayload: async ({ quantity: quantity_cents }: Input, { id, producer, records }: Context): Promise<Payload> => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");

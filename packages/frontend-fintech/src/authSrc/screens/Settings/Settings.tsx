@@ -1,40 +1,30 @@
 import * as stylex from "@stylexjs/stylex";
-import { Spinner } from "../../../components/Spinner";
-import { ChangeEvent, FC, Fragment, useState } from "react";
-import {
-  EntryPointComponent,
-  graphql,
-  useMutation,
-  usePaginationFragment,
-  usePreloadedQuery,
-} from "react-relay/hooks";
-import { SettingsMutation } from "./__generated__/SettingsMutation.graphql";
-import { Label } from "../../../components/Label";
-import { CustomButton } from "../../../components/CustomButton";
-import { WrapperBig, baseWrapperBig } from "../../../components/WrapperBig";
-import { Main } from "../../../components/Main";
-import { Title } from "../../../components/Title";
-import { Input } from "../../../components/Input";
-import { Space, customSpace } from "../../../components/Space";
-import { Rows, baseRows } from "../../../components/Rows";
+import { type ChangeEvent, type FC, Fragment, useState } from "react";
+import { type EntryPointComponent, graphql, useMutation, usePaginationFragment, usePreloadedQuery } from "react-relay/hooks";
+import type { OperationType } from "relay-runtime";
+import FaTrashAlt from "../../../assets/trash-alt-solid.svg";
 import { Columns, baseColumn } from "../../../components/Colums";
+import { CustomButton } from "../../../components/CustomButton";
+import { Input } from "../../../components/Input";
+import { Label } from "../../../components/Label";
+import { Main } from "../../../components/Main";
+import { Rows, baseRows } from "../../../components/Rows";
 import { Select } from "../../../components/Select";
-import { getLongDateName, Languages, useTranslation } from "../../../utils";
-import { SettingsSessionsPaginationUser } from "./__generated__/SettingsSessionsPaginationUser.graphql";
-import { SettingsLoginsPaginationUser } from "./__generated__/SettingsLoginsPaginationUser.graphql";
+import { Space, customSpace } from "../../../components/Space";
+import { Spinner } from "../../../components/Spinner";
 import { Table } from "../../../components/Table";
 import { TableColumnName } from "../../../components/TableColumnName";
-import {
-  settingsFragment,
-  settingsLoginsPaginationFragment,
-  settingsSessionsPaginationFragment,
-} from "./SettingsQueries";
-import { SettingsQueriesAuthUserQuery } from "./__generated__/SettingsQueriesAuthUserQuery.graphql";
-import { SettingsQueries_logins_user$key } from "./__generated__/SettingsQueries_logins_user.graphql";
-import { SettingsQueries_sessions_user$key } from "./__generated__/SettingsQueries_sessions_user.graphql";
-import FaTrashAlt from "../../../assets/trash-alt-solid.svg";
-import { SettingsSessionRowRevokeSessionMutation } from "./__generated__/SettingsSessionRowRevokeSessionMutation.graphql";
-import { OperationType } from "relay-runtime";
+import { Title } from "../../../components/Title";
+import { WrapperBig, baseWrapperBig } from "../../../components/WrapperBig";
+import { type Languages, getLongDateName, useTranslation } from "../../../utils";
+import { settingsFragment, settingsLoginsPaginationFragment, settingsSessionsPaginationFragment } from "./SettingsQueries";
+import type { SettingsLoginsPaginationUser } from "./__generated__/SettingsLoginsPaginationUser.graphql";
+import type { SettingsMutation } from "./__generated__/SettingsMutation.graphql";
+import type { SettingsQueriesAuthUserQuery } from "./__generated__/SettingsQueriesAuthUserQuery.graphql";
+import type { SettingsQueries_logins_user$key } from "./__generated__/SettingsQueries_logins_user.graphql";
+import type { SettingsQueries_sessions_user$key } from "./__generated__/SettingsQueries_sessions_user.graphql";
+import type { SettingsSessionRowRevokeSessionMutation } from "./__generated__/SettingsSessionRowRevokeSessionMutation.graphql";
+import type { SettingsSessionsPaginationUser } from "./__generated__/SettingsSessionsPaginationUser.graphql";
 
 const baseLoanRowIcon = stylex.create({
   base: {
@@ -85,9 +75,7 @@ const columnLogin: {
   {
     id: "id",
     header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.applicationName}</td>
-    ),
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.applicationName}</td>,
   },
   {
     id: "time",
@@ -101,15 +89,12 @@ const columnLogin: {
   {
     id: "address",
     header: (t) => <TableColumnName>{t("IP")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.address}</td>
-    ),
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.address}</td>,
   },
 ];
 
 const DeleteCell: FC<{ id: string }> = ({ id }) => {
-  const [commitRevokeSession, isInFlightRevokeSession] =
-    useMutation<SettingsSessionRowRevokeSessionMutation>(graphql`
+  const [commitRevokeSession, isInFlightRevokeSession] = useMutation<SettingsSessionRowRevokeSessionMutation>(graphql`
       mutation SettingsSessionRowRevokeSessionMutation(
         $input: RevokeSessionInput!
       ) {
@@ -157,40 +142,26 @@ const columnSession: {
   {
     id: "id",
     header: (t) => <TableColumnName>{t("ID")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.id}</td>
-    ),
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.id}</td>,
   },
   {
     id: "applicationName",
     header: (t) => <TableColumnName>{t("Aplicacion")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.applicationName}</td>
-    ),
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.applicationName}</td>,
   },
   {
     id: "deviceBrowser",
-    header: (t) => (
-      <TableColumnName>{t("Tipo de dispositivo")}</TableColumnName>
-    ),
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.deviceBrowser}</td>
-    ),
+    header: (t) => <TableColumnName>{t("Tipo de dispositivo")}</TableColumnName>,
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.deviceBrowser}</td>,
   },
   {
     id: "deviceOS",
-    header: (t) => (
-      <TableColumnName>{t("Nombre del dispositivo")}</TableColumnName>
-    ),
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.deviceOS}</td>
-    ),
+    header: (t) => <TableColumnName>{t("Nombre del dispositivo")}</TableColumnName>,
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.deviceOS}</td>,
   },
   {
     id: "lastTimeAccessed",
-    header: (t) => (
-      <TableColumnName>{t("Ultima vez accedido")}</TableColumnName>
-    ),
+    header: (t) => <TableColumnName>{t("Ultima vez accedido")}</TableColumnName>,
     cell: ({ info, language }) => {
       const date = new Date(info.lastTimeAccessed);
       const dateFormatted = getLongDateName(date, language);
@@ -200,9 +171,7 @@ const columnSession: {
   {
     id: "address",
     header: (t) => <TableColumnName>{t("IP")}</TableColumnName>,
-    cell: ({ info }) => (
-      <td {...stylex.props(baseLoanRowCell.base)}>{info.address}</td>
-    ),
+    cell: ({ info }) => <td {...stylex.props(baseLoanRowCell.base)}>{info.address}</td>,
   },
   {
     id: "delete",
@@ -226,10 +195,7 @@ export interface Queries {
   authQuery: SettingsQueriesAuthUserQuery;
 }
 
-export const Settings: EntryPointComponent<
-  Queries,
-  Record<string, undefined>
-> = (props) => {
+export const Settings: EntryPointComponent<Queries, Record<string, undefined>> = (props) => {
   const { t, changeLanguage } = useTranslation();
   const [commit, isInFlight] = useMutation<SettingsMutation>(graphql`
     mutation SettingsMutation($input: UpdateUserInput!) {
@@ -250,10 +216,7 @@ export const Settings: EntryPointComponent<
       }
     }
   `);
-  const { authUser } = usePreloadedQuery(
-    settingsFragment,
-    props.queries.authQuery
-  );
+  const { authUser } = usePreloadedQuery(settingsFragment, props.queries.authQuery);
   const originLang = authUser?.language as Languages;
   const [formUser, setFormUser] = useState({
     name: authUser?.name || "",
@@ -281,15 +244,14 @@ export const Settings: EntryPointComponent<
       return { ...state, [name]: value };
     });
   };
-  const { data: loginsData, loadNext: loginsLoadNext } = usePaginationFragment<
-    SettingsLoginsPaginationUser,
-    SettingsQueries_logins_user$key
-  >(settingsLoginsPaginationFragment, authUser);
-  const { data: sessionsData, loadNext: sessionsLoadNext } =
-    usePaginationFragment<
-      SettingsSessionsPaginationUser,
-      SettingsQueries_sessions_user$key
-    >(settingsSessionsPaginationFragment, authUser);
+  const { data: loginsData, loadNext: loginsLoadNext } = usePaginationFragment<SettingsLoginsPaginationUser, SettingsQueries_logins_user$key>(
+    settingsLoginsPaginationFragment,
+    authUser,
+  );
+  const { data: sessionsData, loadNext: sessionsLoadNext } = usePaginationFragment<SettingsSessionsPaginationUser, SettingsQueries_sessions_user$key>(
+    settingsSessionsPaginationFragment,
+    authUser,
+  );
 
   if (!authUser) {
     return null;
@@ -301,80 +263,40 @@ export const Settings: EntryPointComponent<
         <Title text={t("Datos generales")} />
         <div {...stylex.props(baseSettingsForm.base)}>
           <Label label={t("Nombre(s)")} />
-          <Input
-            placeholder={t("Nombre(s)")}
-            value={formUser.name}
-            name="name"
-            onChange={handleFormUser}
-          />
+          <Input placeholder={t("Nombre(s)")} value={formUser.name} name="name" onChange={handleFormUser} />
           <Columns>
             <Rows styleX={[baseRows.base, baseRows.flex1]}>
               <Label label={t("Apellido paterno")} />
-              <Input
-                placeholder={t("Apellido paterno")}
-                value={formUser.apellidoPaterno}
-                name="apellidoPaterno"
-                onChange={handleFormUser}
-              />
+              <Input placeholder={t("Apellido paterno")} value={formUser.apellidoPaterno} name="apellidoPaterno" onChange={handleFormUser} />
             </Rows>
             <Space styleX={customSpace.w20} />
             <Rows styleX={[baseRows.base, baseRows.flex1]}>
               <Label label={t("Apellido materno")} />
-              <Input
-                placeholder={t("Apellido materno")}
-                value={formUser.apellidoMaterno}
-                name="apellidoMaterno"
-                onChange={handleFormUser}
-              />
+              <Input placeholder={t("Apellido materno")} value={formUser.apellidoMaterno} name="apellidoMaterno" onChange={handleFormUser} />
             </Rows>
           </Columns>
           <Label label={t("RFC")} />
-          <Input
-            placeholder={t("RFC")}
-            value={formUser.RFC}
-            name="RFC"
-            onChange={handleFormUser}
-          />
+          <Input placeholder={t("RFC")} value={formUser.RFC} name="RFC" onChange={handleFormUser} />
           <Columns>
             <Rows styleX={[baseRows.base, baseRows.flex1]}>
               <Label label={t("CURP")} />
-              <Input
-                placeholder={t("CURP")}
-                value={formUser.CURP}
-                name="CURP"
-                onChange={handleFormUser}
-              />
+              <Input placeholder={t("CURP")} value={formUser.CURP} name="CURP" onChange={handleFormUser} />
             </Rows>
             <Space styleX={customSpace.w20} />
             <Rows styleX={[baseRows.base, baseRows.flex1]}>
               <Label label={t("Clabe")} />
-              <Input
-                placeholder={t("Clabe")}
-                value={formUser.clabe}
-                name="clabe"
-                onChange={handleFormUser}
-              />
+              <Input placeholder={t("Clabe")} value={formUser.clabe} name="clabe" onChange={handleFormUser} />
             </Rows>
           </Columns>
           <Columns>
             <Rows styleX={[baseRows.base, baseRows.flex1]}>
               <Label label={t("Celular")} />
-              <Input
-                placeholder={t("Celular")}
-                value={formUser.mobile}
-                name="mobile"
-                onChange={handleFormUser}
-              />
+              <Input placeholder={t("Celular")} value={formUser.mobile} name="mobile" onChange={handleFormUser} />
             </Rows>
             <Space styleX={customSpace.w20} />
             <Rows styleX={[baseRows.base, baseRows.flex1]}>
               <Label label={t("Email")} />
-              <Input
-                placeholder={t("Email")}
-                value={formUser.email}
-                name="email"
-                onChange={handleFormUser}
-              />
+              <Input placeholder={t("Email")} value={formUser.email} name="email" onChange={handleFormUser} />
             </Rows>
           </Columns>
           <Space styleX={customSpace.h30} />
@@ -442,11 +364,7 @@ export const Settings: EntryPointComponent<
             })}
           </tbody>
         </Table>
-        <CustomButton
-          color="secondary"
-          text={t("Cargar más")}
-          onClick={() => loginsLoadNext(5)}
-        />
+        <CustomButton color="secondary" text={t("Cargar más")} onClick={() => loginsLoadNext(5)} />
         <Space styleX={customSpace.h20} />
         <Title text={t("Sessions")} />
         <Table color="secondary">
@@ -463,14 +381,7 @@ export const Settings: EntryPointComponent<
               if (!node) {
                 return null;
               }
-              const {
-                id,
-                applicationName,
-                deviceOS,
-                deviceBrowser,
-                address,
-                lastTimeAccessed,
-              } = node;
+              const { id, applicationName, deviceOS, deviceBrowser, address, lastTimeAccessed } = node;
               return (
                 <tr key={id} {...stylex.props(baseLoanRowContainer.base)}>
                   {columnSession.map((column) => (
@@ -494,11 +405,7 @@ export const Settings: EntryPointComponent<
             })}
           </tbody>
         </Table>
-        <CustomButton
-          color="secondary"
-          text={t("Cargar más")}
-          onClick={() => sessionsLoadNext(5)}
-        />
+        <CustomButton color="secondary" text={t("Cargar más")} onClick={() => sessionsLoadNext(5)} />
         <Space styleX={customSpace.h20} />
       </WrapperBig>
     </Main>

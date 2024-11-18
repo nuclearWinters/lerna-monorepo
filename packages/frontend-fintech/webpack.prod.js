@@ -18,7 +18,6 @@ module.exports = {
     filename: "static/js/[name].[contenthash:8].js",
     publicPath: "/",
     assetModuleFilename: "static/media/[name].[hash][ext]",
-    assetModuleFilename: "static/media/[name].[hash][ext]",
     chunkFilename: "static/js/[name].[contenthash:8].chunk.js",
     devtoolModuleFilenameTemplate: (info) =>
       path

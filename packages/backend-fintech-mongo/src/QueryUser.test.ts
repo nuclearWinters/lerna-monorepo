@@ -1,78 +1,56 @@
-import { main } from "./app.ts";
-import supertest from "supertest";
-import { type Db, MongoClient, ObjectId } from "mongodb";
-import type { FintechUserMongo } from "@repo/mongo-utils";
-import type TestAgent from "supertest/lib/agent.js";
-import {
-  RedisContainer,
-  type StartedRedisContainer,
-} from "@testcontainers/redis";
-import type { RedisPubSub } from "graphql-redis-subscriptions";
-import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import type { Producer } from "kafkajs";
-import { createClient } from "redis";
-import { serialize } from "cookie";
+import { Server, ServerCredentials, credentials } from "@grpc/grpc-js";
+import { AuthClient, AuthServer } from "@repo/grpc-utils";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
 import { getValidTokens } from "@repo/jwt-utils";
-import type { RedisClientType } from "@repo/redis-utils";
-import { AuthServer, AuthClient } from "@repo/grpc-utils";
+import { getFintechCollections } from "@repo/mongo-utils";
+import { RedisContainer } from "@testcontainers/redis";
+import { serialize } from "cookie";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
+import type { Producer } from "kafkajs";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "./app.ts";
+import { after, it, describe } from "node:test";
+import { ok, strictEqual } from "node:assert";
+import { MongoDBContainer } from "@testcontainers/mongodb";
 
-describe("QueryUser tests", () => {
-  let mongoClient: MongoClient;
-  let dbInstanceFintech: Db;
-  let dbInstanceAuth: Db;
-  let producer: Producer;
-  let startedRedisContainer: StartedRedisContainer;
-  let grpcClient: AuthClient;
-  let pubsub: RedisPubSub;
-  let request: TestAgent<supertest.Test>;
-  let grpcServer: Server;
-  let redisClient: RedisClientType;
+describe("QueryUser tests", async () => {
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const mongoClient = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const pubsub = null as unknown as RedisPubSub;
+  const dbInstanceAuth = mongoClient.db("auth");
+  const dbInstanceFintech = mongoClient.db("fintech");
+  const producer = null as unknown as Producer;
+  const startedRedisContainer = await new RedisContainer().start();
+  const grpcClient = new AuthClient("0.0.0.0:1991", credentials.createInsecure());
+  const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
+  const request = supertest(server, { http2: true });
+  const grpcServer = new Server();
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
+  });
+  await redisClient.connect();
+  grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
+  grpcServer.bindAsync("0.0.0.0:1991", ServerCredentials.createInsecure(), (err) => {
+    if (err) {
+      return;
+    }
+  });
 
-  beforeAll(async () => {
-    mongoClient = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstanceFintech = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    dbInstanceAuth = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
-        "-auth"
-    );
-    const redisContainer = new RedisContainer();
-    startedRedisContainer = await redisContainer.start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    grpcServer = new Server();
-    grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
-    grpcServer.bindAsync(
-      "0.0.0.0:1985",
-      ServerCredentials.createInsecure(),
-      (err) => {
-        if (err) {
-          return;
-        }
-      }
-    );
-    grpcClient = new AuthClient("0.0.0.0:1985", credentials.createInsecure());
-    const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
-    request = supertest(server, { http2: true });
-  }, 20_000);
-
-  afterAll(async () => {
-    grpcClient.close();
-    grpcServer.forceShutdown();
-    await redisClient.disconnect();
-    await startedRedisContainer.stop();
-    await mongoClient.close();
-  }, 10_000);
+  after(
+    async () => {
+      grpcClient.close();
+      grpcServer.forceShutdown();
+      await redisClient.disconnect();
+      await startedRedisContainer.stop();
+      await mongoClient.close();
+    },
+    { timeout: 10_000 },
+  );
 
   it("test QueryUser valid access token", async () => {
-    const users = dbInstanceFintech.collection<FintechUserMongo>("users");
+    const { users } = getFintechCollections(dbInstanceFintech);
     const user_oid = new ObjectId();
     const user_id = crypto.randomUUID();
     await users.insertMany([
@@ -108,9 +86,9 @@ describe("QueryUser tests", () => {
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.user.id).toBeTruthy();
-    expect(data.data.user.accountAvailable).toBe("$500.00");
-    expect(data.data.user.accountToBePaid).toBe("$0.00");
-    expect(data.data.user.accountTotal).toBe("$500.00");
+    ok(data.data.user.id);
+    strictEqual(data.data.user.accountAvailable, "$500.00");
+    strictEqual(data.data.user.accountToBePaid, "$0.00");
+    strictEqual(data.data.user.accountTotal, "$500.00");
   });
 });

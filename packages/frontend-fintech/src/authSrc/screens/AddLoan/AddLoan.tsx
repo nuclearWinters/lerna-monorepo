@@ -1,41 +1,35 @@
-import { ChangeEvent, useState } from "react";
-import { EntryPointComponent, usePreloadedQuery } from "react-relay/hooks";
+import { type ChangeEvent, useState } from "react";
+import { type EntryPointComponent, usePreloadedQuery } from "react-relay/hooks";
+import type { OperationType } from "relay-runtime";
+import { FormSmall } from "../../../components/FormSmall";
+import { Input } from "../../../components/Input";
 import { Label } from "../../../components/Label";
 import { Main } from "../../../components/Main";
-import { WrapperSmall } from "../../../components/WrapperSmall";
-import { FormSmall } from "../../../components/FormSmall";
-import { Title } from "../../../components/Title";
-import { Input } from "../../../components/Input";
+import { RedirectContainer } from "../../../components/RedirectContainer";
 import { Select } from "../../../components/Select";
 import { Space, customSpace } from "../../../components/Space";
-import { authUserQuery } from "../../utilsAuth";
-import { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
-import { RedirectContainer } from "../../../components/RedirectContainer";
+import { Title } from "../../../components/Title";
+import { WrapperSmall } from "../../../components/WrapperSmall";
 import { AddLoanButton } from "../../../fintechSrc/components/AddLoanButton";
 import { useTranslation } from "../../../utils";
-import { OperationType } from "relay-runtime";
+import type { utilsAuthQuery } from "../../__generated__/utilsAuthQuery.graphql";
+import { authUserQuery } from "../../utilsAuth";
 
 export interface Queries {
   [key: string]: OperationType;
   authQuery: utilsAuthQuery;
 }
 
-export const AddLoan: EntryPointComponent<
-  Queries,
-  Record<string, undefined>
-> = (props) => {
+export const AddLoan: EntryPointComponent<Queries, Record<string, undefined>> = (props) => {
   const { t } = useTranslation();
-  const { authUser } = usePreloadedQuery(
-    authUserQuery,
-    props.queries.authQuery
-  );
+  const { authUser } = usePreloadedQuery(authUserQuery, props.queries.authQuery);
   const [form, setForm] = useState({
     goal: "",
     term: "3",
   });
   const handleGoalOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (isNaN(Number(value))) {
+    if (Number.isNaN(Number(value))) {
       return;
     }
     setForm((state) => {
@@ -70,14 +64,7 @@ export const AddLoan: EntryPointComponent<
   const { isLender, isSupport, isBorrower } = authUser;
 
   if (isLender || isSupport) {
-    return (
-      <RedirectContainer
-        allowed={["borrower"]}
-        isBorrower={isBorrower}
-        isLender={isLender}
-        isSupport={isSupport}
-      />
-    );
+    return <RedirectContainer allowed={["borrower"]} isBorrower={isBorrower} isLender={isLender} isSupport={isSupport} />;
   }
 
   return (
@@ -86,13 +73,7 @@ export const AddLoan: EntryPointComponent<
         <Title text={t("Pedir prestamo")} />
         <FormSmall>
           <Label label={t("Cantidad")} />
-          <Input
-            placeholder={t("Cantidad")}
-            value={form.goal}
-            name="goal"
-            onChange={handleGoalOnChange}
-            onBlur={handleGoalOnBlur}
-          />
+          <Input placeholder={t("Cantidad")} value={form.goal} name="goal" onChange={handleGoalOnChange} onBlur={handleGoalOnBlur} />
           <Label label={t("Periodo de la deuda (meses)")} />
           <Select
             name="term"

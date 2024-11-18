@@ -1,8 +1,8 @@
-import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLNonNull, GraphQLString } from "graphql";
-import type { Context } from "../types.ts";
 import { IS_PRODUCTION } from "@repo/utils";
 import { serialize } from "cookie";
+import { GraphQLNonNull, GraphQLString } from "graphql";
+import { mutationWithClientMutationId } from "graphql-relay";
+import type { Context } from "../types.ts";
 
 type Payload = {
   error: string;
@@ -18,10 +18,7 @@ export const LogOutMutation = mutationWithClientMutationId({
       resolve: ({ error }: Payload): string => error,
     },
   },
-  mutateAndGetPayload: async (
-    _: unknown,
-    { res, refreshToken, rdb, sessions }: Context
-  ): Promise<Payload> => {
+  mutateAndGetPayload: async (_: unknown, { res, refreshToken, rdb, sessions }: Context): Promise<Payload> => {
     try {
       const now = new Date();
       now.setMilliseconds(0);
@@ -33,13 +30,10 @@ export const LogOutMutation = mutationWithClientMutationId({
           secure: true,
           sameSite: IS_PRODUCTION ? "strict" : "none",
           domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
-        })
+        }),
       );
       const time = now.getTime();
-      const session = await sessions.findOneAndUpdate(
-        { refreshToken },
-        { $set: { expirationDate: now } }
-      );
+      const session = await sessions.findOneAndUpdate({ refreshToken }, { $set: { expirationDate: now } });
       if (session) {
         await rdb.set(session.refreshToken, time, { EX: 60 * 15 });
       }

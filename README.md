@@ -27,10 +27,8 @@ Demo: [https://relay-graphql-monorepo.com](https://relay-graphql-monorepo.com)
 
 **Developer Tools:**
 
-- Prettier
 - Webpack
-- Eslint
-- Jest
+- Biome
 - Babel
 - Docker
 - PNPM
@@ -41,7 +39,7 @@ Demo: [https://relay-graphql-monorepo.com](https://relay-graphql-monorepo.com)
 - jsonwebtokens
 - @grpc/grpc-js
 - kafkajs
-- node-cron
+- cron
 - mongodb
 - react
 - react-relay

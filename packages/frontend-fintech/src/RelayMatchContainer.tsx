@@ -12,6 +12,7 @@ export default function RelayMatchContainer({ match }: { match: unknown }) {
           <div className="bg-red-200 rounded-md px-2 py-1 inline-block">
             Failed to load {error.moduleLoaderName}{" "}
             <button
+              type="button"
               onClick={() => {
                 moduleLoader(error.moduleLoaderName).resetError();
                 resetError();
@@ -44,7 +45,7 @@ export default function RelayMatchContainer({ match }: { match: unknown }) {
 
 export class ModuleLoaderError extends Error {
   constructor(moduleLoaderName: string, error: Error) {
-    super("ModuleLoaderError: " + error.message);
+    super(`ModuleLoaderError: ${error.message}`);
     this.moduleLoaderName = moduleLoaderName;
     this.error = error;
   }

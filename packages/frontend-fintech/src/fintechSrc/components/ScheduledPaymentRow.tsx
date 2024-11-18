@@ -1,14 +1,11 @@
-import { FC, Fragment } from "react";
+import * as stylex from "@stylexjs/stylex";
+import { type FC, Fragment } from "react";
+import { useLazyLoadQuery } from "react-relay";
+import { graphql } from "relay-runtime";
 import { customSpace } from "../../components/Space";
 import { TableColumnName } from "../../components/TableColumnName";
-import { graphql } from "relay-runtime";
-import { useLazyLoadQuery } from "react-relay";
-import { getLongDateName, Languages, useTranslation } from "../../utils";
-import * as stylex from "@stylexjs/stylex";
-import {
-  LoanScheduledPaymentStatus,
-  ScheduledPaymentRowQuery,
-} from "./__generated__/ScheduledPaymentRowQuery.graphql";
+import { type Languages, getLongDateName, useTranslation } from "../../utils";
+import type { LoanScheduledPaymentStatus, ScheduledPaymentRowQuery } from "./__generated__/ScheduledPaymentRowQuery.graphql";
 
 const baseLoanRowCell = stylex.create({
   base: {
@@ -78,9 +75,7 @@ const columns: {
   },
   {
     id: "amortize",
-    header: (t) => (
-      <TableColumnName colspan={3}>{t("Pago amortización")}</TableColumnName>
-    ),
+    header: (t) => <TableColumnName colspan={3}>{t("Pago amortización")}</TableColumnName>,
     cell: ({ info }) => (
       <td colSpan={3} {...stylex.props(baseLoanRowCell.base)}>
         {info.amortize}
@@ -117,23 +112,14 @@ const columns: {
       };
       return (
         <td {...stylex.props(baseLoanRowStatus.base)}>
-          <div
-            {...stylex.props(
-              baseLoanRowStatusBox.base,
-              statuPaymentsColor(info.status)
-            )}
-          >
-            {getStatusPayment(info.status)}
-          </div>
+          <div {...stylex.props(baseLoanRowStatusBox.base, statuPaymentsColor(info.status))}>{getStatusPayment(info.status)}</div>
         </td>
       );
     },
   },
   {
     id: "scheduledDate",
-    header: (t) => (
-      <TableColumnName colspan={3}>{t("Fecha de pago")}</TableColumnName>
-    ),
+    header: (t) => <TableColumnName colspan={3}>{t("Fecha de pago")}</TableColumnName>,
     cell: ({ info, languageEnum }) => {
       const date = new Date(info.scheduledDate);
       const dateFormatted = getLongDateName(date, languageEnum);
@@ -164,7 +150,7 @@ export const ScheduledPaymentRow: FC<{
       }
     `,
     { loan_gid },
-    { fetchPolicy: "store-or-network" }
+    { fetchPolicy: "store-or-network" },
   );
 
   const languageEnum = language === "ES" ? "ES" : "EN";
@@ -183,9 +169,7 @@ export const ScheduledPaymentRow: FC<{
         return (
           <tr key={String(payment.id)}>
             {columns.map((column) => (
-              <Fragment key={column.id}>
-                {column.cell({ info: payment, t, languageEnum })}
-              </Fragment>
+              <Fragment key={column.id}>{column.cell({ info: payment, t, languageEnum })}</Fragment>
             ))}
           </tr>
         );

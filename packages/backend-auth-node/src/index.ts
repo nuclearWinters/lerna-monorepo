@@ -1,12 +1,12 @@
-import { MongoClient } from "mongodb";
-import { createClient } from "redis";
-import { main } from "./app.ts";
-import { REDIS, MONGO_DB, GRPC_FINTECH, IS_PRODUCTION } from "@repo/utils";
+import fs from "node:fs";
+import type { ServerHttp2Session } from "node:http2";
 import { credentials } from "@grpc/grpc-js";
 import { AccountClient } from "@repo/grpc-utils";
 import { logErr } from "@repo/logs-utils";
-import fs from "node:fs";
-import type { ServerHttp2Session } from "node:http2";
+import { GRPC_FINTECH, IS_PRODUCTION, MONGO_DB, REDIS } from "@repo/utils";
+import { MongoClient } from "mongodb";
+import { createClient } from "redis";
+import { main } from "./app.ts";
 
 const getGRPCClient = () =>
   new Promise<AccountClient>((resolve, reject) => {
@@ -20,8 +20,8 @@ const getGRPCClient = () =>
           ? undefined
           : {
               checkServerIdentity: () => undefined,
-            }
-      )
+            },
+      ),
     );
     client.waitForReady(Date.now() + 50_000, (err) => {
       if (err) {
@@ -65,7 +65,7 @@ Promise.all([
         message: `Reason: ${err.message}, error: ${err.stack}`,
       });
       stream.destroy(err);
-    })
+    }),
   );
   serverHTTP2.on("unknownProtocol", () => {
     logErr({
@@ -74,17 +74,14 @@ Promise.all([
       message: "unknownProtocol",
     });
   });
-  serverHTTP2.addListener(
-    "sessionError",
-    (err: Error, session: ServerHttp2Session) => {
-      logErr({
-        logGroupName: "backend-auth-node",
-        logStreamName: "serverSessionError",
-        message: `Reason: ${err.message}, error: ${err.stack}`,
-      });
-      session.destroy(err);
-    }
-  );
+  serverHTTP2.addListener("sessionError", (err: Error, session: ServerHttp2Session) => {
+    logErr({
+      logGroupName: "backend-auth-node",
+      logStreamName: "serverSessionError",
+      message: `Reason: ${err.message}, error: ${err.stack}`,
+    });
+    session.destroy(err);
+  });
   serverHTTP2.addListener("session", (session) => {
     session.setTimeout(60_000, () => session.destroy(new Error("TIMEOUT")));
   });

@@ -1,69 +1,45 @@
-import { main } from "./app.ts";
-import supertest from "supertest";
-import { type Db, MongoClient, ObjectId } from "mongodb";
-import type TestAgent from "supertest/lib/agent.js";
-import {
-  RedisContainer,
-  type StartedRedisContainer,
-} from "@testcontainers/redis";
-import type { RedisPubSub } from "graphql-redis-subscriptions";
-import { credentials, Server, ServerCredentials } from "@grpc/grpc-js";
-import type { Producer } from "kafkajs";
-import { createClient } from "redis";
-import { serialize } from "cookie";
+import { Server, ServerCredentials, credentials } from "@grpc/grpc-js";
+import { AuthClient, AuthServer } from "@repo/grpc-utils";
 import { AuthService } from "@repo/grpc-utils/protoAuth/auth_grpc_pb";
-import { base64Name } from "@repo/utils";
 import { getValidTokens } from "@repo/jwt-utils";
-import type { RedisClientType } from "@repo/redis-utils";
-import { AuthServer, AuthClient } from "@repo/grpc-utils";
 import { getFintechCollections } from "@repo/mongo-utils";
+import { base64Name } from "@repo/utils";
+import { RedisContainer } from "@testcontainers/redis";
+import { serialize } from "cookie";
+import type { RedisPubSub } from "graphql-redis-subscriptions";
+import type { Producer } from "kafkajs";
+import { MongoClient, ObjectId } from "mongodb";
+import { createClient } from "redis";
+import supertest from "supertest";
+import { main } from "./app.ts";
+import { after, describe, it } from "node:test";
+import { MongoDBContainer } from "@testcontainers/mongodb";
+import { ok, strictEqual } from "node:assert";
 
-describe("QueryLoans tests", () => {
-  let mongoClient: MongoClient;
-  let dbInstanceFintech: Db;
-  let dbInstanceAuth: Db;
-  let producer: Producer;
-  let startedRedisContainer: StartedRedisContainer;
-  let grpcClient: AuthClient;
-  let pubsub: RedisPubSub;
-  let request: TestAgent<supertest.Test>;
-  let grpcServer: Server;
-  let redisClient: RedisClientType;
-
-  beforeAll(async () => {
-    mongoClient = await MongoClient.connect(
-      (global as unknown as { __MONGO_URI__: string }).__MONGO_URI__,
-      {}
-    );
-    dbInstanceFintech = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__
-    );
-    dbInstanceAuth = mongoClient.db(
-      (global as unknown as { __MONGO_DB_NAME__: string }).__MONGO_DB_NAME__ +
-        "-auth"
-    );
-    startedRedisContainer = await new RedisContainer().start();
-    redisClient = createClient({
-      url: startedRedisContainer.getConnectionUrl(),
-    });
-    await redisClient.connect();
-    grpcServer = new Server();
-    grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
-    grpcServer.bindAsync(
-      "0.0.0.0:1986",
-      ServerCredentials.createInsecure(),
-      (err) => {
-        if (err) {
-          return;
-        }
-      }
-    );
-    grpcClient = new AuthClient("0.0.0.0:1986", credentials.createInsecure());
-    const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
-    request = supertest(server, { http2: true });
+describe("QueryLoans tests", async () => {
+  const startedMongoContainer = await new MongoDBContainer().start();
+  const mongoClient = await MongoClient.connect(startedMongoContainer.getConnectionString(), { directConnection: true });
+  const pubsub = null as unknown as RedisPubSub;
+  const dbInstanceAuth = mongoClient.db("auth");
+  const dbInstanceFintech = mongoClient.db("fintech");
+  const producer = null as unknown as Producer;
+  const startedRedisContainer = await new RedisContainer().start();
+  const grpcClient = new AuthClient("0.0.0.0:1989", credentials.createInsecure());
+  const server = await main(dbInstanceFintech, producer, grpcClient, pubsub);
+  const request = supertest(server, { http2: true });
+  const grpcServer = new Server();
+  const redisClient = createClient({
+    url: startedRedisContainer.getConnectionUrl(),
+  });
+  await redisClient.connect();
+  grpcServer.addService(AuthService, AuthServer(dbInstanceAuth, redisClient));
+  grpcServer.bindAsync("0.0.0.0:1989", ServerCredentials.createInsecure(), (err) => {
+    if (err) {
+      return;
+    }
   });
 
-  afterAll(async () => {
+  after(async () => {
     grpcClient.close();
     grpcServer.forceShutdown();
     await redisClient.disconnect();
@@ -186,15 +162,15 @@ describe("QueryLoans tests", () => {
       .set("Cookie", requestCookies);
     const stream = response.text.split("\n");
     const data = JSON.parse(stream[1].replace("data: ", ""));
-    expect(data.data.node.loansFinancing.edges.length).toBe(2);
-    expect(data.data.node.loansFinancing.edges[0].cursor).toBeTruthy();
-    expect(data.data.node.loansFinancing.edges[0].node.id).toBeTruthy();
-    expect(data.data.node.loansFinancing.edges[0].node.user_id).toBeTruthy();
-    expect(data.data.node.loansFinancing.edges[0].node.score).toBeTruthy();
-    expect(data.data.node.loansFinancing.edges[0].node.ROI).toBeTruthy();
-    expect(data.data.node.loansFinancing.edges[0].node.goal).toBeTruthy();
-    expect(data.data.node.loansFinancing.edges[0].node.term).toBeTruthy();
-    expect(data.data.node.loansFinancing.edges[0].node.raised).toBeTruthy();
-    expect(data.data.node.loansFinancing.edges[0].node.expiry).toBeTruthy();
+    strictEqual(data.data.node.loansFinancing.edges.length, 2);
+    ok(data.data.node.loansFinancing.edges[0].cursor);
+    ok(data.data.node.loansFinancing.edges[0].node.id);
+    ok(data.data.node.loansFinancing.edges[0].node.user_id);
+    ok(data.data.node.loansFinancing.edges[0].node.score);
+    ok(data.data.node.loansFinancing.edges[0].node.ROI);
+    ok(data.data.node.loansFinancing.edges[0].node.goal);
+    ok(data.data.node.loansFinancing.edges[0].node.term);
+    ok(data.data.node.loansFinancing.edges[0].node.raised);
+    ok(data.data.node.loansFinancing.edges[0].node.expiry);
   });
 });

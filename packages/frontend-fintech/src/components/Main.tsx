@@ -1,5 +1,5 @@
-import { FC, ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
+import type { FC, ReactNode } from "react";
 
 export const baseMain = stylex.create({
   base: {
@@ -27,17 +27,9 @@ export const baseMainBlock = stylex.create({
   },
 });
 
-export const Main: FC<{ children: ReactNode; notLogged?: boolean }> = ({
-  children,
-  notLogged,
-}) => {
+export const Main: FC<{ children: ReactNode; notLogged?: boolean }> = ({ children, notLogged }) => {
   return (
-    <div
-      {...stylex.props(
-        baseMain.base,
-        notLogged ? baseMain.notLogged : undefined
-      )}
-    >
+    <div {...stylex.props(baseMain.base, notLogged ? baseMain.notLogged : undefined)}>
       <div {...stylex.props(baseMainBlock.base)}>{children}</div>
     </div>
   );

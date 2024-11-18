@@ -1,8 +1,8 @@
-import { FC, useEffect } from "react";
+import { type FC, useEffect } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
-import { Decode, getUserDataCache } from "../../utils";
+import { type Decode, getUserDataCache } from "../../utils";
 import { useLogout } from "../utilsAuth";
-import { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
+import type { CheckExpirationMutation } from "./__generated__/CheckExpirationMutation.graphql";
 
 const { setTimeout } = window;
 

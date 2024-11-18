@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const matchPath = (
-  pathname: string,
-  options: { exact?: boolean; path?: string }
-) => {
+export const matchPath = (pathname: string, options: { exact?: boolean; path?: string }) => {
   const { exact = false, path } = options;
 
   if (!path) {
@@ -59,7 +56,9 @@ export const historyPush = (path: string) => {
   const nextPage = map.get(path);
   prevPage?.();
   nextPage?.();
-  set.forEach((forceUpdate) => forceUpdate());
+  for (const forceUpdate of set) {
+    forceUpdate();
+  }
 };
 
 export const historyReplace = (path: string) => {
@@ -68,7 +67,9 @@ export const historyReplace = (path: string) => {
   const nextPage = map.get(path);
   prevPage?.();
   nextPage?.();
-  set.forEach((forceUpdate) => forceUpdate());
+  for (const forceUpdate of set) {
+    forceUpdate();
+  }
 };
 
 export const useLocation = () => {

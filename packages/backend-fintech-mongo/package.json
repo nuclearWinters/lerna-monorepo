@@ -6,13 +6,10 @@
   "scripts": {
     "start": "node --watch --experimental-strip-types ./src/index.ts",
     "populate": "node --experimental-strip-types ./src/populate.ts",
-    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
+    "lint": "biome check",
     "serve": "KAFKA_ID=backend-fintech-mongo node --experimental-strip-types ./src/index.ts",
     "pcm": "lint-staged",
-    "test": "jest --bail --detectOpenHandles"
-  },
-  "jest": {
-    "preset": "@repo/jest-presets/node"
+    "test": "TESTCONTAINERS_HOST_OVERRIDE=127.0.0.1 node --test --experimental-strip-types"
   },
   "author": "Armando Rueda",
   "license": "ISC",
@@ -32,36 +29,28 @@
     "graphql-relay": "^0.10.2",
     "graphql-subscriptions": "^3.0.0",
     "ioredis": "^5.4.1",
-    "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
     "mongodb": "^6.10.0",
     "@repo/logs-utils": "workspace:*"
   },
   "devDependencies": {
-    "@repo/eslint-8-config": "workspace:*",
-    "@repo/jest-presets": "workspace:*",
+    "@biomejs/biome": "^1.9.4",
     "@repo/typescript-config": "workspace:*",
-    "@shelf/jest-mongodb": "^4.3.2",
     "@testcontainers/kafka": "^10.14.0",
     "@testcontainers/redis": "^10.14.0",
-    "@types/jest": "^29.5.14",
-    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.9.0",
     "@types/supertest": "^6.0.2",
-    "eslint": "^9.14.0",
-    "jest": "^29.7.0",
     "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3",
     "redis": "^4.7.0",
     "supertest": "^7.0.0",
     "testcontainers": "^10.14.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "@testcontainers/mongodb": "^10.14.0"
   },
   "lint-staged": {
     "**/!(*_pb).{js,ts}": [
-      "eslint --cache --fix",
-      "prettier --write",
-      "jest --findRelatedTests --bail --passWithNoTests"
+      "biome check",
+      "node --experimental-strip-types --test"
     ]
   }
 }

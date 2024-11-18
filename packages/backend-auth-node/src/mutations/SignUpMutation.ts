@@ -1,23 +1,12 @@
-import { mutationWithClientMutationId } from "graphql-relay";
-import {
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLEnumType,
-} from "graphql";
-import type { Context } from "../types.ts";
+import { createUser } from "@repo/grpc-utils";
+import { jwt } from "@repo/jwt-utils";
+import { ACCESSSECRET, ACCESS_TOKEN_EXP_NUMBER, IS_PRODUCTION, REFRESHSECRET, REFRESH_TOKEN_EXP_NUMBER } from "@repo/utils";
 import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
-import {
-  ACCESSSECRET,
-  IS_PRODUCTION,
-  REFRESHSECRET,
-  ACCESS_TOKEN_EXP_NUMBER,
-  REFRESH_TOKEN_EXP_NUMBER,
-} from "@repo/utils";
-import { jwt } from "@repo/jwt-utils";
-import { createUser } from "@repo/grpc-utils";
+import { GraphQLBoolean, GraphQLEnumType, GraphQLNonNull, GraphQLString } from "graphql";
+import { mutationWithClientMutationId } from "graphql-relay";
 import { parse as woothee } from "woothee";
+import type { Context } from "../types.ts";
 
 interface Input {
   email: string;
@@ -41,8 +30,7 @@ export const Languages = new GraphQLEnumType({
 
 export const SignUpMutation = mutationWithClientMutationId({
   name: "SignUp",
-  description:
-    "Registra un nuevo usuario y obtén un Refresh Token y un AccessToken.",
+  description: "Registra un nuevo usuario y obtén un Refresh Token y un AccessToken.",
   inputFields: {
     password: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
@@ -57,7 +45,7 @@ export const SignUpMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { email, password, isLender, language }: Input,
-    { authusers, res, logins, ip, sessions, userAgent, grpcClient }: Context
+    { authusers, res, logins, ip, sessions, userAgent, grpcClient }: Context,
   ): Promise<Payload> => {
     try {
       const user = await authusers.findOne({ email });
@@ -94,7 +82,7 @@ export const SignUpMutation = mutationWithClientMutationId({
           refreshTokenExpireTime,
           exp: refreshTokenExpireTime,
         },
-        REFRESHSECRET
+        REFRESHSECRET,
       );
       const accessToken = jwt.sign(
         {
@@ -105,7 +93,7 @@ export const SignUpMutation = mutationWithClientMutationId({
           refreshTokenExpireTime,
           exp: accessTokenExpireTime,
         },
-        ACCESSSECRET
+        ACCESSSECRET,
       );
       const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1_000);
       res.appendHeader(
@@ -116,7 +104,7 @@ export const SignUpMutation = mutationWithClientMutationId({
           secure: true,
           sameSite: IS_PRODUCTION ? "strict" : "none",
           domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
-        })
+        }),
       );
       res.setHeader("accessToken", accessToken);
       await createUser(id, grpcClient);

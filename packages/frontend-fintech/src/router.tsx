@@ -1,100 +1,63 @@
-import {
-  Decode,
-  defaultBorrower,
-  defaultLender,
-  defaultSupport,
-  getUserDataCache,
-} from "./utils";
-import { ApproveLoanEntryPoint } from "./authSrc/screens/ApproveLoan/ApproveLoan.entrypoint";
-import { HeaderAuthEntryPoint } from "./authSrc/screens/HeaderAuth/HeaderAuth.entrypoint";
-import { AddLoanEntryPoint } from "./authSrc/screens/AddLoan/AddLoan.entrypoint";
+import { type EnvironmentProviderOptions, type IEnvironmentProvider, type PreloadedEntryPoint, loadEntryPoint } from "react-relay";
+import type { GetEntryPointComponentFromEntryPoint } from "react-relay/relay-hooks/helpers";
+import { RelayEnvironmentAuth, RelayEnvironmentFintech } from "./RelayEnvironment";
+import { AccountEntryPoint } from "./authSrc/screens/Account/Account.entrypoint";
 import { AddFundsEntryPoint } from "./authSrc/screens/AddFunds/AddFunds.entrypoint";
 import { AddInvestmentsEntryPoint } from "./authSrc/screens/AddInvestments/AddInvestments.entrypoint";
+import { AddLoanEntryPoint } from "./authSrc/screens/AddLoan/AddLoan.entrypoint";
+import { ApproveLoanEntryPoint } from "./authSrc/screens/ApproveLoan/ApproveLoan.entrypoint";
+import { HeaderAuthEntryPoint } from "./authSrc/screens/HeaderAuth/HeaderAuth.entrypoint";
+import { LogInEntryPoint } from "./authSrc/screens/LogIn/LogIn.entrypoint";
+import { MyInvestmentsEntryPoint } from "./authSrc/screens/MyInvestments/MyInvestments.entrypoints";
 import { MyLoansEntryPoint } from "./authSrc/screens/MyLoans/MyLoans.entrypoint";
 import { MyTransactionsEntryPoint } from "./authSrc/screens/MyTransactions/MyTransactions.entrypoint";
 import { RetireFundsEntryPoint } from "./authSrc/screens/RetireFunds/RetireFunds.entrypoint";
-import { AccountEntryPoint } from "./authSrc/screens/Account/Account.entrypoint";
 import { SettingsEntryPoint } from "./authSrc/screens/Settings/Settings.entrypoint";
-import { MyInvestmentsEntryPoint } from "./authSrc/screens/MyInvestments/MyInvestments.entrypoints";
-import { LogInEntryPoint } from "./authSrc/screens/LogIn/LogIn.entrypoint";
 import { SignUpEntryPoint } from "./authSrc/screens/SignUp/SignUp.entrypoint";
 import { Routes } from "./react-router-elements/Routes";
 import { Route } from "./react-router-elements/Routes";
-import {
-  EnvironmentProviderOptions,
-  IEnvironmentProvider,
-  loadEntryPoint,
-  PreloadedEntryPoint,
-} from "react-relay";
-import {
-  RelayEnvironmentAuth,
-  RelayEnvironmentFintech,
-} from "./RelayEnvironment";
-import { GetEntryPointComponentFromEntryPoint } from "react-relay/relay-hooks/helpers";
 import { historyReplace } from "./react-router-elements/utils";
+import { type Decode, defaultBorrower, defaultLender, defaultSupport, getUserDataCache } from "./utils";
 
 const allowedPages = {
-  borrower: [
-    "/account",
-    "/myTransactions",
-    "/addFunds",
-    "/retireFunds",
-    "/settings",
-    "/myLoans",
-    "/addLoan",
-  ],
-  lender: [
-    "/account",
-    "/myTransactions",
-    "/addFunds",
-    "/retireFunds",
-    "/settings",
-    "/myInvestments",
-    "/addInvestments",
-  ],
+  borrower: ["/account", "/myTransactions", "/addFunds", "/retireFunds", "/settings", "/myLoans", "/addLoan"],
+  lender: ["/account", "/myTransactions", "/addFunds", "/retireFunds", "/settings", "/myInvestments", "/addInvestments"],
   support: ["/approveLoan", "/settings"],
 };
 
 const getRedirectPath = (
   path: UserPages,
-  data: Decode | null
+  data: Decode | null,
 ): {
   path: "/myLoans" | "/addInvestments" | "/approveLoan" | "/";
   params: string | null;
 } | null => {
   if (data) {
     if (
-      (allowedPages["borrower"].includes(path) && data.isBorrower) ||
-      (allowedPages["lender"].includes(path) && data.isLender) ||
-      (allowedPages["support"].includes(path) && data.isSupport)
+      (allowedPages.borrower.includes(path) && data.isBorrower) ||
+      (allowedPages.lender.includes(path) && data.isLender) ||
+      (allowedPages.support.includes(path) && data.isSupport)
     ) {
       return null;
-    } else {
-      if (data.isBorrower) {
-        return { path: defaultBorrower, params: null };
-      } else if (data.isLender) {
-        return { path: defaultLender, params: null };
-      } else {
-        return { path: defaultSupport, params: null };
-      }
     }
+    if (data.isBorrower) {
+      return { path: defaultBorrower, params: null };
+    }
+    if (data.isLender) {
+      return { path: defaultLender, params: null };
+    }
+    return { path: defaultSupport, params: null };
   }
   return { path: "/", params: `redirectTo=${path}` };
 };
 
 const options: IEnvironmentProvider<EnvironmentProviderOptions> = {
   getEnvironment: (options) => {
-    return options?.environment === "auth"
-      ? RelayEnvironmentAuth
-      : RelayEnvironmentFintech;
+    return options?.environment === "auth" ? RelayEnvironmentAuth : RelayEnvironmentFintech;
   },
 };
 
-const headerEntryPointReference = loadEntryPoint(
-  options,
-  HeaderAuthEntryPoint,
-  {}
-);
+const headerEntryPointReference = loadEntryPoint(options, HeaderAuthEntryPoint, {});
 
 const routesData = {
   "/": LogInEntryPoint,
@@ -131,9 +94,7 @@ for (const key in routesData) {
   });
 }
 
-export const references = Object.fromEntries(
-  referencesMap.entries()
-) as ReferencesType;
+export const references = Object.fromEntries(referencesMap.entries()) as ReferencesType;
 
 const pathname = window.location.pathname;
 const data = getUserDataCache();
@@ -192,9 +153,7 @@ if (isSessionPage(pathname)) {
   const redirectPath = getRedirectPath(pathname, data);
   if (redirectPath) {
     references[redirectPath.path].loader();
-    historyReplace(
-      `${redirectPath.path}${redirectPath.params ? `?${redirectPath.params}` : ""}`
-    );
+    historyReplace(`${redirectPath.path}${redirectPath.params ? `?${redirectPath.params}` : ""}`);
   } else {
     references[pathname].loader();
   }
@@ -221,8 +180,6 @@ export type ReferencesType = {
   };
 };
 
-export type EntryPointReference<T> = PreloadedEntryPoint<
-  GetEntryPointComponentFromEntryPoint<T>
-> | null;
+export type EntryPointReference<T> = PreloadedEntryPoint<GetEntryPointComponentFromEntryPoint<T>> | null;
 
 export type UnionReferences = EntryPointReference<RoutesDataType[RouteKeys]>;

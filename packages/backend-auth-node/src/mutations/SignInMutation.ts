@@ -1,17 +1,11 @@
-import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLNonNull, GraphQLString } from "graphql";
-import type { Context } from "../types.ts";
-import bcrypt from "bcryptjs";
-import {
-  ACCESS_TOKEN_EXP_NUMBER,
-  REFRESH_TOKEN_EXP_NUMBER,
-  REFRESHSECRET,
-  ACCESSSECRET,
-  IS_PRODUCTION,
-} from "@repo/utils";
 import { jwt } from "@repo/jwt-utils";
+import { ACCESSSECRET, ACCESS_TOKEN_EXP_NUMBER, IS_PRODUCTION, REFRESHSECRET, REFRESH_TOKEN_EXP_NUMBER } from "@repo/utils";
+import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
+import { GraphQLNonNull, GraphQLString } from "graphql";
+import { mutationWithClientMutationId } from "graphql-relay";
 import { parse as woothee } from "woothee";
+import type { Context } from "../types.ts";
 
 interface Input {
   email: string;
@@ -22,11 +16,7 @@ type Payload = {
   error: string;
 };
 
-export const SignInMutation = mutationWithClientMutationId<
-  Input,
-  Payload,
-  Context
->({
+export const SignInMutation = mutationWithClientMutationId<Input, Payload, Context>({
   name: "SignIn",
   description: "Obtén un Refresh Token y un AccessToken.",
   inputFields: {
@@ -39,10 +29,7 @@ export const SignInMutation = mutationWithClientMutationId<
       resolve: ({ error }): string => error,
     },
   },
-  mutateAndGetPayload: async (
-    { email, password },
-    { authusers, rdb, res, logins, ip, sessions, userAgent }
-  ) => {
+  mutateAndGetPayload: async ({ email, password }, { authusers, rdb, res, logins, ip, sessions, userAgent }) => {
     try {
       const user = await authusers.findOne({ email });
       if (!user) throw new Error("User do not exists");
@@ -66,7 +53,7 @@ export const SignInMutation = mutationWithClientMutationId<
           refreshTokenExpireTime: refreshTokenExpireTime,
           exp: refreshTokenExpireTime,
         },
-        REFRESHSECRET
+        REFRESHSECRET,
       );
       const accessToken = jwt.sign(
         {
@@ -77,7 +64,7 @@ export const SignInMutation = mutationWithClientMutationId<
           refreshTokenExpireTime: refreshTokenExpireTime,
           exp: accessTokenExpireTime,
         },
-        ACCESSSECRET
+        ACCESSSECRET,
       );
       const refreshTokenExpireDate = new Date(refreshTokenExpireTime * 1_000);
       res.appendHeader(
@@ -88,7 +75,7 @@ export const SignInMutation = mutationWithClientMutationId<
           secure: true,
           sameSite: IS_PRODUCTION ? "strict" : "none",
           domain: IS_PRODUCTION ? "relay-graphql-monorepo.com" : undefined,
-        })
+        }),
       );
       res.setHeader("accessToken", accessToken);
       await logins.insertOne({

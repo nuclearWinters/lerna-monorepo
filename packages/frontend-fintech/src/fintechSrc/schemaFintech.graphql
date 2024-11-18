@@ -1,6 +1,3 @@
-directive @defer on FRAGMENT_SPREAD | INLINE_FRAGMENT
-directive @stream on FIELD
-
 input LendList {
   loan_gid: ID!
   quantity: MXN!
@@ -218,12 +215,7 @@ type User implements Node {
   approveLoans(after: String, first: Int, reset: Float!): LoanConnection
   myLoans(after: String, first: Int, reset: Float!): LoanConnection
   transactions(after: String, first: Int, reset: Float!): TransactionConnection
-  investments(
-    after: String
-    first: Int
-    status: [InvestmentStatus!]
-    reset: Float!
-  ): InvestmentsConnection
+  investments(after: String, first: Int, status: [InvestmentStatus!], reset: Float!): InvestmentsConnection
   loansFinancing(after: String, first: Int, reset: Float!): LoanConnection
 }
 

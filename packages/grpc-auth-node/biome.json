@@ -1,0 +1,15 @@
+{
+  "files": {
+    "include": ["src/**/*"],
+    "ignore": ["node_modules/**/*"]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 160,
+    "lineEnding": "lf"
+  },
+  "linter": {
+    "ignore": ["test"]
+  }
+}

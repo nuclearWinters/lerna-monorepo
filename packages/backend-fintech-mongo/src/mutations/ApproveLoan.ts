@@ -1,13 +1,10 @@
+import type { LoanMongo } from "@repo/mongo-utils";
+import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
 import { fromGlobalId, mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull, GraphQLID } from "graphql";
-import type { Context } from "../types.ts";
 import { ObjectId } from "mongodb";
 import { GraphQLLoan } from "../Nodes.ts";
-import {
-  publishLoanInsert,
-  publishLoanUpdate,
-} from "../subscriptions/subscriptionsUtils.ts";
-import type { LoanMongo } from "@repo/mongo-utils";
+import { publishLoanInsert, publishLoanUpdate } from "../subscriptions/subscriptionsUtils.ts";
+import type { Context } from "../types.ts";
 
 interface Input {
   loan_gid: string;
@@ -18,11 +15,7 @@ type Payload = {
   loan: LoanMongo | null;
 };
 
-export const ApproveLoanMutation = mutationWithClientMutationId<
-  Input,
-  Payload,
-  Context
->({
+export const ApproveLoanMutation = mutationWithClientMutationId<Input, Payload, Context>({
   name: "ApproveLoan",
   description: "Aprueba una deuda para que empieze a ser financiada.",
   inputFields: {
@@ -38,10 +31,7 @@ export const ApproveLoanMutation = mutationWithClientMutationId<
       resolve: ({ loan }): LoanMongo | null => loan,
     },
   },
-  mutateAndGetPayload: async (
-    { loan_gid },
-    { loans, id, isSupport, pubsub }
-  ) => {
+  mutateAndGetPayload: async ({ loan_gid }, { loans, id, isSupport, pubsub }) => {
     try {
       if (!id) {
         throw new Error("Unauthenticated");
@@ -50,11 +40,7 @@ export const ApproveLoanMutation = mutationWithClientMutationId<
         throw new Error("Unauthorized");
       }
       const { id: loan_id } = fromGlobalId(loan_gid);
-      const loan = await loans.findOneAndUpdate(
-        { _id: new ObjectId(loan_id) },
-        { $set: { status: "financing" } },
-        { returnDocument: "after" }
-      );
+      const loan = await loans.findOneAndUpdate({ _id: new ObjectId(loan_id) }, { $set: { status: "financing" } }, { returnDocument: "after" });
       if (!loan) {
         throw new Error("No se encontró la deuda.");
       }

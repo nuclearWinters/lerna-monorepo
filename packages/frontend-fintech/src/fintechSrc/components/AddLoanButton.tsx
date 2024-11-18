@@ -1,14 +1,11 @@
-import { FC } from "react";
-import { useTranslation } from "../../utils";
+import type { FC } from "react";
 import { graphql, useMutation } from "react-relay";
-import { Spinner } from "../../components/Spinner";
 import { CustomButton } from "../../components/CustomButton";
-import { AddLoanButtonMutation } from "./__generated__/AddLoanButtonMutation.graphql";
+import { Spinner } from "../../components/Spinner";
+import { useTranslation } from "../../utils";
+import type { AddLoanButtonMutation } from "./__generated__/AddLoanButtonMutation.graphql";
 
-export const AddLoanButton: FC<{ goal: string; term: number }> = ({
-  goal,
-  term,
-}) => {
+export const AddLoanButton: FC<{ goal: string; term: number }> = ({ goal, term }) => {
   const { t } = useTranslation();
   const [commit, isInFlight] = useMutation<AddLoanButtonMutation>(graphql`
     mutation AddLoanButtonMutation($input: AddLoanInput!) {

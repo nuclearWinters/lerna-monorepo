@@ -1,7 +1,4 @@
-export const resources: Record<
-  "EN",
-  Record<"translation", Record<string, string>>
-> = {
+export const resources: Record<"EN", Record<"translation", Record<string, string>>> = {
   EN: {
     translation: {
       "Falta por recibir": "To be paid",

@@ -1,6 +1,6 @@
 import { useEffect, useState, useTransition } from "react";
+import { type RouteKeys, type UnionReferences, references } from "../router";
 import { matchPath, register, unregister } from "./utils";
-import { references, RouteKeys, UnionReferences } from "../router";
 
 export const useRoute = ({
   entryPointReference,
@@ -13,9 +13,7 @@ export const useRoute = ({
 }) => {
   const [reference, setReference] = useState(entryPointReference);
   const [, startTransition] = useTransition();
-  const [match, setMatch] = useState(
-    matchPath(window.location.pathname, { path, exact })?.isExact
-  );
+  const [match, setMatch] = useState(matchPath(window.location.pathname, { path, exact })?.isExact);
 
   useEffect(() => {
     const handlePop = () => {

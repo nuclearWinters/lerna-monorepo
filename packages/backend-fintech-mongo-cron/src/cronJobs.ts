@@ -1,11 +1,5 @@
-import cron, { type ScheduledTask } from "node-cron";
+import { CronJob } from "cron";
 
-export const checkEveryDay = (dayFunction: () => void): ScheduledTask =>
-  cron.schedule("0 0 * * *", () => {
-    dayFunction();
-  });
+export const checkEveryDay = (cb: () => void) => new CronJob("0 0 0 * * *", cb, null, true, "America/Cancun");
 
-export const checkEveryMonth = (monthFunction: () => void): ScheduledTask =>
-  cron.schedule("0 0 1 * *", () => {
-    monthFunction();
-  });
+export const checkEveryMonth = (cb: () => void) => new CronJob("0 0 1 * *", cb, null, true, "America/Cancun");
