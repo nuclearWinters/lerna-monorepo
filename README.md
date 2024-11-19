@@ -8,7 +8,7 @@
 
 **Event Driven Architecture**: We are using Kafka and indempotent workers.
 
-**Testing**: we are testing the project with Jest: We test Kafka events by using the _testcontainers_ library, we test MongoDB by using the _@shelf/jest-mongodb_ library and GraphQL microservices by using the _supertest_ library.
+**Testing**: We are testing the project with native Node's Test Runner: We test Kafka, MongoDB and Redis by using the _testcontainers_ library, GraphQL microservices by using the _supertest_ library and React Components by using  _@testing-library/react_.
 
 (I'm experimenting with Rust and Cassandra in other folders.)
 

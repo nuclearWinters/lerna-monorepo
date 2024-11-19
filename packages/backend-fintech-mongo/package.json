@@ -20,7 +20,6 @@
     "@repo/jwt-utils": "workspace:*",
     "@repo/kafka-utils": "workspace:*",
     "@repo/mongo-utils": "workspace:*",
-    "@repo/redis-utils": "workspace:*",
     "@repo/utils": "workspace:*",
     "cookie": "^1.0.1",
     "date-fns": "^4.1.0",

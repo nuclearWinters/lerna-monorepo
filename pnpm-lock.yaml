@@ -138,9 +138,6 @@ importers:
       '@repo/mongo-utils':
         specifier: workspace:*
         version: link:../repo-mongo-utils
-      '@repo/redis-utils':
-        specifier: workspace:*
-        version: link:../repo-redis-utils
       '@repo/utils':
         specifier: workspace:*
         version: link:../repo-utils
