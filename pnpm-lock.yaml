@@ -384,9 +384,6 @@ importers:
 
   packages/grpc-auth-node:
     dependencies:
-      '@biomejs/biome':
-        specifier: ^1.9.4
-        version: 1.9.4
       '@grpc/grpc-js':
         specifier: ^1.12.2
         version: 1.12.2
@@ -406,6 +403,9 @@ importers:
         specifier: ^4.7.0
         version: 4.7.0
     devDependencies:
+      '@biomejs/biome':
+        specifier: ^1.9.4
+        version: 1.9.4
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

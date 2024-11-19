@@ -13,7 +13,6 @@
   "author": "Armando Rueda",
   "license": "ISC",
   "dependencies": {
-    "@biomejs/biome": "^1.9.4",
     "@grpc/grpc-js": "^1.12.2",
     "@repo/grpc-utils": "workspace:*",
     "@repo/utils": "workspace:*",
@@ -22,6 +21,7 @@
     "@repo/logs-utils": "workspace:*"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@repo/typescript-config": "workspace:*",
     "@testcontainers/redis": "^10.14.0",
     "@types/node": "^22.9.0",
