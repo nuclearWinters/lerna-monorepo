@@ -606,6 +606,9 @@ importers:
       '@repo/utils':
         specifier: workspace:*
         version: link:../repo-utils
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       graphql-redis-subscriptions:
         specifier: ^2.6.1
         version: 2.6.1(graphql-subscriptions@3.0.0(graphql@16.9.0))

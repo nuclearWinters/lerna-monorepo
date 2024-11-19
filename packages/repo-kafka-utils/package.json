@@ -22,6 +22,7 @@
     "graphql-redis-subscriptions": "^2.6.1",
     "graphql-subscriptions": "^3.0.0",
     "kafkajs": "^2.2.4",
+    "date-fns": "^4.1.0",
     "mongodb": "^6.10.0"
   },
   "devDependencies": {
