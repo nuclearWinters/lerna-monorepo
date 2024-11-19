@@ -21,7 +21,8 @@
     "@repo/utils": "workspace:*",
     "graphql-redis-subscriptions": "^2.6.1",
     "graphql-subscriptions": "^3.0.0",
-    "kafkajs": "^2.2.4"
+    "kafkajs": "^2.2.4",
+    "mongodb": "^6.10.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
