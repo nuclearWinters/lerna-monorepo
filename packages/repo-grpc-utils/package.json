@@ -45,6 +45,7 @@
     "@repo/mongo-utils": "workspace:*",
     "@repo/redis-utils": "workspace:*",
     "@repo/utils": "workspace:*",
+    "google-protobuf": "^3.15.8",
     "mongodb": "^6.10.0"
   },
   "devDependencies": {

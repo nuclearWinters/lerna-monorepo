@@ -547,6 +547,9 @@ importers:
       '@repo/utils':
         specifier: workspace:*
         version: link:../repo-utils
+      google-protobuf:
+        specifier: ^3.15.8
+        version: 3.15.8
       mongodb:
         specifier: ^6.10.0
         version: 6.10.0(socks@2.8.3)
