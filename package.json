@@ -10,7 +10,7 @@
     "lerna": "^8.1.9"
   },
   "scripts": {
-    "serve": "pnpm --recursive --if-present run serve",
+    "serve": "pnpm --parallel --recursive --if-present run serve",
     "populate": "pnpm --recursive --if-present run populate",
     "test": "pnpm --recursive --if-present run test",
     "lint": "pnpm --recursive --if-present run lint",
