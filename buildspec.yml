@@ -10,7 +10,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies.
       - corepack enable pnpm
-      - pnpm install --prod
+      - pnpm install --prod --filter "backend-auth-node" --filter "backend-fintech-mongo" --filter "backend-fintech-mongo-cron" --filter "kafka-mongo" --filter "grpc-auth-node" --filter "grpc-fintech-node" --filter "graphql-utils" --filter "grpc-utils" --filter "jwt-utils" --filter "kafka-utils" --filter "logs-utils" --filter "mongo-utils" --filter "redis-utils" --filter "utils"
 artifacts:
   enable-symlinks: yes
   files:
