@@ -20,7 +20,7 @@ const kafka = new Kafka({
   ssl: IS_PRODUCTION,
   sasl: IS_PRODUCTION
     ? {
-        mechanism: "scram-sha-256",
+        mechanism: "plain",
         username: KAFKA_USERNAME,
         password: KAFKA_PASSWORD,
       }
