@@ -76,8 +76,8 @@ const main = async (db: Db, producer: Producer, grpcClient: AuthClient, pubsub: 
   });
   const server = createSecureServer(
     {
-      key: fs.readFileSync(IS_PRODUCTION ? "/etc/letsencrypt/live/fintech.relay-graphql-monorepo.com/privkey.pem" : "../../certs/key.pem"),
-      cert: fs.readFileSync(IS_PRODUCTION ? "/etc/letsencrypt/live/fintech.relay-graphql-monorepo.com/fullchain.pem" : "../../certs/cert.pem"),
+      key: fs.readFileSync(IS_PRODUCTION ? "/etc/letsencrypt/live/auth.relay-graphql-monorepo.com/privkey.pem" : "../../certs/key.pem"),
+      cert: fs.readFileSync(IS_PRODUCTION ? "/etc/letsencrypt/live/auth.relay-graphql-monorepo.com/fullchain.pem" : "../../certs/cert.pem"),
     },
     async (req, res) => {
       try {

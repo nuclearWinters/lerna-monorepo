@@ -11,7 +11,7 @@ import { main } from "./app.ts";
 const getGRPCClient = () =>
   new Promise<AccountClient>((resolve, reject) => {
     const client = new AccountClient(
-      "localhost:4001",
+      GRPC_FINTECH,
       credentials.createSsl(
         fs.readFileSync("../../certs/minica.pem"),
         fs.readFileSync("../../certs/key.pem"),
