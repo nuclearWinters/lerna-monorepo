@@ -23,7 +23,7 @@ Promise.all([
   const server = new Server();
   server.addService(AuthService, AuthServer(authdb, redisClient));
   server.bindAsync(
-    IS_PRODUCTION ? "0.0.0.0:4003" : GRPC_AUTH,
+    IS_PRODUCTION ? "localhost:4003" : GRPC_AUTH,
     ServerCredentials.createSsl(
       fs.readFileSync("../../certs/minica.pem"),
       [

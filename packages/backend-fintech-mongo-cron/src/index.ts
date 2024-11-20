@@ -17,6 +17,9 @@ const kafka = new Kafka({
       }
     : undefined,
   logLevel: IS_PRODUCTION ? logLevel.ERROR : undefined,
+  connectionTimeout: 30_000,
+  authenticationTimeout: 30_000,
+  requestTimeout: 30_000,
 });
 
 const producer = kafka.producer();
