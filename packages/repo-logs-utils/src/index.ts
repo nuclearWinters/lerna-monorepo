@@ -1,9 +1,4 @@
-import {
-  CloudWatchLogsClient,
-  CreateLogGroupCommand,
-  CreateLogStreamCommand,
-  PutLogEventsCommand,
-} from "@aws-sdk/client-cloudwatch-logs";
+import { CloudWatchLogsClient, CreateLogGroupCommand, CreateLogStreamCommand, PutLogEventsCommand } from "@aws-sdk/client-cloudwatch-logs";
 import { AWS_MAIN_KEY, AWS_MAIN_SECRET, AWS_REGION } from "./config.ts";
 import { IS_PRODUCTION } from "@repo/utils";
 

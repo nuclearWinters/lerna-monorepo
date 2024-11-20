@@ -1,0 +1,18 @@
+services:
+  backend-auth-rust:
+    container_name: backend-auth-rust
+    image: rust-graphql
+    volumes:
+      - ./certs:/usr/src/service/certs
+      - ./packages/backend-auth-node:/usr/src/service/packages/backend-auth-node
+    working_dir: /usr/src/service/packages/backend-auth-rust
+    command: ["cargo", "run", "--release"]
+    ports:
+      - "4004:4004"
+    depends_on:
+      grpc-fintech-node:
+        condition: service_started
+      redis-fintech:
+        condition: service_started
+      mongo-fintech:
+        condition: service_healthy

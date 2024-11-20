@@ -64,10 +64,8 @@ To set up the project locally:
 
 5. Install [minica](https://github.com/jsha/minica) and run `minica --domains localhost`. Then copy `minica.pem`, `cert.pem` and `key.pem` from `minica` to `certs` project folder (this will create a self-signed certificate so node microservices can use HTTP2).
 
-6. Go to `packages` folder, then `backend-auth-rust` folder and build the docker image with `docker build -t rust-graphql .` command
+6. Run `make up` at root folder (this will run the instances with Docker Compose)
 
-7. Run `make up` at root folder (this will run the instances with Docker Compose)
+7. Run `pnpm populate` at root folder from another terminal window (this will populate the mongo database with data)
 
-8. Run `pnpm populate` at root folder from another terminal window (this will populate the mongo database with data)
-
-9. Go to `http://localhost:8000` to see the application
+8. Go to `http://localhost:8000` to see the application

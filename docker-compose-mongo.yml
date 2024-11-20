@@ -3,11 +3,11 @@ services:
     container_name: "loadbalancer"
     image: haproxy
     ports:
-      - "8080:443"
+      - "443:443"
     volumes:
       - ./haproxy:/usr/local/etc/haproxy
     depends_on:
-      - backend-auth-rust
+      - backend-fintech-mongo
       - backend-auth-node
 
   kafka:
@@ -129,24 +129,6 @@ services:
     ports:
       - "4002:4002"
     depends_on:
-      redis-fintech:
-        condition: service_started
-      mongo-fintech:
-        condition: service_healthy
-
-  backend-auth-rust:
-    container_name: backend-auth-rust
-    image: rust-graphql
-    volumes:
-      - ./certs:/usr/src/service/certs
-      - ./packages/backend-auth-node:/usr/src/service/packages/backend-auth-node
-    working_dir: /usr/src/service/packages/backend-auth-rust
-    command: ["cargo", "run", "--release"]
-    ports:
-      - "4004:4004"
-    depends_on:
-      grpc-fintech-node:
-        condition: service_started
       redis-fintech:
         condition: service_started
       mongo-fintech:
