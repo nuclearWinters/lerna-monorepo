@@ -23,7 +23,7 @@ const getGRPCClient = () =>
             },
       ),
     );
-    client.waitForReady(Date.now() + 3_000, (err) => {
+    client.waitForReady(Date.now() + 20_000, (err) => {
       if (err) {
         reject(err);
       } else {
