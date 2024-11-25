@@ -4,14 +4,33 @@ import { RedisPubSub } from "graphql-redis-subscriptions";
 import { Redis } from "ioredis";
 import { Kafka, logLevel } from "kafkajs";
 import { MongoClient } from "mongodb";
+import { logErr } from "@repo/logs-utils"
 
 const retryStrategy = (times: number) => {
   return Math.min(times * 50, 2_000);
 };
 
+const publisher = new Redis(REDIS, { retryStrategy });
+publisher.on("error", (err) => {
+  logErr({
+    logGroupName: "kafka-mongo",
+    logStreamName: "redisPublisherError",
+    message: `Message: ${err.message}, Stack: ${err.stack}`,
+  });
+});
+
+const subscriber = new Redis(REDIS, { retryStrategy });
+subscriber.on("error", (err) => {
+  logErr({
+    logGroupName: "kafka-mongo",
+    logStreamName: "redisSubscriberError",
+    message: `Message: ${err.message}, Stack: ${err.stack}`,
+  });
+});
+
 export const pubsub = new RedisPubSub({
-  publisher: new Redis(REDIS, { retryStrategy }),
-  subscriber: new Redis(REDIS, { retryStrategy }),
+  publisher,
+  subscriber,
 });
 
 const kafka = new Kafka({

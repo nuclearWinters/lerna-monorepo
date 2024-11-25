@@ -15,6 +15,7 @@
   "dependencies": {
     "@repo/kafka-utils": "workspace:*",
     "@repo/mongo-utils": "workspace:*",
+    "@repo/logs-utils": "workspace:*",
     "@repo/utils": "workspace:*",
     "date-fns": "^4.1.0",
     "graphql-redis-subscriptions": "^2.6.1",

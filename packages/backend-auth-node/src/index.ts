@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import type { ServerHttp2Session } from "node:http2";
 import { credentials } from "@grpc/grpc-js";
 import { AccountClient } from "@repo/grpc-utils";
 import { logErr } from "@repo/logs-utils";
