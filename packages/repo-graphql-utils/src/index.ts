@@ -1,11 +1,4 @@
-import {
-  GraphQLScalarType,
-  Kind,
-  parse,
-  subscribe,
-  execute,
-  type GraphQLSchema,
-} from "graphql";
+import { GraphQLScalarType, Kind, parse, subscribe, execute, type GraphQLSchema } from "graphql";
 import type { ExecutionResult } from "graphql";
 import type { Http2ServerRequest, Http2ServerResponse } from "node:http2";
 import type { ObjMap } from "graphql/jsutils/ObjMap.js";
@@ -24,7 +17,7 @@ export const DateScalarType = new GraphQLScalarType({
   },
   parseLiteral(ast) {
     if (ast.kind === Kind.INT) {
-      return new Date(parseInt(ast.value, 10));
+      return new Date(Number.parseInt(ast.value, 10));
     }
     return null;
   },
@@ -54,10 +47,7 @@ export const createHandler = ({
   dataDrivenDependencies,
 }: {
   schema: GraphQLSchema;
-  context: (
-    req: Http2ServerRequest,
-    res: Http2ServerResponse
-  ) => Promise<Record<string, unknown>>;
+  context: (req: Http2ServerRequest, res: Http2ServerResponse) => Promise<Record<string, unknown>>;
   queryMap: string[][];
   dataDrivenDependencies?: {
     reset(): void;
@@ -71,7 +61,9 @@ export const createHandler = ({
         variables?: Record<string, unknown>;
       }>((resolve, reject) => {
         let body = "";
-        req.on("data", (chunk) => (body += chunk));
+        req.on("data", (chunk) => {
+          body += chunk;
+        });
         req.once("error", reject);
         req.once("end", () => {
           req.off("error", reject);
@@ -94,8 +86,7 @@ export const createHandler = ({
     const contextValue = await context(req, res);
     const document = parse(query);
     const definitionNode = document.definitions[0];
-    const operationName =
-      "operation" in definitionNode ? definitionNode.operation : null;
+    const operationName = "operation" in definitionNode ? definitionNode.operation : null;
     const result =
       operationName === "subscription"
         ? await subscribe({

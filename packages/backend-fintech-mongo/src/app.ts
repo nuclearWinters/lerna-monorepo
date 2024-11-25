@@ -50,7 +50,13 @@ const Subscription = new GraphQLObjectType({
   name: "Subscription",
   description: "Subscribe to data event streams",
   fields: {
+    investments_subscribe_insert,
+    investments_subscribe_update,
     loans_subscribe_insert,
+    loans_subscribe_update,
+    my_loans_subscribe_insert,
+    transactions_subscribe_insert,
+    user_subscribe,
   },
 });
 

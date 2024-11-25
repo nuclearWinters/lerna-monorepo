@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import type { ServerHttp2Session } from "node:http2";
 import { credentials } from "@grpc/grpc-js";
 import { AuthClient } from "@repo/grpc-utils";
 import { logErr } from "@repo/logs-utils";
@@ -33,9 +32,26 @@ const retryStrategy = (times: number) => {
   return Math.min(times * 50, 2_000);
 };
 
+const publisher = new Redis(REDIS, { retryStrategy });
+publisher.on("error", (err) => {
+  logErr({
+    logGroupName: "backend-fintech-mongo",
+    logStreamName: "redisPublisherError",
+    message: `Message: ${err.message}, Stack: ${err.stack}`,
+  });
+});
+const subscriber = new Redis(REDIS, { retryStrategy });
+subscriber.on("error", (err) => {
+  logErr({
+    logGroupName: "backend-fintech-mongo",
+    logStreamName: "redisSubscriberError",
+    message: `Message: ${err.message}, Stack: ${err.stack}`,
+  });
+});
+
 const pubsub = new RedisPubSub({
-  publisher: new Redis(REDIS, { retryStrategy }),
-  subscriber: new Redis(REDIS, { retryStrategy }),
+  publisher,
+  subscriber,
 });
 
 const getGRPCClient = () =>

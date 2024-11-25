@@ -21,16 +21,34 @@ interface PayloadMyLoansInsert {
   my_loans_subscribe_insert: ILoanEdge;
 }
 
-export const my_loans_subscribe_insert: GraphQLFieldConfig<PayloadMyLoansInsert, Context, unknown> = {
+export type PosiblePayloads =
+  | undefined
+  | PayloadMyLoansInsert
+  | PayloadLoanUpdate
+  | PayloadLoansInsert
+  | PayloadInvestmentInsert
+  | PayloadInvestmentUpdate
+  | PayloadTransactionInsert
+  | PayloadUser;
+
+export type MyLoansSubscribeInsert = GraphQLFieldConfig<PosiblePayloads, Context, unknown>;
+
+export const my_loans_subscribe_insert: MyLoansSubscribeInsert = {
   type: new GraphQLNonNull(GraphQLLoanEdge),
   description: "New my loans",
   args: {},
   subscribe: withFilter(
     (_payload, _args, context) => context?.pubsub.asyncIterator(MY_LOAN_INSERT) || pubsub.asyncIterableIterator(MY_LOAN_INSERT),
     (payload, _, context) => {
-      return context?.isSupport
-        ? payload?.my_loans_subscribe_insert.node.status === "waiting for approval"
-        : context?.id === payload?.my_loans_subscribe_insert.node.user_id;
+      if (payload && context && "my_loans_subscribe_insert" in payload) {
+        const isSupport = context.isSupport;
+        const id = context.id;
+        const userId = payload.my_loans_subscribe_insert.node.user_id;
+        const payloadHasStatus = payload.my_loans_subscribe_insert.node.status === "waiting for approval";
+        const isSameUser = id === userId;
+        return isSupport ? payloadHasStatus : isSameUser;
+      }
+      return false;
     },
   ),
 };
@@ -39,14 +57,17 @@ interface PayloadLoansInsert {
   loans_subscribe_insert: ILoanEdge;
 }
 
-export const loans_subscribe_insert: GraphQLFieldConfig<PayloadLoansInsert, Context, unknown> = {
+export const loans_subscribe_insert: GraphQLFieldConfig<PosiblePayloads, Context, unknown> = {
   type: new GraphQLNonNull(GraphQLLoanEdge),
   description: "New loans",
   args: {},
   subscribe: withFilter(
     (_payload, _args, context) => context?.pubsub.asyncIterator(LOAN_INSERT) || pubsub.asyncIterableIterator(LOAN_INSERT),
     (payload) => {
-      return payload?.loans_subscribe_insert.node.status === "financing";
+      if (payload && "loans_subscribe_insert" in payload) {
+        return payload.loans_subscribe_insert.node.status === "financing";
+      }
+      return false;
     },
   ),
 };
@@ -55,14 +76,19 @@ interface PayloadTransactionInsert {
   transactions_subscribe_insert: ITransactionEdge;
 }
 
-export const transactions_subscribe_insert: GraphQLFieldConfig<PayloadTransactionInsert, Context, unknown> = {
+export type TransactionsSubscribeInsert = GraphQLFieldConfig<PosiblePayloads, Context, unknown>;
+
+export const transactions_subscribe_insert: TransactionsSubscribeInsert = {
   type: new GraphQLNonNull(GraphQLTransactionEdge),
   args: {},
   description: "New transactions",
   subscribe: withFilter(
     (_payload, _args, context) => context?.pubsub.asyncIterator(TRANSACTION_INSERT) || pubsub.asyncIterableIterator(TRANSACTION_INSERT),
     (payload, _, context) => {
-      return payload?.transactions_subscribe_insert.node.user_id === context?.id;
+      if (payload && context && "transactions_subscribe_insert" in payload) {
+        return payload.transactions_subscribe_insert.node.user_id === context.id;
+      }
+      return false;
     },
   ),
 };
@@ -71,14 +97,19 @@ interface PayloadInvestmentUpdate {
   investments_subscribe_update: InvestmentMongoRedis;
 }
 
-export const investments_subscribe_update: GraphQLFieldConfig<PayloadInvestmentUpdate, Context, unknown> = {
+export type InvestmentsSubscribeUpdate = GraphQLFieldConfig<PosiblePayloads, Context>;
+
+export const investments_subscribe_update: InvestmentsSubscribeUpdate = {
   type: new GraphQLNonNull(GraphQLInvestment),
   args: {},
   description: "Updated investments",
   subscribe: withFilter(
     (_payload, _args, context) => context?.pubsub.asyncIterator(INVESTMENT_UPDATE) || pubsub.asyncIterableIterator(INVESTMENT_UPDATE),
     (payload, _, context) => {
-      return payload?.investments_subscribe_update.lender_id === context?.id;
+      if (payload && context && "investments_subscribe_update" in payload) {
+        return payload.investments_subscribe_update.lender_id === context.id;
+      }
+      return false;
     },
   ),
 };
@@ -91,7 +122,7 @@ interface PayloadLoanUpdatePayload {
   gid: string;
 }
 
-export const loans_subscribe_update: GraphQLFieldConfig<PayloadLoanUpdate, Context, PayloadLoanUpdatePayload> = {
+export const loans_subscribe_update: GraphQLFieldConfig<PosiblePayloads, Context, PayloadLoanUpdatePayload> = {
   type: new GraphQLNonNull(GraphQLLoan),
   args: {
     gid: {
@@ -102,7 +133,10 @@ export const loans_subscribe_update: GraphQLFieldConfig<PayloadLoanUpdate, Conte
   subscribe: withFilter(
     (_payload, _args, context) => context?.pubsub.asyncIterator(LOAN_UPDATE) || pubsub.asyncIterableIterator(LOAN_UPDATE),
     (payload, variables) => {
-      return payload?.loans_subscribe_update._id === unbase64(variables?.gid || "");
+      if (payload && "loans_subscribe_update" in payload) {
+        return payload.loans_subscribe_update._id === unbase64(variables?.gid || "");
+      }
+      return false;
     },
   ),
 };
@@ -115,7 +149,7 @@ interface PayloadInvestmentInsertPayload {
   status?: IInvestmentStatus[];
 }
 
-export const investments_subscribe_insert: GraphQLFieldConfig<PayloadInvestmentInsert | undefined, Context | undefined, PayloadInvestmentInsertPayload> = {
+export const investments_subscribe_insert: GraphQLFieldConfig<PosiblePayloads, Context | undefined, PayloadInvestmentInsertPayload> = {
   type: new GraphQLNonNull(GraphQLInvestmentEdge),
   args: {
     status: {
@@ -126,10 +160,13 @@ export const investments_subscribe_insert: GraphQLFieldConfig<PayloadInvestmentI
   subscribe: withFilter(
     (_payload, _args, context) => context?.pubsub.asyncIterator(INVESTMENT_INSERT) || pubsub.asyncIterableIterator(INVESTMENT_INSERT),
     (payload, variables, context) => {
-      return (
-        payload?.investments_subscribe_insert.node.lender_id === context?.id &&
-        (variables?.status?.includes(payload?.investments_subscribe_insert.node.status as IInvestmentStatus) || !variables?.status)
-      );
+      if (payload && context && variables && variables.status && "investments_subscribe_insert" in payload) {
+        const isSameUser = payload.investments_subscribe_insert.node.lender_id === context.id;
+        const isSameStatus = variables.status.includes(payload.investments_subscribe_insert.node.status);
+        const payloadHasStatus = !variables.status;
+        return isSameUser && (isSameStatus || payloadHasStatus);
+      }
+      return false;
     },
   ),
 };
@@ -138,14 +175,17 @@ interface PayloadUser {
   user_subscribe: FintechUserMongo;
 }
 
-export const user_subscribe: GraphQLFieldConfig<PayloadUser, Context, unknown> = {
+export const user_subscribe: GraphQLFieldConfig<PosiblePayloads, Context, unknown> = {
   type: new GraphQLNonNull(GraphQLUser),
   description: "Updated user",
   args: {},
   subscribe: withFilter(
     (_payload, _args, context) => context?.pubsub.asyncIterator(USER) || pubsub.asyncIterableIterator(USER),
     (payload, _, context) => {
-      return payload?.user_subscribe.id === context?.id;
+      if (payload && context && "user_subscribe" in payload) {
+        return payload.user_subscribe.id === context.id;
+      }
+      return false;
     },
   ),
 };
