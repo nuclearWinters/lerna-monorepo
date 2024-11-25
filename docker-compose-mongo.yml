@@ -184,8 +184,8 @@ services:
     volumes:
       - .:/usr/src/service
       - lerna-node-modules:/usr/src/service/node_modules
-      - frontend-fintech:/usr/src/service/packages/frontend-fintech/node_modules
-    working_dir: /usr/src/service/packages/frontend-fintech
+      - frontend-fintech-esbuild:/usr/src/service/packages/frontend-fintech-esbuild/node_modules
+    working_dir: /usr/src/service/packages/frontend-fintech-esbuild
     command: ["npm", "run", "start"]
     ports:
       - "8000:8000"
@@ -238,6 +238,8 @@ volumes:
   backend-fintech-mongo-cron:
     external: true
   frontend-fintech:
+    external: true
+  frontend-fintech-esbuild:
     external: true
   repo-graphql-utils:
     external: true

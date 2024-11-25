@@ -50,6 +50,7 @@ export const logErr = async ({
 }) => {
   try {
     if (!IS_PRODUCTION) {
+      console.log(`${logGroupName}:${logStreamName}: ${message}`);
       return;
     }
     const command = new PutLogEventsCommand({

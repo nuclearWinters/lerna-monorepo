@@ -2,14 +2,6 @@ x-base: &base
   image: node:22
   volumes:
     - .:/usr/src/service
-    - ./packages/repo-graphql-utils/node_modules:/usr/src/service/packages/repo-graphql-utils/node_modules:ro
-    - ./packages/repo-grpc-utils/node_modules:/usr/src/service/packages/repo-grpc-utils/node_modules:ro
-    - ./packages/repo-jwt-utils/node_modules:/usr/src/service/packages/repo-jwt-utils/node_modules:ro
-    - ./packages/repo-kafka-utils/node_modules:/usr/src/service/packages/repo-kafka-utils/node_modules:ro
-    - ./packages/repo-logs-utils/node_modules:/usr/src/service/packages/repo-logs-utils/node_modules:ro
-    - ./packages/repo-mongo-utils/node_modules:/usr/src/service/packages/repo-mongo-utils/node_modules:ro
-    - ./packages/repo-redis-utils/node_modules:/usr/src/service/packages/repo-redis-utils/node_modules:ro
-    - ./packages/repo-utils/node_modules:/usr/src/service/packages/repo-utils/node_modules:ro
     - lerna-node-modules:/usr/src/service/node_modules
     - backend-auth-node:/usr/src/service/packages/backend-auth-node/node_modules
     - backend-fintech-mongo:/usr/src/service/packages/backend-fintech-mongo/node_modules
@@ -18,6 +10,7 @@ x-base: &base
     - grpc-fintech-node:/usr/src/service/packages/grpc-fintech-node/node_modules
     - kafka-mongo:/usr/src/service/packages/kafka-mongo/node_modules
     - frontend-fintech:/usr/src/service/packages/frontend-fintech/node_modules
+    - frontend-fintech-esbuild:/usr/src/service/packages/frontend-fintech-esbuild/node_modules
     - repo-grpc-utils:/usr/src/service/packages/repo-grpc-utils/node_modules
     - repo-graphql-utils:/usr/src/service/packages/repo-graphql-utils/node_modules
     - repo-jwt-utils:/usr/src/service/packages/repo-jwt-utils/node_modules
@@ -58,6 +51,8 @@ volumes:
   backend-fintech-mongo-cron:
     external: true
   frontend-fintech:
+    external: true
+  frontend-fintech-esbuild:
     external: true
   repo-grpc-utils:
     external: true

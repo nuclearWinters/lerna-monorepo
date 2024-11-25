@@ -163,7 +163,7 @@ Promise.all([MongoClient.connect(MONGO_DB), getGRPCClient(), producer.connect()]
               logErr({
                 logGroupName: "backend-fintech-mongo",
                 logStreamName: "sessionTimeout",
-                message: `Ping to ${identity} failed, ${err}.`,
+                message: `Ping to ${identity} failed, ${String(err)}.`,
               });
             });
           }
@@ -184,7 +184,7 @@ Promise.all([MongoClient.connect(MONGO_DB), getGRPCClient(), producer.connect()]
             logErr({
               logGroupName: "backend-fintech-mongo",
               logStreamName: "streamError",
-              message: `HTTP/2 stream connection reset, ${String(headers)}, ${err}`,
+              message: `HTTP/2 stream connection reset, ${JSON.stringify(headers)}, ${String(err)}`,
             });
           }
         });
@@ -238,7 +238,7 @@ Promise.all([MongoClient.connect(MONGO_DB), getGRPCClient(), producer.connect()]
             logErr({
               logGroupName: "backend-fintech-mongo",
               logStreamName: "reqError",
-              message: `Response stream error, ${req.url}, ${String(req.headers)}, ${String(err)}`,
+              message: `Response stream error, ${req.url}, ${JSON.stringify(req.headers)}, ${String(err)}`,
             });
           }
         });
@@ -253,7 +253,7 @@ Promise.all([MongoClient.connect(MONGO_DB), getGRPCClient(), producer.connect()]
             logErr({
               logGroupName: "backend-fintech-mongo",
               logStreamName: "resError",
-              message: `Response stream error, ${req.url}, ${String(req.headers)}, ${String(err)}`,
+              message: `Response stream error, ${req.url}, ${JSON.stringify(req.headers)}, ${String(err)}`,
             });
           }
         });

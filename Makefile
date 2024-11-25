@@ -11,6 +11,7 @@ setup:
 	&& docker volume create grpc-fintech-node \
 	&& docker volume create grpc-auth-node \
 	&& docker volume create frontend-fintech \
+	&& docker volume create frontend-fintech-esbuild \
 	&& docker volume create repo-graphql-utils \
 	&& docker volume create repo-grpc-utils \
 	&& docker volume create repo-jwt-utils \

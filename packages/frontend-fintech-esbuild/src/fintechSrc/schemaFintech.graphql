@@ -1,0 +1,224 @@
+input LendList {
+  loan_gid: ID!
+  quantity: MXN!
+}
+
+input AddLendsInput {
+  clientMutationId: String
+  lends: [LendList!]!
+}
+
+type AddLendsPayload {
+  error: String!
+  clientMutationId: String
+}
+
+input AddLoanInput {
+  clientMutationId: String
+  term: Int!
+  goal: MXN!
+}
+
+type AddLoanPayload {
+  error: String!
+  clientMutationId: String
+}
+
+input AddFundsInput {
+  clientMutationId: String
+  quantity: MXN!
+}
+
+type AddFundsPayload {
+  error: String!
+  clientMutationId: String
+}
+
+input ApproveLoanInput {
+  clientMutationId: String
+  loan_gid: ID!
+}
+
+type ApproveLoanPayload {
+  error: String!
+  clientMutationId: String
+  loan: Loan
+}
+
+type Mutation {
+  addLends(input: AddLendsInput!): AddLendsPayload!
+  addLoan(input: AddLoanInput!): AddLoanPayload!
+  addFunds(input: AddFundsInput!): AddFundsPayload!
+  approveLoan(input: ApproveLoanInput!): ApproveLoanPayload!
+}
+
+type Query {
+  user: User
+  node(id: ID!): Node
+  scheduledPaymentsbyLoanId(loan_gid: ID!): [ScheduledPayments]
+}
+
+type Subscription {
+  user_subscribe: User!
+  loans_subscribe_insert: LoanEdge!
+  my_loans_subscribe_insert: LoanEdge!
+  investments_subscribe_insert(status: [InvestmentStatus!]): InvestmentsEdge!
+  transactions_subscribe_insert: TransactionEdge!
+  loans_subscribe_update(gid: ID!): Loan!
+  investments_subscribe_update: Investment!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Investment implements Node {
+  id: ID!
+  borrower_id: String!
+  lender_id: String!
+  loan_id: String!
+  quantity: MXN!
+  ROI: Float!
+  payments: Int!
+  term: Int!
+  moratory: MXN!
+  created_at: Date!
+  updated_at: Date!
+  status: InvestmentStatus!
+  interest_to_earn: MXN!
+  paid_already: MXN!
+  to_be_paid: MXN!
+}
+
+type InvestmentsConnection {
+  pageInfo: PageInfo!
+  edges: [InvestmentsEdge]
+}
+
+type InvestmentsEdge {
+  node: Investment
+  cursor: String!
+}
+
+enum LoanScheduledPaymentStatus {
+  TO_BE_PAID
+  DELAYED
+  PAID
+}
+
+type ScheduledPayments {
+  id: ID!
+  loan_id: ID!
+  amortize: MXN!
+  status: LoanScheduledPaymentStatus!
+  scheduledDate: Date!
+}
+
+type Loan implements Node {
+  id: ID!
+  user_id: String!
+  score: String!
+  ROI: Int!
+  goal: MXN!
+  term: Int!
+  raised: MXN!
+  expiry: Date!
+  status: LoanStatus!
+  pending: MXN!
+  pendingCents: Int!
+}
+
+type LoanConnection {
+  pageInfo: PageInfo!
+  edges: [LoanEdge]
+}
+
+type LoanEdge {
+  node: Loan
+  cursor: String!
+}
+
+enum TransactionType {
+  CREDIT
+  WITHDRAWAL
+  INVEST
+  COLLECT
+}
+
+enum InvestmentStatus {
+  DELAY_PAYMENT
+  UP_TO_DATE
+  FINANCING
+  PAST_DUE
+  PAID
+}
+
+enum LoanStatus {
+  PAID
+  TO_BE_PAID
+  FINANCING
+  WAITING_FOR_APPROVAL
+  PAST_DUE
+}
+
+union Transaction = InvestTransaction | MoneyTransaction
+
+type InvestTransaction {
+  id: ID!
+  user_id: String!
+  borrower_id: String!
+  loan_id: String!
+  type: TransactionType!
+  quantity: MXN!
+  created_at: Date!
+  js(module: String!, id: String): JSDependency!
+}
+
+type MoneyTransaction {
+  id: ID!
+  user_id: String!
+  type: TransactionType!
+  quantity: MXN!
+  created_at: Date!
+  js(module: String!, id: String): JSDependency!
+}
+
+type TransactionConnection {
+  pageInfo: PageInfo!
+  edges: [TransactionEdge]
+}
+
+type TransactionEdge {
+  node: Transaction
+  cursor: String!
+}
+
+type User implements Node {
+  id: ID!
+  accountAvailable: MXN!
+  accountToBePaid: MXN!
+  accountTotal: MXN!
+  accountWithheld: MXN!
+  approveLoans(after: String, first: Int, reset: Float!): LoanConnection
+  myLoans(after: String, first: Int, reset: Float!): LoanConnection
+  transactions(after: String, first: Int, reset: Float!): TransactionConnection
+  investments(after: String, first: Int, status: [InvestmentStatus!], reset: Float!): InvestmentsConnection
+  loansFinancing(after: String, first: Int, reset: Float!): LoanConnection
+}
+
+scalar Date
+scalar MXN
+scalar JSDependency

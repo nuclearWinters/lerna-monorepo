@@ -130,7 +130,7 @@ Promise.all([
               logErr({
                 logGroupName: "backend-auth-node",
                 logStreamName: "sessionTimeout",
-                message: `Ping to ${identity} failed, ${err}.`,
+                message: `Ping to ${identity} failed, ${String(err)}.`,
               });
             });
           }
@@ -151,7 +151,7 @@ Promise.all([
             logErr({
               logGroupName: "backend-auth-node",
               logStreamName: "streamError",
-              message: `HTTP/2 stream connection reset, ${String(headers)}, ${err}`,
+              message: `HTTP/2 stream connection reset, ${JSON.stringify(headers)}, ${String(err)}`,
             });
           }
         });
@@ -205,7 +205,7 @@ Promise.all([
             logErr({
               logGroupName: "backend-auth-node",
               logStreamName: "reqError",
-              message: `Response stream error, ${req.url}, ${String(req.headers)}, ${String(err)}`,
+              message: `Response stream error, ${req.url}, ${JSON.stringify(req.headers)}, ${String(err)}`,
             });
           }
         });
@@ -220,7 +220,7 @@ Promise.all([
             logErr({
               logGroupName: "backend-auth-node",
               logStreamName: "resError",
-              message: `Response stream error, ${req.url}, ${String(req.headers)}, ${String(err)}`,
+              message: `Response stream error, ${req.url}, ${JSON.stringify(req.headers)}, ${String(err)}`,
             });
           }
         });
